@@ -31,7 +31,7 @@ def _to_system_data_lower(lines, cartesian = True) :
     for idx,ii in enumerate(system['atom_numbs']) :
         for jj in range(ii) :
             atom_types.append(idx)
-    system['atom_types'] = atom_types
+    system['atom_types'] = np.array(atom_types, dtype = int)
     return system
 
 
