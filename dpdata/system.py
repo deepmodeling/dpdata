@@ -32,10 +32,10 @@ class System :
         return self.data
 
 
-    def from_lammps_lmp (self, file_name) :
+    def from_lammps_lmp (self, file_name, type_map = None) :
         with open(file_name) as fp:
             lines = [line.rstrip('\n') for line in fp]
-            self.data = lammps.lmp.to_system_data(lines)
+            self.data = lammps.lmp.to_system_data(lines, type_map)
         self._shift_orig_zero()
 
 
@@ -54,10 +54,10 @@ class System :
 
     
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
-        assert(frame_idx < len(data['frames']))
+        assert(frame_idx < len(self.data['frames']))
         w_str = vasp.poscar.from_system_data(self.data, frame_idx)
         with open(file_name, 'w') as fp:
-            fp.write(lmp_str)
+            fp.write(w_str)
 
 
     def affine_map(self, trans, f_idx = 0) :
@@ -77,7 +77,7 @@ class System :
             for ii in ff :
                 ii = ii - self.data['orig']
         self.data['orig'] = self.data['orig'] - self.data['orig']
-        assert(np.zeros([3]) == self.data['orig'])
+        assert((np.zeros([3]) == self.data['orig']).all())
 
 
     def _rot_lower_triangular(self, f_idx = 0) :

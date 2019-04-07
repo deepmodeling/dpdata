@@ -15,8 +15,8 @@ def _get_block (lines, keys) :
     idx_s = idx+2
     idx = idx_s
     ret = []
-    while True :        
-        if len(lines[idx].split()) == 0 :
+    while True :
+        if idx == len(lines) or len(lines[idx].split()) == 0 :
             break
         else :
             ret.append(lines[idx])
@@ -148,8 +148,8 @@ def system_data(lines, type_map = None, idx_zero = True) :
     system['frames'] = [get_posi(lines)]
     return system
 
-def to_system_data(lines) :
-    return system_data(lines)
+def to_system_data(lines, type_map = None, idx_zero = True) :
+    return system_data(lines, type_map = type_map, idx_zero = idx_zero)
 
 def from_system_data(system, f_idx = 0) :
     ret = ''

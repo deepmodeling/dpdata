@@ -54,7 +54,7 @@ def from_system_data(system, f_idx = 0) :
             ret += '%.16e ' % jj
         ret += '\n'
     for ii in system['atom_names'] :
-        ret += '%d ' % ii
+        ret += '%s ' % ii
     ret += '\n'
     for ii in system['atom_numbs'] :
         ret += '%d ' % ii
@@ -70,5 +70,6 @@ def from_system_data(system, f_idx = 0) :
         posi_list.append('%15.10f %15.10f %15.10f' % \
                          (ii[0], ii[1], ii[2])
         )
+    posi_list.append('')
     ret += '\n'.join(posi_list)
     return ret

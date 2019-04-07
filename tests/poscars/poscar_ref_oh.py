@@ -1,12 +1,6 @@
-import os
 import numpy as np
 
-import unittest
-
-from context import system
-# from system import System
-
-class TestPOSCAR :
+class TestPOSCARoh :
 
     def test_atom_numbs(self):
         self.assertEqual(self.system.data['atom_numbs'], [1,1])
@@ -15,7 +9,8 @@ class TestPOSCAR :
         self.assertEqual(self.system.data['atom_names'], ['O','H'])
 
     def test_atom_types(self):
-        self.assertEqual(self.system.data['atom_types'], [0, 1])
+        self.assertEqual(self.system.data['atom_types'][0], 0)
+        self.assertEqual(self.system.data['atom_types'][1], 1)
 
     def test_orig(self):
         for d0 in range(3) :
@@ -40,21 +35,4 @@ class TestPOSCAR :
                 self.assertAlmostEqual(self.system.data['frames'][0][ii][jj], 
                                        ovito_posis[ii][jj], 
                                        places = 6,
-                                       msg = 'posis[%d][%d] failed' % (ii,jj))        
-
-class TestPOSCARCart(unittest.TestCase, TestPOSCAR):
-    
-    def setUp(self): 
-        self.system = system.System()
-        self.system.from_vasp_poscar(os.path.join('poscars', 'POSCAR.oh.c'))
-
-class TestPOSCARDirect(unittest.TestCase, TestPOSCAR):
-    
-    def setUp(self): 
-        self.system = system.System()
-        self.system.from_vasp_poscar(os.path.join('poscars', 'POSCAR.oh.d'))
-
-
-
-if __name__ == '__main__':
-    unittest.main()
+                                       msg = 'posis[%d][%d] failed' % (ii,jj))
