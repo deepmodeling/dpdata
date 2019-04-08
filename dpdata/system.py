@@ -32,6 +32,16 @@ class System :
     def get_data(self) :
         return self.data
 
+    def get_nframes(self) :
+        return self.data['cell'].shape[0]
+
+    def sub_system(self, sys_a, f_idx) :
+        self.data = {}
+        for ii in ['atom_numbs', 'atom_names', 'atom_types', 'orig'] :
+            self.data[ii] = sys_a.data[ii]
+        self.data['cell'] = sys_a.data['cell'][f_idx]
+        self.data['frames'] = sys_a.data['frames'][f_idx]
+        
 
     def from_lammps_lmp (self, file_name, type_map = None) :
         with open(file_name) as fp:

@@ -32,6 +32,8 @@ def _to_system_data_lower(lines, cartesian = True) :
         for jj in range(ii) :
             atom_types.append(idx)
     system['atom_types'] = np.array(atom_types, dtype = int)
+    system['cell'] = np.array(system['cell'])
+    system['frames'] = np.array(system['frames'])
     return system
 
 

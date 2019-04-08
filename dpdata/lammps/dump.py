@@ -106,6 +106,8 @@ def box2dumpbox(orig, box) :
     return bounds, tilt
 
 def system_data(lines, type_map = None, idx_zero = True) :
+    array_lines = split_traj(lines)
+    lines = array_lines[0]
     system = {}
     system['atom_numbs'] = get_natoms_vec(lines)
     system['atom_names'] = []
@@ -118,11 +120,18 @@ def system_data(lines, type_map = None, idx_zero = True) :
             system['atom_names'].append(type_map[ii])
     bounds, tilt = get_dumpbox(lines)
     orig, cell = dumpbox2box(bounds, tilt)
-    system['orig'] = np.array(orig)
+    system['orig'] = np.array(orig) - np.array(orig)
     system['cell'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
     system['atom_types'] = get_atype(lines, idx_zero = idx_zero)
-    system['frames'] = [get_posi(lines)]
+    system['frames'] = [get_posi(lines) - np.array(orig)]
+    for ii in range(1, len(array_lines)) :
+        bounds, tilt = get_dumpbox(array_lines[ii])
+        orig, cell = dumpbox2box(bounds, tilt)
+        system['cell'].append(cell)
+        system['frames'].append(get_posi(array_lines[ii]) - np.array(orig))
+    system['cell'] = np.array(system['cell'])
+    system['frames'] = np.array(system['frames'])
     return system
 
 

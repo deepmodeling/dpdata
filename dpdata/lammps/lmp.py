@@ -146,6 +146,8 @@ def system_data(lines, type_map = None, idx_zero = True) :
     system['atom_types'] = get_atype(lines, idx_zero = idx_zero)
     system['coordinates'] = get_posi(lines)
     system['frames'] = [get_posi(lines)]
+    system['cell'] = np.array(system['cell'])
+    system['frames'] = np.array(system['frames'])
     return system
 
 def to_system_data(lines, type_map = None, idx_zero = True) :
