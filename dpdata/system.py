@@ -1,5 +1,6 @@
 import numpy as np
 import dpdata.lammps.lmp
+import dpdata.lammps.dump
 import dpdata.vasp.poscar
 
 class System :    
@@ -45,6 +46,13 @@ class System :
         with open(file_name, 'w') as fp:
             fp.write(w_str)
     
+
+    def from_lammps_dump (self, file_name, type_map = None) :
+        with open(file_name) as fp:
+            lines = [line.rstrip('\n') for line in fp]
+            self.data = dpdata.lammps.dump.system_data(lines, type_map)
+        self._shift_orig_zero()
+
 
     def from_vasp_poscar(self, file_name) :
         with open(file_name) as fp:

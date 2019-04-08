@@ -19,7 +19,7 @@ def _get_block (lines, key) :
         idx_e += 1
     return lines[idx_s:idx_e], lines[idx_s-1]
 
-def get_atype(lines) :
+def get_atype(lines, idx_zero = False) :
     blk, head = _get_block(lines, 'ATOMS')
     keys = head.split()
     id_idx = keys.index('id') - 2
@@ -28,8 +28,11 @@ def get_atype(lines) :
     for ii in blk :
         atype.append([int(ii.split()[id_idx]), int(ii.split()[tidx])])
     atype.sort()
-    atype = np.array(atype, dtype = int)
-    return atype[:,1]
+    atype = np.array(atype, dtype = int)    
+    if idx_zero :
+        return atype[:,1] - 1
+    else :
+        return atype[:,1] 
 
 def get_natoms(lines) :
     blk, head = _get_block(lines, 'NUMBER OF ATOMS')
@@ -102,19 +105,24 @@ def box2dumpbox(orig, box) :
     bounds[2][1] = lohi[2][1]
     return bounds, tilt
 
-def system_data(lines) :
+def system_data(lines, type_map = None, idx_zero = True) :
     system = {}
     system['atom_numbs'] = get_natoms_vec(lines)
     system['atom_names'] = []
-    for ii in range(len(system['atom_numbs'])) :
-        system['atom_names'].append('TYPE_%d' % ii)
+    if type_map == None :
+        for ii in range(len(system['atom_numbs'])) :
+            system['atom_names'].append('TYPE_%d' % ii)
+    else :
+        assert(len(type_map) >= len(system['atom_numbs']))
+        for ii in range(len(system['atom_numbs'])) :
+            system['atom_names'].append(type_map[ii])
     bounds, tilt = get_dumpbox(lines)
     orig, cell = dumpbox2box(bounds, tilt)
     system['orig'] = np.array(orig)
-    system['cell'] = np.array(cell)
+    system['cell'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
-    system['atom_types'] = get_atype(lines)
-    system['coordinates'] = get_posi(lines)
+    system['atom_types'] = get_atype(lines, idx_zero = idx_zero)
+    system['frames'] = [get_posi(lines)]
     return system
 
 
