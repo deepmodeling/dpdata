@@ -133,10 +133,12 @@ class LabeledSystem (System):
         # the vasp xml assumes the direct coordinates
         # apply the transform to the cartesan coordinates
         for ii in range(self.get_nframes()) :
-            for jj in range(sum(self.data['atom_numbs'])) :
-                self.data['frames'][ii][jj] \
-                    = np.matmul(self.data['frames'][ii][jj], self.data['cell'][ii])
+            self.data['frames'][ii] = np.matmul(self.data['frames'][ii], self.data['cell'][ii])
         # rotate the system to lammps convention
         self.rot_lower_triangular()
-        # self.to_vasp_poscar('tmp.POSCAR', frame_idx=2)
-        
+        # scale virial to the unit of eV
+        v_pref = 1 * 1e3 / 1.602176621e6
+        for ii in range (self.get_nframes()) :
+            vol = np.linalg.det(np.reshape(self.data['cell'][ii], [3,3]))
+            self.data['virials'][ii] *= v_pref * vol
+        # print(self.data)
