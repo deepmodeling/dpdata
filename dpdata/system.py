@@ -2,6 +2,7 @@ import numpy as np
 import dpdata.lammps.lmp
 import dpdata.lammps.dump
 import dpdata.vasp.poscar
+import dpdata.vasp.xml
 
 class System :    
     data = {}
@@ -33,14 +34,15 @@ class System :
         return self.data
 
     def get_nframes(self) :
-        return self.data['cell'].shape[0]
+        return len(self.data['cell'])
 
-    def sub_system(self, sys_a, f_idx) :
-        self.data = {}
+    def sub_system(self, f_idx) :
+        tmp = System()
         for ii in ['atom_numbs', 'atom_names', 'atom_types', 'orig'] :
-            self.data[ii] = sys_a.data[ii]
-        self.data['cell'] = sys_a.data['cell'][f_idx]
-        self.data['frames'] = sys_a.data['frames'][f_idx]
+            tmp.data[ii] = self.data[ii]
+        tmp.data['cell'] = self.data['cell'][f_idx]
+        tmp.data['frames'] = self.data['frames'][f_idx]
+        return tmp
         
 
     def from_lammps_lmp (self, file_name, type_map = None) :
@@ -68,7 +70,7 @@ class System :
         with open(file_name) as fp:
             lines = [line.rstrip('\n') for line in fp]
             self.data = dpdata.vasp.poscar.to_system_data(lines)
-        self._rot_lower_triangular()
+        self.rot_lower_triangular()
 
     
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
@@ -97,6 +99,9 @@ class System :
         self.data['orig'] = self.data['orig'] - self.data['orig']
         assert((np.zeros([3]) == self.data['orig']).all())
 
+    def rot_lower_triangular(self) :
+        for ii in range(self.get_nframes()) :
+            self._rot_lower_triangular(ii)
 
     def _rot_lower_triangular(self, f_idx = 0) :
         qq, rr = np.linalg.qr(self.data['cell'][f_idx].T)
@@ -109,5 +114,29 @@ class System :
         if self.data['cell'][f_idx][2][2] < 0 :
             rot[2][2] = -1
         assert(np.linalg.det(rot) > 0) 
-        self.affine_map(rot)
+        self.affine_map(rot, f_idx = f_idx)
+        
+
+class LabeledSystem (System): 
+    def from_vasp_xml(self, file_name) :
+        self.data['atom_names'], \
+            self.data['atom_types'], \
+            self.data['cell'], \
+            self.data['frames'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            self.data['virials'], \
+            = dpdata.vasp.xml.analyze(file_name, type_idx_zero = True)
+        self.data['atom_numbs'] = []
+        for ii in range(len(self.data['atom_names'])) :
+            self.data['atom_numbs'].append(sum(self.data['atom_types'] == ii))
+        # the vasp xml assumes the direct coordinates
+        # apply the transform to the cartesan coordinates
+        for ii in range(self.get_nframes()) :
+            for jj in range(sum(self.data['atom_numbs'])) :
+                self.data['frames'][ii][jj] \
+                    = np.matmul(self.data['frames'][ii][jj], self.data['cell'][ii])
+        # rotate the system to lammps convention
+        self.rot_lower_triangular()
+        # self.to_vasp_poscar('tmp.POSCAR', frame_idx=2)
         
