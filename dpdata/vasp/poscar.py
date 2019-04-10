@@ -63,8 +63,10 @@ def from_system_data(system, f_idx = 0) :
     ret += '\n'
     ret += 'cartesian\n'
     atype = system['atom_types']
-    posis = system['frames'][f_idx]
-    sort_idx = np.argsort(atype)
+    posis = system['frames'][f_idx]    
+    # atype_idx = [[idx,tt] for idx,tt in enumerate(atype)]
+    # sort_idx = np.argsort(atype, kind = 'mergesort')
+    sort_idx = np.lexsort((np.arange(len(atype)), atype))
     atype = atype[sort_idx]
     posis = posis[sort_idx]
     posi_list = []

@@ -86,13 +86,13 @@ def get_natoms_vec(lines) :
     assert (sum(natoms_vec) == get_natoms(lines))
     return natoms_vec
 
-def get_atype(lines, idx_zero = False) :
+def get_atype(lines, type_idx_zero = False) :
     alines = get_atoms(lines) 
     atype = []
     for ii in alines :
         # idx, mt, at, q, x, y, z = _atom_info_mol(ii)
         idx, at, x, y, z = _atom_info_atom(ii)
-        if idx_zero :
+        if type_idx_zero :
             atype.append(at-1)
         else:
             atype.append(at)
@@ -127,7 +127,7 @@ def get_lmpbox(lines) :
     return box_info, tilt
 
 
-def system_data(lines, type_map = None, idx_zero = True) :
+def system_data(lines, type_map = None, type_idx_zero = True) :
     system = {}
     system['atom_numbs'] = get_natoms_vec(lines)
     system['atom_names'] = []
@@ -143,15 +143,15 @@ def system_data(lines, type_map = None, idx_zero = True) :
     system['orig'] = np.array(orig)
     system['cell'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
-    system['atom_types'] = get_atype(lines, idx_zero = idx_zero)
+    system['atom_types'] = get_atype(lines, type_idx_zero = type_idx_zero)
     system['coordinates'] = get_posi(lines)
     system['frames'] = [get_posi(lines)]
     system['cell'] = np.array(system['cell'])
     system['frames'] = np.array(system['frames'])
     return system
 
-def to_system_data(lines, type_map = None, idx_zero = True) :
-    return system_data(lines, type_map = type_map, idx_zero = idx_zero)
+def to_system_data(lines, type_map = None, type_idx_zero = True) :
+    return system_data(lines, type_map = type_map, type_idx_zero = type_idx_zero)
 
 def from_system_data(system, f_idx = 0) :
     ret = ''
