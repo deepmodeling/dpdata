@@ -24,16 +24,16 @@ class CompSys :
     def test_cell(self):
         for ii in range(3) :
             for jj in range(3) :
-                self.assertAlmostEqual(self.system_1.data['cell'][0][ii][jj], 
-                                       self.system_2.data['cell'][0][ii][jj], 
+                self.assertAlmostEqual(self.system_1.data['cells'][0][ii][jj], 
+                                       self.system_2.data['cells'][0][ii][jj], 
                                        places = 6,
                                        msg = 'cell[%d][%d] failed' % (ii,jj))
 
     def test_frame(self): 
         for ii in range(sum(self.system_1.data['atom_numbs'])) :
             for jj in range(3) :
-                self.assertAlmostEqual(self.system_1.data['frames'][0][ii][jj], 
-                                       self.system_2.data['frames'][0][ii][jj], 
+                self.assertAlmostEqual(self.system_1.data['coords'][0][ii][jj], 
+                                       self.system_2.data['coords'][0][ii][jj], 
                                        places = 6,
                                        msg = 'posis[%d][%d] failed' % (ii,jj))
 

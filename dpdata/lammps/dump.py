@@ -121,17 +121,17 @@ def system_data(lines, type_map = None, type_idx_zero = True) :
     bounds, tilt = get_dumpbox(lines)
     orig, cell = dumpbox2box(bounds, tilt)
     system['orig'] = np.array(orig) - np.array(orig)
-    system['cell'] = [np.array(cell)]
+    system['cells'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
     system['atom_types'] = get_atype(lines, type_idx_zero = type_idx_zero)
-    system['frames'] = [get_posi(lines) - np.array(orig)]
+    system['coords'] = [get_posi(lines) - np.array(orig)]
     for ii in range(1, len(array_lines)) :
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
-        system['cell'].append(cell)
-        system['frames'].append(get_posi(array_lines[ii]) - np.array(orig))
-    system['cell'] = np.array(system['cell'])
-    system['frames'] = np.array(system['frames'])
+        system['cells'].append(cell)
+        system['coords'].append(get_posi(array_lines[ii]) - np.array(orig))
+    system['cells'] = np.array(system['cells'])
+    system['coords'] = np.array(system['coords'])
     return system
 
 

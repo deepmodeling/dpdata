@@ -15,7 +15,7 @@ def _to_system_data_lower(lines, cartesian = True) :
         boxv = [float(jj) for jj in lines[ii].split()]
         boxv = np.array(boxv) * scale
         cell.append(boxv)
-    system['cell'] = [np.array(cell)]
+    system['cells'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
     coord = []
     for ii in range(8, 8+natoms) :
@@ -23,17 +23,17 @@ def _to_system_data_lower(lines, cartesian = True) :
         if cartesian :
             tmpv = np.array(tmpv) * scale
         else :
-            tmpv = np.matmul(np.array(tmpv), system['cell'][0])
+            tmpv = np.matmul(np.array(tmpv), system['cells'][0])
         coord.append(tmpv)
-    system['frames'] = [np.array(coord)]
+    system['coords'] = [np.array(coord)]
     system['orig'] = np.zeros(3)
     atom_types = []
     for idx,ii in enumerate(system['atom_numbs']) :
         for jj in range(ii) :
             atom_types.append(idx)
     system['atom_types'] = np.array(atom_types, dtype = int)
-    system['cell'] = np.array(system['cell'])
-    system['frames'] = np.array(system['frames'])
+    system['cells'] = np.array(system['cells'])
+    system['coords'] = np.array(system['coords'])
     return system
 
 
@@ -51,7 +51,7 @@ def from_system_data(system, f_idx = 0) :
         ret += '%s%d ' % (name, ii)
     ret += '\n'
     ret += '1.0\n'
-    for ii in system['cell'][f_idx] :
+    for ii in system['cells'][f_idx] :
         for jj in ii :
             ret += '%.16e ' % jj
         ret += '\n'
@@ -63,7 +63,7 @@ def from_system_data(system, f_idx = 0) :
     ret += '\n'
     ret += 'cartesian\n'
     atype = system['atom_types']
-    posis = system['frames'][f_idx]    
+    posis = system['coords'][f_idx]    
     # atype_idx = [[idx,tt] for idx,tt in enumerate(atype)]
     # sort_idx = np.argsort(atype, kind = 'mergesort')
     sort_idx = np.lexsort((np.arange(len(atype)), atype))

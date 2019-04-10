@@ -9,8 +9,8 @@ class TestIons(unittest.TestCase):
         self.system = dpdata.System()
         self.system.from_lammps_lmp(os.path.join('poscars', 'conf.waterion.lmp'), 
                                     type_map = ['O', 'H'])
-        self.bonds = dpdata.md.water.compute_bonds(self.system.data['cell'][0],
-                                                   self.system.data['frames'][0],
+        self.bonds = dpdata.md.water.compute_bonds(self.system.data['cells'][0],
+                                                   self.system.data['coords'][0],
                                                    self.system.data['atom_types'])
 
 

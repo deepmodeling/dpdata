@@ -22,7 +22,7 @@ class TestPOSCARoh :
                                [1.2874292, 0.7485898, 2.2254033]])
         for ii in range(3) :
             for jj in range(3) :
-                self.assertAlmostEqual(self.system.data['cell'][0][ii][jj], 
+                self.assertAlmostEqual(self.system.data['cells'][0][ii][jj], 
                                        ovito_cell[ii][jj], 
                                        places = 6,
                                        msg = 'cell[%d][%d] failed' % (ii,jj))
@@ -32,7 +32,7 @@ class TestPOSCARoh :
                                 [1.2621856, 0.7018028, 0.5513885]])
         for ii in range(2) :
             for jj in range(3) :
-                self.assertAlmostEqual(self.system.data['frames'][0][ii][jj], 
+                self.assertAlmostEqual(self.system.data['coords'][0][ii][jj], 
                                        ovito_posis[ii][jj], 
                                        places = 6,
                                        msg = 'posis[%d][%d] failed' % (ii,jj))

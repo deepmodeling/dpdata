@@ -141,13 +141,12 @@ def system_data(lines, type_map = None, type_idx_zero = True) :
     lohi, tilt = get_lmpbox(lines)
     orig, cell = lmpbox2box(lohi, tilt)
     system['orig'] = np.array(orig)
-    system['cell'] = [np.array(cell)]
+    system['cells'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
     system['atom_types'] = get_atype(lines, type_idx_zero = type_idx_zero)
-    system['coordinates'] = get_posi(lines)
-    system['frames'] = [get_posi(lines)]
-    system['cell'] = np.array(system['cell'])
-    system['frames'] = np.array(system['frames'])
+    system['coords'] = [get_posi(lines)]
+    system['cells'] = np.array(system['cells'])
+    system['coords'] = np.array(system['coords'])
     return system
 
 def to_system_data(lines, type_map = None, type_idx_zero = True) :
@@ -160,11 +159,11 @@ def from_system_data(system, f_idx = 0) :
     ntypes = len(system['atom_numbs'])    
     ret += '%d atoms\n' % natoms
     ret += '%d atom types\n' % ntypes
-    ret += (ptr_float_fmt + ' ' + ptr_float_fmt + ' xlo xhi\n') % (0, system['cell'][f_idx][0][0])
-    ret += (ptr_float_fmt + ' ' + ptr_float_fmt + ' ylo yhi\n') % (0, system['cell'][f_idx][1][1])
-    ret += (ptr_float_fmt + ' ' + ptr_float_fmt + ' zlo zhi\n') % (0, system['cell'][f_idx][2][2])
+    ret += (ptr_float_fmt + ' ' + ptr_float_fmt + ' xlo xhi\n') % (0, system['cells'][f_idx][0][0])
+    ret += (ptr_float_fmt + ' ' + ptr_float_fmt + ' ylo yhi\n') % (0, system['cells'][f_idx][1][1])
+    ret += (ptr_float_fmt + ' ' + ptr_float_fmt + ' zlo zhi\n') % (0, system['cells'][f_idx][2][2])
     ret += (ptr_float_fmt + ' ' + ptr_float_fmt + ' ' + ptr_float_fmt + ' xy xz yz\n') % \
-    (system['cell'][f_idx][1][0], system['cell'][f_idx][2][0], system['cell'][f_idx][2][1])
+    (system['cells'][f_idx][1][0], system['cells'][f_idx][2][0], system['cells'][f_idx][2][1])
     ret += '\n'
     ret += 'Atoms # atomic\n'
     ret += '\n'
@@ -173,9 +172,9 @@ def from_system_data(system, f_idx = 0) :
         ret += coord_fmt % \
                (ii+1,
                 system['atom_types'][ii] + 1,
-                system['frames'][f_idx][ii][0] - system['orig'][0],
-                system['frames'][f_idx][ii][1] - system['orig'][1],
-                system['frames'][f_idx][ii][2] - system['orig'][2]
+                system['coords'][f_idx][ii][0] - system['orig'][0],
+                system['coords'][f_idx][ii][1] - system['orig'][1],
+                system['coords'][f_idx][ii][2] - system['orig'][2]
         )
     return ret
 
