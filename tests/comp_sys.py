@@ -78,8 +78,8 @@ class CompLabeledSys (CompSys) :
         for ff in range(self.system_1.get_nframes()) :
             for ii in range(3) :
                 for jj in range(3) :
-                    self.assertAlmostEqual(self.system_1.data['virials'][ff][ii][jj], 
-                                           self.system_2.data['virials'][ff][ii][jj], 
+                    self.assertAlmostEqual(self.system_1['virials'][ff][ii][jj], 
+                                           self.system_2['virials'][ff][ii][jj], 
                                            places = self.vir_places,
                                            msg = 'virials[%d][%d][%d] failed' % (ff,ii,jj))
             
