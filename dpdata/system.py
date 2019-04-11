@@ -46,6 +46,9 @@ class System (object) :
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
+    
+    def __getitem__(self, key):
+        return self.data[key]
 
     def get_data(self) :
         return self.data
@@ -242,4 +245,13 @@ class LabeledSystem (System):
         if len(self.data['virials']) != 0 :            
             np.savetxt(os.path.join(folder, 'virial.raw'), np.reshape(self.data['virials'], [nframes, 9]))
 
+
+    def sub_system(self, f_idx) :
+        tmp_sys = LabeledSystem()
+        tmp_sys.data = System.sub_system(self, f_idx).data
+        tmp_sys.data['energies'] = self.data['energies'][f_idx]
+        tmp_sys.data['forces'] = self.data['forces'][f_idx]
+        if len(self.data['virials']) != 0 :
+            tmp_sys.data['virials'] = self.data['virials'][f_idx]            
+        return tmp_sys
 
