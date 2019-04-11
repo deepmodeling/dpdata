@@ -3,8 +3,9 @@ import dpdata.lammps.lmp
 import dpdata.lammps.dump
 import dpdata.vasp.poscar
 import dpdata.vasp.xml
+import dpdata.vasp.outcar
 
-class System :    
+class System :
     data = {}
     '''
     for example a water system that has two molecules
@@ -118,6 +119,7 @@ class System :
         
 
 class LabeledSystem (System): 
+
     def from_vasp_xml(self, file_name) :
         self.data['atom_names'], \
             self.data['atom_types'], \
@@ -142,3 +144,36 @@ class LabeledSystem (System):
             vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
             self.data['virials'][ii] *= v_pref * vol
         # print(self.data)
+
+    def from_vasp_outcar(self, file_name) :
+        with open(file_name) as fp:
+            lines = [line.rstrip('\n') for line in fp]
+        self.data['atom_names'], self.data['atom_numbs'], self.data['atom_types'] \
+            = dpdata.vasp.outcar.system_info(lines, type_idx_zero = True)
+        self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            self.data['virials'], \
+            = dpdata.vasp.outcar.get_frames(lines)
+        # rotate the system to lammps convention
+        self.rot_lower_triangular()
+        # scale virial to the unit of eV
+        if len(self.data['virials']) != 0 :            
+            v_pref = 1 * 1e3 / 1.602176621e6        
+            for ii in range (self.get_nframes()) :
+                vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
+                self.data['virials'][ii] *= v_pref * vol
+
+    
+    def to_deepmd_raw(self, folder) :
+        os.makedirs(folder, exist_ok = True)
+        nframes = self.get_nframes()
+        np.savetxt(os.path.join(folder, 'type.raw'), self.data['atom_types'])
+        np.savetxt(os.path.join(folder, 'box.raw'), np.reshape(self.data['cells'], [nframes, 9]))
+        np.savetxt(os.path.join(folder, 'coord.raw'), np.reshape(self.data['coords'], [nframes, -1]))
+        np.savetxt(os.path.join(folder, 'energy.raw'), np.reshape(self.data['energies'], [nframes, 1]))
+        np.savetxt(os.path.join(folder, 'force.raw'), np.reshape(self.data['forces'], [nframes, -1]))
+        if len(self.data['virials']) != 0 :            
+            np.savetxt(os.path.join(folder, 'virial.raw'), np.reshape(self.data['virials'], [nframes, 9]))
+

@@ -2,10 +2,11 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from poscars.comp_sys import CompSys
+from comp_sys import CompSys
 
 class TestVaspXml(unittest.TestCase, CompSys):
     def setUp (self) :
+        self.places = 6
         xml_sys = dpdata.LabeledSystem()
         xml_sys.from_vasp_xml('poscars/vasprun.h2o.md.xml')
         # init_sys = dpdata.System()

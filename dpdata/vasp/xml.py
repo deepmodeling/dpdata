@@ -31,6 +31,7 @@ def analyze_calculation(cc) :
     check_name(structure_xml.find('varray'), 'positions')
     cell = get_varray(structure_xml.find('crystal').find('varray'))
     posi = get_varray(structure_xml.find('varray'))    
+    strs = None
     for vv in cc.findall('varray') :
         if vv.attrib['name'] == 'forces' :
             forc = get_varray(vv) 
@@ -92,7 +93,8 @@ def analyze (fname, type_idx_zero = False) :
                 all_cell.append(cell)
                 all_ener.append(ener)
                 all_forc.append(forc)
-                all_strs.append(strs)                
+                if strs is not None :
+                    all_strs.append(strs)                
     except ET.ParseError:
         return eles, types, np.array(all_cell), np.array(all_posi), np.array(all_ener), np.array(all_forc), np.array(all_strs)
     return eles, types, np.array(all_cell), np.array(all_posi), np.array(all_ener), np.array(all_forc), np.array(all_strs)
