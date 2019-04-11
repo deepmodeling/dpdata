@@ -1,4 +1,4 @@
-dpdata is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats
+**dpdata** is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats
 
 # Import dpdata
 ```python
@@ -22,9 +22,9 @@ d_outcar = dpdata.LabeledSystem('OUTCAR')
 ```
 The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any), are loaded by `LabeledSystem`. It is noted that the forces of atoms are always assumed to exist. `LabeledSystem` is a derived class of `System`.
 
-The `System` or `LabeledSystem` can be constructed from the following file formats with `format key` passed to argument `fmt`:
+The `System` or `LabeledSystem` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
 
-| Software| format | multi frames | labeled | constructor   | format key    |
+| Software| format | multi frames | labeled | class	    | format key    |
 | ------- | :---   | :---:        | :---:   | :---          | :---          |
 | vasp	  | poscar | False        | False   | System	    | 'vasp/poscar' | 
 | vasp    | outcar | True         | True    | LabeledSystem | 'vasp/outcar' |	
@@ -39,22 +39,22 @@ These properties stored in `System` and `LabeledSystem` can be accessed by opera
 ```python
 coords = d_outcar['coords']
 ```
-Available properties are (nframe: number of frames in the system, ntotal: total number of atoms in the system)
+Available properties are (nframe: number of frames in the system, natoms: total number of atoms in the system)
 
-| key		|  type		| dimension		| is a label	| description 
+| key		|  type		| dimension		| are labels	| description 
 | ---		| ---		| ---			| ---		| ---
 | 'atom_names'	| list of str	| ntypes		| False		| The name of each atom type
 | 'atom_numbs'	| list of int	| ntypes		| False		| The number of atoms of each atom type
-| 'atom_types'	| np.ndarray	| ntotal		| False		| Array assigning type to each atom
+| 'atom_types'	| np.ndarray	| natoms		| False		| Array assigning type to each atom
 | 'cells'	| np.ndarray	| nframes x 3 x 3	| False		| The cell tensor of each frame
-| 'coords'	| np.ndarray	| nframes x ntotal x 3	| False		| The atom coordinates
+| 'coords'	| np.ndarray	| nframes x natoms x 3	| False		| The atom coordinates
 | 'energies'	| np.ndarray	| nframes		| True		| The frame energies
-| 'forces'	| np.ndarray	| nframes x ntotal x 3	| True		| The atom forces
+| 'forces'	| np.ndarray	| nframes x natoms x 3	| True		| The atom forces
 | 'virials'	| np.ndarray	| nframes x 3 x 3	| True		| The virial tensor of each frame
 
 
 # Dump data
-The data stored in `System` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
+The data stored in `System` or `LabeledSystem` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
 ```python
 d_outcar.to_lammps_lmp('conf.lmp', frame_idx=0)
 ```
