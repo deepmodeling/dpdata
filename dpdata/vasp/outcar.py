@@ -22,7 +22,7 @@ def system_info (lines, type_idx_zero = False) :
                 atom_types.append(idx)
             else :
                 atom_types.append(idx+1)
-    return atom_names, atom_numbs, atom_types
+    return atom_names, atom_numbs, np.array(atom_types, dtype = int)
 
 
 # we assume that the force is printed ...
