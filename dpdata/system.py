@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import dpdata.lammps.lmp
 import dpdata.lammps.dump
@@ -5,8 +6,7 @@ import dpdata.vasp.poscar
 import dpdata.vasp.xml
 import dpdata.vasp.outcar
 
-class System :
-    data = {}
+class System (object) :
     '''
     for example a water system that has two molecules
     data['atom_numbs'] = [2, 4]
@@ -21,7 +21,10 @@ class System :
     data['cells'][ii] is always lower triangular (lammps axes convention)
     '''
 
-    def __init__ (self) :
+    def __init__ (self, 
+                  file_name = None, 
+                  fmt = 'auto', 
+                  type_map = None) :
         self.data = {}
         self.data['atom_numbs'] = []
         self.data['atom_names'] = []
@@ -29,6 +32,19 @@ class System :
         self.data['orig'] = [0, 0, 0]
         self.data['cells'] = []
         self.data['coords'] = []
+
+        if file_name is None :
+            return
+        if fmt == 'auto':
+            fmt = file_name.split('.')[-1] 
+        if fmt == 'lmp' or fmt == 'lammps/lmp' :
+            self.from_lammps_lmp(file_name, type_map = type_map) 
+        elif fmt == 'dump' or fmt == 'lammps/dump' :
+            self.from_lammps_dump(file_name, type_map = type_map)
+        elif fmt == 'poscar' or fmt == 'POSCAR' or fmt == 'vasp/poscar':
+            self.from_vasp_poscar(file_name)
+        else :
+            raise RuntimeError('unknow data format ' + fmt)
 
 
     def get_data(self) :
@@ -120,6 +136,24 @@ class System :
 
 class LabeledSystem (System): 
 
+    def __init__ (self, file_name = None, fmt = 'auto', type_map = None) :
+
+        System.__init__(self)
+
+        if file_name is None :
+            return
+        if fmt == 'auto':
+            fmt = file_name.split('.')[-1] 
+        if fmt == 'xml' or fmt == 'XML' or fmt == 'vasp/xml' :
+            self.from_vasp_xml(file_name) 
+        elif fmt == 'outcar' or fmt == 'OUTCAR' or fmt == 'vasp/outcar' :
+            self.from_vasp_outcar(file_name)
+        elif fmt == 'deepmd' or fmt == 'deepmd/raw':
+            self.from_deepmd_raw(file_name, type_map = type_map)
+        else :
+            raise RuntimeError('unknow data format ' + fmt)
+
+
     def from_vasp_xml(self, file_name) :
         self.data['atom_names'], \
             self.data['atom_types'], \
@@ -165,15 +199,47 @@ class LabeledSystem (System):
                 vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
                 self.data['virials'][ii] *= v_pref * vol
 
+
+    def from_deepmd_raw(self, folder, type_map = None) :
+        self.data['virials'] = []
+        self.data['atom_types'] \
+            = np.loadtxt(os.path.join(folder, 'type.raw')).astype(int)
+        ntypes = np.max(self.data['atom_types']) + 1
+        self.data['atom_numbs'] = []
+        for ii in range (ntypes) :
+            self.data['atom_numbs'].append(np.count_nonzero(self.data['atom_types'] == ii))
+        self.data['atom_names'] = []
+        if type_map == None :
+            for ii in range(ntypes) :
+                self.data['atom_names'].append('Type_%d' % ii)
+        else :
+            assert(len(type_map) >= len(self.data['atom_numbs']))
+            for ii in range(len(self.data['atom_numbs'])) :
+                self.data['atom_names'].append(type_map[ii])
+        self.data['orig'] = np.zeros([3])        
+        self.data['cells'] = np.loadtxt(os.path.join(folder, 'box.raw'))
+        self.data['coords'] = np.loadtxt(os.path.join(folder, 'coord.raw'))
+        self.data['energies'] = np.loadtxt(os.path.join(folder, 'energy.raw'))
+        self.data['forces'] = np.loadtxt(os.path.join(folder, 'force.raw'))
+        nframes = self.data['energies'].size
+        self.data['cells'] = np.reshape(self.data['cells'], [nframes, 3, 3])
+        self.data['coords'] = np.reshape(self.data['coords'], [nframes, -1, 3])
+        self.data['energies'] = np.reshape(self.data['energies'], [nframes])
+        self.data['forces'] = np.reshape(self.data['forces'], [nframes, -1, 3])
+        if os.path.exists(os.path.join(folder, 'virial.raw')) :
+            self.data['virials'] = np.loadtxt(os.path.join(folder, 'virial.raw'))
+            self.data['virials'] = np.reshape(self.data['virials'], [nframes, 3, 3])        
+
     
     def to_deepmd_raw(self, folder) :
         os.makedirs(folder, exist_ok = True)
         nframes = self.get_nframes()
-        np.savetxt(os.path.join(folder, 'type.raw'), self.data['atom_types'])
-        np.savetxt(os.path.join(folder, 'box.raw'), np.reshape(self.data['cells'], [nframes, 9]))
-        np.savetxt(os.path.join(folder, 'coord.raw'), np.reshape(self.data['coords'], [nframes, -1]))
-        np.savetxt(os.path.join(folder, 'energy.raw'), np.reshape(self.data['energies'], [nframes, 1]))
-        np.savetxt(os.path.join(folder, 'force.raw'), np.reshape(self.data['forces'], [nframes, -1]))
+        np.savetxt(os.path.join(folder, 'type.raw'),    self.data['atom_types'], fmt = '%d')
+        np.savetxt(os.path.join(folder, 'box.raw'),     np.reshape(self.data['cells'],    [nframes,  9]))
+        np.savetxt(os.path.join(folder, 'coord.raw'),   np.reshape(self.data['coords'],   [nframes, -1]))
+        np.savetxt(os.path.join(folder, 'energy.raw'),  np.reshape(self.data['energies'], [nframes,  1]))
+        np.savetxt(os.path.join(folder, 'force.raw'),   np.reshape(self.data['forces'],   [nframes, -1]))
         if len(self.data['virials']) != 0 :            
             np.savetxt(os.path.join(folder, 'virial.raw'), np.reshape(self.data['virials'], [nframes, 9]))
+
 
