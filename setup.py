@@ -1,22 +1,33 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+from os import path
+import setuptools
 
+readme_file = path.join(path.dirname(path.abspath(__file__)), 'README.md')
+try:
+    from m2r import parse_from_file
+    readme = parse_from_file(readme_file)
+except ImportError:
+    with open(readme_file) as f:
+        readme = f.read()
 
-with open('README.md') as f:
-    readme = f.read()
+install_requires = ['xml']
 
-with open('LICENSE') as f:
-    license = f.read()
-
-setup(
-    name='dpfu',
-    version='0.0.0',
-    description='Manipulating DeePMD-kit data, VASP, LAMMPS file formats',
+setuptools.setup(
+    name="dpdata",
+    version="0.0.2",
+    author="Han Wang",
+    author_email="wang_han@iapcm.ac.cn",
+    description="Manipulating DeePMD-kit, VASP and LAMMPS data formats",
     long_description=readme,
-    author='Deep modeling developers',
-    author_email='wang_han@iapcm.ac.cn',
-    url='https://github.com/deepmodeling/dpfu',
-    license=license,
-    packages=find_packages(exclude=('tests', 'docs'))
+    long_description_content_type="text/markdown",
+    url="https://github.com/deepmodeling/dpdata",
+    packages=['dpdata', 'dpdata/vasp', 'dpdata/lammps', 'dpdata/md', 'dpdata/deepmd'],
+    classifiers=[
+        "Programming Language :: Python :: 3.6",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    ],
+    keywords='lammps vasp deepmd-kit',
+    install_requires=install_requires,    
 )
+
