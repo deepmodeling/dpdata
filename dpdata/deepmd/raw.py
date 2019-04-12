@@ -1,25 +1,30 @@
 import os
 import numpy as np
 
+def load_type(folder, type_map = None) :
+    data = {}
+    data['atom_types'] \
+        = np.loadtxt(os.path.join(folder, 'type.raw')).astype(int)
+    ntypes = np.max(data['atom_types']) + 1
+    data['atom_numbs'] = []
+    for ii in range (ntypes) :
+        data['atom_numbs'].append(np.count_nonzero(data['atom_types'] == ii))
+    data['atom_names'] = []
+    if type_map == None :
+        for ii in range(ntypes) :
+            data['atom_names'].append('Type_%d' % ii)
+    else :
+        assert(len(type_map) >= len(data['atom_numbs']))
+        for ii in range(len(data['atom_numbs'])) :
+            data['atom_names'].append(type_map[ii])
+    return data
+
+
 def to_system_data(folder, type_map = None) :
     if os.path.isdir(folder) :
-        data = {}
-        data['virials'] = []
-        data['atom_types'] \
-            = np.loadtxt(os.path.join(folder, 'type.raw')).astype(int)
-        ntypes = np.max(data['atom_types']) + 1
-        data['atom_numbs'] = []
-        for ii in range (ntypes) :
-            data['atom_numbs'].append(np.count_nonzero(data['atom_types'] == ii))
-        data['atom_names'] = []
-        if type_map == None :
-            for ii in range(ntypes) :
-                data['atom_names'].append('Type_%d' % ii)
-        else :
-            assert(len(type_map) >= len(data['atom_numbs']))
-            for ii in range(len(data['atom_numbs'])) :
-                data['atom_names'].append(type_map[ii])
+        data = load_type(folder, type_map = type_map)
         data['orig'] = np.zeros([3])        
+        data['virials'] = []
         data['cells'] = np.loadtxt(os.path.join(folder, 'box.raw'))
         data['coords'] = np.loadtxt(os.path.join(folder, 'coord.raw'))
         data['energies'] = np.loadtxt(os.path.join(folder, 'energy.raw'))
@@ -49,3 +54,4 @@ def dump (folder, data) :
     if len(data['virials']) != 0 :            
         np.savetxt(os.path.join(folder, 'virial.raw'), np.reshape(data['virials'], [nframes, 9]))
     
+
