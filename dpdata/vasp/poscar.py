@@ -42,6 +42,9 @@ def to_system_data(lines) :
     if lines[7][0] == 'S' or lines[7][0] == 's' :
         lines.pop(7)
     is_cartesian = (lines[7][0] in ['C', 'c', 'K', 'k'])
+    if not is_cartesian :
+        if not (lines[7][0] in ['d', 'D']) :
+            raise RuntimeError('seem not to be a valid POSCAR of vasp 5.x, may be a POSCAR of vasp 4.x?')
     return _to_system_data_lower(lines, is_cartesian)
 
 
