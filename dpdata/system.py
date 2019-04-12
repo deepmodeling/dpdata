@@ -6,6 +6,7 @@ import dpdata.vasp.poscar
 import dpdata.vasp.xml
 import dpdata.vasp.outcar
 import dpdata.deepmd.raw
+import dpdata.deepmd.comp
 
 class System (object) :
     '''
@@ -154,6 +155,8 @@ class LabeledSystem (System):
             self.from_vasp_outcar(file_name)
         elif fmt == 'deepmd' or fmt == 'deepmd/raw':
             self.from_deepmd_raw(file_name, type_map = type_map)
+        elif fmt == 'deepmd/npy':
+            self.from_deepmd_comp(file_name, type_map = type_map)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -209,8 +212,20 @@ class LabeledSystem (System):
         if tmp_data is not None :
             self.data = tmp_data
     
+
     def to_deepmd_raw(self, folder) :
         dpdata.deepmd.raw.dump(folder, self.data)
+
+
+    def from_deepmd_comp(self, folder, type_map = None) :
+        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map)
+
+        
+    def to_deepmd_comp(self, folder, set_size = 5000, comp_prec=np.float32) :
+        dpdata.deepmd.comp.dump(folder, self.data, 
+                                set_size = set_size,
+                                comp_prec = comp_prec)
+
 
     def sub_system(self, f_idx) :
         tmp_sys = LabeledSystem()
