@@ -1,11 +1,38 @@
-**dpdata** is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats
+**dpdata** is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats.
+dpdata only works with python 3.x.
 
-# Import dpdata
+
+# Installation
+One can download the source code of dpdata by 
+```bash
+git clone https://github.com/deepmodeling/dpdata.git dpdata
+```
+then use `setup.py` to install the module
+```bash
+cd dpdata
+python setup.py install
+```
+
+`dpdata` can also by install via pip
+```bash
+pip3 install dpdata
+```
+
+
+# Quick start
+
+This section gives some examples on how dpdata works. Firstly one needs to import the module in a python 3.x compatible code.
 ```python
 import dpdata
 ```
+The typicall workflow of `dpdata` is 
 
-# Load data
+1. Load data from vasp or lammps or deepmd-kit data files.
+2. Manipulate data 
+3. Dump data to in a desired format
+
+
+## Load data
 ```python
 d_poscar = dpdata.System('POSCAR', fmt = 'vasp/poscar')
 ```
@@ -34,7 +61,8 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | deepmd  | raw    | True         | True    | LabeledSystem | 'deepmd/raw'  |
 
 
-# Access data
+
+## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
 ```python
 coords = d_outcar['coords']
@@ -53,7 +81,8 @@ Available properties are (nframe: number of frames in the system, natoms: total 
 | 'virials'	| np.ndarray	| nframes x 3 x 3	| True		| The virial tensor of each frame
 
 
-# Dump data
+
+## Dump data
 The data stored in `System` or `LabeledSystem` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
 ```python
 d_outcar.to_lammps_lmp('conf.lmp', frame_idx=0)
