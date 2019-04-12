@@ -10,23 +10,51 @@ import dpdata.deepmd.comp
 
 class System (object) :
     '''
-    for example a water system that has two molecules
-    data['atom_numbs'] = [2, 4]
-    data['atom_names'] = ['O', 'H']
-    data['atom_types'] = [0, 1, 1, 0, 1, 1]
-    data['orig'] = [0, 0, 0]
-    data['cells'] = [ [...], [...] ]    # two frames
-    data['coords'] = [ [...], [...] ]  # two frames
+    The data System
 
-    Assumptions : 
-    data['orig'] is always [0, 0, 0]
-    data['cells'][ii] is always lower triangular (lammps axes convention)
+    A data System (a concept used by `deepmd-kit <https://github.com/deepmodeling/deepmd-kit>`_) 
+    contains frames (e.g. produced by an MD simulation) that has the same number of atoms of the same type. 
+    The order of the atoms should be consistent among the frames in one System.
+    
+    For example, a water system named `d_example` has two molecules. The properties can be accessed by
+        - `d_example['atom_numbs']` : [2, 4]
+        - `d_example['atom_names']` : ['O', 'H']
+        - `d_example['atom_types']` : [0, 1, 1, 0, 1, 1]
+        - `d_example['orig']` : [0, 0, 0]
+        - `d_example['cells']` : a numpy array of size nframes x 3 x 3  
+        - `d_example['coords']` : a numpy array of size nframes x natoms x 3
+    
+    It is noted that 
+        - The order of frames stored in `'atom_types'`, `'cells'` and `'coords'` should be consistent.
+        - The order of atoms in **all** frames of `'atom_types'` and  `'coords'` should be consistent.
+
+    Restrictions:
+        - `d_example['orig']` is always [0, 0, 0]
+        - `d_example['cells'][ii]` is always lower triangular (lammps cell tensor convention)
     '''
 
     def __init__ (self, 
                   file_name = None, 
                   fmt = 'auto', 
                   type_map = None) :
+        """
+        Constructor
+
+        Parameters
+        ----------
+        file_name : str
+            The file to load the system
+        fmt : str 
+            Format of the file, supported formats are
+                - ``auto``: infered from `file_name`'s extension
+                - ``lammps/lmp``: Lammps data
+                - ``lammps/dump``: Lammps dump
+                - ``vasp/poscar``: vasp POSCAR
+
+        type_map : list of str
+            Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
+            If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
+        """
         self.data = {}
         self.data['atom_numbs'] = []
         self.data['atom_names'] = []
@@ -47,18 +75,32 @@ class System (object) :
             self.from_vasp_poscar(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
-
     
+
     def __getitem__(self, key):
+        """Returns proerty stored in System by key"""
         return self.data[key]
 
-    def get_data(self) :
-        return self.data
 
     def get_nframes(self) :
+        """Returns number of frames in the system"""
         return len(self.data['cells'])
 
+
     def sub_system(self, f_idx) :
+        """
+        Construct a subsystem from the system
+        
+        Parameters
+        ----------
+        f_idx : int or index
+            Which frame to use in the subsystem
+        
+        Returns
+        -------
+        sub_system : System
+            The subsystem
+        """
         tmp = System()
         for ii in ['atom_numbs', 'atom_names', 'atom_types', 'orig'] :
             tmp.data[ii] = self.data[ii]
@@ -75,6 +117,16 @@ class System (object) :
 
 
     def to_lammps_lmp(self, file_name, frame_idx = 0) :
+        """
+        Dump the system in lammps data format
+        
+        Parameters
+        ----------
+        file_name : str
+            The output file name
+        frame_idx : int
+            The index of the frame to dump
+        """
         assert(frame_idx < len(self.data['coords']))
         w_str = dpdata.lammps.lmp.from_system_data(self.data, frame_idx)
         with open(file_name, 'w') as fp:
@@ -96,6 +148,16 @@ class System (object) :
 
     
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
+        """
+        Dump the system in vasp POSCAR format
+        
+        Parameters
+        ----------
+        file_name : str
+            The output file name
+        frame_idx : int
+            The index of the frame to dump
+        """
         assert(frame_idx < len(self.data['coords']))
         w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
         with open(file_name, 'w') as fp:
@@ -140,8 +202,39 @@ class System (object) :
         
 
 class LabeledSystem (System): 
+    '''
+    The labeled data System
+    
+    For example, a labeled water system named `d_example` has two molecules (6 atoms) and `nframes` frames. The labels can be accessed by
+        - `d_example['energies']` : a numpy array of size nframes 
+        - `d_example['forces']` : a numpy array of size nframes x 6 x 3
+        - `d_example['virials']` : optional, a numpy array of size nframes x 3 x 3
+    
+    It is noted that 
+        - The order of frames stored in `'energies'`, `'forces'` and `'virials'` should be consistent with `'atom_types'`, `'cells'` and `'coords'`.
+        - The order of atoms in **every** frame of `'forces'` should be consistent with `'coords'` and `'atom_types'`.
+    '''
 
     def __init__ (self, file_name = None, fmt = 'auto', type_map = None) :
+        """
+        Constructor
+
+        Parameters
+        ----------
+        file_name : str
+            The file to load the system
+        fmt : str 
+            Format of the file, supported formats are
+                - ``auto``: infered from `file_name`'s extension
+                - ``vasp/xml``: vasp xml
+                - ``vasp/outcar``: vasp OUTCAR
+                - ``deepmd/raw``: deepmd-kit raw
+                - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
+
+        type_map : list of str
+            Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
+            If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
+        """
 
         System.__init__(self)
 
@@ -214,6 +307,9 @@ class LabeledSystem (System):
     
 
     def to_deepmd_raw(self, folder) :
+        """
+        Dump the system in deepmd raw format to `folder`
+        """
         dpdata.deepmd.raw.dump(folder, self.data)
 
 
@@ -221,13 +317,43 @@ class LabeledSystem (System):
         self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map)
 
         
-    def to_deepmd_comp(self, folder, set_size = 5000, comp_prec=np.float32) :
+    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
+        """
+        Dump the system in deepmd compressed format (numpy binary) to `folder`. 
+
+        The frames are firstly split to sets, then dumped to seperated subfolders named as `folder/set.000`, `folder/set.001`, ....
+
+        Each set contains `set_size` frames.
+        The last set may have less frames than `set_size`.
+        
+        Parameters
+        ----------
+        folder : str
+            The output folder
+        set_size : int
+            The size of each set. 
+        prec: {numpy.float32, numpy.float64}
+            The floating point precision of the compressed data
+        """
         dpdata.deepmd.comp.dump(folder, self.data, 
                                 set_size = set_size,
-                                comp_prec = comp_prec)
+                                comp_prec = prec)
 
 
     def sub_system(self, f_idx) :
+        """
+        Construct a subsystem from the system
+        
+        Parameters
+        ----------
+        f_idx : int or index
+            Which frame to use in the subsystem
+        
+        Returns
+        -------
+        sub_system : LabeledSystem
+            The subsystem
+        """
         tmp_sys = LabeledSystem()
         tmp_sys.data = System.sub_system(self, f_idx).data
         tmp_sys.data['energies'] = self.data['energies'][f_idx]
