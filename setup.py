@@ -11,11 +11,14 @@ except ImportError:
     with open(readme_file) as f:
         readme = f.read()
 
-install_requires = ['xml']
+# install_requires = ['xml']
+install_requires=[]
 
 setuptools.setup(
     name="dpdata",
-    version="0.0.2",
+    version_format='{tag}.dev{commitcount}+{gitsha}',
+    setup_requires=['setuptools-git-version'],
+    # version="0.0.2",
     author="Han Wang",
     author_email="wang_han@iapcm.ac.cn",
     description="Manipulating DeePMD-kit, VASP and LAMMPS data formats",
