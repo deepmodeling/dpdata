@@ -58,7 +58,7 @@ class CompLabeledSys (CompSys) :
         for ff in range(self.system_1.get_nframes()) :
             self.assertAlmostEqual(self.system_1.data['energies'][ff], 
                                    self.system_2.data['energies'][ff], 
-                                   places = self.places,
+                                   places = self.e_places,
                                    msg = 'energies[%d] failed' % (ff))
 
     def test_force(self) :
@@ -69,7 +69,7 @@ class CompLabeledSys (CompSys) :
                 for jj in range(3) :
                     self.assertAlmostEqual(self.system_1.data['forces'][ff][ii][jj], 
                                            self.system_2.data['forces'][ff][ii][jj], 
-                                           places = self.places,
+                                           places = self.f_places,
                                            msg = 'forces[%d][%d][%d] failed' % (ff,ii,jj))
             
     def test_virial(self) :
@@ -80,7 +80,7 @@ class CompLabeledSys (CompSys) :
                 for jj in range(3) :
                     self.assertAlmostEqual(self.system_1['virials'][ff][ii][jj], 
                                            self.system_2['virials'][ff][ii][jj], 
-                                           places = self.vir_places,
+                                           places = self.v_places,
                                            msg = 'virials[%d][%d][%d] failed' % (ff,ii,jj))
             
                     

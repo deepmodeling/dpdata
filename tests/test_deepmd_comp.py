@@ -16,7 +16,9 @@ class TestDeepmdLoadDumpComp(unittest.TestCase, CompLabeledSys):
                                              fmt = 'deepmd/npy',
                                              type_map = ['O', 'H'])
         self.places = 6
-        self.vir_places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
 
 
 if __name__ == '__main__':

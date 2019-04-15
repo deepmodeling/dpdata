@@ -87,6 +87,11 @@ class System (object) :
         return len(self.data['cells'])
 
 
+    def get_natoms(self) :
+        """Returns number of atoms in the system"""
+        return len(self.data['atom_types'])
+
+
     def sub_system(self, f_idx) :
         """
         Construct a subsystem from the system
@@ -166,14 +171,8 @@ class System (object) :
 
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
-        cell = self.data['cells'][f_idx]
-        for ii in range(3) :
-            cell[ii] = np.matmul(cell[ii], trans)
-        self.data['cells'][f_idx] = cell
-        for ff in self.data['coords'] :            
-            tmp_ff = ff
-            for ii in range(tmp_ff.shape[0]): 
-                tmp_ff[ii] = np.matmul(tmp_ff[ii], trans)
+        self.data['cells'][f_idx] = np.matmul(self.data['cells'][f_idx], trans)
+        self.data['coords'][f_idx] = np.matmul(self.data['coords'][f_idx], trans)
 
 
     def _shift_orig_zero(self) :
@@ -183,13 +182,15 @@ class System (object) :
         self.data['orig'] = self.data['orig'] - self.data['orig']
         assert((np.zeros([3]) == self.data['orig']).all())
 
+
     def rot_lower_triangular(self) :
         for ii in range(self.get_nframes()) :
-            self._rot_lower_triangular(ii)
+            self.rot_frame_lower_triangular(ii)
 
-    def _rot_lower_triangular(self, f_idx = 0) :
+
+    def rot_frame_lower_triangular(self, f_idx = 0) :
         qq, rr = np.linalg.qr(self.data['cells'][f_idx].T)
-        self.affine_map(qq)
+        self.affine_map(qq, f_idx = f_idx)
         rot = np.eye(3)
         if self.data['cells'][f_idx][0][0] < 0 :
             rot[0][0] = -1
@@ -197,8 +198,9 @@ class System (object) :
             rot[1][1] = -1
         if self.data['cells'][f_idx][2][2] < 0 :
             rot[2][2] = -1
-        assert(np.linalg.det(rot) > 0) 
+        assert(np.linalg.det(rot) == 1) 
         self.affine_map(rot, f_idx = f_idx)
+        return np.matmul(qq, rot)
         
 
 class LabeledSystem (System): 
@@ -253,6 +255,10 @@ class LabeledSystem (System):
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
+    
+    def has_virial(self) :
+        return ('virials' in self.data) and (len(self.data['virials']) > 0)
+
 
     def from_vasp_xml(self, file_name) :
         self.data['atom_names'], \
@@ -270,14 +276,14 @@ class LabeledSystem (System):
         # apply the transform to the cartesan coordinates
         for ii in range(self.get_nframes()) :
             self.data['coords'][ii] = np.matmul(self.data['coords'][ii], self.data['cells'][ii])
-        # rotate the system to lammps convention
-        self.rot_lower_triangular()
         # scale virial to the unit of eV
         v_pref = 1 * 1e3 / 1.602176621e6
         for ii in range (self.get_nframes()) :
             vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
             self.data['virials'][ii] *= v_pref * vol
-        # print(self.data)
+        # rotate the system to lammps convention
+        self.rot_lower_triangular()
+
 
     def from_vasp_outcar(self, file_name) :
         with open(file_name) as fp:
@@ -290,14 +296,32 @@ class LabeledSystem (System):
             self.data['forces'], \
             self.data['virials'], \
             = dpdata.vasp.outcar.get_frames(lines)
-        # rotate the system to lammps convention
-        self.rot_lower_triangular()
         # scale virial to the unit of eV
         if len(self.data['virials']) != 0 :            
             v_pref = 1 * 1e3 / 1.602176621e6        
             for ii in range (self.get_nframes()) :
                 vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
                 self.data['virials'][ii] *= v_pref * vol
+        # rotate the system to lammps convention
+        self.rot_lower_triangular()
+
+
+    def affine_map_fv(self, trans, f_idx) :
+        assert(np.linalg.det(trans) != 0)
+        self.data['forces'][f_idx] = np.matmul(self.data['forces'][f_idx], trans)
+        if self.has_virial():
+            self.data['virials'][f_idx] = np.matmul(trans.T, np.matmul(self.data['virials'][f_idx], trans))
+
+
+    def rot_lower_triangular(self) :
+        for ii in range(self.get_nframes()) :
+            self.rot_frame_lower_triangular(ii)
+
+
+    def rot_frame_lower_triangular(self, f_idx = 0) :
+        trans = System.rot_frame_lower_triangular(self, f_idx = f_idx)
+        self.affine_map_fv(trans, f_idx = f_idx)
+        return trans
 
 
     def from_deepmd_raw(self, folder, type_map = None) :

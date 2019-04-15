@@ -11,7 +11,9 @@ class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys):
         self.system_2 = dpdata.LabeledSystem()
         self.system_2.from_vasp_outcar('poscars/OUTCAR.h2o.md')
         self.places = 6
-        self.vir_places = 4
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
 
 if __name__ == '__main__':
     unittest.main()

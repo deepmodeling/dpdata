@@ -12,7 +12,9 @@ class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys):
                                              fmt = 'deepmd/raw', 
                                              type_map = ['O', 'H'])
         self.places = 6
-        self.vir_places = 4
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
 
 
 class TestDeepmdDumpRaw(unittest.TestCase, CompLabeledSys):
@@ -22,7 +24,9 @@ class TestDeepmdDumpRaw(unittest.TestCase, CompLabeledSys):
         self.system_1.to_deepmd_raw('tmp.deepmd')
         self.system_2 = dpdata.LabeledSystem('tmp.deepmd', type_map = ['O', 'H'])        
         self.places = 6
-        self.vir_places = 4
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
 
 
 if __name__ == '__main__':
