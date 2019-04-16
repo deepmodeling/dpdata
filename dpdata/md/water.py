@@ -83,7 +83,8 @@ def compute_bonds(box,
 
 def find_ions (atype, 
                bonds, 
-               oh_sel = [0, 1]) :
+               oh_sel = [0, 1], 
+               ret_h2o = True) :
     no = []
     noh = []
     noh2 = []
@@ -99,7 +100,8 @@ def find_ions (atype,
             elif len(bonds[ii] ) == 1 :
                 noh.append(ii)
             elif len(bonds[ii] ) == 2 :
-                noh2.append(ii)
+                if ret_h2o :
+                    noh2.append(ii)
             elif len(bonds[ii] ) == 3 :
                 noh3.append(ii)
             else :
