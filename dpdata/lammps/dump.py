@@ -71,11 +71,13 @@ def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
     bounds = np.zeros([3,2])
     tilt = np.zeros([3])
+    load_tilt = 'xy xz yz' in h
     for dd in range(3) :
         info = [float(jj) for jj in blk[dd].split()]
         bounds[dd][0] = info[0]
         bounds[dd][1] = info[1]
-        tilt[dd] = info[2]
+        if load_tilt :
+            tilt[dd] = info[2]
     return bounds, tilt
 
 def dumpbox2box(bounds, tilt) :
