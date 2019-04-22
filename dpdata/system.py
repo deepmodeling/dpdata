@@ -7,6 +7,7 @@ import dpdata.vasp.xml
 import dpdata.vasp.outcar
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
+import dpdata.pwscf.traj
 
 class System (object) :
     '''
@@ -73,6 +74,8 @@ class System (object) :
             self.from_lammps_dump(file_name, type_map = type_map)
         elif fmt == 'poscar' or fmt == 'POSCAR' or fmt == 'vasp/poscar':
             self.from_vasp_poscar(file_name)
+        elif fmt == 'pwscf/traj':
+            self.from_pwscf_traj(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
     
@@ -167,6 +170,20 @@ class System (object) :
         w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
         with open(file_name, 'w') as fp:
             fp.write(w_str)
+
+    
+    def from_pwscf_traj(self, prefix) :
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            cell \
+            = dpdata.pwscf.traj.load_param_file(prefix + '.in')
+        self.data['coords'] \
+            = dpdata.pwscf.traj.load_pos(prefix + '.pos', np.sum(self.data['atom_numbs']))
+        self.data['orig'] = np.zeros(3)
+        self.data['cells'] = np.tile(cell, (self.data['coords'].shape[0], 1, 1))
+        self.data['coords'] = dpdata.md.pbc.apply_pbc(self)        
+        self.rot_lower_triangular()
 
 
     def affine_map(self, trans, f_idx = 0) :

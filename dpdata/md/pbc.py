@@ -53,3 +53,13 @@ def system_pbc_shift(system) :
         shifts[ii] = np.copy(curr_shift)
         prev_ncoord = curr_ncoord
     return np.array(shifts, dtype = int)
+
+
+def apply_pbc(system) :
+    coords = []
+    for ff in range(system.get_nframes()) :
+        ncoord = dir_coord(system['coords'][ff], 
+                           system['cells' ][ff])
+        ncoord = ncoord % 1
+        coords.append(np.matmul(ncoord, system['cells' ][ff]))
+    return np.array(coords)
