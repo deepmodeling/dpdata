@@ -283,7 +283,7 @@ class LabeledSystem (System):
         if fmt == 'xml' or fmt == 'XML' or fmt == 'vasp/xml' :
             self.from_vasp_xml(file_name, begin = begin, step = step) 
         elif fmt == 'outcar' or fmt == 'OUTCAR' or fmt == 'vasp/outcar' :
-            self.from_vasp_outcar(file_name)
+            self.from_vasp_outcar(file_name, begin = begin, step = step)
         elif fmt == 'deepmd' or fmt == 'deepmd/raw':
             self.from_deepmd_raw(file_name, type_map = type_map)
         elif fmt == 'deepmd/npy':
@@ -323,7 +323,7 @@ class LabeledSystem (System):
         self.rot_lower_triangular()
 
 
-    def from_vasp_outcar(self, file_name) :
+    def from_vasp_outcar(self, file_name, begin = 0, step = 1) :
         # with open(file_name) as fp:
         #     lines = [line.rstrip('\n') for line in fp]
         self.data['atom_names'], \
@@ -334,7 +334,7 @@ class LabeledSystem (System):
             self.data['energies'], \
             self.data['forces'], \
             self.data['virials'], \
-            = dpdata.vasp.outcar.get_frames(file_name)
+            = dpdata.vasp.outcar.get_frames(file_name, begin = begin, step = step)
         # scale virial to the unit of eV
         if len(self.data['virials']) != 0 :            
             v_pref = 1 * 1e3 / 1.602176621e6        

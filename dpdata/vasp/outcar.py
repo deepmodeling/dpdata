@@ -37,7 +37,7 @@ def get_outcar_block(fp) :
     return blk
 
 # we assume that the force is printed ...
-def get_frames (fname) :
+def get_frames (fname, begin = 0, step = 1) :
     fp = open(fname)
     blk = get_outcar_block(fp)
 
@@ -50,19 +50,20 @@ def get_frames (fname) :
     all_forces = []
     all_virials = []    
 
-    count = 0
+    cc = 0
     while len(blk) > 0 :
-        coord, cell, energy, force, virial = analyze_block(blk, ntot)
-        if len(coord) == 0:
-            break
-        all_coords.append(coord)
-        all_cells.append(cell)
-        all_energies.append(energy)
-        all_forces.append(force)
-        if virial is not None :
-            all_virials.append(virial)
-        blk = get_outcar_block(fp)        
-        count += 1
+        if cc >= begin and (cc - begin) % step == 0 :
+            coord, cell, energy, force, virial = analyze_block(blk, ntot)
+            if len(coord) == 0:
+                break
+            all_coords.append(coord)
+            all_cells.append(cell)
+            all_energies.append(energy)
+            all_forces.append(force)
+            if virial is not None :
+                all_virials.append(virial)
+        blk = get_outcar_block(fp)
+        cc += 1
 
     fp.close()
     return atom_names, atom_numbs, atom_types, np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), np.array(all_virials)
