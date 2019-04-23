@@ -13,6 +13,7 @@ def system_info (lines, type_idx_zero = False) :
                 atom_numbs = atom_numbs_
             else :
                 assert (atom_numbs == atom_numbs_), "in consistent numb atoms in OUTCAR"
+            break
     assert(atom_numbs is not None), "cannot find ion type info in OUTCAR"
     atom_names = atom_names[:len(atom_numbs)]
     atom_types = []
@@ -25,9 +26,22 @@ def system_info (lines, type_idx_zero = False) :
     return atom_names, atom_numbs, np.array(atom_types, dtype = int)
 
 
+def get_outcar_block(fp) :
+    blk = []
+    for ii in fp :
+        if not ii :
+            return blk
+        blk.append(ii.rstrip('\n'))
+        if 'free  energy   TOTEN' in ii:
+            return blk
+    return blk
+
 # we assume that the force is printed ...
-def get_frames (lines) :
-    atom_names, atom_numbs, atom_types = system_info(lines)
+def get_frames (fname) :
+    fp = open(fname)
+    blk = get_outcar_block(fp)
+
+    atom_names, atom_numbs, atom_types = system_info(blk, type_idx_zero = True)
     ntot = sum(atom_numbs)
 
     all_coords = []
@@ -36,22 +50,43 @@ def get_frames (lines) :
     all_forces = []
     all_virials = []    
 
+    count = 0
+    while len(blk) > 0 :
+        coord, cell, energy, force, virial = analyze_block(blk, ntot)
+        if len(coord) == 0:
+            break
+        all_coords.append(coord)
+        all_cells.append(cell)
+        all_energies.append(energy)
+        all_forces.append(force)
+        if virial is not None :
+            all_virials.append(virial)
+        blk = get_outcar_block(fp)        
+        count += 1
+
+    fp.close()
+    return atom_names, atom_numbs, atom_types, np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), np.array(all_virials)
+
+
+def analyze_block(lines, ntot) :
+    coord = []
+    cell = []
+    energy = None
+    force = []
+    virial = None
     for idx,ii in enumerate(lines) :
         if 'Iteration' in ii:
-            coord = []
-            cell = []
-            energy = None
-            force = []
-            virial = None
+            pass
         elif 'free  energy   TOTEN' in ii:
             energy = float(ii.split()[4])
             assert((force is not None) and len(coord) > 0 and len(cell) > 0)
-            all_coords.append(coord)
-            all_cells.append(cell)
-            all_energies.append(energy)
-            all_forces.append(force)
-            if virial is not None :
-                all_virials.append(virial)
+            # all_coords.append(coord)
+            # all_cells.append(cell)
+            # all_energies.append(energy)
+            # all_forces.append(force)
+            # if virial is not None :
+            #     all_virials.append(virial)
+            return coord, cell, energy, force, virial
         elif 'VOLUME and BASIS' in ii:
             for dd in range(3) :
                 tmp_l = lines[idx+5+dd]
@@ -75,5 +110,4 @@ def get_frames (lines) :
                 info = [float(ss) for ss in tmp_l.split()]
                 coord.append(info[:3])
                 force.append(info[3:])
-    
-    return np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), np.array(all_virials)
+    return coord, cell, energy, force, virial

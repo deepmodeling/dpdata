@@ -324,16 +324,17 @@ class LabeledSystem (System):
 
 
     def from_vasp_outcar(self, file_name) :
-        with open(file_name) as fp:
-            lines = [line.rstrip('\n') for line in fp]
-        self.data['atom_names'], self.data['atom_numbs'], self.data['atom_types'] \
-            = dpdata.vasp.outcar.system_info(lines, type_idx_zero = True)
-        self.data['cells'], \
+        # with open(file_name) as fp:
+        #     lines = [line.rstrip('\n') for line in fp]
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
             self.data['coords'], \
             self.data['energies'], \
             self.data['forces'], \
             self.data['virials'], \
-            = dpdata.vasp.outcar.get_frames(lines)
+            = dpdata.vasp.outcar.get_frames(file_name)
         # scale virial to the unit of eV
         if len(self.data['virials']) != 0 :            
             v_pref = 1 * 1e3 / 1.602176621e6        
