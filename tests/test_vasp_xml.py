@@ -29,5 +29,19 @@ class TestVaspXmlRotSys(unittest.TestCase, CompLabeledSys):
         self.system_2 = dpdata.LabeledSystem('poscars/vasprun.h2o.md.tribox.lower.xml')
 
 
+class TestVaspXmlSkip(unittest.TestCase, CompLabeledSys):
+    def setUp (self) :
+        self.places = 6
+        # rotated vasp computation, subject to numerical error
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+        begin = 2
+        end = 10
+        step = 3
+        self.system_1 = dpdata.LabeledSystem('poscars/vasprun.h2o.md.10.xml', begin = begin, step = step)
+        self.system_2 = dpdata.LabeledSystem('poscars/vasprun.h2o.md.10.xml').sub_system(np.arange(2,10,3))
+
+
 if __name__ == '__main__':
     unittest.main()

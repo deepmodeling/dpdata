@@ -71,7 +71,7 @@ def formulate_config(eles, types, posi, cell, ener, forc, strs_) :
         ret += '\n'            
     return ret
 
-def analyze (fname, type_idx_zero = False) :
+def analyze (fname, type_idx_zero = False, begin = 0, step = 1) :
     """
     can deal with broken xml file
     """
@@ -80,6 +80,7 @@ def analyze (fname, type_idx_zero = False) :
     all_ener = []
     all_forc = []
     all_strs = []
+    cc = 0
     try:
         for event, elem in ET.iterparse(fname):
             if elem.tag == 'atominfo' :
@@ -89,12 +90,14 @@ def analyze (fname, type_idx_zero = False) :
                     types = types - 1
             if elem.tag == 'calculation' :
                 posi, cell, ener, forc, strs = analyze_calculation(elem)
-                all_posi.append(posi)
-                all_cell.append(cell)
-                all_ener.append(ener)
-                all_forc.append(forc)
-                if strs is not None :
-                    all_strs.append(strs)                
+                if cc >= begin and (cc - begin) % step == 0 :
+                    all_posi.append(posi)
+                    all_cell.append(cell)
+                    all_ener.append(ener)
+                    all_forc.append(forc)
+                    if strs is not None :
+                        all_strs.append(strs)                
+                cc += 1
     except ET.ParseError:
         return eles, types, np.array(all_cell), np.array(all_posi), np.array(all_ener), np.array(all_forc), np.array(all_strs)
     return eles, types, np.array(all_cell), np.array(all_posi), np.array(all_ener), np.array(all_forc), np.array(all_strs)

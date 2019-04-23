@@ -281,7 +281,7 @@ class LabeledSystem (System):
         if fmt == 'auto':
             fmt = file_name.split('.')[-1] 
         if fmt == 'xml' or fmt == 'XML' or fmt == 'vasp/xml' :
-            self.from_vasp_xml(file_name) 
+            self.from_vasp_xml(file_name, begin = begin, step = step) 
         elif fmt == 'outcar' or fmt == 'OUTCAR' or fmt == 'vasp/outcar' :
             self.from_vasp_outcar(file_name)
         elif fmt == 'deepmd' or fmt == 'deepmd/raw':
@@ -298,7 +298,7 @@ class LabeledSystem (System):
         return ('virials' in self.data) and (len(self.data['virials']) > 0)
 
 
-    def from_vasp_xml(self, file_name) :
+    def from_vasp_xml(self, file_name, begin = 0, step = 1) :
         self.data['atom_names'], \
             self.data['atom_types'], \
             self.data['cells'], \
@@ -306,7 +306,7 @@ class LabeledSystem (System):
             self.data['energies'], \
             self.data['forces'], \
             self.data['virials'], \
-            = dpdata.vasp.xml.analyze(file_name, type_idx_zero = True)
+            = dpdata.vasp.xml.analyze(file_name, type_idx_zero = True, begin = begin, step = step)
         self.data['atom_numbs'] = []
         for ii in range(len(self.data['atom_names'])) :
             self.data['atom_numbs'].append(sum(self.data['atom_types'] == ii))
