@@ -107,6 +107,29 @@ def box2dumpbox(orig, box) :
     bounds[2][1] = lohi[2][1]
     return bounds, tilt
 
+
+def load_file(fname, begin = 0, step = 1) :
+    lines = []
+    buff = []
+    cc = -1
+    with open(fname) as fp:
+        while True:
+            line = fp.readline().rstrip('\n')
+            if not line :
+                if cc >= begin and (cc - begin) % step == 0 :
+                    lines += buff
+                    buff = []
+                cc += 1
+                return lines
+            if 'ITEM: TIMESTEP' in line :
+                if cc >= begin and (cc - begin) % step == 0 :
+                    lines += buff
+                    buff = []
+                cc += 1
+            if cc >= begin and (cc - begin) % step == 0 :
+                buff.append(line)
+    
+
 def system_data(lines, type_map = None, type_idx_zero = True) :
     array_lines = split_traj(lines)
     lines = array_lines[0]
@@ -158,18 +181,22 @@ def split_traj(dump_lines) :
 
 
 if __name__ == '__main__' :
-    fname = 'dump.hti'
-    lines = open(fname).read().split('\n')
-    # print(get_natoms(lines))
-    # print(get_natomtypes(lines))
-    # print(get_natoms_vec(lines))
-    posi = get_posi(lines)
-    dbox, tilt = get_dumpbox(lines)
-    orig, box = dumpbox2box(dbox, tilt)
-    dbox1, tilt1 = box2dumpbox(orig, box)
-    print(dbox - dbox1)
-    print(tilt - tilt1)
-    print(orig)
-    print(box)
-    np.savetxt('tmp.out', posi - orig, fmt='%.6f')
-    print(system_data(lines))
+    # fname = 'dump.hti'
+    # lines = open(fname).read().split('\n')
+    # # print(get_natoms(lines))
+    # # print(get_natomtypes(lines))
+    # # print(get_natoms_vec(lines))
+    # posi = get_posi(lines)
+    # dbox, tilt = get_dumpbox(lines)
+    # orig, box = dumpbox2box(dbox, tilt)
+    # dbox1, tilt1 = box2dumpbox(orig, box)
+    # print(dbox - dbox1)
+    # print(tilt - tilt1)
+    # print(orig)
+    # print(box)
+    # np.savetxt('tmp.out', posi - orig, fmt='%.6f')
+    # print(system_data(lines))
+    
+    lines = load_file('conf.5.dump', begin = 0, step = 2)
+    with open('tmp.out', 'w') as fp:
+        fp.write('\n'.join(lines))

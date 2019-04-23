@@ -38,7 +38,9 @@ class System (object) :
     def __init__ (self, 
                   file_name = None, 
                   fmt = 'auto', 
-                  type_map = None) :
+                  type_map = None, 
+                  begin = 0,
+                  step = 1) :
         """
         Constructor
 
@@ -52,10 +54,15 @@ class System (object) :
                 - ``lammps/lmp``: Lammps data
                 - ``lammps/dump``: Lammps dump
                 - ``vasp/poscar``: vasp POSCAR
+                - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in' and file_name+'.pos'
 
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
+        begin : int
+            The beginning frame when loading MD trajectory. 
+        step : int
+            The number of skipped frames when loading MD trajectory. 
         """
         self.data = {}
         self.data['atom_numbs'] = []
@@ -72,11 +79,11 @@ class System (object) :
         if fmt == 'lmp' or fmt == 'lammps/lmp' :
             self.from_lammps_lmp(file_name, type_map = type_map) 
         elif fmt == 'dump' or fmt == 'lammps/dump' :
-            self.from_lammps_dump(file_name, type_map = type_map)
+            self.from_lammps_dump(file_name, type_map = type_map, begin = begin, step = step)
         elif fmt == 'poscar' or fmt == 'POSCAR' or fmt == 'vasp/poscar':
             self.from_vasp_poscar(file_name)
         elif fmt == 'pwscf/traj':
-            self.from_pwscf_traj(file_name)
+            self.from_pwscf_traj(file_name, begin = begin, step = step)
         else :
             raise RuntimeError('unknow data format ' + fmt)
     
@@ -142,10 +149,13 @@ class System (object) :
             fp.write(w_str)
     
 
-    def from_lammps_dump (self, file_name, type_map = None) :
-        with open(file_name) as fp:
-            lines = [line.rstrip('\n') for line in fp]
-            self.data = dpdata.lammps.dump.system_data(lines, type_map)
+    def from_lammps_dump (self, 
+                          file_name, 
+                          type_map = None, 
+                          begin = 0,
+                          step = 1) :
+        lines = dpdata.lammps.dump.load_file(file_name, begin = begin, step = step)
+        self.data = dpdata.lammps.dump.system_data(lines, type_map)
         self._shift_orig_zero()
 
 
@@ -173,8 +183,11 @@ class System (object) :
             fp.write(w_str)
 
     
-    def from_pwscf_traj(self, prefix) :        
-        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix)
+    def from_pwscf_traj(self, 
+                        prefix, 
+                        begin = 0,
+                        step = 1) :
+        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'], 
                                       self.data['cells'], 
@@ -230,7 +243,12 @@ class LabeledSystem (System):
         - The order of atoms in **every** frame of `'forces'` should be consistent with `'coords'` and `'atom_types'`.
     '''
 
-    def __init__ (self, file_name = None, fmt = 'auto', type_map = None) :
+    def __init__ (self, 
+                  file_name = None, 
+                  fmt = 'auto', 
+                  type_map = None, 
+                  begin = 0,
+                  step = 1) :
         """
         Constructor
 
@@ -245,10 +263,15 @@ class LabeledSystem (System):
                 - ``vasp/outcar``: vasp OUTCAR
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
+                - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
+        begin : int
+            The beginning frame when loading MD trajectory. 
+        step : int
+            The number of skipped frames when loading MD trajectory. 
         """
 
         System.__init__(self)
@@ -266,7 +289,7 @@ class LabeledSystem (System):
         elif fmt == 'deepmd/npy':
             self.from_deepmd_comp(file_name, type_map = type_map)
         elif fmt == 'pwscf/traj':
-            self.from_pwscf_traj(file_name)
+            self.from_pwscf_traj(file_name, begin = begin, step = step)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -379,14 +402,14 @@ class LabeledSystem (System):
                                 comp_prec = prec)
 
     
-    def from_pwscf_traj(self, prefix) :
-        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix)
+    def from_pwscf_traj(self, prefix, begin = 0, step = 1) :
+        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'], 
                                       self.data['cells'], 
             )
         self.data['energies'], self.data['forces'] \
-            = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix)
+            = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
         self.data['virials'] = []
         self.rot_lower_triangular()
 

@@ -109,21 +109,41 @@ def _load_pos_block(fp, natoms) :
         return blk
 
 
-def load_pos(fname, natoms) :
+def load_data(fname, 
+              natoms, 
+              begin = 0, 
+              step = 1,
+              convert = 1.) :
     coords = []
+    cc = 0
     with open(fname) as fp:
         while True:
             blk = _load_pos_block(fp, natoms)
-            # print(blk)
             if blk == None :
                 break
             else :
-                coords.append(blk)
-    coords= length_convert * np.array(coords)
+                if cc >= begin and (cc - begin) % step == 0 :
+                    coords.append(blk)
+            cc += 1
+    coords= convert * np.array(coords)
     return coords
 
 
-def load_energy(fname) :
+# def load_pos(fname, natoms) :
+#     coords = []
+#     with open(fname) as fp:
+#         while True:
+#             blk = _load_pos_block(fp, natoms)
+#             # print(blk)
+#             if blk == None :
+#                 break
+#             else :
+#                 coords.append(blk)
+#     coords= length_convert * np.array(coords)
+#     return coords
+
+
+def load_energy(fname, begin = 0, step = 1) :
     data = np.loadtxt(fname)
     with open(fname) as fp:
         line = fp.readline()
@@ -132,24 +152,24 @@ def load_energy(fname) :
         else :
             return None
     data = np.reshape(data, [-1, nw])
-    return energy_convert * data[:,4]
+    return energy_convert * data[begin::step,4]
 
 
-def load_force(fname, natoms) :
-    coords = []
-    with open(fname) as fp:
-        while True:
-            blk = _load_pos_block(fp, natoms)
-            # print(blk)
-            if blk == None :
-                break
-            else :
-                coords.append(blk)
-    coords= force_convert * np.array(coords)
-    return coords
+# def load_force(fname, natoms) :
+#     coords = []
+#     with open(fname) as fp:
+#         while True:
+#             blk = _load_pos_block(fp, natoms)
+#             # print(blk)
+#             if blk == None :
+#                 break
+#             else :
+#                 coords.append(blk)
+#     coords= force_convert * np.array(coords)
+#     return coords
 
 
-def to_system_data(input_name, prefix) :
+def to_system_data(input_name, prefix, begin = 0, step = 1) :
     data = {}
     data['atom_names'], \
         data['atom_numbs'], \
@@ -157,16 +177,26 @@ def to_system_data(input_name, prefix) :
         cell \
         = load_param_file(input_name)
     data['coords'] \
-        = load_pos(prefix + '.pos', np.sum(data['atom_numbs']))
+        = load_data(prefix + '.pos', 
+                    np.sum(data['atom_numbs']), 
+                    begin = begin, 
+                    step = step, 
+                    convert = length_convert)
     data['orig'] = np.zeros(3)
     data['cells'] = np.tile(cell, (data['coords'].shape[0], 1, 1))
     return data
 
 
-def to_system_label(input_name, prefix) :
+def to_system_label(input_name, prefix, begin = 0, step = 1) :
     atom_names, atom_numbs, atom_types, cell = load_param_file(input_name)
-    energy = load_energy(prefix + '.evp')
-    force = load_force(prefix + '.for', np.sum(atom_numbs))
+    energy = load_energy(prefix + '.evp', 
+                         begin = begin, 
+                         step = step)
+    force = load_data(prefix + '.for', 
+                      np.sum(atom_numbs), 
+                      begin = begin,
+                      step = step, 
+                      convert = force_convert)
     return energy, force
 
 

@@ -1,0 +1,67 @@
+&CONTROL
+  title = "water 63mol+OH- PBE 330K",
+  calculation = 'cp-wf',
+  restart_mode = "restart",
+  prefix = "oh-scan",
+  pseudo_dir = '/global/homes/l/lxzheng/Pseudo_Potentials/',
+  outdir = './SimulationFiles/',
+  nstep = 10000,
+  isave  = 100,
+  dt = 2.D0,
+  tstress = .true.,
+  tprnfor = .true.,
+  iprint = 5,
+  !ndr = 68,
+  !ndw = 68,
+  ekin_conv_thr = 1.D-6,
+  max_seconds = 3000,
+/
+&SYSTEM
+  ibrav     = 1,
+  celldm(1) = 23.5170,
+  nat       = 2,
+  ntyp      = 2,
+  ecutwfc   = 85.00D0, 
+  ecfixed   = 130.D0, ! effective cutoff value
+  q2sigma   = 15.D0,
+  qcutz     = 200.D0,
+  input_dft = 'scan',
+  tot_charge    = -1
+/
+&ELECTRONS
+  electron_dynamics     = "verlet",
+  emass                 = 100.D0,
+  emass_cutoff          = 25.D0,
+  ortho_max             = 800,
+  electron_maxstep      = 500,
+/
+&IONS
+   ion_dynamics     = "verlet",
+   ion_temperature  = 'nose',
+   fnosep           = 60,
+   tempw            = 330,
+   nhpcl            = 4,
+   nhptyp           = 2,
+   ndega            = -3
+   ion_radius(1)    = 1.4
+   ion_radius(2)    = 1.4
+/
+&WANNIER
+  nit    =  60,
+  calwf  =   3,
+  tolw   =   1.D-6, nsteps =   50,
+  adapt  = .FALSE.
+  wfdt   = 2.0D0,
+  wf_q   = 500.D0,
+  wf_friction = 0.3d0,
+/
+!REF_CELL_PARAMETERS {bohr} 
+!   23.920   0.00000000    0.00000000
+!   0.00    23.920         0.00
+!   0.00    0.00          23.920
+ATOMIC_SPECIES
+O   15.9994    O_HSCV_PBE-1.0.UPF
+H   2.01410178 H_HSCV_PBE-1.0.UPF
+ATOMIC_POSITIONS {bohr}
+O     0.298803E+02  0.153223E+02 -0.419200E+01
+H     0.503917E+01  0.486667E+01  0.163637E+02
