@@ -55,11 +55,12 @@ def system_pbc_shift(system) :
     return np.array(shifts, dtype = int)
 
 
-def apply_pbc(system) :
+def apply_pbc(system_coords, system_cells) :
     coords = []
-    for ff in range(system.get_nframes()) :
-        ncoord = dir_coord(system['coords'][ff], 
-                           system['cells' ][ff])
+    nframes = system_cells.shape[0]
+    for ff in range(nframes) :
+        ncoord = dir_coord(system_coords[ff], 
+                           system_cells[ff])
         ncoord = ncoord % 1
-        coords.append(np.matmul(ncoord, system['cells' ][ff]))
+        coords.append(np.matmul(ncoord, system_cells[ff]))
     return np.array(coords)

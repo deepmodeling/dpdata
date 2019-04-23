@@ -1,10 +1,16 @@
 #!/usr/bin/python3 
 
 import numpy as np
+import dpdata
 
 ry2ev = 13.605693009
+hartree2ev = 27.211386018
 bohr2ang = 0.52917721067
 kbar2evperang3 = 1./1602
+
+length_convert = bohr2ang
+energy_convert = hartree2ev
+force_convert = energy_convert / length_convert
 
 def load_key (lines, key) :
     for ii in lines :
@@ -80,7 +86,7 @@ def load_param_file(fname) :
         cell = load_cell_parameters(lines) 
     else :
         cell = convert_celldm(ibrav, celldm)
-    cell = cell * bohr2ang
+    cell = cell * length_convert
     # print(atom_names)
     # print(atom_numbs)
     # print(atom_types)
@@ -113,9 +119,55 @@ def load_pos(fname, natoms) :
                 break
             else :
                 coords.append(blk)
-    coords= bohr2ang * np.array(coords)
-    # print(coords.shape)
+    coords= length_convert * np.array(coords)
     return coords
+
+
+def load_energy(fname) :
+    data = np.loadtxt(fname)
+    with open(fname) as fp:
+        line = fp.readline()
+        if line :
+            nw = len(line.split())
+        else :
+            return None
+    data = np.reshape(data, [-1, nw])
+    return energy_convert * data[:,4]
+
+
+def load_force(fname, natoms) :
+    coords = []
+    with open(fname) as fp:
+        while True:
+            blk = _load_pos_block(fp, natoms)
+            # print(blk)
+            if blk == None :
+                break
+            else :
+                coords.append(blk)
+    coords= force_convert * np.array(coords)
+    return coords
+
+
+def to_system_data(input_name, prefix) :
+    data = {}
+    data['atom_names'], \
+        data['atom_numbs'], \
+        data['atom_types'], \
+        cell \
+        = load_param_file(input_name)
+    data['coords'] \
+        = load_pos(prefix + '.pos', np.sum(data['atom_numbs']))
+    data['orig'] = np.zeros(3)
+    data['cells'] = np.tile(cell, (data['coords'].shape[0], 1, 1))
+    return data
+
+
+def to_system_label(input_name, prefix) :
+    atom_names, atom_numbs, atom_types, cell = load_param_file(input_name)
+    energy = load_energy(prefix + '.evp')
+    force = load_force(prefix + '.for', np.sum(atom_numbs))
+    return energy, force
 
 
 if __name__ == '__main__':

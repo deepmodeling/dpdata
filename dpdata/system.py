@@ -8,6 +8,7 @@ import dpdata.vasp.outcar
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.pwscf.traj
+import dpdata.md.pbc
 
 class System (object) :
     '''
@@ -172,17 +173,12 @@ class System (object) :
             fp.write(w_str)
 
     
-    def from_pwscf_traj(self, prefix) :
-        self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            cell \
-            = dpdata.pwscf.traj.load_param_file(prefix + '.in')
+    def from_pwscf_traj(self, prefix) :        
+        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix)
         self.data['coords'] \
-            = dpdata.pwscf.traj.load_pos(prefix + '.pos', np.sum(self.data['atom_numbs']))
-        self.data['orig'] = np.zeros(3)
-        self.data['cells'] = np.tile(cell, (self.data['coords'].shape[0], 1, 1))
-        self.data['coords'] = dpdata.md.pbc.apply_pbc(self)        
+            = dpdata.md.pbc.apply_pbc(self.data['coords'], 
+                                      self.data['cells'], 
+            )
         self.rot_lower_triangular()
 
 
@@ -269,6 +265,8 @@ class LabeledSystem (System):
             self.from_deepmd_raw(file_name, type_map = type_map)
         elif fmt == 'deepmd/npy':
             self.from_deepmd_comp(file_name, type_map = type_map)
+        elif fmt == 'pwscf/traj':
+            self.from_pwscf_traj(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -379,6 +377,18 @@ class LabeledSystem (System):
         dpdata.deepmd.comp.dump(folder, self.data, 
                                 set_size = set_size,
                                 comp_prec = prec)
+
+    
+    def from_pwscf_traj(self, prefix) :
+        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix)
+        self.data['coords'] \
+            = dpdata.md.pbc.apply_pbc(self.data['coords'], 
+                                      self.data['cells'], 
+            )
+        self.data['energies'], self.data['forces'] \
+            = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix)
+        self.data['virials'] = []
+        self.rot_lower_triangular()
 
 
     def sub_system(self, f_idx) :

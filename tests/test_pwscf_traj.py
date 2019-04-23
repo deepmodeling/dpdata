@@ -4,11 +4,7 @@ import unittest
 from context import dpdata
 
 
-class TestPWSCFTraj(unittest.TestCase):
-    
-    def setUp(self): 
-        self.system = dpdata.System('pwscf.traj/oh-md', fmt = 'pwscf/traj')
-
+class TestPWSCFProps :
     def test_atom_names(self) :
         self.assertEqual(self.system.data['atom_names'], ['O','H'])
 
@@ -46,6 +42,20 @@ class TestPWSCFTraj(unittest.TestCase):
                 elif coords[ii][jj] >= celll :
                     coords[ii][jj] -= celll
                 self.assertAlmostEqual(self.system['coords'][-1][ii][jj], coords[ii][jj])
+
+
+class TestPWSCFTraj(unittest.TestCase, TestPWSCFProps):    
+
+    def setUp(self): 
+        self.system = dpdata.System('pwscf.traj/oh-md', fmt = 'pwscf/traj')
+
+
+class TestPWSCFLabeledTraj(unittest.TestCase, TestPWSCFProps):    
+
+    def setUp(self): 
+        self.system = dpdata.LabeledSystem('pwscf.traj/oh-md', fmt = 'pwscf/traj')
+
+
 
 
 if __name__ == '__main__':
