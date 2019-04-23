@@ -65,7 +65,7 @@ class CompLabeledSys (CompSys) :
         self.assertEqual(self.system_1.get_nframes(),
                          self.system_2.get_nframes())        
         for ff in range(self.system_1.get_nframes()) :
-            for ii in range(self.system_1.data['forces'].shape[0]) :
+            for ii in range(self.system_1.data['forces'].shape[1]) :
                 for jj in range(3) :
                     self.assertAlmostEqual(self.system_1.data['forces'][ff][ii][jj], 
                                            self.system_2.data['forces'][ff][ii][jj], 
@@ -75,6 +75,9 @@ class CompLabeledSys (CompSys) :
     def test_virial(self) :
         self.assertEqual(self.system_1.get_nframes(),
                          self.system_2.get_nframes())        
+        if len(self.system_1['virials']) == 0:
+            self.assertEqual(len(self.system_1['virials']), 0)
+            return
         for ff in range(self.system_1.get_nframes()) :
             for ii in range(3) :
                 for jj in range(3) :
