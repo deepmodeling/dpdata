@@ -13,7 +13,23 @@ def _msd(coords, cells, pbc_shift, begin):
         msds.append(np.sum(diff_coord * diff_coord) / natoms)
     return np.array(msds)
 
-def msd(system, sel = None, begin = 0) :
+def _msd_win(coords, cells, pbc_shift, begin, window):
+    nframes = cells.shape[0]
+    natoms = coords.shape[1]
+    ncoords = np.zeros(coords.shape)
+    msd = np.zeros([window])
+    for ff in range(nframes) :
+        ncoords[ff] = coords[ff] + np.matmul(pbc_shift[ff], cells[ff]) 
+    cc = 0
+    for ii in range(begin,nframes-window+1) :
+        start = np.tile(ncoords[ii], (window, 1, 1))
+        diff_coord = ncoords[ii:ii+window] - start
+        diff_coord = np.reshape(diff_coord, [-1, natoms * 3])
+        msd += np.sum(diff_coord * diff_coord, axis = 1) / natoms
+        cc += 1
+    return np.array(msd) / cc
+
+def msd(system, sel = None, begin = 0, window = 0) :
     natoms = system.get_natoms()    
     if sel is None :
         sel_idx = np.arange(natoms)
@@ -30,4 +46,8 @@ def msd(system, sel = None, begin = 0) :
     cells = system['cells']
     pbc_shift = pbc_shift[:,sel_idx,:]
     coords = coords[:,sel_idx,:]
-    return _msd(coords, cells, pbc_shift, begin)
+    if window <= 0 :
+        return _msd(coords, cells, pbc_shift, begin)
+    else :
+        return _msd_win(coords, cells, pbc_shift, begin, window)
+        
