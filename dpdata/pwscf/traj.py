@@ -152,7 +152,7 @@ def load_energy(fname, begin = 0, step = 1) :
         else :
             return None
     data = np.reshape(data, [-1, nw])
-    return energy_convert * data[begin::step,4]
+    return energy_convert * data[begin::step,5]
 
 
 # def load_force(fname, natoms) :
