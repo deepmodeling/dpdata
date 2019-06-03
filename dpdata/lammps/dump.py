@@ -67,6 +67,30 @@ def get_posi(lines) :
     posis = np.array(posis)     
     return posis[:,1:4]
 
+def get_posi_frac(lines) :
+    blk, head = _get_block(lines, 'ATOMS')
+    keys = head.split()
+    id_idx = keys.index('id') - 2
+    xidx = keys.index('xs') - 2
+    yidx = keys.index('ys') - 2
+    zidx = keys.index('zs') - 2
+    sel = (xidx, yidx, zidx)
+    posis = []
+    for ii in blk :
+        words = ii.split()
+        posis.append([float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
+    posis.sort()
+    posis = np.array(posis)     
+    return posis[:,1:4]
+
+def safe_get_posi(lines, cell):
+    try:
+        posis = get_posi(lines)
+    except ValueError:
+        fposis = get_posi_frac(lines)
+        posis = fposis @ cell
+    return posis
+
 def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
     bounds = np.zeros([3,2])
@@ -149,12 +173,12 @@ def system_data(lines, type_map = None, type_idx_zero = True) :
     system['cells'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
     system['atom_types'] = get_atype(lines, type_idx_zero = type_idx_zero)
-    system['coords'] = [get_posi(lines) - np.array(orig)]
+    system['coords'] = [safe_get_posi(lines, cell) - np.array(orig)]
     for ii in range(1, len(array_lines)) :
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
         system['cells'].append(cell)
-        system['coords'].append(get_posi(array_lines[ii]) - np.array(orig))
+        system['coords'].append(safe_get_posi(lines, cell) - np.array(orig))
     system['cells'] = np.array(system['cells'])
     system['coords'] = np.array(system['coords'])
     return system
