@@ -75,7 +75,7 @@ class System (object) :
         if file_name is None :
             return
         if fmt == 'auto':
-            fmt = file_name.split('.')[-1] 
+            fmt = os.path.basename(file_name).split('.')[-1] 
         if fmt == 'lmp' or fmt == 'lammps/lmp' :
             self.from_lammps_lmp(file_name, type_map = type_map) 
         elif fmt == 'dump' or fmt == 'lammps/dump' :
