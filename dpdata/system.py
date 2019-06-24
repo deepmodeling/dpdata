@@ -123,7 +123,25 @@ class System (object) :
         tmp.data['cells'] = self.data['cells'][f_idx]
         tmp.data['coords'] = self.data['coords'][f_idx]
         return tmp
-        
+
+
+    def append(self, system) :
+        """
+        Append a system to this system
+
+        Parameters
+        ----------
+        system : System
+            The system to append
+        """
+        for ii in ['atom_numbs', 'atom_names', 'orig'] :
+            assert(system.data[ii] == self.data[ii])
+        for ii in ['atom_types'] :
+            eq = (system.data[ii] == self.data[ii])
+            assert(eq.all())
+        for ii in ['coords', 'cells'] :
+            self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+
 
     def from_lammps_lmp (self, file_name, type_map = None) :
         with open(file_name) as fp:
@@ -437,3 +455,23 @@ class LabeledSystem (System):
             tmp_sys.data['virials'] = self.data['virials'][f_idx]            
         return tmp_sys
 
+
+    def append(self, system):
+        """
+        Append a system to this system
+
+        Parameters
+        ----------
+        system : System
+            The system to append
+        """
+        System.append(self, system)
+        tgt = ['energies', 'forces']
+        if len(system.data['virials']) != 0 and len(self.data['virials']) == 0:
+            raise RuntimeError('system has virial, but this does not')
+        if len(system.data['virials']) == 0 and len(self.data['virials']) != 0:
+            raise RuntimeError('this has virial, but system does not')
+        if len(system.data['virials']) != 0 :
+            tgt.append('virials')
+        for ii in tgt:
+            self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
