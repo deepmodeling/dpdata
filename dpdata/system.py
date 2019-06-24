@@ -297,7 +297,7 @@ class LabeledSystem (System):
         if file_name is None :
             return
         if fmt == 'auto':
-            fmt = file_name.split('.')[-1] 
+            fmt = os.path.basename(file_name).split('.')[-1] 
         if fmt == 'xml' or fmt == 'XML' or fmt == 'vasp/xml' :
             self.from_vasp_xml(file_name, begin = begin, step = step) 
         elif fmt == 'outcar' or fmt == 'OUTCAR' or fmt == 'vasp/outcar' :
