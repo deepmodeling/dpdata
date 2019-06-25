@@ -59,6 +59,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | lammps  | lmp    | False        | False   | System        | 'lammps/lmp'  |
 | lammps  | dump   | True         | False   | System        | 'lammps/dump' |
 | deepmd  | raw    | True         | True    | LabeledSystem | 'deepmd/raw'  |
+| gaussian| log    | False        | True    | LabeledSystem | 'gaussian/log'|
 
 
 
