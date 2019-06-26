@@ -25,7 +25,7 @@ setuptools.setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/deepmodeling/dpdata",
-    packages=['dpdata', 'dpdata/vasp', 'dpdata/lammps', 'dpdata/md', 'dpdata/deepmd', 'dpdata/pwscf'],
+    packages=['dpdata', 'dpdata/vasp', 'dpdata/lammps', 'dpdata/md', 'dpdata/deepmd', 'dpdata/pwscf', 'dpdata/gaussian'],
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
