@@ -9,6 +9,7 @@ import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.pwscf.traj
 import dpdata.md.pbc
+import dpdata.gaussian.log
 
 class System (object) :
     '''
@@ -290,6 +291,7 @@ class LabeledSystem (System):
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
+                - ``gaussian/log``: gaussian logs
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -316,6 +318,8 @@ class LabeledSystem (System):
             self.from_deepmd_comp(file_name, type_map = type_map)
         elif fmt == 'pwscf/traj':
             self.from_pwscf_traj(file_name, begin = begin, step = step)
+        elif fmt == 'gaussian/log':
+            self.from_gaussian_log(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -439,6 +443,12 @@ class LabeledSystem (System):
             = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
         self.data['virials'] = []
         self.rot_lower_triangular()
+
+
+    def from_gaussian_log(self, file_name):
+        self.data = dpdata.gaussian.log.to_system_data(file_name)
+        self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
+        self.data['virials'] = []
 
 
     def sub_system(self, f_idx) :
