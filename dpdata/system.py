@@ -142,6 +142,14 @@ class System (object) :
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
 
+    def apply_pbc(self) :
+        """
+        Append periodic boundary condition
+        """
+        ncoord = dpdata.md.pbc.dir_coord(self.data['coords'], self.data['cells'])
+        ncoord = ncoord % 1
+        self.data['coords'] = np.matmul(ncoord, self.data['cells'])
+
 
     def from_lammps_lmp (self, file_name, type_map = None) :
         with open(file_name) as fp:
