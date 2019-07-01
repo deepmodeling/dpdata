@@ -12,6 +12,7 @@ import dpdata.md.pbc
 import dpdata.gaussian.log
 from copy import deepcopy
 from monty.json import MSONable
+from monty.serialization import loadfn,dumpfn
 
 class System (MSONable) :
     '''
@@ -137,6 +138,16 @@ class System (MSONable) :
        return self.__class__.from_dict({'data':self_copy.data})
        
 
+    def dump(self,filename,indent=4):
+        """dump .json or .yaml file """
+        dumpfn(self.as_dict(),filename,indent=indent)
+
+
+    @staticmethod
+    def load(filename):
+        """rebuild System obj. from .json or .yaml file """
+        return loadfn(filename)
+
     def as_dict(self):
         """Returns data dict of System instance"""
         d={"@module": self.__class__.__module__,
@@ -145,13 +156,6 @@ class System (MSONable) :
           }
         return d
     
-
-    @classmethod
-    def from_dict(cls,d):
-        """Contruct System instance from dict object"""
-        data=d['data']
-        return cls(data=data)
- 
  
     def get_atom_names(self):
         """Returns name of atoms """
@@ -354,8 +358,8 @@ def check_System(data):
     assert( isinstance(data,dict) )
     assert( set(data.keys())==keys )
     assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
-    assert( len(data['atom_names'])==len(data['atom_numbs']) )
     assert( len(data['cells']) == len(data['coords']) )
+    assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
 
 def check_LabeledSystem(data):
@@ -364,6 +368,7 @@ def check_LabeledSystem(data):
     assert( isinstance(data,dict) )
     assert( set(data.keys())==keys )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
+
     assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
     if len(data['virials'])>0:
        assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
@@ -474,11 +479,6 @@ class LabeledSystem (System):
           raise RuntimeError("Unspported data structure")
        return self.__class__.from_dict({'data':self_copy.data})
 
-    @classmethod
-    def from_dict(cls,d):
-        """Contruct LabeledSystem instance from dict object"""
-        data=d['data']
-        return cls(data=data)
 
     def has_virial(self) :
         return ('virials' in self.data) and (len(self.data['virials']) > 0)
