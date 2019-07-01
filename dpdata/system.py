@@ -446,8 +446,11 @@ class LabeledSystem (System):
 
 
     def from_gaussian_log(self, file_name):
-        self.data = dpdata.gaussian.log.to_system_data(file_name)
-        self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
+        try:
+            self.data = dpdata.gaussian.log.to_system_data(file_name)
+            self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
+        except AssertionError:
+            self.data['energies'], self.data['forces']= [], []
         self.data['virials'] = []
 
 
