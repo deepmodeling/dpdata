@@ -20,7 +20,7 @@ API documentation
 .. automodule:: dpdata
 
 .. autoclass:: System
-    :members: __init__, __getitem__, get_nframes, get_natoms, sub_system, to_lammps_lmp, to_vasp_poscar
+    :members: __init__, __getitem__, get_nframes, get_natoms, sub_system, append, apply_pbc, to_lammps_lmp, to_vasp_poscar
 
 .. autoclass:: LabeledSystem
     :members: __init__, sub_system, to_deepmd_raw, to_deepmd_npy
