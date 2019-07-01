@@ -10,6 +10,7 @@ import dpdata.deepmd.comp
 import dpdata.pwscf.traj
 import dpdata.md.pbc
 import dpdata.gaussian.log
+from copy import deepcopy
 from monty.json import MSONable
 
 class System (MSONable) :
@@ -115,6 +116,26 @@ class System (MSONable) :
         """Returns proerty stored in System by key"""
         return self.data[key]
 
+    def __len__(self) :
+        """Returns number of frames in the system"""
+        return self.get_nframes() 
+
+
+    def __add__(self,others) :
+       """magic method "+" operation """
+       self_copy=self.copy()
+       if isinstance(others,System):
+          other_copy=others.copy()
+          self_copy.append(other_copy)
+       elif isinstance(others, list):
+          for ii in others:
+              assert(isinstance(ii,System))
+              ii_copy=ii.copy()
+              self_copy.append(ii_copy)
+       else:
+          raise RuntimeError("Unspported data structure")
+       return self.__class__.from_dict({'data':self_copy.data})
+       
 
     def as_dict(self):
         """Returns data dict of System instance"""
@@ -159,7 +180,7 @@ class System (MSONable) :
 
     def copy(self):
         """Returns a copy of the system.  """
-        return self.__class__.from_dict({'data':self.data})
+        return self.__class__.from_dict({'data':deepcopy(self.data)})
 
 
     def sub_system(self, f_idx) :
@@ -427,6 +448,21 @@ class LabeledSystem (System):
         ret+="\n"+"  ".join(map(str,self.get_atom_numbs()))
         return ret
     
+    def __add__(self,others) :
+       """magic method "+" operation """
+       self_copy=self.copy()
+       if isinstance(others,LabeledSystem):
+          other_copy=others.copy()
+          self_copy.append(other_copy)
+       elif isinstance(others, list):
+          for ii in others:
+              assert(isinstance(ii,LabeledSystem))
+              ii_copy=ii.copy()
+              self_copy.append(ii_copy)
+       else:
+          raise RuntimeError("Unspported data structure")
+       return self.__class__.from_dict({'data':self_copy.data})
+
     @classmethod
     def from_dict(cls,d):
         """Contruct LabeledSystem instance from dict object"""
