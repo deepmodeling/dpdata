@@ -10,8 +10,9 @@ import dpdata.deepmd.comp
 import dpdata.pwscf.traj
 import dpdata.md.pbc
 import dpdata.gaussian.log
+from monty.json import MSONable
 
-class System (object) :
+class System (MSONable) :
     '''
     The data System
 
@@ -41,7 +42,8 @@ class System (object) :
                   fmt = 'auto', 
                   type_map = None, 
                   begin = 0,
-                  step = 1) :
+                  step = 1,
+                  data = None) :
         """
         Constructor
 
@@ -64,44 +66,100 @@ class System (object) :
             The beginning frame when loading MD trajectory. 
         step : int
             The number of skipped frames when loading MD trajectory. 
+        data : dict
+             The raw data of System class.
         """
         self.data = {}
         self.data['atom_numbs'] = []
         self.data['atom_names'] = []
         self.data['atom_types'] = []
-        self.data['orig'] = [0, 0, 0]
+        self.data['orig'] = np.array([0, 0, 0])
         self.data['cells'] = []
         self.data['coords'] = []
 
+        if data:
+           check_System(data)
+           self.data=data
+           return
         if file_name is None :
-            return
+           return
         if fmt == 'auto':
             fmt = os.path.basename(file_name).split('.')[-1] 
         if fmt == 'lmp' or fmt == 'lammps/lmp' :
             self.from_lammps_lmp(file_name, type_map = type_map) 
         elif fmt == 'dump' or fmt == 'lammps/dump' :
             self.from_lammps_dump(file_name, type_map = type_map, begin = begin, step = step)
-        elif fmt == 'poscar' or fmt == 'POSCAR' or fmt == 'vasp/poscar':
+        elif fmt.lower() == 'poscar' or fmt.lower() == 'contcar' or fmt.lower() == 'vasp/poscar' or fmt.lower() == 'vasp/contcar':
             self.from_vasp_poscar(file_name)
         elif fmt == 'pwscf/traj':
             self.from_pwscf_traj(file_name, begin = begin, step = step)
         else :
             raise RuntimeError('unknow data format ' + fmt)
+
+    def __repr__(self):
+        return self.__str__()
     
+    def __str__(self):
+        ret="Data Summary"
+        ret+="\nUnlabeled System"
+        ret+="\n-------------------"
+        ret+="\nFrame Numbers     : %d"%self.get_nframes()
+        ret+="\nAtom Numbers      : %d"%self.get_natoms()
+        ret+="\nElement List      :"
+        ret+="\n-------------------"
+        ret+="\n"+"  ".join(map(str,self.get_atom_names()))
+        ret+="\n"+"  ".join(map(str,self.get_atom_numbs()))
+        return ret
 
     def __getitem__(self, key):
         """Returns proerty stored in System by key"""
         return self.data[key]
 
 
+    def as_dict(self):
+        """Returns data dict of System instance"""
+        d={"@module": self.__class__.__module__,
+             "@class": self.__class__.__name__,
+             "data": self.data
+          }
+        return d
+    
+
+    @classmethod
+    def from_dict(cls,d):
+        """Contruct System instance from dict object"""
+        data=d['data']
+        return cls(data=data)
+ 
+ 
+    def get_atom_names(self):
+        """Returns name of atoms """
+        return  self.data['atom_names']
+
+     
+    def get_atom_types(self):
+        """Returns type of atoms """
+        return self.data['atom_types']
+
+ 
+    def get_atom_numbs(self):
+        """Returns number of atoms """
+        return self.data['atom_numbs']
+
+  
     def get_nframes(self) :
         """Returns number of frames in the system"""
         return len(self.data['cells'])
 
 
     def get_natoms(self) :
-        """Returns number of atoms in the system"""
+        """Returns total number of atoms in the system"""
         return len(self.data['atom_types'])
+
+
+    def copy(self):
+        """Returns a copy of the system.  """
+        return self.__class__.from_dict({'data':self.data})
 
 
     def sub_system(self, f_idx) :
@@ -135,14 +193,29 @@ class System (object) :
         system : System
             The system to append
         """
-        for ii in ['atom_numbs', 'atom_names', 'orig'] :
+        for ii in ['atom_numbs', 'atom_names'] :
             assert(system.data[ii] == self.data[ii])
-        for ii in ['atom_types'] :
+        for ii in ['atom_types','orig'] :
             eq = (system.data[ii] == self.data[ii])
             assert(eq.all())
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
 
+
+    def extend(self, systems):
+        """
+        Extend a system list to this system
+
+        Parameters
+        ----------
+        systems : [System1, System2, System3 ]
+            The list to extend
+        """
+        
+        for system in systems:
+            self.append(system)
+
+            
     def apply_pbc(self) :
         """
         Append periodic boundary condition
@@ -255,6 +328,27 @@ class System (object) :
         self.affine_map(rot, f_idx = f_idx)
         return np.matmul(qq, rot)
         
+def check_System(data):
+    keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
+    assert( isinstance(data,dict) )
+    assert( set(data.keys())==keys )
+    assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
+    assert( len(data['atom_names'])==len(data['atom_numbs']) )
+    assert( len(data['cells']) == len(data['coords']) )
+
+
+def check_LabeledSystem(data):
+    keys={'atom_names', 'atom_numbs', 'atom_types', 'cells', 'coords', 'energies',
+           'forces', 'orig', 'virials'}
+    assert( isinstance(data,dict) )
+    assert( set(data.keys())==keys )
+    assert( len(data['atom_names'])==len(data['atom_numbs']) )
+    assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
+    if len(data['virials'])>0:
+       assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
+    else:
+       assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
+
 
 class LabeledSystem (System): 
     '''
@@ -275,7 +369,8 @@ class LabeledSystem (System):
                   fmt = 'auto', 
                   type_map = None, 
                   begin = 0,
-                  step = 1) :
+                  step = 1,
+                  data=None) :
         """
         Constructor
 
@@ -304,6 +399,10 @@ class LabeledSystem (System):
 
         System.__init__(self)
 
+        if data:
+           check_LabeledSystem(data)
+           self.data=data
+           return
         if file_name is None :
             return
         if fmt == 'auto':
@@ -323,7 +422,28 @@ class LabeledSystem (System):
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
+    def __repr__(self):
+        return self.__str__()
     
+    def __str__(self):
+        ret="Data Summary"
+        ret+="\nLabeled System"
+        ret+="\n-------------------"
+        ret+="\nFrame Numbers      : %d"%self.get_nframes()
+        ret+="\nAtom Numbers       : %d"%self.get_natoms()
+        ret+="\nIncluding Virials  : %s"% "Yes" if self.has_virial() else "No"
+        ret+="\nElement List       :"
+        ret+="\n-------------------"
+        ret+="\n"+"  ".join(map(str,self.get_atom_names()))
+        ret+="\n"+"  ".join(map(str,self.get_atom_numbs()))
+        return ret
+    
+    @classmethod
+    def from_dict(cls,d):
+        """Contruct LabeledSystem instance from dict object"""
+        data=d['data']
+        return cls(data=data)
+
     def has_virial(self) :
         return ('virials' in self.data) and (len(self.data['virials']) > 0)
 
