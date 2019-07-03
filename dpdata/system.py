@@ -238,7 +238,7 @@ class System (MSONable) :
         """
         
         for system in systems:
-            self.append(system)
+            self.append(system.copy())
 
             
     def apply_pbc(self) :
