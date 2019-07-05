@@ -135,6 +135,13 @@ class System (object) :
         system : System
             The system to append
         """
+        if not len(system.data['atom_numbs']):
+            # skip if the system to append is non-converged
+            return False
+        elif not len(self.data['atom_numbs']):
+            # this system is non-converged but the system to append is converged
+            self.data = system.data
+            return False
         for ii in ['atom_numbs', 'atom_names', 'orig'] :
             assert(system.data[ii] == self.data[ii])
         for ii in ['atom_types'] :
@@ -142,6 +149,7 @@ class System (object) :
             assert(eq.all())
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+        return True
 
     def apply_pbc(self) :
         """
@@ -486,7 +494,9 @@ class LabeledSystem (System):
         system : System
             The system to append
         """
-        System.append(self, system)
+        if not System.append(self, system):
+            # skip if this system or the system to append is non-converged
+            return
         tgt = ['energies', 'forces']
         if len(system.data['virials']) != 0 and len(self.data['virials']) == 0:
             raise RuntimeError('system has virial, but this does not')
