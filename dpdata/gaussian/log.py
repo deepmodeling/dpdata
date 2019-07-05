@@ -57,4 +57,5 @@ def to_system_data(file_name):
     data['forces'] = np.array([forces]) * force_convert
     data['energies'] = np.array([energy]) * energy_convert
     data['coords'] = np.array([coords])
+    data['orig'] = [0, 0, 0]
     return data

@@ -238,7 +238,7 @@ class System (MSONable) :
         """
         
         for system in systems:
-            self.append(system)
+            self.append(system.copy())
 
             
     def apply_pbc(self) :
@@ -457,7 +457,8 @@ class LabeledSystem (System):
         ret+="\n-------------------"
         ret+="\nFrame Numbers      : %d"%self.get_nframes()
         ret+="\nAtom Numbers       : %d"%self.get_natoms()
-        ret+="\nIncluding Virials  : %s"% "Yes" if self.has_virial() else "No"
+        status= "Yes" if self.has_virial() else "No"
+        ret+="\nIncluding Virials  : %s"% status
         ret+="\nElement List       :"
         ret+="\n-------------------"
         ret+="\n"+"  ".join(map(str,self.get_atom_names()))
@@ -602,8 +603,11 @@ class LabeledSystem (System):
 
 
     def from_gaussian_log(self, file_name):
-        self.data = dpdata.gaussian.log.to_system_data(file_name)
-        self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
+        try:
+            self.data = dpdata.gaussian.log.to_system_data(file_name)
+            self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
+        except AssertionError:
+            self.data['energies'], self.data['forces']= [], []
         self.data['virials'] = []
 
 
