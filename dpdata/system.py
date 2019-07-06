@@ -353,29 +353,6 @@ class System (MSONable) :
         self.affine_map(rot, f_idx = f_idx)
         return np.matmul(qq, rot)
         
-def check_System(data):
-    keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
-    assert( isinstance(data,dict) )
-    assert( set(data.keys())==keys )
-    assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
-    assert( len(data['cells']) == len(data['coords']) )
-    assert( len(data['atom_names'])==len(data['atom_numbs']) )
-
-
-def check_LabeledSystem(data):
-    keys={'atom_names', 'atom_numbs', 'atom_types', 'cells', 'coords', 'energies',
-           'forces', 'orig', 'virials'}
-    assert( isinstance(data,dict) )
-    assert( set(data.keys())==keys )
-    assert( len(data['atom_names'])==len(data['atom_numbs']) )
-
-    assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
-    if len(data['virials'])>0:
-       assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
-    else:
-       assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
-
-
 class LabeledSystem (System): 
     '''
     The labeled data System
@@ -653,3 +630,31 @@ class LabeledSystem (System):
             tgt.append('virials')
         for ii in tgt:
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+
+def check_System(data):
+    keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
+    assert( isinstance(data,dict) )
+    assert( set(data.keys())==keys )
+    assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
+    assert( len(data['cells']) == len(data['coords']) )
+    assert( len(data['atom_names'])==len(data['atom_numbs']) )
+
+def check_LabeledSystem(data):
+    keys={'atom_names', 'atom_numbs', 'atom_types', 'cells', 'coords', 'energies',
+           'forces', 'orig', 'virials'}
+    if 'virials' in data.keys():
+        pass
+    else:
+        data['virials']=[]
+
+    assert( set(data.keys())==keys )
+    assert( isinstance(data,dict) )
+    assert( len(data['atom_names'])==len(data['atom_numbs']) )
+
+    assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
+    if len(data['virials'])>0:
+       assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
+    else:
+       assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
+
+
