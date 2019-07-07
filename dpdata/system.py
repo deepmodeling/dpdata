@@ -243,6 +243,9 @@ class System (object) :
 
     def rot_frame_lower_triangular(self, f_idx = 0) :
         qq, rr = np.linalg.qr(self.data['cells'][f_idx].T)
+        if np.linalg.det(qq) < 0 :
+            qq = -qq
+            rr = -rr
         self.affine_map(qq, f_idx = f_idx)
         rot = np.eye(3)
         if self.data['cells'][f_idx][0][0] < 0 :
