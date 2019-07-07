@@ -8,7 +8,6 @@ class TestDeepmdLoadDumpComp(unittest.TestCase, CompLabeledSys):
     def setUp (self) :
         self.system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
                                              fmt = 'vasp/outcar')
-        self.system_1j = dpdata.LabeledSystem.load('poscars/h2o.md.json')
         self.system_1.to_deepmd_npy('tmp.deepmd.npy', 
                                     prec = np.float64, 
                                     set_size = 2)        

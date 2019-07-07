@@ -3,21 +3,11 @@ import numpy as np
 class CompSys :
     
     def test_len_func(self):
-        self.assertEqual(len(self.system_1),3)
+        self.assertEqual(len(self.system_1),len(self.system_2))
 
     def test_add_func(self):
-        self.assertEqual(len(self.system_1+self.system_1),6)
-
-    def test_load_func(self):
-        self.assertEqual(len(self.system_1),len(self.system_1j))
-        self.assertEqual(self.system_1j.data['atom_numbs'], 
-                         self.system_1.data['atom_numbs'])
-        self.assertEqual(self.system_1j.data['atom_names'], 
-                         self.system_1.data['atom_names'])
-        self.assertEqual(self.system_1j.data['atom_types'][0], 
-                         self.system_1.data['atom_types'][0])
-        self.assertEqual(self.system_1j.data['atom_types'][1],
-                         self.system_1.data['atom_types'][1])
+        self.assertEqual(len(self.system_1+self.system_1),
+                         len(self.system_2+self.system_2))
 
     def test_atom_numbs(self):
         self.assertEqual(self.system_1.data['atom_numbs'], 
