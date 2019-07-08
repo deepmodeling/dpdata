@@ -14,3 +14,7 @@ tmp*
 *.pyc
 CMakeCache.txt
 CMakeFiles
+.eggs
+build
+dist
+dpdata.egg-info

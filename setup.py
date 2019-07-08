@@ -12,7 +12,7 @@ except ImportError:
         readme = f.read()
 
 # install_requires = ['xml']
-install_requires=['numpy']
+install_requires=['numpy', 'monty']
 
 setuptools.setup(
     name="dpdata",

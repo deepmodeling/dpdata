@@ -3,17 +3,26 @@ import numpy as np
 def system_info (lines, type_idx_zero = False) :
     atom_names = []
     atom_numbs = None
+    nelm = None
     for ii in lines: 
         if 'TITEL  =' in ii : 
             # get atom names from POTCAR info, tested only for PAW_PBE ...
-            atom_names.append(ii.split()[3])
+            _ii=ii.split()[3]
+            if '_' in _ii:
+                # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
+                atom_names.append(_ii.split(('_')[0]))
+            else:
+                atom_names.append(_ii)
+        elif 'NELM' in ii :
+            nelm = int(ii.split()[2][:-1])
+            break;
         elif 'ions per type' in ii :
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None :                
                 atom_numbs = atom_numbs_
             else :
                 assert (atom_numbs == atom_numbs_), "in consistent numb atoms in OUTCAR"
-            break
+    assert(nelm is not None), "cannot find maximum steps for each SC iteration"
     assert(atom_numbs is not None), "cannot find ion type info in OUTCAR"
     atom_names = atom_names[:len(atom_numbs)]
     atom_types = []
@@ -23,7 +32,7 @@ def system_info (lines, type_idx_zero = False) :
                 atom_types.append(idx)
             else :
                 atom_types.append(idx+1)
-    return atom_names, atom_numbs, np.array(atom_types, dtype = int)
+    return atom_names, atom_numbs, np.array(atom_types, dtype = int), nelm
 
 
 def get_outcar_block(fp) :
@@ -41,7 +50,7 @@ def get_frames (fname, begin = 0, step = 1) :
     fp = open(fname)
     blk = get_outcar_block(fp)
 
-    atom_names, atom_numbs, atom_types = system_info(blk, type_idx_zero = True)
+    atom_names, atom_numbs, atom_types, nelm = system_info(blk, type_idx_zero = True)
     ntot = sum(atom_numbs)
 
     all_coords = []
@@ -53,15 +62,16 @@ def get_frames (fname, begin = 0, step = 1) :
     cc = 0
     while len(blk) > 0 :
         if cc >= begin and (cc - begin) % step == 0 :
-            coord, cell, energy, force, virial = analyze_block(blk, ntot)
-            if len(coord) == 0:
-                break
-            all_coords.append(coord)
-            all_cells.append(cell)
-            all_energies.append(energy)
-            all_forces.append(force)
-            if virial is not None :
-                all_virials.append(virial)
+            coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm)
+            if is_converge : 
+                if len(coord) == 0:
+                    break
+                all_coords.append(coord)
+                all_cells.append(cell)
+                all_energies.append(energy)
+                all_forces.append(force)
+                if virial is not None :
+                    all_virials.append(virial)
         blk = get_outcar_block(fp)
         cc += 1
 
@@ -69,15 +79,19 @@ def get_frames (fname, begin = 0, step = 1) :
     return atom_names, atom_numbs, atom_types, np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), np.array(all_virials)
 
 
-def analyze_block(lines, ntot) :
+def analyze_block(lines, ntot, nelm) :
     coord = []
     cell = []
     energy = None
     force = []
     virial = None
+    is_converge = True
+    sc_index = 0
     for idx,ii in enumerate(lines) :
         if 'Iteration' in ii:
-            pass
+            sc_index = int(ii.split()[3][:-1])
+            if sc_index >= nelm:
+                is_converge = False
         elif 'free  energy   TOTEN' in ii:
             energy = float(ii.split()[4])
             assert((force is not None) and len(coord) > 0 and len(cell) > 0)
@@ -87,7 +101,7 @@ def analyze_block(lines, ntot) :
             # all_forces.append(force)
             # if virial is not None :
             #     all_virials.append(virial)
-            return coord, cell, energy, force, virial
+            return coord, cell, energy, force, virial, is_converge
         elif 'VOLUME and BASIS' in ii:
             for dd in range(3) :
                 tmp_l = lines[idx+5+dd]
@@ -111,4 +125,4 @@ def analyze_block(lines, ntot) :
                 info = [float(ss) for ss in tmp_l.split()]
                 coord.append(info[:3])
                 force.append(info[3:])
-    return coord, cell, energy, force, virial
+    return coord, cell, energy, force, virial, is_converge
