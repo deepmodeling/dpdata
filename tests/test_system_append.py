@@ -23,5 +23,18 @@ class TestVaspXmlAppend(unittest.TestCase, CompLabeledSys):
         self.system_2 = dpdata.LabeledSystem('poscars/vasprun.h2o.md.10.xml').sub_system(np.arange(0,10,2))
 
 
+class TestDifferentOrderAppend(unittest.TestCase, CompLabeledSys):
+    def setUp (self) :
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        self.system_1 = dpdata.LabeledSystem('gaussian/methane.gaussianlog', fmt='gaussian/log')
+        system_2 = dpdata.LabeledSystem('gaussian/methane_reordered.gaussianlog', fmt='gaussian/log')
+        self.system_1.append(system_2)
+                
+        self.system_2 = self.system_1.sub_system([0, 0])
+
 if __name__ == '__main__':
     unittest.main()
