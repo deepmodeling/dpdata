@@ -193,7 +193,9 @@ class System (MSONable) :
         Reset the type of the system
         Parameters
         ----------
-        type_map : dict or list
+        type_map : 
+            dict :  {"H":0,"O":1} 
+            or list  ["H","C","O","N"]
             The map between elements and index
             if no map_dict is given, index will
             be set according to atomic number 
