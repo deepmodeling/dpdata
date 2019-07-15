@@ -65,6 +65,8 @@ def dump(folder,
         virials = np.reshape(data['virials'],   [nframes, 9]).astype(comp_prec)
     else :
         virials = []
+    if 'atom_pref' in data:
+        atom_pref = np.reshape(data['atom_pref'], [nframes, -1].astype(comp_prec)
     # dump frame properties: cell, coord, energy, force and virial
     nsets = nframes // set_size
     if set_size * nsets < nframes :
@@ -80,5 +82,7 @@ def dump(folder,
         np.save(os.path.join(set_folder, 'force'),      forces [set_stt:set_end])
         if len(virials) > 0:
             np.save(os.path.join(set_folder, 'virial'), virials[set_stt:set_end])
+        if 'atom_pref' in data:
+            np.save(os.path.join(set_folder, "atom_pref"), atom_pref[set_stt:set_end])
         
         

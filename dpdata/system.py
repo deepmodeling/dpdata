@@ -664,6 +664,9 @@ class LabeledSystem (System):
             # skip if this system or the system to append is non-converged
             return
         tgt = ['energies', 'forces']
+        for ii in ['atom_pref']:
+            if ii in self.data:
+                tgt.append(ii)
         if len(system.data['virials']) != 0 and len(self.data['virials']) == 0:
             raise RuntimeError('system has virial, but this does not')
         if len(system.data['virials']) == 0 and len(self.data['virials']) != 0:
@@ -676,6 +679,9 @@ class LabeledSystem (System):
     def sort_atom_types(self):
         idx = System.sort_atom_types(self)
         self.data['forces'] = self.data['forces'][:, idx]
+        for ii in ['atom_pref']:
+            if ii in self.data:
+                self.data[ii] = self.data[ii][:, idx]
 
 
 class MultiSystems:
