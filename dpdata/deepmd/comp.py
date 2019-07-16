@@ -66,7 +66,7 @@ def dump(folder,
     else :
         virials = []
     if 'atom_pref' in data:
-        atom_pref = np.reshape(data['atom_pref'], [nframes, -1].astype(comp_prec)
+        atom_pref = np.reshape(data['atom_pref'], [nframes, -1]).astype(comp_prec)
     # dump frame properties: cell, coord, energy, force and virial
     nsets = nframes // set_size
     if set_size * nsets < nframes :
