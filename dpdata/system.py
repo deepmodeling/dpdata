@@ -258,6 +258,22 @@ class System (MSONable) :
         system : System
             The system to append
         """
+        if not len(system.data['atom_numbs']):
+            # skip if the system to append is non-converged
+            return False
+        elif not len(self.data['atom_numbs']):
+            # this system is non-converged but the system to append is converged
+            self.data = system.data
+            return False
+        assert(system.formula == self.formula)
+        if system.data['atom_names'] != self.data['atom_names']:
+            # allow to append a system with different atom_names order
+            system.sort_atom_names()
+            self.sort_atom_names()
+        if (system.data['atom_types'] != self.data['atom_types']).any():
+            # allow to append a system with different atom_types order
+            system.sort_atom_types()
+            self.sort_atom_types()
         for ii in ['atom_numbs', 'atom_names'] :
             assert(system.data[ii] == self.data[ii])
         for ii in ['atom_types','orig'] :
@@ -265,6 +281,27 @@ class System (MSONable) :
             assert(eq.all())
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+        return True
+
+    def sort_atom_names(self):
+        idx = np.argsort(self.data['atom_names'])
+        self.data['atom_names'] = list(np.array(self.data['atom_names'][idx]))
+        self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'][idx]))
+        self.data['atom_types'] = idx[self.data['atom_types']]
+    
+    def sort_atom_types(self):
+        idx = np.argsort(self.data['atom_types'])
+        self.data['atom_types'] = self.data['atom_types'][idx]
+        self.data['coords'] = self.data['coords'][:, idx]
+        return idx
+
+    @property
+    def formula(self):
+        """
+        Return the formula of this system, like C3H5O2
+        """
+        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in sorted(
+            zip(self.data['atom_names'], self.data['atom_numbs']))])
 
 
     def to_list(self):
@@ -396,6 +433,9 @@ class System (MSONable) :
 
     def rot_frame_lower_triangular(self, f_idx = 0) :
         qq, rr = np.linalg.qr(self.data['cells'][f_idx].T)
+        if np.linalg.det(qq) < 0 :
+            qq = -qq
+            rr = -rr
         self.affine_map(qq, f_idx = f_idx)
         rot = np.eye(3)
         if self.data['cells'][f_idx][0][0] < 0 :
@@ -675,7 +715,9 @@ class LabeledSystem (System):
         system : System
             The system to append
         """
-        System.append(self, system)
+        if not System.append(self, system):
+            # skip if this system or the system to append is non-converged
+            return
         tgt = ['energies', 'forces']
         if len(system.data['virials']) != 0 and len(self.data['virials']) == 0:
             raise RuntimeError('system has virial, but this does not')
@@ -685,6 +727,80 @@ class LabeledSystem (System):
             tgt.append('virials')
         for ii in tgt:
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+    
+    def sort_atom_types(self):
+        idx = System.sort_atom_types(self)
+        self.data['forces'] = self.data['forces'][:, idx]
+
+
+class MultiSystems:
+    '''A set containing several systems.'''
+
+    def __init__(self, *systems):
+        """
+        Parameters
+        ----------
+        systems : System
+            The systems contained
+        """
+        self.systems = {}
+        self.append(*systems)
+
+    def __getitem__(self, key):
+        """Returns proerty stored in System by key"""
+        return self.systems[key]
+
+    def append(self, *systems) :
+        """
+        Append systems or MultiSystems to systems
+
+        Parameters
+        ----------
+        system : System
+            The system to append
+        """
+        for system in systems:
+            if isinstance(system, System):
+                self.__append(system)
+            elif isinstance(system, MultiSystems):
+                for sys in system.system:
+                    self.__append(sys)
+            else:
+                raise RuntimeError("Object must be System or MultiSystems!")
+    
+    def __append(self, system):
+        formula = system.formula
+        if not formula:
+            return
+        if formula in self.systems:
+            self.systems[formula].append(system)
+        else:
+            self.systems[formula] = system
+
+    def to_deepmd_raw(self, folder) :
+        """
+        Dump systems in deepmd raw format to `folder` for each system.
+        """
+        for system_name, system in self.systems.items():
+            system.to_deepmd_raw(os.path.join(folder, system_name))
+        
+    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
+        """
+        Dump the system in deepmd compressed format (numpy binary) to `folder` for each system.
+        
+        Parameters
+        ----------
+        folder : str
+            The output folder
+        set_size : int
+            The size of each set. 
+        prec: {numpy.float32, numpy.float64}
+            The floating point precision of the compressed data
+        """
+        for system_name, system in self.systems.items():
+            system.to_deepmd_npy(os.path.join(folder, system_name),
+                                 set_size = set_size,
+                                 prec = prec)
 
 def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}

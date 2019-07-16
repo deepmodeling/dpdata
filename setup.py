@@ -12,13 +12,12 @@ except ImportError:
         readme = f.read()
 
 # install_requires = ['xml']
-install_requires=['numpy']
+install_requires=['numpy', 'monty']
 
 setuptools.setup(
     name="dpdata",
-    version_format='{tag}.dev{commitcount}+{gitsha}',
-    setup_requires=['setuptools-git-version'],
-    # version="0.0.2",
+    use_scm_version={'write_to': 'dpdata/_version.py'},
+    setup_requires=['setuptools_scm'],
     author="Han Wang",
     author_email="wang_han@iapcm.ac.cn",
     description="Manipulating DeePMD-kit, VASP and LAMMPS data formats",

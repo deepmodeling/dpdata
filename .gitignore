@@ -18,3 +18,4 @@ CMakeFiles
 build
 dist
 dpdata.egg-info
+_version.py

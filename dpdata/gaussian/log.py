@@ -26,8 +26,11 @@ def to_system_data(file_name):
                 energy = float(line.split()[4])
             elif line.startswith(" Center     Atomic                   Forces (Hartrees/Bohr)"):
                 flag = 1
+                forces = []
             elif line.startswith("                          Input orientation:"):
                 flag = 5
+                coords = []
+                atom_symbols = []
 
             if 1 <= flag <= 3 or 5 <= flag <= 9:
                 flag += 1
@@ -46,7 +49,7 @@ def to_system_data(file_name):
                     s = line.split()
                     coords.append([float(x) for x in s[3:6]])
                     atom_symbols.append(symbols[int(s[1])])
-        
+
     assert(coords), "cannot find coords"
     assert(energy), "cannot find energies"
     assert(forces), "cannot find forces"
@@ -57,5 +60,5 @@ def to_system_data(file_name):
     data['forces'] = np.array([forces]) * force_convert
     data['energies'] = np.array([energy]) * energy_convert
     data['coords'] = np.array([coords])
-    data['orig'] = [0, 0, 0]
+    data['orig'] = np.array([0, 0, 0])
     return data

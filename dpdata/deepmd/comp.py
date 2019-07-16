@@ -29,7 +29,7 @@ def to_system_data(folder, type_map = None) :
         all_coords.append(np.reshape(coords, [nframes,-1,3]))
         all_eners.append(np.reshape(eners, [nframes]))
         all_forces.append(np.reshape(forces, [nframes,-1,3]))
-        if len(virs) > 0:
+        if virs is not None and len(virs) > 0:
             virs = all_virs.append(np.reshape(virs, [nframes,3,3]))
     data['cells'] = np.concatenate(all_cells, axis = 0)
     data['coords'] = np.concatenate(all_coords, axis = 0)
