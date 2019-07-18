@@ -245,8 +245,8 @@ class System (MSONable) :
 
     def sort_atom_names(self):
         idx = np.argsort(self.data['atom_names'])
-        self.data['atom_names'] = list(np.array(self.data['atom_names'][idx]))
-        self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'][idx]))
+        self.data['atom_names'] = list(np.array(self.data['atom_names'])[idx])
+        self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'])[idx])
         self.data['atom_types'] = idx[self.data['atom_types']]
     
     def sort_atom_types(self):
@@ -392,6 +392,14 @@ class System (MSONable) :
         assert(np.linalg.det(rot) == 1) 
         self.affine_map(rot, f_idx = f_idx)
         return np.matmul(qq, rot)
+
+
+    def add_atom_names(self, atom_names):
+        """
+        Add atom_names that do not exist.
+        """
+        self.data['atom_names'].extend(atom_names)
+        self.data['atom_numbs'].extend([0 for _ in atom_names])
         
 class LabeledSystem (System): 
     '''
@@ -689,6 +697,7 @@ class MultiSystems:
             The systems contained
         """
         self.systems = {}
+        self.atom_names = []
         self.append(*systems)
 
     def __getitem__(self, key):
@@ -714,13 +723,36 @@ class MultiSystems:
                 raise RuntimeError("Object must be System or MultiSystems!")
     
     def __append(self, system):
-        formula = system.formula
-        if not formula:
+        if not system.formula:
             return
+        self.check_atom_names(system)
+        formula = system.formula
         if formula in self.systems:
             self.systems[formula].append(system)
         else:
             self.systems[formula] = system
+    
+    def check_atom_names(self, system):
+        """
+        Make atom_names in all systems equal, prevent inconsistent atom_types.
+        """
+        new_in_system = set(system["atom_names"]) - set(self.atom_names)
+        new_in_self = set(self.atom_names) - set(system["atom_names"])
+        if len(new_in_system):
+            # A new atom_name appear, add to self.atom_names
+            self.atom_names.extend(new_in_system)
+            self.atom_names.sort()
+            # Add this atom_name to each system, and change their names
+            new_systems = {}
+            for each_system in self.systems.values():
+                each_system.add_atom_names(new_in_system)  
+                each_system.sort_atom_names()
+                new_systems[each_system.formula] = each_system
+            self.systems = new_systems
+        if len(new_in_self):
+            # Previous atom_name not in this system
+            system.add_atom_names(new_in_self)
+        system.sort_atom_names()
 
     def to_deepmd_raw(self, folder) :
         """
