@@ -247,7 +247,7 @@ class System (MSONable) :
         idx = np.argsort(self.data['atom_names'])
         self.data['atom_names'] = list(np.array(self.data['atom_names'])[idx])
         self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'])[idx])
-        self.data['atom_types'] = idx[self.data['atom_types']]
+        self.data['atom_types'] = np.argsort(idx)[self.data['atom_types']]
     
     def sort_atom_types(self):
         idx = np.argsort(self.data['atom_types'])
