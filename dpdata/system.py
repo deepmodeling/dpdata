@@ -13,7 +13,6 @@ import dpdata.gaussian.log
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
-from pymatgen import Element
 
 class System (MSONable) :
     '''
@@ -143,6 +142,58 @@ class System (MSONable) :
         """dump .json or .yaml file """
         dumpfn(self.as_dict(),filename,indent=indent)
 
+    def set_atom_types(self,type_map=None):
+        """
+        Reset the type of the system
+        Parameters
+        ----------
+        type_map : 
+            dict :  {"H":0,"O":1} 
+            or list  ["H","C","O","N"]
+            The map between elements and index
+            if no map_dict is given, index will
+            be set according to atomic number 
+        
+        Returns
+        -------
+        system : System with specific type order
+        """
+        if isinstance(type_map,dict) or type_map is None:
+           pass
+        elif isinstance(type_map,list):
+           type_map=dict(zip(type_map,range(len(type_map))))
+        else:
+           raise RuntimeError("Unknown format")
+
+        if type_map is None:
+           type_map=elements_index_map(self.get_atom_names(),standard=True)
+
+        _set1=set(self.get_atom_names())
+        _set2=set(list(type_map.keys()))
+        assert _set1.issubset(_set2)
+
+        atom_types_list=[]
+        for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
+            atom_types_list.extend([name]*numb)
+        new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
+        _system=self.copy()
+        _system.data['atom_types']=new_atom_types
+        return _system
+
+
+    def to_list(self):
+        """
+        convert system to list, usefull for data collection
+        """
+        if len(self)==0:
+           return []
+        if len(self)==1:
+           return [self]
+        else:
+           systems=[]
+           for ii in range(len(self)):
+               systems.append(self.sub_system([ii]))
+           return systems
 
     @staticmethod
     def load(filename):
@@ -188,45 +239,6 @@ class System (MSONable) :
         return self.__class__.from_dict({'data':deepcopy(self.data)})
 
 
-    def set_atom_types(self,type_map=None):
-        """
-        Reset the type of the system
-        Parameters
-        ----------
-        type_map : 
-            dict :  {"H":0,"O":1} 
-            or list  ["H","C","O","N"]
-            The map between elements and index
-            if no map_dict is given, index will
-            be set according to atomic number 
-        
-        Returns
-        -------
-        system : System with specific type order
-        """
-        if isinstance(type_map,dict) or type_map is None:
-           pass
-        elif isinstance(type_map,list):
-           type_map=dict(zip(type_map,range(len(type_map))))
-        else:
-           raise RuntimeError("Unknown format")
-           
-        if type_map is None:
-           type_map=elements_index_map(self.get_atom_names(),standard=True)
-
-        _set1=set(self.get_atom_names())
-        _set2=set(list(type_map.keys()))
-        assert _set1.issubset(_set2)
-
-        atom_types_list=[]
-        for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
-            atom_types_list.extend([name]*numb)
-        new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
-        _system=self.copy()
-        _system.data['atom_types']=new_atom_types
-        return _system
- 
-    
     def sub_system(self, f_idx) :
         """
         Construct a subsystem from the system
@@ -285,9 +297,9 @@ class System (MSONable) :
 
     def sort_atom_names(self):
         idx = np.argsort(self.data['atom_names'])
-        self.data['atom_names'] = list(np.array(self.data['atom_names'][idx]))
-        self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'][idx]))
-        self.data['atom_types'] = idx[self.data['atom_types']]
+        self.data['atom_names'] = list(np.array(self.data['atom_names'])[idx])
+        self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'])[idx])
+        self.data['atom_types'] = np.argsort(idx)[self.data['atom_types']]
     
     def sort_atom_types(self):
         idx = np.argsort(self.data['atom_types'])
@@ -303,21 +315,6 @@ class System (MSONable) :
         return ''.join(["{}{}".format(symbol,numb) for symbol,numb in sorted(
             zip(self.data['atom_names'], self.data['atom_numbs']))])
 
-
-    def to_list(self):
-        """
-        convert system to list, usefull for data collection
-        """
-        if len(self)==0:
-           return []
-        if len(self)==1:
-           return [self]
-        else:
-           systems=[]
-           for ii in range(len(self)):
-               systems.append(self.sub_system([ii]))
-           return systems
- 
 
     def extend(self, systems):
         """
@@ -447,6 +444,14 @@ class System (MSONable) :
         assert(np.linalg.det(rot) == 1) 
         self.affine_map(rot, f_idx = f_idx)
         return np.matmul(qq, rot)
+
+
+    def add_atom_names(self, atom_names):
+        """
+        Add atom_names that do not exist.
+        """
+        self.data['atom_names'].extend(atom_names)
+        self.data['atom_numbs'].extend([0 for _ in atom_names])
         
 class LabeledSystem (System): 
     '''
@@ -744,6 +749,7 @@ class MultiSystems:
             The systems contained
         """
         self.systems = {}
+        self.atom_names = []
         self.append(*systems)
 
     def __getitem__(self, key):
@@ -769,13 +775,36 @@ class MultiSystems:
                 raise RuntimeError("Object must be System or MultiSystems!")
     
     def __append(self, system):
-        formula = system.formula
-        if not formula:
+        if not system.formula:
             return
+        self.check_atom_names(system)
+        formula = system.formula
         if formula in self.systems:
             self.systems[formula].append(system)
         else:
             self.systems[formula] = system
+    
+    def check_atom_names(self, system):
+        """
+        Make atom_names in all systems equal, prevent inconsistent atom_types.
+        """
+        new_in_system = set(system["atom_names"]) - set(self.atom_names)
+        new_in_self = set(self.atom_names) - set(system["atom_names"])
+        if len(new_in_system):
+            # A new atom_name appear, add to self.atom_names
+            self.atom_names.extend(new_in_system)
+            self.atom_names.sort()
+            # Add this atom_name to each system, and change their names
+            new_systems = {}
+            for each_system in self.systems.values():
+                each_system.add_atom_names(new_in_system)  
+                each_system.sort_atom_names()
+                new_systems[each_system.formula] = each_system
+            self.systems = new_systems
+        if len(new_in_self):
+            # Previous atom_name not in this system
+            system.add_atom_names(new_in_self)
+        system.sort_atom_names()
 
     def to_deepmd_raw(self, folder) :
         """
@@ -836,3 +865,4 @@ def elements_index_map(elements,standard=False,inverse=False):
        return dict(zip(range(len(elements)),elements))
     else:
        return dict(zip(elements,range(len(elements))))
+                                                         
