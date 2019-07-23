@@ -13,6 +13,7 @@ import dpdata.gaussian.log
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
+from pymatgen import Element
 
 class System (MSONable) :
     '''
