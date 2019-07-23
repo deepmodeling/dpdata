@@ -13,6 +13,7 @@ import dpdata.gaussian.log
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
+from pymatgen import Element
 
 class System (MSONable) :
     '''
@@ -142,6 +143,58 @@ class System (MSONable) :
         """dump .json or .yaml file """
         dumpfn(self.as_dict(),filename,indent=indent)
 
+    def set_atom_types(self,type_map=None):
+        """
+        Reset the type of the system
+        Parameters
+        ----------
+        type_map : 
+            dict :  {"H":0,"O":1} 
+            or list  ["H","C","O","N"]
+            The map between elements and index
+            if no map_dict is given, index will
+            be set according to atomic number 
+        
+        Returns
+        -------
+        system : System with specific type order
+        """
+        if isinstance(type_map,dict) or type_map is None:
+           pass
+        elif isinstance(type_map,list):
+           type_map=dict(zip(type_map,range(len(type_map))))
+        else:
+           raise RuntimeError("Unknown format")
+
+        if type_map is None:
+           type_map=elements_index_map(self.get_atom_names(),standard=True)
+
+        _set1=set(self.get_atom_names())
+        _set2=set(list(type_map.keys()))
+        assert _set1.issubset(_set2)
+
+        atom_types_list=[]
+        for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
+            atom_types_list.extend([name]*numb)
+        new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
+        _system=self.copy()
+        _system.data['atom_types']=new_atom_types
+        return _system
+
+
+    def to_list(self):
+        """
+        convert system to list, usefull for data collection
+        """
+        if len(self)==0:
+           return []
+        if len(self)==1:
+           return [self]
+        else:
+           systems=[]
+           for ii in range(len(self)):
+               systems.append(self.sub_system([ii]))
+           return systems
 
     @staticmethod
     def load(filename):
@@ -812,3 +865,11 @@ def check_LabeledSystem(data):
        assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
 
 
+def elements_index_map(elements,standard=False,inverse=False):
+    if standard:
+       elements.sort(key=lambda x: Element(x).number)
+    if inverse:
+       return dict(zip(range(len(elements)),elements))
+    else:
+       return dict(zip(elements,range(len(elements))))
+                                                         
