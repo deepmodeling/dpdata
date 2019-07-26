@@ -10,7 +10,7 @@ def system_info (lines, type_idx_zero = False) :
             _ii=ii.split()[3]
             if '_' in _ii:
                 # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
-                atom_names.append(_ii.split(('_')[0]))
+                atom_names.append(_ii.split('_')[0])
             else:
                 atom_names.append(_ii)
         elif 'NELM' in ii :
