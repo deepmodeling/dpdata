@@ -13,7 +13,7 @@ import dpdata.gaussian.log
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
-from pymatgen import Element
+from mendeleev import element as Element 
 
 class System (MSONable) :
     '''
@@ -167,7 +167,7 @@ class System (MSONable) :
            raise RuntimeError("Unknown format")
 
         if type_map is None:
-           type_map=elements_index_map(self.get_atom_names(),standard=True)
+           type_map=elements_index_map(self.get_atom_names().copy(),standard=True)
 
         _set1=set(self.get_atom_names())
         _set2=set(list(type_map.keys()))
@@ -867,7 +867,7 @@ def check_LabeledSystem(data):
 
 def elements_index_map(elements,standard=False,inverse=False):
     if standard:
-       elements.sort(key=lambda x: Element(x).number)
+       elements.sort(key=lambda x: Element(x).atomic_number)
     if inverse:
        return dict(zip(range(len(elements)),elements))
     else:
