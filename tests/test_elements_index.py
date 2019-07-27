@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import unittest
-from pymatgen import Element
 from dpdata.system import elements_index_map
 
 class ElementIndexMap(unittest.TestCase):
