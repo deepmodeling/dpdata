@@ -167,7 +167,7 @@ class System (MSONable) :
            raise RuntimeError("Unknown format")
 
         if type_map is None:
-           type_map=elements_index_map(self.get_atom_names(),standard=True)
+           type_map=elements_index_map(self.get_atom_names().copy(),standard=True)
 
         _set1=set(self.get_atom_names())
         _set2=set(list(type_map.keys()))
