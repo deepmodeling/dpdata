@@ -9,7 +9,7 @@ data={"name": "Hydrogen",
    "calculated_radius": 0.53
     }
 
-class TestSetAtomTypes(unittest.TestCase):
+class TestPeriodicTable(unittest.TestCase):
     def setUp (self) :
         self.H = dpdata.periodic_table.Element("H")
 
