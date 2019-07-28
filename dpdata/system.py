@@ -13,7 +13,7 @@ import dpdata.gaussian.log
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
-from mendeleev import element as Element 
+from periodic_table import Element 
 
 class System (MSONable) :
     '''
@@ -867,7 +867,7 @@ def check_LabeledSystem(data):
 
 def elements_index_map(elements,standard=False,inverse=False):
     if standard:
-       elements.sort(key=lambda x: Element(x).atomic_number)
+       elements.sort(key=lambda x: Element(x).Z)
     if inverse:
        return dict(zip(range(len(elements)),elements))
     else:
