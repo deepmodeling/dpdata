@@ -1,9 +1,13 @@
+from pathlib import Path
 from monty.serialization import loadfn,dumpfn
-_pdt=loadfn('periodic_table.json')
+
+fpdt=str(Path(__file__).absolute().parent / "periodic_table.json")
+_pdt=loadfn(fpdt)
 
 class Element:
 
     def __init__(self, symbol: str):
+        assert symbol in _pdt.keys()
         self.symbol = "%s" % symbol
         d = _pdt[symbol]
         self._Z = d['atomic_no']
@@ -32,7 +36,7 @@ class Element:
         return self._X
 
     @property
-    def m(self):
+    def mass(self):
         return self._mass
 
     @property
