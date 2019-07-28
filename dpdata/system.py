@@ -13,7 +13,7 @@ import dpdata.gaussian.log
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
-from periodic_table import Element 
+from dpdata.periodic_table import Element 
 
 class System (MSONable) :
     '''
