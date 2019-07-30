@@ -1,0 +1,826 @@
+{
+    "H": {
+        "name": "Hydrogen",
+        "atomic_no": 1,
+        "X": 2.2,
+        "atomic_mass": 1.00794,
+        "radius": 0.25,
+        "calculated_radius": 0.53
+    },
+    "He": {
+        "name": "Helium",
+        "atomic_no": 2,
+        "X": null,
+        "atomic_mass": 4.002602,
+        "radius": null,
+        "calculated_radius": 0.31
+    },
+    "Li": {
+        "name": "Lithium",
+        "atomic_no": 3,
+        "X": 0.98,
+        "atomic_mass": 6.941,
+        "radius": 1.45,
+        "calculated_radius": 1.67
+    },
+    "Be": {
+        "name": "Beryllium",
+        "atomic_no": 4,
+        "X": 1.57,
+        "atomic_mass": 9.012182,
+        "radius": 1.05,
+        "calculated_radius": 1.12
+    },
+    "B": {
+        "name": "Boron",
+        "atomic_no": 5,
+        "X": 2.04,
+        "atomic_mass": 10.811,
+        "radius": 0.85,
+        "calculated_radius": 0.87
+    },
+    "C": {
+        "name": "Carbon",
+        "atomic_no": 6,
+        "X": 2.55,
+        "atomic_mass": 12.0107,
+        "radius": 0.7,
+        "calculated_radius": 0.67
+    },
+    "N": {
+        "name": "Nitrogen",
+        "atomic_no": 7,
+        "X": 3.04,
+        "atomic_mass": 14.0067,
+        "radius": 0.65,
+        "calculated_radius": 0.56
+    },
+    "O": {
+        "name": "Oxygen",
+        "atomic_no": 8,
+        "X": 3.44,
+        "atomic_mass": 15.9994,
+        "radius": 0.6,
+        "calculated_radius": 0.48
+    },
+    "F": {
+        "name": "Fluorine",
+        "atomic_no": 9,
+        "X": 3.98,
+        "atomic_mass": 18.9984032,
+        "radius": 0.5,
+        "calculated_radius": 0.42
+    },
+    "Ne": {
+        "name": "Neon",
+        "atomic_no": 10,
+        "X": null,
+        "atomic_mass": 20.1797,
+        "radius": null,
+        "calculated_radius": 0.38
+    },
+    "Na": {
+        "name": "Sodium",
+        "atomic_no": 11,
+        "X": 0.93,
+        "atomic_mass": 22.98976928,
+        "radius": 1.8,
+        "calculated_radius": 1.9
+    },
+    "Mg": {
+        "name": "Magnesium",
+        "atomic_no": 12,
+        "X": 1.31,
+        "atomic_mass": 24.305,
+        "radius": 1.5,
+        "calculated_radius": 1.45
+    },
+    "Al": {
+        "name": "Aluminum",
+        "atomic_no": 13,
+        "X": 1.61,
+        "atomic_mass": 26.9815386,
+        "radius": 1.25,
+        "calculated_radius": 1.18
+    },
+    "Si": {
+        "name": "Silicon",
+        "atomic_no": 14,
+        "X": 1.9,
+        "atomic_mass": 28.0855,
+        "radius": 1.1,
+        "calculated_radius": 1.11
+    },
+    "P": {
+        "name": "Phosphorus",
+        "atomic_no": 15,
+        "X": 2.19,
+        "atomic_mass": 30.973762,
+        "radius": 1.0,
+        "calculated_radius": 0.98
+    },
+    "S": {
+        "name": "Sulfur",
+        "atomic_no": 16,
+        "X": 2.58,
+        "atomic_mass": 32.065,
+        "radius": 1.0,
+        "calculated_radius": 0.88
+    },
+    "Cl": {
+        "name": "Chlorine",
+        "atomic_no": 17,
+        "X": 3.16,
+        "atomic_mass": 35.453,
+        "radius": 1.0,
+        "calculated_radius": 0.79
+    },
+    "Ar": {
+        "name": "Argon",
+        "atomic_no": 18,
+        "X": null,
+        "atomic_mass": 39.948,
+        "radius": 0.71,
+        "calculated_radius": 0.71
+    },
+    "K": {
+        "name": "Potassium",
+        "atomic_no": 19,
+        "X": 0.82,
+        "atomic_mass": 39.0983,
+        "radius": 2.2,
+        "calculated_radius": 2.43
+    },
+    "Ca": {
+        "name": "Calcium",
+        "atomic_no": 20,
+        "X": 1.0,
+        "atomic_mass": 40.078,
+        "radius": 1.8,
+        "calculated_radius": 1.94
+    },
+    "Sc": {
+        "name": "Scandium",
+        "atomic_no": 21,
+        "X": 1.36,
+        "atomic_mass": 44.955912,
+        "radius": 1.6,
+        "calculated_radius": 1.84
+    },
+    "Ti": {
+        "name": "Titanium",
+        "atomic_no": 22,
+        "X": 1.54,
+        "atomic_mass": 47.867,
+        "radius": 1.4,
+        "calculated_radius": 1.76
+    },
+    "V": {
+        "name": "Vanadium",
+        "atomic_no": 23,
+        "X": 1.63,
+        "atomic_mass": 50.9415,
+        "radius": 1.35,
+        "calculated_radius": 1.71
+    },
+    "Cr": {
+        "name": "Chromium",
+        "atomic_no": 24,
+        "X": 1.66,
+        "atomic_mass": 51.9961,
+        "radius": 1.4,
+        "calculated_radius": 1.66
+    },
+    "Mn": {
+        "name": "Manganese",
+        "atomic_no": 25,
+        "X": 1.55,
+        "atomic_mass": 54.938045,
+        "radius": 1.4,
+        "calculated_radius": 1.61
+    },
+    "Fe": {
+        "name": "Iron",
+        "atomic_no": 26,
+        "X": 1.83,
+        "atomic_mass": 55.845,
+        "radius": 1.4,
+        "calculated_radius": 1.56
+    },
+    "Co": {
+        "name": "Cobalt",
+        "atomic_no": 27,
+        "X": 1.88,
+        "atomic_mass": 58.933195,
+        "radius": 1.35,
+        "calculated_radius": 1.52
+    },
+    "Ni": {
+        "name": "Nickel",
+        "atomic_no": 28,
+        "X": 1.91,
+        "atomic_mass": 58.6934,
+        "radius": 1.35,
+        "calculated_radius": 1.49
+    },
+    "Cu": {
+        "name": "Copper",
+        "atomic_no": 29,
+        "X": 1.9,
+        "atomic_mass": 63.546,
+        "radius": 1.35,
+        "calculated_radius": 1.45
+    },
+    "Zn": {
+        "name": "Zinc",
+        "atomic_no": 30,
+        "X": 1.65,
+        "atomic_mass": 65.409,
+        "radius": 1.35,
+        "calculated_radius": 1.42
+    },
+    "Ga": {
+        "name": "Gallium",
+        "atomic_no": 31,
+        "X": 1.81,
+        "atomic_mass": 69.723,
+        "radius": 1.3,
+        "calculated_radius": 1.36
+    },
+    "Ge": {
+        "name": "Germanium",
+        "atomic_no": 32,
+        "X": 2.01,
+        "atomic_mass": 72.64,
+        "radius": 1.25,
+        "calculated_radius": 1.25
+    },
+    "As": {
+        "name": "Arsenic",
+        "atomic_no": 33,
+        "X": 2.18,
+        "atomic_mass": 74.9216,
+        "radius": 1.15,
+        "calculated_radius": 1.14
+    },
+    "Se": {
+        "name": "Selenium",
+        "atomic_no": 34,
+        "X": 2.55,
+        "atomic_mass": 78.96,
+        "radius": 1.15,
+        "calculated_radius": 1.03
+    },
+    "Br": {
+        "name": "Bromine",
+        "atomic_no": 35,
+        "X": 2.96,
+        "atomic_mass": 79.904,
+        "radius": 1.15,
+        "calculated_radius": 0.94
+    },
+    "Kr": {
+        "name": "Krypton",
+        "atomic_no": 36,
+        "X": 3.0,
+        "atomic_mass": 83.798,
+        "radius": null,
+        "calculated_radius": 0.88
+    },
+    "Rb": {
+        "name": "Rubidium",
+        "atomic_no": 37,
+        "X": 0.82,
+        "atomic_mass": 85.4678,
+        "radius": 2.35,
+        "calculated_radius": 2.65
+    },
+    "Sr": {
+        "name": "Strontium",
+        "atomic_no": 38,
+        "X": 0.95,
+        "atomic_mass": 87.62,
+        "radius": 2.0,
+        "calculated_radius": 2.19
+    },
+    "Y": {
+        "name": "Yttrium",
+        "atomic_no": 39,
+        "X": 1.22,
+        "atomic_mass": 88.90585,
+        "radius": 1.8,
+        "calculated_radius": 2.12
+    },
+    "Zr": {
+        "name": "Zirconium",
+        "atomic_no": 40,
+        "X": 1.33,
+        "atomic_mass": 91.224,
+        "radius": 1.55,
+        "calculated_radius": 2.06
+    },
+    "Nb": {
+        "name": "Niobium",
+        "atomic_no": 41,
+        "X": 1.6,
+        "atomic_mass": 92.90638,
+        "radius": 1.45,
+        "calculated_radius": 1.98
+    },
+    "Mo": {
+        "name": "Molybdenum",
+        "atomic_no": 42,
+        "X": 2.16,
+        "atomic_mass": 95.94,
+        "radius": 1.45,
+        "calculated_radius": 1.9
+    },
+    "Tc": {
+        "name": "Technetium",
+        "atomic_no": 43,
+        "X": 1.9,
+        "atomic_mass": 98.0,
+        "radius": 1.35,
+        "calculated_radius": 1.83
+    },
+    "Ru": {
+        "name": "Ruthenium",
+        "atomic_no": 44,
+        "X": 2.2,
+        "atomic_mass": 101.07,
+        "radius": 1.3,
+        "calculated_radius": 1.78
+    },
+    "Rh": {
+        "name": "Rhodium",
+        "atomic_no": 45,
+        "X": 2.28,
+        "atomic_mass": 102.9055,
+        "radius": 1.35,
+        "calculated_radius": 1.73
+    },
+    "Pd": {
+        "name": "Palladium",
+        "atomic_no": 46,
+        "X": 2.2,
+        "atomic_mass": 106.42,
+        "radius": 1.4,
+        "calculated_radius": 1.69
+    },
+    "Ag": {
+        "name": "Silver",
+        "atomic_no": 47,
+        "X": 1.93,
+        "atomic_mass": 107.8682,
+        "radius": 1.6,
+        "calculated_radius": 1.65
+    },
+    "Cd": {
+        "name": "Cadmium",
+        "atomic_no": 48,
+        "X": 1.69,
+        "atomic_mass": 112.411,
+        "radius": 1.55,
+        "calculated_radius": 1.61
+    },
+    "In": {
+        "name": "Indium",
+        "atomic_no": 49,
+        "X": 1.78,
+        "atomic_mass": 114.818,
+        "radius": 1.55,
+        "calculated_radius": 1.56
+    },
+    "Sn": {
+        "name": "Tin",
+        "atomic_no": 50,
+        "X": 1.96,
+        "atomic_mass": 118.71,
+        "radius": 1.45,
+        "calculated_radius": 1.45
+    },
+    "Sb": {
+        "name": "Antimony",
+        "atomic_no": 51,
+        "X": 2.05,
+        "atomic_mass": 121.76,
+        "radius": 1.45,
+        "calculated_radius": 1.33
+    },
+    "Te": {
+        "name": "Tellurium",
+        "atomic_no": 52,
+        "X": 2.1,
+        "atomic_mass": 127.6,
+        "radius": 1.4,
+        "calculated_radius": 1.23
+    },
+    "I": {
+        "name": "Iodine",
+        "atomic_no": 53,
+        "X": 2.66,
+        "atomic_mass": 126.90447,
+        "radius": 1.4,
+        "calculated_radius": 1.15
+    },
+    "Xe": {
+        "name": "Xenon",
+        "atomic_no": 54,
+        "X": 2.6,
+        "atomic_mass": 131.293,
+        "radius": null,
+        "calculated_radius": 1.08
+    },
+    "Cs": {
+        "name": "Cesium",
+        "atomic_no": 55,
+        "X": 0.79,
+        "atomic_mass": 132.9054519,
+        "radius": 2.6,
+        "calculated_radius": 2.98
+    },
+    "Ba": {
+        "name": "Barium",
+        "atomic_no": 56,
+        "X": 0.89,
+        "atomic_mass": 137.327,
+        "radius": 2.15,
+        "calculated_radius": 2.53
+    },
+    "La": {
+        "name": "Lanthanum",
+        "atomic_no": 57,
+        "X": 1.1,
+        "atomic_mass": 138.90547,
+        "radius": 1.95,
+        "calculated_radius": null
+    },
+    "Ce": {
+        "name": "Cerium",
+        "atomic_no": 58,
+        "X": 1.12,
+        "atomic_mass": 140.116,
+        "radius": 1.85,
+        "calculated_radius": null
+    },
+    "Pr": {
+        "name": "Praseodymium",
+        "atomic_no": 59,
+        "X": 1.13,
+        "atomic_mass": 140.90765,
+        "radius": 1.85,
+        "calculated_radius": 2.47
+    },
+    "Nd": {
+        "name": "Neodymium",
+        "atomic_no": 60,
+        "X": 1.14,
+        "atomic_mass": 144.242,
+        "radius": 1.85,
+        "calculated_radius": 2.06
+    },
+    "Pm": {
+        "name": "Promethium",
+        "atomic_no": 61,
+        "X": 1.13,
+        "atomic_mass": 145.0,
+        "radius": 1.85,
+        "calculated_radius": 2.05
+    },
+    "Sm": {
+        "name": "Samarium",
+        "atomic_no": 62,
+        "X": 1.17,
+        "atomic_mass": 150.36,
+        "radius": 1.85,
+        "calculated_radius": 2.38
+    },
+    "Eu": {
+        "name": "Europium",
+        "atomic_no": 63,
+        "X": 1.2,
+        "atomic_mass": 151.964,
+        "radius": 1.85,
+        "calculated_radius": 2.31
+    },
+    "Gd": {
+        "name": "Gadolinium",
+        "atomic_no": 64,
+        "X": 1.2,
+        "atomic_mass": 157.25,
+        "radius": 1.8,
+        "calculated_radius": 2.33
+    },
+    "Tb": {
+        "name": "Terbium",
+        "atomic_no": 65,
+        "X": 1.1,
+        "atomic_mass": 158.92535,
+        "radius": 1.75,
+        "calculated_radius": 2.25
+    },
+    "Dy": {
+        "name": "Dysprosium",
+        "atomic_no": 66,
+        "X": 1.22,
+        "atomic_mass": 162.5,
+        "radius": 1.75,
+        "calculated_radius": 2.28
+    },
+    "Ho": {
+        "name": "Holmium",
+        "atomic_no": 67,
+        "X": 1.23,
+        "atomic_mass": 164.93032,
+        "radius": 1.75,
+        "calculated_radius": null
+    },
+    "Er": {
+        "name": "Erbium",
+        "atomic_no": 68,
+        "X": 1.24,
+        "atomic_mass": 167.259,
+        "radius": 1.75,
+        "calculated_radius": 2.26
+    },
+    "Tm": {
+        "name": "Thulium",
+        "atomic_no": 69,
+        "X": 1.25,
+        "atomic_mass": 168.93421,
+        "radius": 1.75,
+        "calculated_radius": 2.22
+    },
+    "Yb": {
+        "name": "Ytterbium",
+        "atomic_no": 70,
+        "X": 1.1,
+        "atomic_mass": 173.04,
+        "radius": 1.75,
+        "calculated_radius": 2.22
+    },
+    "Lu": {
+        "name": "Lutetium",
+        "atomic_no": 71,
+        "X": 1.27,
+        "atomic_mass": 174.967,
+        "radius": 1.75,
+        "calculated_radius": 2.17
+    },
+    "Hf": {
+        "name": "Hafnium",
+        "atomic_no": 72,
+        "X": 1.3,
+        "atomic_mass": 178.49,
+        "radius": 1.55,
+        "calculated_radius": 2.08
+    },
+    "Ta": {
+        "name": "Tantalum",
+        "atomic_no": 73,
+        "X": 1.5,
+        "atomic_mass": 180.94788,
+        "radius": 1.45,
+        "calculated_radius": 2.0
+    },
+    "W": {
+        "name": "Tungsten",
+        "atomic_no": 74,
+        "X": 2.36,
+        "atomic_mass": 183.84,
+        "radius": 1.35,
+        "calculated_radius": 1.93
+    },
+    "Re": {
+        "name": "Rhenium",
+        "atomic_no": 75,
+        "X": 1.9,
+        "atomic_mass": 186.207,
+        "radius": 1.35,
+        "calculated_radius": 1.88
+    },
+    "Os": {
+        "name": "Osmium",
+        "atomic_no": 76,
+        "X": 2.2,
+        "atomic_mass": 190.23,
+        "radius": 1.3,
+        "calculated_radius": 1.85
+    },
+    "Ir": {
+        "name": "Iridium",
+        "atomic_no": 77,
+        "X": 2.2,
+        "atomic_mass": 192.217,
+        "radius": 1.35,
+        "calculated_radius": 1.8
+    },
+    "Pt": {
+        "name": "Platinum",
+        "atomic_no": 78,
+        "X": 2.28,
+        "atomic_mass": 195.084,
+        "radius": 1.35,
+        "calculated_radius": 1.77
+    },
+    "Au": {
+        "name": "Gold",
+        "atomic_no": 79,
+        "X": 2.54,
+        "atomic_mass": 196.966569,
+        "radius": 1.35,
+        "calculated_radius": 1.74
+    },
+    "Hg": {
+        "name": "Mercury",
+        "atomic_no": 80,
+        "X": 2.0,
+        "atomic_mass": 200.59,
+        "radius": 1.5,
+        "calculated_radius": 1.71
+    },
+    "Tl": {
+        "name": "Thallium",
+        "atomic_no": 81,
+        "X": 1.62,
+        "atomic_mass": 204.3833,
+        "radius": 1.9,
+        "calculated_radius": 1.56
+    },
+    "Pb": {
+        "name": "Lead",
+        "atomic_no": 82,
+        "X": 2.33,
+        "atomic_mass": 207.2,
+        "radius": 1.8,
+        "calculated_radius": 1.54
+    },
+    "Bi": {
+        "name": "Bismuth",
+        "atomic_no": 83,
+        "X": 2.02,
+        "atomic_mass": 208.9804,
+        "radius": 1.6,
+        "calculated_radius": 1.43
+    },
+    "Po": {
+        "name": "Polonium",
+        "atomic_no": 84,
+        "X": 2.0,
+        "atomic_mass": 210.0,
+        "radius": 1.9,
+        "calculated_radius": 1.35
+    },
+    "At": {
+        "name": "Astatine",
+        "atomic_no": 85,
+        "X": 2.2,
+        "atomic_mass": 210.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Rn": {
+        "name": "Radon",
+        "atomic_no": 86,
+        "X": 2.2,
+        "atomic_mass": 220.0,
+        "radius": null,
+        "calculated_radius": 1.2
+    },
+    "Fr": {
+        "name": "Francium",
+        "atomic_no": 87,
+        "X": 0.7,
+        "atomic_mass": 223.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Ra": {
+        "name": "Radium",
+        "atomic_no": 88,
+        "X": 0.9,
+        "atomic_mass": 226.0,
+        "radius": 2.15,
+        "calculated_radius": null
+    },
+    "Ac": {
+        "name": "Actinium",
+        "atomic_no": 89,
+        "X": 1.1,
+        "atomic_mass": 227.0,
+        "radius": 1.95,
+        "calculated_radius": null
+    },
+    "Th": {
+        "name": "Thorium",
+        "atomic_no": 90,
+        "X": 1.3,
+        "atomic_mass": 232.03806,
+        "radius": 1.8,
+        "calculated_radius": null
+    },
+    "Pa": {
+        "name": "Protactinium",
+        "atomic_no": 91,
+        "X": 1.5,
+        "atomic_mass": 231.03588,
+        "radius": 1.8,
+        "calculated_radius": null
+    },
+    "U": {
+        "name": "Uranium",
+        "atomic_no": 92,
+        "X": 1.38,
+        "atomic_mass": 238.02891,
+        "radius": 1.75,
+        "calculated_radius": null
+    },
+    "Np": {
+        "name": "Neptunium",
+        "atomic_no": 93,
+        "X": 1.36,
+        "atomic_mass": 237.0,
+        "radius": 1.75,
+        "calculated_radius": null
+    },
+    "Pu": {
+        "name": "Plutonium",
+        "atomic_no": 94,
+        "X": 1.28,
+        "atomic_mass": 244.0,
+        "radius": 1.75,
+        "calculated_radius": null
+    },
+    "Am": {
+        "name": "Americium",
+        "atomic_no": 95,
+        "X": 1.3,
+        "atomic_mass": 243.0,
+        "radius": 1.75,
+        "calculated_radius": null
+    },
+    "Cm": {
+        "name": "Curium",
+        "atomic_no": 96,
+        "X": 1.3,
+        "atomic_mass": 247.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Bk": {
+        "name": "Berkelium",
+        "atomic_no": 97,
+        "X": 1.3,
+        "atomic_mass": 247.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Cf": {
+        "name": "Californium",
+        "atomic_no": 98,
+        "X": 1.3,
+        "atomic_mass": 251.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Es": {
+        "name": "Einsteinium",
+        "atomic_no": 99,
+        "X": 1.3,
+        "atomic_mass": 252.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Fm": {
+        "name": "Fermium",
+        "atomic_no": 100,
+        "X": 1.3,
+        "atomic_mass": 257.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Md": {
+        "name": "Mendelevium",
+        "atomic_no": 101,
+        "X": 1.3,
+        "atomic_mass": 258.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "No": {
+        "name": "Nobelium",
+        "atomic_no": 102,
+        "X": 1.3,
+        "atomic_mass": 259.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Lr": {
+        "name": "Lawrencium",
+        "atomic_no": 103,
+        "X": 1.3,
+        "atomic_mass": 262.0,
+        "radius": null,
+        "calculated_radius": null
+    }
+}
