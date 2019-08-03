@@ -115,7 +115,9 @@ class System (MSONable) :
         return ret
 
     def __getitem__(self, key):
-        """Returns proerty stored in System by key"""
+        """Returns proerty stored in System by key or by idx"""
+        if isinstance(key, int):
+            return self.sub_system(key)
         return self.data[key]
 
     def __len__(self) :
@@ -760,8 +762,32 @@ class MultiSystems:
         self.append(*systems)
 
     def __getitem__(self, key):
-        """Returns proerty stored in System by key"""
+        """Returns proerty stored in System by key or by idx"""
+        if isinstance(key, int):
+            return list(self.systems.values())[key]
         return self.systems[key]
+
+    def __len__(self):
+        return len(self.systems)
+
+    def __repr__(self):
+        return self.__str__()
+    
+    def __str__(self):
+        return 'MultiSystems ({} systems containing {} frames)'.format(len(self.systems), self.get_nframes())
+
+    def __add__(self, others) :
+       """magic method "+" operation """
+       self_copy = deepcopy(self)
+       if isinstance(others, System) or isinstance(others, MultiSystems):
+          return self.__class__(self, others)
+       elif isinstance(others, list):
+          return self.__class__(self, *others)
+       raise RuntimeError("Unspported data structure")
+       
+    def get_nframes(self) :
+        """Returns number of frames in all systems"""
+        return sum(len(system) for system in self.systems.values())
 
     def append(self, *systems) :
         """
@@ -776,7 +802,7 @@ class MultiSystems:
             if isinstance(system, System):
                 self.__append(system)
             elif isinstance(system, MultiSystems):
-                for sys in system.system:
+                for sys in system:
                     self.__append(sys)
             else:
                 raise RuntimeError("Object must be System or MultiSystems!")
@@ -789,7 +815,7 @@ class MultiSystems:
         if formula in self.systems:
             self.systems[formula].append(system)
         else:
-            self.systems[formula] = system
+            self.systems[formula] = system.copy()
     
     def check_atom_names(self, system):
         """

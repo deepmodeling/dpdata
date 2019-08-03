@@ -38,7 +38,33 @@ class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems):
         self.atom_names = ['C', 'H']
 
 
-class TestMultiSystems(unittest.TestCase, MultiSystems):
+class TestMultiSystemsAdd(unittest.TestCase, CompLabeledSys, MultiSystems):
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        system_1 = dpdata.LabeledSystem('gaussian/methane.gaussianlog', fmt='gaussian/log')
+        system_2 = dpdata.LabeledSystem('gaussian/methane_reordered.gaussianlog', fmt='gaussian/log')
+        system_3 = dpdata.LabeledSystem('gaussian/methane_sub.gaussianlog', fmt='gaussian/log')
+        system_4 = dpdata.LabeledSystem('gaussian/noncoveraged.gaussianlog', fmt='gaussian/log')
+
+        self.systems = dpdata.MultiSystems(system_1)
+        self.systems += system_2
+        self.systems += system_3
+        self.systems += system_4
+        for s in self.systems:
+            if s.formula == 'C1H3':
+                self.system_1 = s
+        self.system_2 = system_3
+    
+        self.system_names = ['C1H4', 'C1H3']
+        self.system_sizes = {'C1H4':2, 'C1H3':1}
+        self.atom_names = ['C', 'H']
+
+
+class TestMultiSystemsSorted(unittest.TestCase, MultiSystems):
     def setUp(self):
         # CH4 and O2
         system_1 = dpdata.LabeledSystem('gaussian/methane.gaussianlog', fmt='gaussian/log')
