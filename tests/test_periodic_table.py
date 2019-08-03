@@ -21,6 +21,7 @@ class TestPeriodicTable(unittest.TestCase):
         self.assertEqual(H.mass,data['atomic_mass'])
         self.assertEqual(H.radius,data['radius'])
         self.assertEqual(H.calculated_radius,data['calculated_radius'])
+        self.assertEqual(H.X,dpdata.periodic_table.Element.from_Z(1).X)
 
 if __name__ == '__main__':
     unittest.main()
