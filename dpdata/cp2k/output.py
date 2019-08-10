@@ -40,15 +40,21 @@ def get_frames (fname) :
     assert(energy), "cannot find energies"
     assert(force), "cannot find forces"
 
+    #conver to float array and add extra dimension for nframes
     cell = np.array(cell)
     cell = cell.astype(np.float)
+    cell = cell[np.newaxis, :, :]
     coord = np.array(coord)
     coord = coord.astype(np.float)
+    coord = coord[np.newaxis, :, :]
     atom_symbol_list = np.array(atom_symbol_list)
     force = np.array(force)
     force = force.astype(np.float)
+    force = force[np.newaxis, :, :]
     force = force * eV / angstrom
     energy = float(energy) * eV
+    energy = np.array(energy)
+    energy = energy[np.newaxis]
     atom_names, atom_types, atom_numbs = np.unique(atom_symbol_list, return_inverse=True, return_counts=True)
 
 

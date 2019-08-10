@@ -10,3 +10,5 @@ print(cp2k_output['coords'])
 print(cp2k_output['energies'])
 print(cp2k_output['forces'])
 # no virial
+cp2k_output.to_deepmd_raw('dpmd_raw')
+cp2k_output.to_deepmd_npy('dpmd_npy')
