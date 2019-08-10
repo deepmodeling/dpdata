@@ -23,7 +23,7 @@ def get_frames (fname) :
                 if (ii == '\n') :
                     coord_flag = False
                 else :
-                    coord.append(ii.split()[3:6])
+                    coord.append(ii.split()[4:7])
                     atom_symbol_list.append(ii.split()[2])
         if 'ENERGY|' in ii :
             energy = (ii.split()[8])
@@ -58,6 +58,6 @@ def get_frames (fname) :
     atom_names, atom_types, atom_numbs = np.unique(atom_symbol_list, return_inverse=True, return_counts=True)
 
 
-    return atom_names, atom_numbs, atom_types, cell, coord, energy, force
+    return list(atom_names), list(atom_numbs), atom_types, cell, coord, energy, force
 
 
