@@ -36,6 +36,7 @@ def get_frames (fname) :
                     force_flag = False
                 else :
                     force.append(ii.split()[3:6])
+    fp.close()
     assert(coord), "cannot find coords"
     assert(energy), "cannot find energies"
     assert(force), "cannot find forces"
