@@ -894,7 +894,7 @@ def check_LabeledSystem(data):
     else:
         data['virials']=[]
 
-    assert( set(data.keys())==keys )
+    assert( keys.issubset(set(data.keys())) )
     assert( isinstance(data,dict) )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
