@@ -4,7 +4,7 @@ import numpy as np
 def load_type(folder, type_map = None) :
     data = {}
     data['atom_types'] \
-        = np.loadtxt(os.path.join(folder, 'type.raw')).astype(int)
+        = np.loadtxt(os.path.join(folder, 'type.raw'), ndmin=1).astype(int)
     ntypes = np.max(data['atom_types']) + 1
     data['atom_numbs'] = []
     for ii in range (ntypes) :
