@@ -99,6 +99,7 @@ class System (MSONable) :
             self.from_pwscf_traj(file_name, begin = begin, step = step)
         else :
             raise RuntimeError('unknow data format ' + fmt)
+        self.check_type_map(type_map)
 
     def __repr__(self):
         return self.__str__()
@@ -299,11 +300,19 @@ class System (MSONable) :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
         return True
 
-    def sort_atom_names(self):
+    def sort_atom_names(self, type_map=None):
         idx = np.argsort(self.data['atom_names'])
+        if type_map is not None:
+            # assign atom_names idx to the specify order
+            assert (set(type_map) == set(self.data['atom_names']))
+            idx = idx[np.argsort(np.argsort(type_map))]
         self.data['atom_names'] = list(np.array(self.data['atom_names'])[idx])
         self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'])[idx])
         self.data['atom_types'] = np.argsort(idx)[self.data['atom_types']]
+
+    def check_type_map(self, type_map):
+        if type_map is not None and type_map != self.data['atom_names']:
+            self.sort_atom_names(type_map=type_map)
 
     def sort_atom_types(self):
         idx = np.argsort(self.data['atom_types'])
@@ -530,6 +539,7 @@ class LabeledSystem (System):
             self.from_cp2k_output(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
+        self.check_type_map(type_map)
 
     def __repr__(self):
         return self.__str__()
