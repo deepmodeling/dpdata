@@ -99,7 +99,6 @@ class System (MSONable) :
             self.from_pwscf_traj(file_name, begin = begin, step = step)
         else :
             raise RuntimeError('unknow data format ' + fmt)
-        self.check_type_map(type_map)
 
     def __repr__(self):
         return self.__str__()
@@ -567,7 +566,6 @@ class LabeledSystem (System):
             self.from_cp2k_output(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
-        self.check_type_map(type_map)
 
     def __repr__(self):
         return self.__str__()

@@ -4,21 +4,13 @@ from itertools import permutations
 
 
 class TestTypeMap():
-    def test_type_map(self):
+    def test_check_type_map(self):
         # read atom names
         system = dpdata.LabeledSystem(self.fn, fmt=self.fmt)
         atom_names = system['atom_names']
         for type_map in permutations(atom_names, len(atom_names)):
             type_map = list(type_map)
-            system = dpdata.LabeledSystem(self.fn, fmt=self.fmt, type_map=type_map)
-            self.assertEqual(type_map, system['atom_names'])
-    
-    def test_sort_atom_names(self):
-        system = dpdata.LabeledSystem(self.fn, fmt=self.fmt)
-        atom_names = system['atom_names']
-        for type_map in permutations(atom_names, len(atom_names)):
-            type_map = list(type_map)
-            system.sort_atom_names(type_map=type_map)
+            system.check_type_map(type_map=type_map)
             self.assertEqual(type_map, system['atom_names'])
     
     def test_type_map_is_superset(self):
@@ -26,7 +18,8 @@ class TestTypeMap():
         atom_names = system['atom_names'] + ["X"]
         for type_map in permutations(atom_names, len(atom_names)):
             type_map = list(type_map)
-            system = dpdata.LabeledSystem(self.fn, fmt=self.fmt, type_map=type_map)
+            system = dpdata.LabeledSystem(self.fn, fmt=self.fmt)
+            system.check_type_map(type_map=type_map)
             self.assertEqual(type_map, system['atom_names'])
 
 
