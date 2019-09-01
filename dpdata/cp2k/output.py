@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def get_frames (fname) :
     coord_flag = False
     force_flag = False
@@ -56,9 +57,20 @@ def get_frames (fname) :
     energy = float(energy) * eV
     energy = np.array(energy)
     energy = energy[np.newaxis]
-    atom_names, atom_types, atom_numbs = np.unique(atom_symbol_list, return_inverse=True, return_counts=True)
+    tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)
+    atom_types = []
+    atom_numbs = []
+    #preserve the atom_name order
+    atom_names = atom_symbol_list[np.sort(symbol_idx)]
+    for jj in atom_symbol_list:
+        for idx, ii in enumerate(atom_names):
+            if (jj == ii) :
+                atom_types.append(idx)
+    for idx in range(len(atom_names)):
+        atom_numbs.append(atom_types.count(idx))
 
+    atom_types = np.array(atom_types)
 
-    return list(atom_names), list(atom_numbs), atom_types, cell, coord, energy, force
+    return list(atom_names), atom_numbs, atom_types, cell, coord, energy, force
 
 
