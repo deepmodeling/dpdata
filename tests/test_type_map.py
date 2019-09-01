@@ -20,6 +20,14 @@ class TestTypeMap():
             type_map = list(type_map)
             system.sort_atom_names(type_map=type_map)
             self.assertEqual(type_map, system['atom_names'])
+    
+    def test_type_map_is_superset(self):
+        system = dpdata.LabeledSystem(self.fn, fmt=self.fmt)
+        atom_names = system['atom_names'] + ["X"]
+        for type_map in permutations(atom_names, len(atom_names)):
+            type_map = list(type_map)
+            system = dpdata.LabeledSystem(self.fn, fmt=self.fmt, type_map=type_map)
+            self.assertEqual(type_map, system['atom_names'])
 
 
 class TestTypeMap1(TestTypeMap, unittest.TestCase):
