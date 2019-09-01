@@ -802,15 +802,20 @@ class LabeledSystem (System):
 class MultiSystems:
     '''A set containing several systems.'''
 
-    def __init__(self, *systems):
+    def __init__(self, *systems, type_map=None):
         """
         Parameters
         ----------
         systems : System
             The systems contained
+        type_map : list of str
+            Maps atom type to name
         """
         self.systems = {}
-        self.atom_names = []
+        if type_map is not None:
+            self.atom_names = type_map
+        else:
+            self.atom_names = []
         self.append(*systems)
 
     def __getitem__(self, key):
