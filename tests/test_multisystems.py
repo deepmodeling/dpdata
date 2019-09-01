@@ -4,6 +4,7 @@ import unittest
 from context import dpdata
 from comp_sys import CompSys
 from comp_sys import CompLabeledSys
+from itertools import permutations
 
 class MultiSystems:
     def test_systems_name(self):
@@ -110,6 +111,19 @@ class TestMultiDeepmdDumpComp(unittest.TestCase, CompLabeledSys):
         systems.to_deepmd_npy(path)
         self.system_1 = dpdata.LabeledSystem(os.path.join(path, 'C1H3'), fmt='deepmd/npy', type_map = ['C', 'H'])
         self.system_2 = system_3
+
+class TestTypeMap(unittest.TestCase):
+    def setUp (self) :
+        self.system_1 = dpdata.LabeledSystem('gaussian/methane.gaussianlog', fmt='gaussian/log')
+        self.system_2 = dpdata.LabeledSystem('gaussian/methane_reordered.gaussianlog', fmt='gaussian/log')
+        self.system_3 = dpdata.LabeledSystem('gaussian/methane_sub.gaussianlog', fmt='gaussian/log')
+        self.system_4 = dpdata.LabeledSystem('gaussian/noncoveraged.gaussianlog', fmt='gaussian/log')
+
+    def test_type_map(self):
+        for type_map in permutations(['C', 'H', 'O', 'N'], 4):
+            systems = dpdata.MultiSystems(self.system_1, self.system_2, self.system_3, self.system_4, type_map=type_map)
+            self.assertEqual(type_map, systems.atom_names)
+
 
 if __name__ == '__main__':
     unittest.main()

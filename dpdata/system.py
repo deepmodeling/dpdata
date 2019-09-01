@@ -299,11 +299,47 @@ class System (MSONable) :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
         return True
 
-    def sort_atom_names(self):
-        idx = np.argsort(self.data['atom_names'])
+    def sort_atom_names(self, type_map=None):
+        """
+        Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
+        to atom_names. If type_map is not given, atom_names will be sorted by
+        alphabetical order. If type_map is given, atom_names will be type_map. 
+
+        Parameters
+        ----------
+        type_map : list
+            type_map
+        """
+        if type_map is not None:
+            # assign atom_names index to the specify order
+            # atom_names must be a subset of type_map
+            assert (set(self.data['atom_names']).issubset(set(type_map)))
+            # for the condition that type_map is a proper superset of atom_names
+            new_atoms = set(type_map) - set(self.data["atom_names"])
+            if new_atoms:
+                self.add_atom_names(new_atoms)
+            # index that will sort an array by type_map
+            idx = np.argsort(self.data['atom_names'])[np.argsort(np.argsort(type_map))]
+        else:
+            # index that will sort an array by alphabetical order
+            idx = np.argsort(self.data['atom_names'])
+        # sort atom_names, atom_numbs, atom_types by idx
         self.data['atom_names'] = list(np.array(self.data['atom_names'])[idx])
         self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'])[idx])
         self.data['atom_types'] = np.argsort(idx)[self.data['atom_types']]
+
+    def check_type_map(self, type_map):
+        """
+        Assign atom_names to type_map if type_map is given and different from
+        atom_names.
+
+        Parameters
+        ----------
+        type_map : list
+            type_map       
+        """
+        if type_map is not None and type_map != self.data['atom_names']:
+            self.sort_atom_names(type_map=type_map)
 
     def sort_atom_types(self):
         idx = np.argsort(self.data['atom_types'])
@@ -764,15 +800,20 @@ class LabeledSystem (System):
 class MultiSystems:
     '''A set containing several systems.'''
 
-    def __init__(self, *systems):
+    def __init__(self, *systems, type_map=None):
         """
         Parameters
         ----------
         systems : System
             The systems contained
+        type_map : list of str
+            Maps atom type to name
         """
         self.systems = {}
-        self.atom_names = []
+        if type_map is not None:
+            self.atom_names = type_map
+        else:
+            self.atom_names = []
         self.append(*systems)
 
     def __getitem__(self, key):
