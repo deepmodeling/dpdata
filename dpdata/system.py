@@ -325,6 +325,9 @@ class System (MSONable) :
             if new_atoms:
                 self.add_atom_names(new_atoms)
             # index that will sort an array by type_map
+            # a[as[a]] == b[as[b]]  as == argsort
+            # as[as[b]] == as^{-1}[b]
+            # a[as[a][as[as[b]]]] = b[as[b][as^{-1}[b]]] = b[id]
             idx = np.argsort(self.data['atom_names'])[np.argsort(np.argsort(type_map))]
         else:
             # index that will sort an array by alphabetical order
