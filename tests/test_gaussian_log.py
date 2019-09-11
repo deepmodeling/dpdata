@@ -45,7 +45,7 @@ class TestNonCoveragedGaussianLog :
         self.assertEqual(self.system.data['forces'], [])
 
     def test_virials(self) :
-        self.assertEqual(self.system.data['virials'], [])
+        self.assertFalse('virials' in self.system.data)
 
 class TestNonCoveragedGaussianLoadLog(unittest.TestCase, TestNonCoveragedGaussianLog):
     def setUp (self) :
