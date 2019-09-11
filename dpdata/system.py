@@ -60,6 +60,8 @@ class System (MSONable) :
                 - ``auto``: infered from `file_name`'s extension
                 - ``lammps/lmp``: Lammps data
                 - ``lammps/dump``: Lammps dump
+                - ``deepmd/raw``: deepmd-kit raw
+                - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
                 - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in' and file_name+'.pos'
 
@@ -95,6 +97,10 @@ class System (MSONable) :
             self.from_lammps_dump(file_name, type_map = type_map, begin = begin, step = step)
         elif fmt.lower() == 'poscar' or fmt.lower() == 'contcar' or fmt.lower() == 'vasp/poscar' or fmt.lower() == 'vasp/contcar':
             self.from_vasp_poscar(file_name)
+        elif fmt == 'deepmd' or fmt == 'deepmd/raw':
+            self.from_deepmd_raw(file_name, type_map = type_map)
+        elif fmt == 'deepmd/npy':
+            self.from_deepmd_comp(file_name, type_map = type_map)
         elif fmt == 'pwscf/traj':
             self.from_pwscf_traj(file_name, begin = begin, step = step)
         else :
@@ -449,6 +455,42 @@ class System (MSONable) :
         self.rot_lower_triangular()
 
 
+    def from_deepmd_comp(self, folder, type_map = None) :
+        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = False)
+
+    def from_deepmd_raw(self, folder, type_map = None) :
+        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = False)
+        if tmp_data is not None :
+            self.data = tmp_data
+
+    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
+        """
+        Dump the system in deepmd compressed format (numpy binary) to `folder`.
+
+        The frames are firstly split to sets, then dumped to seperated subfolders named as `folder/set.000`, `folder/set.001`, ....
+
+        Each set contains `set_size` frames.
+        The last set may have less frames than `set_size`.
+
+        Parameters
+        ----------
+        folder : str
+            The output folder
+        set_size : int
+            The size of each set.
+        prec: {numpy.float32, numpy.float64}
+            The floating point precision of the compressed data
+        """
+        dpdata.deepmd.comp.dump(folder, self.data,
+                                set_size = set_size,
+                                comp_prec = prec)
+
+    def to_deepmd_raw(self, folder) :
+        """
+        Dump the system in deepmd raw format to `folder`
+        """
+        dpdata.deepmd.raw.dump(folder, self.data) 
+
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
         self.data['cells'][f_idx] = np.matmul(self.data['cells'][f_idx], trans)
@@ -599,10 +641,9 @@ class LabeledSystem (System):
           raise RuntimeError("Unspported data structure")
        return self.__class__.from_dict({'data':self_copy.data})
 
-
     def has_virial(self) :
-        return ('virials' in self.data) and (len(self.data['virials']) > 0)
-
+        # return ('virials' in self.data) and (len(self.data['virials']) > 0)
+        return ('virials' in self.data)
 
     def from_vasp_xml(self, file_name, begin = 0, step = 1) :
         self.data['atom_names'], \
@@ -639,10 +680,12 @@ class LabeledSystem (System):
             self.data['coords'], \
             self.data['energies'], \
             self.data['forces'], \
-            self.data['virials'], \
+            tmp_virial, \
             = dpdata.vasp.outcar.get_frames(file_name, begin = begin, step = step)
+        if tmp_virial is not None :
+            self.data['virials'] = tmp_virial
         # scale virial to the unit of eV
-        if len(self.data['virials']) != 0 :
+        if 'virials' in self.data :
             v_pref = 1 * 1e3 / 1.602176621e6
             for ii in range (self.get_nframes()) :
                 vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
@@ -669,44 +712,14 @@ class LabeledSystem (System):
         return trans
 
 
+    def from_deepmd_comp(self, folder, type_map = None) :
+        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = True)
+
+
     def from_deepmd_raw(self, folder, type_map = None) :
-        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map)
+        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = True)
         if tmp_data is not None :
             self.data = tmp_data
-
-
-    def to_deepmd_raw(self, folder) :
-        """
-        Dump the system in deepmd raw format to `folder`
-        """
-        dpdata.deepmd.raw.dump(folder, self.data)
-
-
-    def from_deepmd_comp(self, folder, type_map = None) :
-        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map)
-
-
-    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
-        """
-        Dump the system in deepmd compressed format (numpy binary) to `folder`.
-
-        The frames are firstly split to sets, then dumped to seperated subfolders named as `folder/set.000`, `folder/set.001`, ....
-
-        Each set contains `set_size` frames.
-        The last set may have less frames than `set_size`.
-
-        Parameters
-        ----------
-        folder : str
-            The output folder
-        set_size : int
-            The size of each set.
-        prec: {numpy.float32, numpy.float64}
-            The floating point precision of the compressed data
-        """
-        dpdata.deepmd.comp.dump(folder, self.data,
-                                set_size = set_size,
-                                comp_prec = prec)
 
 
     def from_pwscf_traj(self, prefix, begin = 0, step = 1) :
@@ -717,7 +730,6 @@ class LabeledSystem (System):
             )
         self.data['energies'], self.data['forces'] \
             = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
-        self.data['virials'] = []
         self.rot_lower_triangular()
 
 
@@ -727,10 +739,9 @@ class LabeledSystem (System):
             self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
-        self.data['virials'] = []
+
 
     def from_cp2k_output(self, file_name) :
-        self.data['virials'] = []
         self.data['atom_names'], \
             self.data['atom_numbs'], \
             self.data['atom_types'], \
@@ -759,7 +770,7 @@ class LabeledSystem (System):
         tmp_sys.data = System.sub_system(self, f_idx).data
         tmp_sys.data['energies'] = self.data['energies'][f_idx]
         tmp_sys.data['forces'] = self.data['forces'][f_idx]
-        if len(self.data['virials']) != 0 :
+        if 'virials' in self.data:
             tmp_sys.data['virials'] = self.data['virials'][f_idx]
         return tmp_sys
 
@@ -780,11 +791,11 @@ class LabeledSystem (System):
         for ii in ['atom_pref']:
             if ii in self.data:
                 tgt.append(ii)
-        if len(system.data['virials']) != 0 and len(self.data['virials']) == 0:
+        if ('virials' in system.data) and ('virials' not in self.data):
             raise RuntimeError('system has virial, but this does not')
-        if len(system.data['virials']) == 0 and len(self.data['virials']) != 0:
+        if ('virials' not in system.data) and ('virials' in self.data):
             raise RuntimeError('this has virial, but system does not')
-        if len(system.data['virials']) != 0 :
+        if 'virials' in system.data :
             tgt.append('virials')
         for ii in tgt:
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
@@ -929,21 +940,17 @@ def check_System(data):
 
 def check_LabeledSystem(data):
     keys={'atom_names', 'atom_numbs', 'atom_types', 'cells', 'coords', 'energies',
-           'forces', 'orig', 'virials'}
-    if 'virials' in data.keys():
-        pass
-    else:
-        data['virials']=[]
+           'forces', 'orig'}
 
     assert( keys.issubset(set(data.keys())) )
     assert( isinstance(data,dict) )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
     assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
-    if len(data['virials'])>0:
-       assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
+    if 'virials' in data:
+        assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
     else:
-       assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
+        assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
 
 
 def elements_index_map(elements,standard=False,inverse=False):
