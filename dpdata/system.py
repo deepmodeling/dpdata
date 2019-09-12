@@ -152,9 +152,10 @@ class System (MSONable) :
         """dump .json or .yaml file """
         dumpfn(self.as_dict(),filename,indent=indent)
 
-    def set_atom_types(self,type_map=None):
+
+    def map_atom_types(self,type_map=None):
         """
-        Reset the type of the system
+        Map the atom types of the system
         Parameters
         ----------
         type_map :
@@ -166,7 +167,8 @@ class System (MSONable) :
 
         Returns
         -------
-        system : System with specific type order
+        new_atom_types : list
+            The mapped atom types
         """
         if isinstance(type_map,dict) or type_map is None:
            pass
@@ -186,9 +188,8 @@ class System (MSONable) :
         for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
             atom_types_list.extend([name]*numb)
         new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
-        _system=self.copy()
-        _system.data['atom_types']=new_atom_types
-        return _system
+
+        return new_atom_types
 
 
     def to_list(self):
@@ -325,6 +326,9 @@ class System (MSONable) :
             if new_atoms:
                 self.add_atom_names(new_atoms)
             # index that will sort an array by type_map
+            # a[as[a]] == b[as[b]]  as == argsort
+            # as[as[b]] == as^{-1}[b]
+            # a[as[a][as[as[b]]]] = b[as[b][as^{-1}[b]]] = b[id]
             idx = np.argsort(self.data['atom_names'])[np.argsort(np.argsort(type_map))]
         else:
             # index that will sort an array by alphabetical order
@@ -534,6 +538,7 @@ class System (MSONable) :
         """
         self.data['atom_names'].extend(atom_names)
         self.data['atom_numbs'].extend([0 for _ in atom_names])
+
 
 class LabeledSystem (System):
     '''
