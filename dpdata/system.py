@@ -106,6 +106,10 @@ class System (MSONable) :
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
+        if type_map is not None:
+            self.apply_type_map(type_map)
+
+
     def __repr__(self):
         return self.__str__()
 
@@ -350,6 +354,12 @@ class System (MSONable) :
         """
         if type_map is not None and type_map != self.data['atom_names']:
             self.sort_atom_names(type_map=type_map)
+
+    def apply_type_map(self, type_map) :
+        if type_map is not None and type(type_map) is list:
+            self.check_type_map(type_map)
+        else:
+            raise RuntimeError('invalid type map, cannot be applied')
 
     def sort_atom_types(self):
         idx = np.argsort(self.data['atom_types'])
@@ -613,6 +623,10 @@ class LabeledSystem (System):
             self.from_cp2k_output(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
+
+        if type_map is not None:
+            self.apply_type_map(type_map)
+
 
     def __repr__(self):
         return self.__str__()
