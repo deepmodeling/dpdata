@@ -15,6 +15,20 @@ class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 4
 
+class TestVaspOUTCARTypeMap(unittest.TestCase, CompLabeledSys):
+    def setUp(self):
+        sys0 = dpdata.LabeledSystem('poscars/OUTCAR.ch4.unconverged', fmt =  'vasp/outcar')
+        sys0.data['atom_names'] = ['A', 'C', 'B', 'H', 'D']
+        sys0.data['atom_numbs'] = [  0,   1,   0,   4,   0]
+        sys0.data['atom_types'] = np.array([  3,   3,   3,   3,   1], dtype = int)
+        sys1 = dpdata.LabeledSystem('poscars/OUTCAR.ch4.unconverged', fmt =  'vasp/outcar', type_map = ['A', 'C', 'B', 'H', 'D'])
+        self.system_1 = sys0
+        self.system_2 = sys1
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
 class TestVaspOUTCARSkip(unittest.TestCase, CompLabeledSys):
     def setUp (self) :
         begin = 1
