@@ -1,4 +1,4 @@
-import os,filecmp
+import os
 import numpy as np
 import unittest
 from context import dpdata
