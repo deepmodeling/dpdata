@@ -84,11 +84,11 @@ class System (MSONable) :
         self.data['coords'] = []
 
         if data:
-           check_System(data)
-           self.data=data
-           return
+            check_System(data)
+            self.data=data
+            return
         if file_name is None :
-           return
+            return
         if fmt == 'auto':
             fmt = os.path.basename(file_name).split('.')[-1]
         if fmt == 'lmp' or fmt == 'lammps/lmp' :
@@ -953,7 +953,10 @@ def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
     assert( isinstance(data,dict) )
     assert( set(data.keys())==keys )
-    assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
+    if len(data['coords']) > 0 :
+        assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
+    else :
+        assert( len(data['atom_types'])==sum(data['atom_numbs']) )        
     assert( len(data['cells']) == len(data['coords']) )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
@@ -965,7 +968,10 @@ def check_LabeledSystem(data):
     assert( isinstance(data,dict) )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
-    assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
+    if len(data['coords']) > 0 :
+        assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
+    else:
+        assert( len(data['atom_types']) ==sum(data['atom_numbs'])  )
     if 'virials' in data:
         assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
     else:

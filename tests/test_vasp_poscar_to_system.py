@@ -31,9 +31,6 @@ class TestVaspPOSCARTypeMap(unittest.TestCase, CompSys):
         self.f_places = 6
         self.v_places = 6
 
-    def test_type_map_empty(self):
-        sys1 = dpdata.System(type_map = ['A', 'H', 'B', 'O', 'D'])        
-
 
 if __name__ == '__main__':
     unittest.main()
