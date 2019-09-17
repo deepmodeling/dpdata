@@ -52,9 +52,9 @@ def to_system_data(file_name, md=False):
                     coords.append([float(x) for x in s[3:6]])
                     atom_symbols.append(symbols[int(s[1])])
 
-    assert(coords), "cannot find coords"
+    assert(coords_t), "cannot find coords"
     assert(energy), "cannot find energies"
-    assert(forces), "cannot find forces"
+    assert(forces_t), "cannot find forces"
 
     atom_names, data['atom_types'], atom_numbs = np.unique(atom_symbols, return_inverse=True, return_counts=True)
     data['atom_names'] = list(atom_names)
