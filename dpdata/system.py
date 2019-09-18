@@ -619,6 +619,8 @@ class LabeledSystem (System):
             self.from_pwscf_traj(file_name, begin = begin, step = step)
         elif fmt == 'gaussian/log':
             self.from_gaussian_log(file_name)
+        elif fmt == 'gaussian/md':
+            self.from_gaussian_log(file_name, md=True)
         elif fmt == 'cp2k/output':
             self.from_cp2k_output(file_name)
         else :
@@ -752,9 +754,9 @@ class LabeledSystem (System):
         self.rot_lower_triangular()
 
 
-    def from_gaussian_log(self, file_name):
+    def from_gaussian_log(self, file_name, md=False):
         try:
-            self.data = dpdata.gaussian.log.to_system_data(file_name)
+            self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
             self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
