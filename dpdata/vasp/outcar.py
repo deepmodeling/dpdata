@@ -74,9 +74,13 @@ def get_frames (fname, begin = 0, step = 1) :
                     all_virials.append(virial)
         blk = get_outcar_block(fp)
         cc += 1
-
+        
+    if len(all_virials) == 0 :
+        all_virials = None
+    else :
+        all_virials = np.array(all_virials)
     fp.close()
-    return atom_names, atom_numbs, atom_types, np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), np.array(all_virials)
+    return atom_names, atom_numbs, atom_types, np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), all_virials
 
 
 def analyze_block(lines, ntot, nelm) :

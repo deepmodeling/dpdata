@@ -61,7 +61,7 @@ class TestNonCoveragedGaussianLoadLog(unittest.TestCase, TestGaussianLog):
         self.assertEqual(self.system.data['forces'], [])
 
     def test_virials(self) :
-        self.assertEqual(self.system.data['virials'], [])
+        self.assertFalse('virials' in self.system.data)
 
 if __name__ == '__main__':
     unittest.main()
