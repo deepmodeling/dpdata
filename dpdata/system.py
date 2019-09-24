@@ -8,6 +8,7 @@ import dpdata.vasp.outcar
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.pwscf.traj
+import dpdata.pwscf.scf
 import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.cp2k.output
@@ -586,6 +587,7 @@ class LabeledSystem (System):
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
+                - ``pwscf/scf``: pwscf single point calculations. Both input and output files are required. file_name denotes output file name. Input file name is obtained by replacing 'out' by 'in' from file_name.
                 - ``gaussian/log``: gaussian logs
 
         type_map : list of str
@@ -617,6 +619,8 @@ class LabeledSystem (System):
             self.from_deepmd_comp(file_name, type_map = type_map)
         elif fmt == 'pwscf/traj':
             self.from_pwscf_traj(file_name, begin = begin, step = step)
+        elif fmt == 'pwscf/scf':
+            self.from_pwscf_scf(file_name)
         elif fmt == 'gaussian/log':
             self.from_gaussian_log(file_name)
         elif fmt == 'cp2k/output':
@@ -751,6 +755,17 @@ class LabeledSystem (System):
             = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
         self.rot_lower_triangular()
 
+    def from_pwscf_scf(self, file_name) :
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            self.data['virials'], \
+            = dpdata.pwscf.scf.get_frame(file_name)
+        self.rot_lower_triangular()
 
     def from_gaussian_log(self, file_name):
         try:

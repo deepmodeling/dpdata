@@ -20,7 +20,7 @@ setuptools.setup(
     setup_requires=['setuptools_scm'],
     author="Han Wang",
     author_email="wang_han@iapcm.ac.cn",
-    description="Manipulating DeePMD-kit, VASP and LAMMPS data formats",
+    description="Manipulating data formats of DeePMD-kit, VASP, QE, and LAMMPS, etc.",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/deepmodeling/dpdata",

@@ -61,7 +61,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | deepmd  | raw    | True         | True    | LabeledSystem | 'deepmd/raw'  |
 | gaussian| log    | False        | True    | LabeledSystem | 'gaussian/log'|
 | cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output'|
-
+| pwscf   | output | False        | True    | LabeledSystem | 'pwscf/scf'|
 
 
 ## Access data
