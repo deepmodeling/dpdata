@@ -1,0 +1,37 @@
+&control
+  calculation='scf'
+  prefix='water'
+  pseudo_dir='../pseudo'
+  outdir='./out'
+  restart_mode='from_scratch'
+  nstep=20000
+  disk_io='none'
+  max_seconds=10000
+  tprnfor=.true.
+  tstress=.true.
+/
+&system
+  ibrav=1
+  a=10
+  nat=5
+  ntyp=2,
+  ecutwfc=110
+  input_dft='PBE'
+/
+&electrons
+  electron_maxstep = 1000
+  mixing_beta = 0.5
+/
+&ions
+/
+&cell
+/
+ATOMIC_SPECIES
+H   1.0  H.tm.pbe.UPF 
+C   1.0  C.tm.pbe.UPF 
+ATOMIC_POSITIONS {angstrom}
+H 5.41646 4.01132 3.51118
+H 4.13161 4.70677 4.43116
+H 5.63096 5.52167 4.45038
+H 5.49988 4.00341 5.34265
+C 5.19271 4.55775 4.43687
