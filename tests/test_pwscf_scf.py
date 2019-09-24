@@ -120,7 +120,8 @@ class TestPWSCFLabeledOutput(unittest.TestCase, TestPWSCFSinglePointEnergy):
 class TestPWSCFLabeledOutputListInput(unittest.TestCase, TestPWSCFSinglePointEnergy):
 
     def setUp(self):
-        self.system = dpdata.LabeledSystem(['pwscf.scf/01.in', 'pwscf.scf/01.out'], fmt='pwscf/scf')
+        self.system_ch4 = dpdata.LabeledSystem(['pwscf.scf/01.in', 'pwscf.scf/01.out'], fmt='pwscf/scf')
+        self.system_h2o = dpdata.LabeledSystem(['pwscf.scf/02.in', 'pwscf.scf/02.out'], fmt='pwscf/scf')
 
 
 if __name__ == '__main__':
