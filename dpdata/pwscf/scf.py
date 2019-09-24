@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
+import os,sys
 import numpy as np
-import sys
 
 ry2ev = 13.605693009
 bohr2ang = 0.52917721067
@@ -87,10 +87,22 @@ def get_stress (lines) :
     ret *= kbar2evperang3
     return ret
    
-def get_frame (fout):
-    outlines = open(fout, 'r').read().split('\n')
-    # the name of the input file is assumed to be different from the output by 'in' and 'out' 
-    inlines = open(fout.replace('out','in'), 'r').read().split('\n')
+def get_frame (fname):
+    if type(fname) == str:
+        path_out = fname
+        outname = os.path.basename(path_out)
+        # the name of the input file is assumed to be different from the output by 'in' and 'out' 
+        inname = outname.replace('out', 'in')
+        path_in = os.path.join(os.path.dirname(path_out), inname)
+    elif type(fname) == list and len(fname) == 2:
+        path_in = fname[0]
+        path_out = fname[1]
+    else:
+        raise RuntimeError('invalid input')    
+    with open(path_out, 'r') as fp:
+        outlines = fp.read().split('\n')
+    with open(path_in, 'r') as fp:
+        inlines = fp.read().split('\n')
     atom_names, natoms, types, coords      = get_coords(inlines)
     cell        = get_cell  (inlines)
     energy      = get_energy(outlines)
