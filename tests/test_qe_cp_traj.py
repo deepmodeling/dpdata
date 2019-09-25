@@ -26,7 +26,7 @@ class TestPWSCFProps :
                     self.assertEqual(self.system['cells'][ff][ii][jj], ref[ii][jj])
 
     def test_coord(self) :        
-        with open('pwscf.traj/oh-md.pos') as fp :
+        with open('qe.traj/oh-md.pos') as fp :
             lines = fp.read().rstrip('\n').split('\n')
         lines = lines[-191:]
         coords = []
@@ -47,13 +47,13 @@ class TestPWSCFProps :
 class TestPWSCFTraj(unittest.TestCase, TestPWSCFProps):    
 
     def setUp(self): 
-        self.system = dpdata.System('pwscf.traj/oh-md', fmt = 'pwscf/traj')
+        self.system = dpdata.System('qe.traj/oh-md', fmt = 'qe/cp/traj')
 
 
 class TestPWSCFLabeledTraj(unittest.TestCase, TestPWSCFProps):    
 
     def setUp(self): 
-        self.system = dpdata.LabeledSystem('pwscf.traj/oh-md', fmt = 'pwscf/traj')
+        self.system = dpdata.LabeledSystem('qe.traj/oh-md', fmt = 'qe/cp/traj')
 
 
 
