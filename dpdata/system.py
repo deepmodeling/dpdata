@@ -7,8 +7,8 @@ import dpdata.vasp.xml
 import dpdata.vasp.outcar
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
-import dpdata.pwscf.traj
-import dpdata.pwscf.scf
+import dpdata.qe.traj
+import dpdata.qe.scf
 import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.cp2k.output
@@ -64,7 +64,7 @@ class System (MSONable) :
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
-                - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in' and file_name+'.pos'
+                - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
 
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -102,8 +102,8 @@ class System (MSONable) :
             self.from_deepmd_raw(file_name, type_map = type_map)
         elif fmt == 'deepmd/npy':
             self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'pwscf/traj':
-            self.from_pwscf_traj(file_name, begin = begin, step = step)
+        elif fmt == 'qe/cp/traj':
+            self.from_qe_cp_traj(file_name, begin = begin, step = step)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -458,11 +458,11 @@ class System (MSONable) :
             fp.write(w_str)
 
 
-    def from_pwscf_traj(self,
+    def from_qe_cp_traj(self,
                         prefix,
                         begin = 0,
                         step = 1) :
-        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
@@ -586,9 +586,11 @@ class LabeledSystem (System):
                 - ``vasp/outcar``: vasp OUTCAR
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
-                - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
-                - ``pwscf/scf``: pwscf single point calculations. Both input and output files are required. file_name denotes output file name. Input file name is obtained by replacing 'out' by 'in' from file_name.
+                - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
+                - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``gaussian/log``: gaussian logs
+                - ``gaussian/md``: gaussian ab initio molecular dynamics
+                - ``cp2k/output``: cp2k output file
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -617,10 +619,10 @@ class LabeledSystem (System):
             self.from_deepmd_raw(file_name, type_map = type_map)
         elif fmt == 'deepmd/npy':
             self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'pwscf/traj':
-            self.from_pwscf_traj(file_name, begin = begin, step = step)
-        elif fmt == 'pwscf/scf':
-            self.from_pwscf_scf(file_name)
+        elif fmt == 'qe/cp/traj':
+            self.from_qe_cp_traj(file_name, begin = begin, step = step)
+        elif fmt == 'qe/pw/scf':
+            self.from_qe_pw_scf(file_name)
         elif fmt == 'gaussian/log':
             self.from_gaussian_log(file_name)
         elif fmt == 'gaussian/md':
@@ -747,17 +749,17 @@ class LabeledSystem (System):
             self.data = tmp_data
 
 
-    def from_pwscf_traj(self, prefix, begin = 0, step = 1) :
-        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+    def from_qe_cp_traj(self, prefix, begin = 0, step = 1) :
+        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
             )
         self.data['energies'], self.data['forces'] \
-            = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
+            = dpdata.qe.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
         self.rot_lower_triangular()
 
-    def from_pwscf_scf(self, file_name) :
+    def from_qe_pw_scf(self, file_name) :
         self.data['atom_names'], \
             self.data['atom_numbs'], \
             self.data['atom_types'], \
@@ -766,7 +768,7 @@ class LabeledSystem (System):
             self.data['energies'], \
             self.data['forces'], \
             self.data['virials'], \
-            = dpdata.pwscf.scf.get_frame(file_name)
+            = dpdata.qe.scf.get_frame(file_name)
         self.rot_lower_triangular()
 
     def from_gaussian_log(self, file_name, md=False):

@@ -30,7 +30,7 @@ class TestPWSCFSinglePointEnergy:
             for jj in range(cell.shape[1]) :
                 self.assertEqual(self.system_ch4.data['cells'][0][ii][jj], cell[ii][jj])
 
-        fp = open('pwscf.scf/h2o_cell')
+        fp = open('qe.scf/h2o_cell')
         cell = []
         for ii in fp :
             cell.append([float(jj) for jj in ii.split()])
@@ -41,7 +41,7 @@ class TestPWSCFSinglePointEnergy:
 
 
     def test_coord(self) :
-        fp = open('pwscf.scf/ch4_coord')
+        fp = open('qe.scf/ch4_coord')
         coord = []
         for ii in fp :
             coord.append([float(jj) for jj in ii.split()])
@@ -51,7 +51,7 @@ class TestPWSCFSinglePointEnergy:
                 self.assertEqual(self.system_ch4.data['coords'][0][ii][jj], coord[ii][jj])
         fp.close()
 
-        fp = open('pwscf.scf/h2o_coord')
+        fp = open('qe.scf/h2o_coord')
         coord = []
         for ii in fp :
             coord.append([float(jj) for jj in ii.split()])
@@ -62,7 +62,7 @@ class TestPWSCFSinglePointEnergy:
         fp.close()
 
     def test_force(self) :
-        fp = open('pwscf.scf/ch4_force')
+        fp = open('qe.scf/ch4_force')
         force = []
         for ii in fp :
             force.append([float(jj) for jj in ii.split()])
@@ -72,7 +72,7 @@ class TestPWSCFSinglePointEnergy:
                 self.assertEqual(self.system_ch4.data['forces'][0][ii][jj], force[ii][jj])
         fp.close()
 
-        fp = open('pwscf.scf/h2o_force')
+        fp = open('qe.scf/h2o_force')
         force = []
         for ii in fp :
             force.append([float(jj) for jj in ii.split()])
@@ -83,7 +83,7 @@ class TestPWSCFSinglePointEnergy:
         fp.close()
 
     def test_virial(self) :
-        fp = open('pwscf.scf/ch4_virial')
+        fp = open('qe.scf/ch4_virial')
         virial = []
         for ii in fp :
             virial.append([float(jj) for jj in ii.split()])
@@ -93,7 +93,7 @@ class TestPWSCFSinglePointEnergy:
                 self.assertEqual(self.system_ch4.data['virials'][0][ii][jj], virial[ii][jj])
         fp.close()
 
-        fp = open('pwscf.scf/h2o_virial')
+        fp = open('qe.scf/h2o_virial')
         virial = []
         for ii in fp :
             virial.append([float(jj) for jj in ii.split()])
@@ -114,14 +114,14 @@ class TestPWSCFSinglePointEnergy:
 class TestPWSCFLabeledOutput(unittest.TestCase, TestPWSCFSinglePointEnergy):
 
     def setUp(self):
-        self.system_ch4 = dpdata.LabeledSystem('pwscf.scf/01.out',fmt='pwscf/scf')
-        self.system_h2o = dpdata.LabeledSystem('pwscf.scf/02.out',fmt='pwscf/scf')
+        self.system_ch4 = dpdata.LabeledSystem('qe.scf/01.out',fmt='qe/pw/scf')
+        self.system_h2o = dpdata.LabeledSystem('qe.scf/02.out',fmt='qe/pw/scf')
 
 class TestPWSCFLabeledOutputListInput(unittest.TestCase, TestPWSCFSinglePointEnergy):
 
     def setUp(self):
-        self.system_ch4 = dpdata.LabeledSystem(['pwscf.scf/01.in', 'pwscf.scf/01.out'], fmt='pwscf/scf')
-        self.system_h2o = dpdata.LabeledSystem(['pwscf.scf/02.in', 'pwscf.scf/02.out'], fmt='pwscf/scf')
+        self.system_ch4 = dpdata.LabeledSystem(['qe.scf/01.in', 'qe.scf/01.out'], fmt='qe/pw/scf')
+        self.system_h2o = dpdata.LabeledSystem(['qe.scf/02.in', 'qe.scf/02.out'], fmt='qe/pw/scf')
 
 
 if __name__ == '__main__':
