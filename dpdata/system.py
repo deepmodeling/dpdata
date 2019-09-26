@@ -7,8 +7,9 @@ import dpdata.vasp.xml
 import dpdata.vasp.outcar
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
-import dpdata.qe.traj
-import dpdata.qe.scf
+import dpdata.pwscf.traj
+import dpdata.siesta.output
+import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.cp2k.output
@@ -61,11 +62,10 @@ class System (MSONable) :
                 - ``auto``: infered from `file_name`'s extension
                 - ``lammps/lmp``: Lammps data
                 - ``lammps/dump``: Lammps dump
-                - ``deepmd/raw``: deepmd-kit raw
-                - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
-                - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
-
+                - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in' and file_name+'.pos'
+                - ``siesta/output``: siesta SCF output file
+                - ``siesta/aimd_output``: siesta aimd output file
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
@@ -85,11 +85,11 @@ class System (MSONable) :
         self.data['coords'] = []
 
         if data:
-            check_System(data)
-            self.data=data
-            return
+           check_System(data)
+           self.data=data
+           return
         if file_name is None :
-            return
+           return
         if fmt == 'auto':
             fmt = os.path.basename(file_name).split('.')[-1]
         if fmt == 'lmp' or fmt == 'lammps/lmp' :
@@ -98,18 +98,14 @@ class System (MSONable) :
             self.from_lammps_dump(file_name, type_map = type_map, begin = begin, step = step)
         elif fmt.lower() == 'poscar' or fmt.lower() == 'contcar' or fmt.lower() == 'vasp/poscar' or fmt.lower() == 'vasp/contcar':
             self.from_vasp_poscar(file_name)
-        elif fmt == 'deepmd' or fmt == 'deepmd/raw':
-            self.from_deepmd_raw(file_name, type_map = type_map)
-        elif fmt == 'deepmd/npy':
-            self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'qe/cp/traj':
-            self.from_qe_cp_traj(file_name, begin = begin, step = step)
+        elif fmt == 'pwscf/traj':
+            self.from_pwscf_traj(file_name, begin = begin, step = step)
+        elif fmt.lower() == 'siesta/output':
+            self.from_siesta_output(file_name)
+        elif fmt.lower() == 'siesta/aimd_output':
+            self.from_siesta_aiMD_output(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
-
-        if type_map is not None:
-            self.apply_type_map(type_map)
-
 
     def __repr__(self):
         return self.__str__()
@@ -157,10 +153,9 @@ class System (MSONable) :
         """dump .json or .yaml file """
         dumpfn(self.as_dict(),filename,indent=indent)
 
-
-    def map_atom_types(self,type_map=None):
+    def set_atom_types(self,type_map=None):
         """
-        Map the atom types of the system
+        Reset the type of the system
         Parameters
         ----------
         type_map :
@@ -172,8 +167,7 @@ class System (MSONable) :
 
         Returns
         -------
-        new_atom_types : list
-            The mapped atom types
+        system : System with specific type order
         """
         if isinstance(type_map,dict) or type_map is None:
            pass
@@ -193,8 +187,9 @@ class System (MSONable) :
         for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
             atom_types_list.extend([name]*numb)
         new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
-
-        return new_atom_types
+        _system=self.copy()
+        _system.data['atom_types']=new_atom_types
+        return _system
 
 
     def to_list(self):
@@ -311,56 +306,11 @@ class System (MSONable) :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
         return True
 
-    def sort_atom_names(self, type_map=None):
-        """
-        Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
-        to atom_names. If type_map is not given, atom_names will be sorted by
-        alphabetical order. If type_map is given, atom_names will be type_map. 
-
-        Parameters
-        ----------
-        type_map : list
-            type_map
-        """
-        if type_map is not None:
-            # assign atom_names index to the specify order
-            # atom_names must be a subset of type_map
-            assert (set(self.data['atom_names']).issubset(set(type_map)))
-            # for the condition that type_map is a proper superset of atom_names
-            new_atoms = set(type_map) - set(self.data["atom_names"])
-            if new_atoms:
-                self.add_atom_names(new_atoms)
-            # index that will sort an array by type_map
-            # a[as[a]] == b[as[b]]  as == argsort
-            # as[as[b]] == as^{-1}[b]
-            # a[as[a][as[as[b]]]] = b[as[b][as^{-1}[b]]] = b[id]
-            idx = np.argsort(self.data['atom_names'])[np.argsort(np.argsort(type_map))]
-        else:
-            # index that will sort an array by alphabetical order
-            idx = np.argsort(self.data['atom_names'])
-        # sort atom_names, atom_numbs, atom_types by idx
+    def sort_atom_names(self):
+        idx = np.argsort(self.data['atom_names'])
         self.data['atom_names'] = list(np.array(self.data['atom_names'])[idx])
         self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'])[idx])
         self.data['atom_types'] = np.argsort(idx)[self.data['atom_types']]
-
-    def check_type_map(self, type_map):
-        """
-        Assign atom_names to type_map if type_map is given and different from
-        atom_names.
-
-        Parameters
-        ----------
-        type_map : list
-            type_map       
-        """
-        if type_map is not None and type_map != self.data['atom_names']:
-            self.sort_atom_names(type_map=type_map)
-
-    def apply_type_map(self, type_map) :
-        if type_map is not None and type(type_map) is list:
-            self.check_type_map(type_map)
-        else:
-            raise RuntimeError('invalid type map, cannot be applied')
 
     def sort_atom_types(self):
         idx = np.argsort(self.data['atom_types'])
@@ -458,53 +408,41 @@ class System (MSONable) :
             fp.write(w_str)
 
 
-    def from_qe_cp_traj(self,
+    def from_pwscf_traj(self,
                         prefix,
                         begin = 0,
                         step = 1) :
-        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
             )
         self.rot_lower_triangular()
 
+    def from_siesta_output(self, fname):
+        self.data['atom_names'], \
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.output.obtain_frame(fname)
+        # self.rot_lower_triangular()
 
-    def from_deepmd_comp(self, folder, type_map = None) :
-        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = False)
 
-    def from_deepmd_raw(self, folder, type_map = None) :
-        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = False)
-        if tmp_data is not None :
-            self.data = tmp_data
-
-    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
-        """
-        Dump the system in deepmd compressed format (numpy binary) to `folder`.
-
-        The frames are firstly split to sets, then dumped to seperated subfolders named as `folder/set.000`, `folder/set.001`, ....
-
-        Each set contains `set_size` frames.
-        The last set may have less frames than `set_size`.
-
-        Parameters
-        ----------
-        folder : str
-            The output folder
-        set_size : int
-            The size of each set.
-        prec: {numpy.float32, numpy.float64}
-            The floating point precision of the compressed data
-        """
-        dpdata.deepmd.comp.dump(folder, self.data,
-                                set_size = set_size,
-                                comp_prec = prec)
-
-    def to_deepmd_raw(self, folder) :
-        """
-        Dump the system in deepmd raw format to `folder`
-        """
-        dpdata.deepmd.raw.dump(folder, self.data) 
+    def from_siesta_aiMD_output(self, fname):
+        self.data['atom_names'], \
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.aiMD_output.get_aiMD_frame(fname)
+        #self.rot_lower_triangular()
 
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
@@ -550,7 +488,6 @@ class System (MSONable) :
         self.data['atom_names'].extend(atom_names)
         self.data['atom_numbs'].extend([0 for _ in atom_names])
 
-
 class LabeledSystem (System):
     '''
     The labeled data System
@@ -586,11 +523,10 @@ class LabeledSystem (System):
                 - ``vasp/outcar``: vasp OUTCAR
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
-                - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
-                - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
+                - ``pwscf/traj``: pwscf trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
+                - ``siesta/output``: siesta SCF output file
+                - ``siesta/aimd_output``: siesta aimd output file
                 - ``gaussian/log``: gaussian logs
-                - ``gaussian/md``: gaussian ab initio molecular dynamics
-                - ``cp2k/output``: cp2k output file
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -619,22 +555,18 @@ class LabeledSystem (System):
             self.from_deepmd_raw(file_name, type_map = type_map)
         elif fmt == 'deepmd/npy':
             self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'qe/cp/traj':
-            self.from_qe_cp_traj(file_name, begin = begin, step = step)
-        elif fmt == 'qe/pw/scf':
-            self.from_qe_pw_scf(file_name)
+        elif fmt == 'pwscf/traj':
+            self.from_pwscf_traj(file_name, begin = begin, step = step)
+        elif fmt.lower() == 'siesta/output':
+            self.from_siesta_output(file_name)
+        elif fmt.lower() == 'siesta/aimd_output':
+            self.from_siesta_aiMD_output(file_name)
         elif fmt == 'gaussian/log':
             self.from_gaussian_log(file_name)
-        elif fmt == 'gaussian/md':
-            self.from_gaussian_log(file_name, md=True)
         elif fmt == 'cp2k/output':
             self.from_cp2k_output(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
-
-        if type_map is not None:
-            self.apply_type_map(type_map)
-
 
     def __repr__(self):
         return self.__str__()
@@ -668,9 +600,10 @@ class LabeledSystem (System):
           raise RuntimeError("Unspported data structure")
        return self.__class__.from_dict({'data':self_copy.data})
 
+
     def has_virial(self) :
-        # return ('virials' in self.data) and (len(self.data['virials']) > 0)
-        return ('virials' in self.data)
+        return ('virials' in self.data) and (len(self.data['virials']) > 0)
+
 
     def from_vasp_xml(self, file_name, begin = 0, step = 1) :
         self.data['atom_names'], \
@@ -707,12 +640,10 @@ class LabeledSystem (System):
             self.data['coords'], \
             self.data['energies'], \
             self.data['forces'], \
-            tmp_virial, \
+            self.data['virials'], \
             = dpdata.vasp.outcar.get_frames(file_name, begin = begin, step = step)
-        if tmp_virial is not None :
-            self.data['virials'] = tmp_virial
         # scale virial to the unit of eV
-        if 'virials' in self.data :
+        if len(self.data['virials']) != 0 :
             v_pref = 1 * 1e3 / 1.602176621e6
             for ii in range (self.get_nframes()) :
                 vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
@@ -739,46 +670,92 @@ class LabeledSystem (System):
         return trans
 
 
-    def from_deepmd_comp(self, folder, type_map = None) :
-        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = True)
-
-
     def from_deepmd_raw(self, folder, type_map = None) :
-        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = True)
+        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map)
         if tmp_data is not None :
             self.data = tmp_data
 
 
-    def from_qe_cp_traj(self, prefix, begin = 0, step = 1) :
-        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+    def to_deepmd_raw(self, folder) :
+        """
+        Dump the system in deepmd raw format to `folder`
+        """
+        dpdata.deepmd.raw.dump(folder, self.data)
+
+
+    def from_deepmd_comp(self, folder, type_map = None) :
+        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map)
+
+
+    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
+        """
+        Dump the system in deepmd compressed format (numpy binary) to `folder`.
+
+        The frames are firstly split to sets, then dumped to seperated subfolders named as `folder/set.000`, `folder/set.001`, ....
+
+        Each set contains `set_size` frames.
+        The last set may have less frames than `set_size`.
+
+        Parameters
+        ----------
+        folder : str
+            The output folder
+        set_size : int
+            The size of each set.
+        prec: {numpy.float32, numpy.float64}
+            The floating point precision of the compressed data
+        """
+        dpdata.deepmd.comp.dump(folder, self.data,
+                                set_size = set_size,
+                                comp_prec = prec)
+
+
+    def from_pwscf_traj(self, prefix, begin = 0, step = 1) :
+        self.data = dpdata.pwscf.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
             )
         self.data['energies'], self.data['forces'] \
-            = dpdata.qe.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
+            = dpdata.pwscf.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
+        self.data['virials'] = []
         self.rot_lower_triangular()
 
-    def from_qe_pw_scf(self, file_name) :
+    def from_siesta_output(self, file_name) :
         self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            self.data['virials'], \
-            = dpdata.qe.scf.get_frame(file_name)
-        self.rot_lower_triangular()
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.output.obtain_frame(file_name)
+        # self.rot_lower_triangular()
 
-    def from_gaussian_log(self, file_name, md=False):
+    def from_siesta_aiMD_output(self, file_name):
+        self.data['atom_names'], \
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.aiMD_output.get_aiMD_frame(file_name)
+        # self.rot_lower_triangular()
+
+
+    def from_gaussian_log(self, file_name):
         try:
-            self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
+            self.data = dpdata.gaussian.log.to_system_data(file_name)
+            self.data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]]])
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
-
+        self.data['virials'] = []
 
     def from_cp2k_output(self, file_name) :
+        self.data['virials'] = []
         self.data['atom_names'], \
             self.data['atom_numbs'], \
             self.data['atom_types'], \
@@ -807,7 +784,7 @@ class LabeledSystem (System):
         tmp_sys.data = System.sub_system(self, f_idx).data
         tmp_sys.data['energies'] = self.data['energies'][f_idx]
         tmp_sys.data['forces'] = self.data['forces'][f_idx]
-        if 'virials' in self.data:
+        if len(self.data['virials']) != 0 :
             tmp_sys.data['virials'] = self.data['virials'][f_idx]
         return tmp_sys
 
@@ -828,11 +805,11 @@ class LabeledSystem (System):
         for ii in ['atom_pref']:
             if ii in self.data:
                 tgt.append(ii)
-        if ('virials' in system.data) and ('virials' not in self.data):
+        if len(system.data['virials']) != 0 and len(self.data['virials']) == 0:
             raise RuntimeError('system has virial, but this does not')
-        if ('virials' not in system.data) and ('virials' in self.data):
+        if len(system.data['virials']) == 0 and len(self.data['virials']) != 0:
             raise RuntimeError('this has virial, but system does not')
-        if 'virials' in system.data :
+        if len(system.data['virials']) != 0 :
             tgt.append('virials')
         for ii in tgt:
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
@@ -844,24 +821,18 @@ class LabeledSystem (System):
             if ii in self.data:
                 self.data[ii] = self.data[ii][:, idx]
 
-
 class MultiSystems:
     '''A set containing several systems.'''
 
-    def __init__(self, *systems, type_map=None):
+    def __init__(self, *systems):
         """
         Parameters
         ----------
         systems : System
             The systems contained
-        type_map : list of str
-            Maps atom type to name
         """
         self.systems = {}
-        if type_map is not None:
-            self.atom_names = type_map
-        else:
-            self.atom_names = []
+        self.atom_names = []
         self.append(*systems)
 
     def __getitem__(self, key):
@@ -971,29 +942,27 @@ def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
     assert( isinstance(data,dict) )
     assert( set(data.keys())==keys )
-    if len(data['coords']) > 0 :
-        assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
-    else :
-        assert( len(data['atom_types'])==sum(data['atom_numbs']) )        
+    assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
     assert( len(data['cells']) == len(data['coords']) )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
 def check_LabeledSystem(data):
     keys={'atom_names', 'atom_numbs', 'atom_types', 'cells', 'coords', 'energies',
-           'forces', 'orig'}
+           'forces', 'orig', 'virials'}
+    if 'virials' in data.keys():
+        pass
+    else:
+        data['virials']=[]
 
-    assert( keys.issubset(set(data.keys())) )
+    assert( set(data.keys())==keys )
     assert( isinstance(data,dict) )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
-    if len(data['coords']) > 0 :
-        assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
+    assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
+    if len(data['virials'])>0:
+       assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
     else:
-        assert( len(data['atom_types']) ==sum(data['atom_numbs'])  )
-    if 'virials' in data:
-        assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
-    else:
-        assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
+       assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
 
 
 def elements_index_map(elements,standard=False,inverse=False):
