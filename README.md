@@ -1,11 +1,15 @@
-**dpdata** is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats.
+**dpdata** is a python package for manipulating DeePMD-kit, VASP(Gaussian, PWSCF or SIESTA), LAMMPS data formats.
 dpdata only works with python 3.x.
+
+The source code link is as follows:
+
+dpdata: https://github.com/deepmodeling/dpdata
 
 
 # Installation
 One can download the source code of dpdata by 
 ```bash
-git clone https://github.com/deepmodeling/dpdata.git dpdata
+git clone https://github.com/LiuGroupHNU/dpdata.git dpdata
 ```
 then use `setup.py` to install the module
 ```bash
@@ -49,6 +53,17 @@ d_outcar = dpdata.LabeledSystem('OUTCAR')
 ```
 The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any), are loaded by `LabeledSystem`. It is noted that the forces of atoms are always assumed to exist. `LabeledSystem` is a derived class of `System`.
 
+Provide siesta technical support for dpdata
+
+SIESTA SCF calculation output file: scf_output    (only a frame)
+```python
+ret_scf  = dpdata.LabeledSystem('scf_output', fmt='siesta/output')
+```
+SIESTA aiMD calculation output file: aimd_output  (contain a lot of frames)
+```python
+ret_aimd = dpdata.LabeledSystem('aimd_output', fmt='siesta/aimd_output')
+```
+
 The `System` or `LabeledSystem` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
 
 | Software| format | multi frames | labeled | class	    | format key    |
@@ -58,16 +73,13 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | vasp    | xml    | True         | True    | LabeledSystem | 'vasp/xml'    |	
 | lammps  | lmp    | False        | False   | System        | 'lammps/lmp'  |
 | lammps  | dump   | True         | False   | System        | 'lammps/dump' |
-| deepmd  | raw    | True         | False   | System	    | 'deepmd/raw'  |
-| deepmd  | npy    | True         | False   | System        | 'deepmd/npy'  |
 | deepmd  | raw    | True         | True    | LabeledSystem | 'deepmd/raw'  |
-| deepmd  | npy    | True         | True    | LabeledSystem | 'deepmd/npy'  |
 | gaussian| log    | False        | True    | LabeledSystem | 'gaussian/log'|
-| gaussian| log    | True         | True    | LabeledSystem | 'gaussian/md' |
-| cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output' |
-| QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
-| QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
-| QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
+| siesta  | output | False        | True    | LabeledSystem | 'siesta/output'|
+| siesta  | aimd_output| True        | True    | LabeledSystem | 'siesta/aimd_output'|
+| cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output'|
+
+
 
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
