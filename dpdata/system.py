@@ -9,6 +9,8 @@ import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.qe.traj
 import dpdata.qe.scf
+import dpdata.siesta.output
+import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.cp2k.output
@@ -65,7 +67,8 @@ class System (MSONable) :
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
-
+                - ``siesta/output``: siesta SCF output file
+                - ``siesta/aimd_output``: siesta aimd output file
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
@@ -104,6 +107,10 @@ class System (MSONable) :
             self.from_deepmd_comp(file_name, type_map = type_map)
         elif fmt == 'qe/cp/traj':
             self.from_qe_cp_traj(file_name, begin = begin, step = step)
+        elif fmt.lower() == 'siesta/output':
+            self.from_siesta_output(file_name)
+        elif fmt.lower() == 'siesta/aimd_output':
+            self.from_siesta_aiMD_output(file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -506,6 +513,30 @@ class System (MSONable) :
         """
         dpdata.deepmd.raw.dump(folder, self.data) 
 
+    def from_siesta_output(self, fname):
+        self.data['atom_names'], \
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.output.obtain_frame(fname)
+        # self.rot_lower_triangular()
+
+
+    def from_siesta_aiMD_output(self, fname):
+        self.data['atom_names'], \
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.aiMD_output.get_aiMD_frame(fname)
+    
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
         self.data['cells'][f_idx] = np.matmul(self.data['cells'][f_idx], trans)
@@ -588,6 +619,8 @@ class LabeledSystem (System):
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
+                - ``siesta/output``: siesta SCF output file
+                - ``siesta/aimd_output``: siesta aimd output file
                 - ``gaussian/log``: gaussian logs
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
@@ -623,6 +656,10 @@ class LabeledSystem (System):
             self.from_qe_cp_traj(file_name, begin = begin, step = step)
         elif fmt == 'qe/pw/scf':
             self.from_qe_pw_scf(file_name)
+        elif fmt.lower() == 'siesta/output':
+            self.from_siesta_output(file_name)
+        elif fmt.lower() == 'siesta/aimd_output':
+            self.from_siesta_aiMD_output(file_name)
         elif fmt == 'gaussian/log':
             self.from_gaussian_log(file_name)
         elif fmt == 'gaussian/md':
@@ -770,7 +807,30 @@ class LabeledSystem (System):
             self.data['virials'], \
             = dpdata.qe.scf.get_frame(file_name)
         self.rot_lower_triangular()
+    
+    def from_siesta_output(self, file_name) :
+        self.data['atom_names'], \
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.output.obtain_frame(file_name)
+        # self.rot_lower_triangular()
 
+    def from_siesta_aiMD_output(self, file_name):
+        self.data['atom_names'], \
+        self.data['atom_numbs'], \
+        self.data['atom_types'], \
+        self.data['cells'], \
+        self.data['coords'], \
+        self.data['energies'], \
+        self.data['forces'], \
+        self.data['virials'] \
+            = dpdata.siesta.aiMD_output.get_aiMD_frame(file_name)
+    
     def from_gaussian_log(self, file_name, md=False):
         try:
             self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
