@@ -6,7 +6,7 @@ import dpdata
 ry2ev = 13.605693009
 hartree2ev = 27.211386018
 bohr2ang = 0.52917721067
-kbar2evperang3 = 1./1602
+kbar2evperang3 = 1e3 / 1.602176621e6
 
 length_convert = bohr2ang
 energy_convert = hartree2ev
