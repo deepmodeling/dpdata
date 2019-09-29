@@ -519,12 +519,9 @@ class System (MSONable) :
         self.data['atom_types'], \
         self.data['cells'], \
         self.data['coords'], \
-        self.data['energies'], \
-        self.data['forces'], \
-        self.data['virials'] \
+        _e, _f, _v \
             = dpdata.siesta.output.obtain_frame(fname)
         # self.rot_lower_triangular()
-
 
     def from_siesta_aiMD_output(self, fname):
         self.data['atom_names'], \
@@ -532,9 +529,7 @@ class System (MSONable) :
         self.data['atom_types'], \
         self.data['cells'], \
         self.data['coords'], \
-        self.data['energies'], \
-        self.data['forces'], \
-        self.data['virials'] \
+        _e, _f, _v \
             = dpdata.siesta.aiMD_output.get_aiMD_frame(fname)
     
     def affine_map(self, trans, f_idx = 0) :
