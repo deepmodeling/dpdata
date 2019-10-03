@@ -10,13 +10,22 @@ def load_type(folder, type_map = None) :
     for ii in range (ntypes) :
         data['atom_numbs'].append(np.count_nonzero(data['atom_types'] == ii))
     data['atom_names'] = []
-    if type_map == None :
+    # if find type_map.raw, use it
+    if os.path.isfile(os.path.join(folder, 'type_map.raw')) :
+        with open(os.path.join(folder, 'type_map.raw')) as fp:
+            my_type_map = fp.read().split()
+    # else try to use arg type_map 
+    elif type_map is not None:
+        my_type_map = type_map
+    # in the last case, make artificial atom names
+    else:
+        my_type_map = []
         for ii in range(ntypes) :
-            data['atom_names'].append('Type_%d' % ii)
-    else :
-        assert(len(type_map) >= len(data['atom_numbs']))
-        for ii in range(len(data['atom_numbs'])) :
-            data['atom_names'].append(type_map[ii])
+            my_type_map.append('Type_%d' % ii)
+    assert(len(my_type_map) >= len(data['atom_numbs']))
+    for ii in range(len(data['atom_numbs'])) :
+        data['atom_names'].append(my_type_map[ii])
+
     return data
 
 
@@ -49,6 +58,7 @@ def dump (folder, data) :
     os.makedirs(folder, exist_ok = True)
     nframes = data['cells'].shape[0]
     np.savetxt(os.path.join(folder, 'type.raw'),    data['atom_types'], fmt = '%d')
+    np.savetxt(os.path.join(folder, 'type_map.raw'),    data['atom_names'], fmt = '%s')
     np.savetxt(os.path.join(folder, 'box.raw'),     np.reshape(data['cells'],    [nframes,  9]))
     np.savetxt(os.path.join(folder, 'coord.raw'),   np.reshape(data['coords'],   [nframes, -1]))
     if 'energies' in data :

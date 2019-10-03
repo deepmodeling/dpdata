@@ -66,6 +66,7 @@ def dump(folder,
             raise RuntimeError('found ' + str(sets) + ' in ' + folder + 'not a clean deepmd raw dir. please firstly clean set.* then try compress')
     # dump raw 
     np.savetxt(os.path.join(folder, 'type.raw'), data['atom_types'], fmt = '%d')    
+    np.savetxt(os.path.join(folder, 'type_map.raw'),    data['atom_names'], fmt = '%s')
     # reshape frame properties and convert prec
     nframes = data['cells'].shape[0]
     cells  = np.reshape(data['cells'],    [nframes,  9]).astype(comp_prec)

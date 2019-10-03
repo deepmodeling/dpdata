@@ -33,6 +33,104 @@ class TestDeepmdDumpRaw(unittest.TestCase, CompLabeledSys):
             shutil.rmtree('tmp.deepmd')
 
 
+class TestDeepmdTypeMap(unittest.TestCase):
+    def tearDown(self) :
+        if os.path.exists('tmp.deepmd'):
+            shutil.rmtree('tmp.deepmd')
+
+    def test_type_map (self) :
+        system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
+                                        fmt = 'vasp/outcar')
+        system_1.to_deepmd_raw('tmp.deepmd')
+        with open(os.path.join('tmp.deepmd', 'type_map.raw')) as fp:
+            tm = fp.read().split()
+        self.assertEqual(tm, ['O', 'H'])
+        self.assertEqual(system_1['atom_names'], ['O', 'H'])
+        self.assertEqual(system_1['atom_types'][0], 0)
+        self.assertEqual(system_1['atom_types'][1], 0)
+        self.assertEqual(system_1['atom_types'][2], 1)
+        self.assertEqual(system_1['atom_types'][3], 1)
+        self.assertEqual(system_1['atom_types'][4], 1)
+        self.assertEqual(system_1['atom_types'][5], 1)
+
+    def test_type_map_load (self) :
+        system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
+                                        fmt = 'vasp/outcar')
+        system_1.to_deepmd_raw('tmp.deepmd')
+        system_2 = dpdata.LabeledSystem('tmp.deepmd')
+        self.assertEqual(system_2['atom_names'], ['O', 'H'])
+        self.assertEqual(system_2['atom_types'][0], 0)
+        self.assertEqual(system_2['atom_types'][1], 0)
+        self.assertEqual(system_2['atom_types'][2], 1)
+        self.assertEqual(system_2['atom_types'][3], 1)
+        self.assertEqual(system_2['atom_types'][4], 1)
+        self.assertEqual(system_2['atom_types'][5], 1)
+        self.assertEqual(system_2['atom_numbs'][0], 2)
+        self.assertEqual(system_2['atom_numbs'][1], 4)
+
+    def test_type_map_enforce (self) :
+        system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
+                                        fmt = 'vasp/outcar')
+        system_1.to_deepmd_raw('tmp.deepmd')
+        system_2 = dpdata.LabeledSystem('tmp.deepmd', type_map = ['H', 'O'])
+        self.assertEqual(system_2['atom_names'], ['H', 'O'])
+        self.assertEqual(system_2['atom_types'][0], 1)
+        self.assertEqual(system_2['atom_types'][1], 1)
+        self.assertEqual(system_2['atom_types'][2], 0)
+        self.assertEqual(system_2['atom_types'][3], 0)
+        self.assertEqual(system_2['atom_types'][4], 0)
+        self.assertEqual(system_2['atom_types'][5], 0)
+        self.assertEqual(system_2['atom_numbs'][0], 4)
+        self.assertEqual(system_2['atom_numbs'][1], 2)
+
+    def test_npy_type_map (self) :
+        system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
+                                        fmt = 'vasp/outcar')
+        system_1.to_deepmd_npy('tmp.deepmd')
+        with open(os.path.join('tmp.deepmd', 'type_map.raw')) as fp:
+            tm = fp.read().split()
+        self.assertEqual(tm, ['O', 'H'])
+        self.assertEqual(system_1['atom_names'], ['O', 'H'])
+        self.assertEqual(system_1['atom_types'][0], 0)
+        self.assertEqual(system_1['atom_types'][1], 0)
+        self.assertEqual(system_1['atom_types'][2], 1)
+        self.assertEqual(system_1['atom_types'][3], 1)
+        self.assertEqual(system_1['atom_types'][4], 1)
+        self.assertEqual(system_1['atom_types'][5], 1)
+
+    def test_npy_type_map_load (self) :
+        system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
+                                        fmt = 'vasp/outcar')
+        system_1.to_deepmd_npy('tmp.deepmd')
+        system_2 = dpdata.LabeledSystem('tmp.deepmd', fmt = 'deepmd/npy')
+        self.assertEqual(system_2['atom_names'], ['O', 'H'])
+        self.assertEqual(system_2['atom_types'][0], 0)
+        self.assertEqual(system_2['atom_types'][1], 0)
+        self.assertEqual(system_2['atom_types'][2], 1)
+        self.assertEqual(system_2['atom_types'][3], 1)
+        self.assertEqual(system_2['atom_types'][4], 1)
+        self.assertEqual(system_2['atom_types'][5], 1)
+        self.assertEqual(system_2['atom_numbs'][0], 2)
+        self.assertEqual(system_2['atom_numbs'][1], 4)
+
+    def test_npy_type_map_enforce (self) :
+        system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
+                                        fmt = 'vasp/outcar')
+        system_1.to_deepmd_npy('tmp.deepmd')
+        system_2 = dpdata.LabeledSystem('tmp.deepmd', type_map = ['H', 'O'], fmt = 'deepmd/npy')
+        self.assertEqual(system_2['atom_names'], ['H', 'O'])
+        self.assertEqual(system_2['atom_types'][0], 1)
+        self.assertEqual(system_2['atom_types'][1], 1)
+        self.assertEqual(system_2['atom_types'][2], 0)
+        self.assertEqual(system_2['atom_types'][3], 0)
+        self.assertEqual(system_2['atom_types'][4], 0)
+        self.assertEqual(system_2['atom_types'][5], 0)
+        self.assertEqual(system_2['atom_numbs'][0], 4)
+        self.assertEqual(system_2['atom_numbs'][1], 2)
+
+
+
+
 class TestDeepmdRawNoLabels(unittest.TestCase, CompSys) :
     def setUp (self) :
         self.system_1 = dpdata.System('poscars/POSCAR.h2o.md',
