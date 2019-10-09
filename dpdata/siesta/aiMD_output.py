@@ -118,7 +118,7 @@ def covert_dimension(arr, num):
 
 def get_aiMD_frame(fname):
     NumberOfSpecies = int(get_single_line_tail(fname, 'redata: Number of Atomic Species')[0])
-    atom_names = extract_keyword(fname, '%block Chemical_Species_label', NumberOfSpecies, 2, 3, 0, 3)[0].tolist()
+    atom_names = extract_keyword(fname, 'initatom: Reading input for the pseudopotentials and atomic orbitals', NumberOfSpecies, 4, 5, 0, 8)[0].tolist()
     tot_natoms = int(get_single_line_tail(fname, 'Number of atoms', 3)[0])
 
     atom_types = get_atom_types(fname, tot_natoms)
