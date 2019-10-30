@@ -67,7 +67,8 @@ def from_system_data(system, f_idx = 0, skip_zeros = True) :
         if ii == 0: continue
         ret += '%d ' % ii
     ret += '\n'
-    ret += 'cartesian\n'
+    # should use Cartesian for VESTA software
+    ret += 'Cartesian\n'
     atype = system['atom_types']
     posis = system['coords'][f_idx]    
     # atype_idx = [[idx,tt] for idx,tt in enumerate(atype)]
