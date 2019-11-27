@@ -59,8 +59,9 @@ Now Class dpdata.MultiSystems Only support gap/quip xyz  format file.
 The following commands relating to `Class dpdata.MultiSystems` may be useful.
 ```python
 # load data
-# note that the prefix 'file_name=' and 'fmt=' can NOT be omitted
-xyz_multi_systems = dpdata.MultiSystems(file_name='xyz_unittest.xyz', fmt='gap/xyz')
+# note that in the second case the prefix 'file_name=' and 'fmt=' can NOT be omitted
+xyz_multi_systems = dpdata.MultiSystems.from_file('tests/xyz/xyz_unittest.xyz','gap/xyz')
+xyz_multi_systems = dpdata.MultiSystems(file_name='tests/syz/xyz_unittest.xyz', fmt='gap/xyz')
 
 # print the multi_system infomation
 print(xyz_multi_systems)

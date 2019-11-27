@@ -6,7 +6,7 @@ from comp_sys import CompLabeledSys
 
 class TestGapxyz(unittest.TestCase, CompLabeledSys):
     def setUp (self) :
-        self.multi_systems = dpdata.MultiSystems(file_name='xyz/xyz_unittest.xyz', fmt='gap/xyz')
+        self.multi_systems = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','gap/xyz')
         self.system_1 = self.multi_systems.systems['B1C9']
         self.system_2 = dpdata.LabeledSystem('xyz/B1C9', fmt='deepmd')
         self.places = 6

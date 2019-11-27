@@ -905,7 +905,7 @@ class LabeledSystem (System):
 class MultiSystems:
     '''A set containing several systems.'''
 
-    def __init__(self, *systems, type_map=None,file_name=None, fmt=None):
+    def __init__(self, *systems,file_name=None, fmt=None,type_map=None):
         """
         Parameters
         ----------
@@ -914,9 +914,6 @@ class MultiSystems:
         type_map : list of str
             Maps atom type to name
         """
-        if all(type(ii)==str for ii in systems) and len(systems)>0:
-            raise RuntimeError("the prefix 'file_name=' and 'fmt=' can not be omitted"
-                "for example MultiSystems(file_name='water.xyz', fmt='gap/xyz')" )
         self.systems = {}
         if type_map is not None:
             self.atom_names = type_map
@@ -956,6 +953,10 @@ class MultiSystems:
        elif isinstance(others, list):
           return self.__class__(self, *others)
        raise RuntimeError("Unspported data structure")
+    
+    @classmethod
+    def from_file(cls,file_name,fmt,type_map=None):
+        return cls(file_name=file_name, fmt=fmt,type_map=type_map)
 
     def get_nframes(self) :
         """Returns number of frames in all systems"""
@@ -1017,6 +1018,7 @@ class MultiSystems:
         for info_dict in GapxyzSystems(filename):
             system=LabeledSystem(data=info_dict)
             self.append(system)
+
 
     def to_deepmd_raw(self, folder) :
         """
