@@ -19,7 +19,7 @@ from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
-from dpdata.xyz.gap_xyz import GapxyzSystems
+from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
 
 class System (MSONable) :
     '''
@@ -905,7 +905,7 @@ class LabeledSystem (System):
 class MultiSystems:
     '''A set containing several systems.'''
 
-    def __init__(self, *systems,file_name=None, fmt=None,type_map=None):
+    def __init__(self, *systems,type_map=None):
         """
         Parameters
         ----------
@@ -920,15 +920,6 @@ class MultiSystems:
         else:
             self.atom_names = []
         self.append(*systems)
-        if file_name is not None:
-            if fmt is None:
-                raise RuntimeError("must specify file format for file {}".format(file_name))
-            elif fmt == 'gap/xyz' or 'xyz':
-                self.from_gap_xyz_file(file_name)
-            else:
-                raise RuntimeError("unknown file format for file {} format {},now supported 'gap/xyz'".format(file_name, fmt))
-
-
 
     def __getitem__(self, key):
         """Returns proerty stored in System by key or by idx"""
@@ -955,8 +946,20 @@ class MultiSystems:
        raise RuntimeError("Unspported data structure")
     
     @classmethod
-    def from_file(cls,file_name,fmt,type_map=None):
-        return cls(file_name=file_name, fmt=fmt,type_map=type_map)
+    def from_file(cls,file_name,fmt):
+        multi_systems = cls()
+        multi_systems.load_systems_from_file(file_name=file_name,fmt=fmt)
+        return multi_systems
+    
+    def load_systems_from_file(self, file_name=None, fmt=None):
+        if file_name is not None:
+            if fmt is None:
+                raise RuntimeError("must specify file format for file {}".format(file_name))
+            elif fmt == 'quip/gap/xyz' or 'xyz':
+                self.from_quip_gap_xyz_file(file_name)
+            else:
+                raise RuntimeError("unknown file format for file {} format {},now supported 'quip/gap/xyz'".format(file_name, fmt))
+
 
     def get_nframes(self) :
         """Returns number of frames in all systems"""
@@ -1012,10 +1015,10 @@ class MultiSystems:
             system.add_atom_names(new_in_self)
         system.sort_atom_names()
 
-    def from_gap_xyz_file(self,filename):
-        # gap_xyz_systems = GapxyzSystems(filename)
-        # print(next(gap_xyz_systems))
-        for info_dict in GapxyzSystems(filename):
+    def from_quip_gap_xyz_file(self,filename):
+        # quip_gap_xyz_systems = QuipGapxyzSystems(filename)
+        # print(next(quip_gap_xyz_systems))
+        for info_dict in QuipGapxyzSystems(filename):
             system=LabeledSystem(data=info_dict)
             self.append(system)
 

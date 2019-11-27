@@ -4,9 +4,9 @@ import unittest
 from context import dpdata
 from comp_sys import CompLabeledSys
 
-class TestGapxyz(unittest.TestCase, CompLabeledSys):
+class TestQuipGapxyz(unittest.TestCase, CompLabeledSys):
     def setUp (self) :
-        self.multi_systems = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','gap/xyz')
+        self.multi_systems = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','quip/gap/xyz')
         self.system_1 = self.multi_systems.systems['B1C9']
         self.system_2 = dpdata.LabeledSystem('xyz/B1C9', fmt='deepmd')
         self.places = 6
@@ -14,9 +14,9 @@ class TestGapxyz(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 4
 
-class TestGapxyz2(unittest.TestCase, CompLabeledSys):
+class TestQuipGapxyz2(unittest.TestCase, CompLabeledSys):
     def setUp (self) :
-        self.system_temp0 = dpdata.MultiSystems(file_name='xyz/xyz_unittest.xyz', fmt='gap/xyz')
+        self.system_temp0 = dpdata.MultiSystems.from_file(file_name='xyz/xyz_unittest.xyz', fmt='quip/gap/xyz')
         self.system_1 = self.system_temp0.systems['B5C7']
         self.system_temp1 = dpdata.LabeledSystem('xyz/B1C9', fmt='deepmd')
         self.system_temp2 = dpdata.LabeledSystem('xyz/B5C7', fmt='deepmd')

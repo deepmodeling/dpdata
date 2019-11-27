@@ -8,9 +8,9 @@
 import numpy as np
 from collections import OrderedDict
 import re 
-class GapxyzSystems(object):
+class QuipGapxyzSystems(object):
     """
-    deal with GapxyzFile 
+    deal with QuipGapxyzFile 
     """
     def __init__(self, file_name):
         self.file_object = open(file_name, 'r')
