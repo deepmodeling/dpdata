@@ -6,6 +6,7 @@
 #     print(lines)
 #%% 
 import numpy as np
+from collections import OrderedDict
 import re 
 class GapxyzSystems(object):
     """
@@ -101,7 +102,7 @@ class GapxyzSystems(object):
             else:
                 raise RuntimeError("unknown field {}".format(kv_dict['key']))
 
-        type_num_dict = {}
+        type_num_dict = OrderedDict()
         atom_type_list = []
         type_map = {}
         temp_atom_max_index = 0
