@@ -9,8 +9,6 @@ class TestGapxyz(unittest.TestCase, CompLabeledSys):
         self.multi_systems = dpdata.MultiSystems(file_name='xyz/xyz_unittest.xyz', fmt='gap/xyz')
         self.system_1 = self.multi_systems.systems['B1C9']
         self.system_2 = dpdata.LabeledSystem('xyz/B1C9', fmt='deepmd')
-        print(111,self.system_1.data)
-        print(222,self.system_2.data)
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -24,8 +22,6 @@ class TestGapxyz2(unittest.TestCase, CompLabeledSys):
         self.system_temp2 = dpdata.LabeledSystem('xyz/B5C7', fmt='deepmd')
         self.system_temp3 = dpdata.MultiSystems(self.system_temp2, self.system_temp1)
         self.system_2 = self.system_temp3.systems['B5C7']
-        print(333,self.system_1.data)
-        print(444,self.system_2.data)
         self.places = 6
         self.e_places = 6
         self.f_places = 6
