@@ -1,3 +1,4 @@
+#%%
 import os
 import numpy as np
 import dpdata.lammps.lmp
@@ -18,6 +19,7 @@ from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
+from dpdata.xyz.gap_xyz import GapxyzSystems
 
 class System (MSONable) :
     '''
@@ -312,8 +314,8 @@ class System (MSONable) :
         for ii in ['atom_numbs', 'atom_names'] :
             assert(system.data[ii] == self.data[ii])
         for ii in ['atom_types','orig'] :
-            eq = (system.data[ii] == self.data[ii])
-            assert(eq.all())
+            eq = [v1==v2 for v1,v2 in zip(system.data[ii], self.data[ii])]
+            assert(all(eq))
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
         return True
@@ -903,7 +905,7 @@ class LabeledSystem (System):
 class MultiSystems:
     '''A set containing several systems.'''
 
-    def __init__(self, *systems, type_map=None):
+    def __init__(self, *systems, type_map=None,file_name=None, fmt=None):
         """
         Parameters
         ----------
@@ -918,6 +920,15 @@ class MultiSystems:
         else:
             self.atom_names = []
         self.append(*systems)
+        if file_name is not None:
+            if fmt is None:
+                raise RuntimeError(f'must specify file format for file {file_name}')
+            elif fmt == 'gap/xyz' or 'xyz':
+                self.from_gap_xyz_file(file_name)
+            else:
+                raise RuntimeError(f"unknown file format for file {file_name} format {fmt},supported 'gap/xyz'")
+
+
 
     def __getitem__(self, key):
         """Returns proerty stored in System by key or by idx"""
@@ -997,6 +1008,13 @@ class MultiSystems:
             system.add_atom_names(new_in_self)
         system.sort_atom_names()
 
+    def from_gap_xyz_file(self,filename):
+        # gap_xyz_systems = GapxyzSystems(filename)
+        # print(next(gap_xyz_systems))
+        for info_dict in GapxyzSystems(filename):
+            system=LabeledSystem(data=info_dict)
+            self.append(system)
+
     def to_deepmd_raw(self, folder) :
         """
         Dump systems in deepmd raw format to `folder` for each system.
@@ -1053,9 +1071,12 @@ def check_LabeledSystem(data):
 
 def elements_index_map(elements,standard=False,inverse=False):
     if standard:
-       elements.sort(key=lambda x: Element(x).Z)
+        elements.sort(key=lambda x: Element(x).Z)
     if inverse:
-       return dict(zip(range(len(elements)),elements))
+        return dict(zip(range(len(elements)),elements))
     else:
-       return dict(zip(elements,range(len(elements))))
+        return dict(zip(elements,range(len(elements))))
 
+
+
+# %%
