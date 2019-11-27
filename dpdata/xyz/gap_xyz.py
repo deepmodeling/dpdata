@@ -34,14 +34,14 @@ class GapxyzSystems(object):
                 for ii in range(atom_num+1):
                     lines.append(self.file_object.readline())
                 if not lines[-1]:
-                    raise RuntimeError(f'this xyz file may lack of lines, should be {atom_num+2} lines, {lines}')
+                    raise RuntimeError("this xyz file may lack of lines, should be {};lines:{}".format(atom_num+2, lines))
                 yield lines
     
     @staticmethod
     def handle_single_xyz_frame(lines):
         atom_num = int(lines[0].strip('\n').strip())
         if len(lines) != atom_num + 2:
-            raise RuntimeError(f'format error, atom_num=={atom_num}, {len(lines)}!=atom_num+2')
+            raise RuntimeError("format error, atom_num=={}, {}!=atom_num+2".format(atom_num, len(lines)))
         data_format_line = lines[1].strip('\n').strip()+str(' ')
         p1 = re.compile(r'(?P<key>\S+)=(?P<quote>[\'\"]?)(?P<value>.*?)(?P=quote)\s+')
         p2 = re.compile(r'(?P<key>\w+?):(?P<datatype>[a-zA-Z]):(?P<value>\d+)')
@@ -72,41 +72,41 @@ class GapxyzSystems(object):
         for kv_dict in prop_list:
             if kv_dict['key'] == 'species':
                 if kv_dict['datatype'] != 'S':
-                    raise RuntimeError(f"datatype for species must be 'S' instead of {kv_dict['datatype']!r}")
+                    raise RuntimeError("datatype for species must be 'S' instead of {}".format(kv_dict['datatype']))
                 field_length = int(kv_dict['value'])
                 type_array = data_array[:,used_colomn:used_colomn+field_length].flatten()
                 used_colomn += field_length
                 continue
             elif kv_dict['key'] == 'pos':
                 if kv_dict['datatype'] != 'R':
-                    raise RuntimeError(f"datatype for pos must be 'R' instead of {kv_dict['datatype']!r}")
+                    raise RuntimeError("datatype for pos must be 'R' instead of {}".format(kv_dict['datatype']))
                 field_length = int(kv_dict['value'])
                 coords_array = data_array[:,used_colomn:used_colomn+field_length]
                 used_colomn += field_length
                 continue
             elif kv_dict['key'] == 'Z':
                 if kv_dict['datatype'] != 'I':
-                    raise RuntimeError(f"datatype for pos must be 'R' instead of {kv_dict['datatype']!r}")
+                    raise RuntimeError("datatype for pos must be 'R' instead of {}".format(kv_dict['datatype']))
                 field_length = int(kv_dict['value'])
                 Z_array = data_array[:,used_colomn:used_colomn+field_length].flatten()
                 used_colomn += field_length
                 continue
             elif kv_dict['key'] == 'force':
                 if kv_dict['datatype'] != 'R':
-                    raise RuntimeError(f"datatype for pos must be 'R' instead of {kv_dict['datatype']!r}")
+                    raise RuntimeError("datatype for pos must be 'R' instead of {}".format(kv_dict['datatype']))
                 field_length = int(kv_dict['value'])
                 force_array = data_array[:,used_colomn:used_colomn+field_length]
                 used_colomn += field_length
                 continue
             else:
-                raise RuntimeError(f"unknown field {kv_dict['key']}")
+                raise RuntimeError("unknown field {}".format(kv_dict['key']))
 
         type_num_dict = {}
         atom_type_list = []
         type_map = {}
         temp_atom_max_index = 0
         if type_array is None:
-            raise RuntimeError(f"type_array can't be None type, check .xyz file")
+            raise RuntimeError("type_array can't be None type, check .xyz file")
         for ii in type_array:
             if ii not in type_map:
                 type_map[ii] = temp_atom_max_index
@@ -127,8 +127,8 @@ class GapxyzSystems(object):
         else:
             virials = None
         info_dict = {}
-        info_dict['atom_names'] = type_num_array[:,0]
-        info_dict['atom_numbs'] = type_num_array[:,1].astype(int)
+        info_dict['atom_names'] = list(type_num_array[:,0])
+        info_dict['atom_numbs'] = list(type_num_array[:,1].astype(int))
         info_dict['atom_types'] = np.array(atom_type_list).astype(int)
         info_dict['cells'] = np.array([np.array(list(filter(bool,field_dict['Lattice'].split(' ')))).reshape(3,3)]).astype('float32')
         info_dict['coords'] = np.array([coords_array]).astype('float32')
@@ -137,22 +137,3 @@ class GapxyzSystems(object):
         info_dict['virials'] = virials
         info_dict['orig'] = [0,0,0]
         return info_dict
-#%%
-
-# print(lines, len(lines))
-        
-#%%
-
-
-
-
-# coords = np.array(list(filter(bool,field_dict['pos'].split(' ')))).reshape(3,3)
-    # if ii not in temp_type_list:
-    #     atom_type_list.append(ii)
-    #     type_dict[ii]+=1
-    # elif temp_type_list[-1]==ii:
-    #     type_dict[ii]+=1
-    # else:
-    #     raise RuntimeError(f"atom type must be in squeue,check .xyz file, type_array:{type_array}")
-
-# print(type_dict)

@@ -914,6 +914,9 @@ class MultiSystems:
         type_map : list of str
             Maps atom type to name
         """
+        if all(type(ii)==str for ii in systems) and len(systems)>0:
+            raise RuntimeError("the prefix 'file_name=' and 'fmt=' can not be omitted"
+                "for example MultiSystems(file_name='water.xyz', fmt='gap/xyz')" )
         self.systems = {}
         if type_map is not None:
             self.atom_names = type_map
@@ -922,11 +925,11 @@ class MultiSystems:
         self.append(*systems)
         if file_name is not None:
             if fmt is None:
-                raise RuntimeError(f'must specify file format for file {file_name}')
+                raise RuntimeError("must specify file format for file {}".format(file_name))
             elif fmt == 'gap/xyz' or 'xyz':
                 self.from_gap_xyz_file(file_name)
             else:
-                raise RuntimeError(f"unknown file format for file {file_name} format {fmt},supported 'gap/xyz'")
+                raise RuntimeError("unknown file format for file {} format {},now supported 'gap/xyz'".format(file_name, fmt))
 
 
 

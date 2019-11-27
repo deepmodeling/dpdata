@@ -51,6 +51,33 @@ The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any),
 
 The `System` or `LabeledSystem` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
 
+For `gap/quip xyz` files, single .xyz file may include many different configurations with different atom numbers and atom type.
+
+The Class `dpdata.MultiSystems`  can read data  this kind of file.
+Now Class dpdata.MultiSystems Only support gap/quip xyz  format file.
+
+The following commands relating to `Class dpdata.MultiSystems` may be useful.
+```python
+# load data
+# note that the prefix 'file_name=' and 'fmt=' can NOT be omitted
+xyz_multi_systems = dpdata.MultiSystems(file_name='xyz_unittest.xyz', fmt='gap/xyz')
+
+# print the multi_system infomation
+print(xyz_multi_systems)
+print(xyz_multi_systems.systems) # return a dictionaries
+
+# print the system infomation
+print(xyz_multi_systems.systems['B1C9'].data)
+
+# dump a system's data to ./my_work_dir/B1C9_raw folder
+xyz_multi_systems.systems['B1C9'].to_deepmd_raw('./my_work_dir/B1C9_raw')
+
+# dump all systems
+xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
+
+
+```
+
 | Software| format | multi frames | labeled | class	    | format key    |
 | ------- | :---   | :---:        | :---:   | :---          | :---          |
 | vasp	  | poscar | False        | False   | System	    | 'vasp/poscar' | 
@@ -70,6 +97,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
 | QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
 | QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
+|gap/quip|xyz|True|True|MultiSystems|'gap/xyz'|
 
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
