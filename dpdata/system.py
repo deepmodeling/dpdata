@@ -1,3 +1,4 @@
+#%%
 import os
 import numpy as np
 import dpdata.lammps.lmp
@@ -18,6 +19,7 @@ from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
+from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
 
 class System (MSONable) :
     '''
@@ -312,8 +314,8 @@ class System (MSONable) :
         for ii in ['atom_numbs', 'atom_names'] :
             assert(system.data[ii] == self.data[ii])
         for ii in ['atom_types','orig'] :
-            eq = (system.data[ii] == self.data[ii])
-            assert(eq.all())
+            eq = [v1==v2 for v1,v2 in zip(system.data[ii], self.data[ii])]
+            assert(all(eq))
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
         return True
@@ -903,7 +905,7 @@ class LabeledSystem (System):
 class MultiSystems:
     '''A set containing several systems.'''
 
-    def __init__(self, *systems, type_map=None):
+    def __init__(self, *systems,type_map=None):
         """
         Parameters
         ----------
@@ -942,6 +944,22 @@ class MultiSystems:
        elif isinstance(others, list):
           return self.__class__(self, *others)
        raise RuntimeError("Unspported data structure")
+    
+    @classmethod
+    def from_file(cls,file_name,fmt):
+        multi_systems = cls()
+        multi_systems.load_systems_from_file(file_name=file_name,fmt=fmt)
+        return multi_systems
+    
+    def load_systems_from_file(self, file_name=None, fmt=None):
+        if file_name is not None:
+            if fmt is None:
+                raise RuntimeError("must specify file format for file {}".format(file_name))
+            elif fmt == 'quip/gap/xyz' or 'xyz':
+                self.from_quip_gap_xyz_file(file_name)
+            else:
+                raise RuntimeError("unknown file format for file {} format {},now supported 'quip/gap/xyz'".format(file_name, fmt))
+
 
     def get_nframes(self) :
         """Returns number of frames in all systems"""
@@ -996,6 +1014,14 @@ class MultiSystems:
             # Previous atom_name not in this system
             system.add_atom_names(new_in_self)
         system.sort_atom_names()
+
+    def from_quip_gap_xyz_file(self,filename):
+        # quip_gap_xyz_systems = QuipGapxyzSystems(filename)
+        # print(next(quip_gap_xyz_systems))
+        for info_dict in QuipGapxyzSystems(filename):
+            system=LabeledSystem(data=info_dict)
+            self.append(system)
+
 
     def to_deepmd_raw(self, folder) :
         """
@@ -1053,9 +1079,12 @@ def check_LabeledSystem(data):
 
 def elements_index_map(elements,standard=False,inverse=False):
     if standard:
-       elements.sort(key=lambda x: Element(x).Z)
+        elements.sort(key=lambda x: Element(x).Z)
     if inverse:
-       return dict(zip(range(len(elements)),elements))
+        return dict(zip(range(len(elements)),elements))
     else:
-       return dict(zip(elements,range(len(elements))))
+        return dict(zip(elements,range(len(elements))))
 
+
+
+# %%
