@@ -65,7 +65,10 @@ The following commands relating to `Class dpdata.MultiSystems` may be useful.
 # load data
 
 xyz_multi_systems = dpdata.MultiSystems.from_file(file_name='tests/xyz/xyz_unittest.xyz',fmt='quip/gap/xyz')
-vasp_multi_systems =  dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='OUTCAR', fmt='vasp/outcar')
+vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='OUTCAR', fmt='vasp/outcar')
+
+# use wildcard
+vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='*OUTCAR', fmt='vasp/outcar')
 
 # print the multi_system infomation
 print(xyz_multi_systems)

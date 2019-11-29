@@ -1,5 +1,6 @@
 #%%
 import os
+import glob
 import numpy as np
 import dpdata.lammps.lmp
 import dpdata.lammps.dump
@@ -954,11 +955,7 @@ class MultiSystems:
     @classmethod
     def from_dir(cls,dir_name, file_name, fmt='auto'):
         multi_systems = cls()
-        target_file_list = []
-        for ii in os.walk(dir_name):
-            if file_name in ii[2]:
-                target_file = os.path.join(ii[0], file_name)
-                target_file_list.append(target_file)
+        target_file_list = glob.glob('./{}/**/{}'.format(dir_name, file_name), recursive=True)
         for target_file in target_file_list:
             multi_systems.append(LabeledSystem(file_name=target_file, fmt=fmt))
         return multi_systems
