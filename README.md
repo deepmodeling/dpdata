@@ -51,16 +51,24 @@ The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any),
 
 The `System` or `LabeledSystem` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
 
-For `quip/gap xyz` files, single .xyz file may include many different configurations with different atom numbers and atom type.
+The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
 
-The Class `dpdata.MultiSystems`  can read data  this kind of file.
-Now Class dpdata.MultiSystems Only support quip/gap xyz  format file.
+Use `dpdata.MultiSystems.from_dir` to read from a  directory, `dpdata.MultiSystems` will walk in the directory 
+Recursively  and  find all file with specific file_name. Supports all the file formats that `dpdata.LabeledSystem` supports.
+
+Use  `dpdata.MultiSystems.from_file` to read from single file. Now only support quip/gap/xyz  format file.
+
+For example, for `quip/gap xyz` files, single .xyz file may contain many different configurations with different atom numbers and atom type.
 
 The following commands relating to `Class dpdata.MultiSystems` may be useful.
 ```python
 # load data
 
-xyz_multi_systems = dpdata.MultiSystems.from_file('tests/xyz/xyz_unittest.xyz','quip/gap/xyz')
+xyz_multi_systems = dpdata.MultiSystems.from_file(file_name='tests/xyz/xyz_unittest.xyz',fmt='quip/gap/xyz')
+vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='OUTCAR', fmt='vasp/outcar')
+
+# use wildcard
+vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='*OUTCAR', fmt='vasp/outcar')
 
 # print the multi_system infomation
 print(xyz_multi_systems)

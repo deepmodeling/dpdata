@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-
-#%%
-# with open('./test.xyz', 'r') as xyz_file:
-#     lines = xyz_file.readlines()
-#     print(lines)
 #%% 
 import numpy as np
 from collections import OrderedDict
@@ -44,20 +39,16 @@ class QuipGapxyzSystems(object):
         if len(lines) != atom_num + 2:
             raise RuntimeError("format error, atom_num=={}, {}!=atom_num+2".format(atom_num, len(lines)))
         data_format_line = lines[1].strip('\n').strip()+str(' ')
-        p1 = re.compile(r'(?P<key>\S+)=(?P<quote>[\'\"]?)(?P<value>.*?)(?P=quote)\s+')
-        p2 = re.compile(r'(?P<key>\w+?):(?P<datatype>[a-zA-Z]):(?P<value>\d+)')
-        field_list = [kv_dict.groupdict() for kv_dict in p1.finditer(data_format_line)]
-        field_dict = {}
-        for item in field_list:
-            field_dict[item['key']]=item['value']
-        data_format_line = lines[1]
-        data_format_list= [m.groupdict() for m in p1.finditer(data_format_line)]
+        field_value_pattern= re.compile(r'(?P<key>\S+)=(?P<quote>[\'\"]?)(?P<value>.*?)(?P=quote)\s+')
+        prop_pattern = re.compile(r'(?P<key>\w+?):(?P<datatype>[a-zA-Z]):(?P<value>\d+)')
+
+        data_format_list= [kv_dict.groupdict() for kv_dict in field_value_pattern.finditer(data_format_line)]
         field_dict = {}
         for item in data_format_list:
             field_dict[item['key']]=item['value']
 
         Properties = field_dict['Properties']
-        prop_list = [m.groupdict() for m in p2.finditer(Properties)]
+        prop_list = [kv_dict.groupdict() for kv_dict in prop_pattern.finditer(Properties)]
 
         data_lines = []
         for line in lines[2:]:
@@ -127,6 +118,7 @@ class QuipGapxyzSystems(object):
             virials = np.array([np.array(list(filter(bool,field_dict['virial'].split(' ')))).reshape(3,3)]).astype('float32')
         else:
             virials = None
+
         info_dict = {}
         info_dict['atom_names'] = list(type_num_array[:,0])
         info_dict['atom_numbs'] = list(type_num_array[:,1].astype(int))
