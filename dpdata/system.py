@@ -950,7 +950,20 @@ class MultiSystems:
         multi_systems = cls()
         multi_systems.load_systems_from_file(file_name=file_name,fmt=fmt)
         return multi_systems
-    
+
+    @classmethod
+    def from_dir(cls,dir_name, file_name, fmt='auto'):
+        multi_systems = cls()
+        target_file_list = []
+        for ii in os.walk(dir_name):
+            if file_name in ii[2]:
+                target_file = os.path.join(ii[0], file_name)
+                target_file_list.append(target_file)
+        for target_file in target_file_list:
+            multi_systems.append(LabeledSystem(file_name=target_file, fmt=fmt))
+        return multi_systems
+
+
     def load_systems_from_file(self, file_name=None, fmt=None):
         if file_name is not None:
             if fmt is None:
@@ -1015,10 +1028,10 @@ class MultiSystems:
             system.add_atom_names(new_in_self)
         system.sort_atom_names()
 
-    def from_quip_gap_xyz_file(self,filename):
-        # quip_gap_xyz_systems = QuipGapxyzSystems(filename)
+    def from_quip_gap_xyz_file(self,file_name):
+        # quip_gap_xyz_systems = QuipGapxyzSystems(file_name)
         # print(next(quip_gap_xyz_systems))
-        for info_dict in QuipGapxyzSystems(filename):
+        for info_dict in QuipGapxyzSystems(file_name):
             system=LabeledSystem(data=info_dict)
             self.append(system)
 
