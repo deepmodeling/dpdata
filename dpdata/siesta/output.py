@@ -38,12 +38,16 @@ def extract_keyword(fout, keyword, down_line_num, begin_column, column_num):
             else:
                 flag = 0
                 continue
-            for i in range(begin_column, column_num):
-                if not value.split()[i].isalpha():
-                    ret.append(float(value.strip().split()[i]))
-                else:
-                    ret.append(value.strip().split()[i])
-            continue
+            if len(value.split()) >= column_num:
+                for i in range(begin_column, column_num):
+                    if not value.split()[i].isalpha():
+                        ret.append(float(value.strip().split()[i]))
+                    else:
+                        ret.append(value.strip().split()[i])
+            ## compatible siesta-4.0.2 and siesta-4.1-b4
+            else:
+                flag = 0
+                idx = 0
     file.close()
     return ret
 
@@ -55,6 +59,17 @@ def get_atom_types(fout, atomnums):
         atomtype.append(int(covert_type[i]) - 1)
     return atomtype
 
+def get_atom_name(fout):
+    file = open(fout, 'r')
+    ret = []
+    for value in file:
+        if 'Species number:' in value:
+            for j in range(len(value.split())):
+                if value.split()[j] == 'Label:':
+                    ret.append(value.split()[j+1])
+                    break              
+    file.close()
+    return ret
 
 def get_atom_numbs(atomtypes):
     atom_numbs = []
@@ -79,12 +94,11 @@ def get_virial(fout, cells):
 
 def obtain_frame(fname):
     NumberOfSpecies = int(get_single_line_tail(fname, 'redata: Number of Atomic Species')[0])
-    atom_names = extract_keyword(fname, 'initatom: Reading input for the pseudopotentials and atomic orbitals', NumberOfSpecies, 4, 5)
+    atom_names = get_atom_name(fname)
     tot_natoms = int(get_single_line_tail(fname, 'Number of atoms', 3)[0])
     atom_types = get_atom_types(fname, tot_natoms)
     atom_numbs = get_atom_numbs(atom_types)
     assert (max(atom_types) + 1 == NumberOfSpecies)
-
     cell = extract_keyword(fname, 'outcell: Unit cell vectors (Ang):', 3, 0, 3)
     coord = extract_keyword(fname, 'outcoor: Atomic coordinates (Ang):', tot_natoms, 0, 3)
     energy = get_single_line_tail(fname, 'siesta: E_KS(eV) =')
