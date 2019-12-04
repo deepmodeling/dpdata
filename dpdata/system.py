@@ -282,8 +282,8 @@ class System (MSONable) :
         tmp = System()
         for ii in ['atom_numbs', 'atom_names', 'atom_types', 'orig'] :
             tmp.data[ii] = self.data[ii]
-        tmp.data['cells'] = self.data['cells'][f_idx]
-        tmp.data['coords'] = self.data['coords'][f_idx]
+        tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
+        tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
         return tmp
 
 
@@ -863,10 +863,10 @@ class LabeledSystem (System):
         """
         tmp_sys = LabeledSystem()
         tmp_sys.data = System.sub_system(self, f_idx).data
-        tmp_sys.data['energies'] = self.data['energies'][f_idx]
-        tmp_sys.data['forces'] = self.data['forces'][f_idx]
+        tmp_sys.data['energies'] = np.atleast_1d(self.data['energies'][f_idx])
+        tmp_sys.data['forces'] = self.data['forces'][f_idx].reshape(-1, self.data['forces'].shape[1], 3)
         if 'virials' in self.data:
-            tmp_sys.data['virials'] = self.data['virials'][f_idx]
+            tmp_sys.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
         return tmp_sys
 
 
