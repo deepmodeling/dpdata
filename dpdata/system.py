@@ -579,6 +579,73 @@ class System (MSONable) :
         self.data['atom_names'].extend(atom_names)
         self.data['atom_numbs'].extend([0 for _ in atom_names])
 
+    def replicate(self, ncopy):
+        tmp = System()
+        nframes = self.get_nframes()
+        data = self.data
+        tmp.data['atom_names'] = data['atom_names'].copy()
+        tmp.data['atom_numbs'] = (np.array(data['atom_numbs'].copy()) * np.prod(ncopy)).tolist()
+        tmp.data['atom_types'] = np.sort(np.tile(data['atom_types'].copy(),np.prod(ncopy)))
+        tmp.data['cells'] = data['cells'].copy()
+        for ii in range(3):
+            tmp.data['cells'][:,ii,:] *= ncopy[ii]
+        tmp.data['coords'] = np.tile(data['coords'].copy(),tuple(ncopy)+(1,1,1))
+
+        for xx in range(ncopy[0]):
+            for yy in range(ncopy[1]):
+                for zz in range(ncopy[2]):
+                    tmp.data['coords'][xx,yy,zz,:,:,:] += xx * np.reshape(data['cells'][:,0,:], [-1,1,3])\
+                                                + yy * np.reshape(data['cells'][:,1,:], [-1,1,3])\
+                                                + zz * np.reshape(data['cells'][:,2,:], [-1,1,3])
+        tmp.data['coords'] = np.reshape(np.transpose(tmp.data['coords'], [3,4,0,1,2,5]), (nframes, -1 , 3))
+        return tmp
+
+
+
+    def perturb(self, pert_num, pert_fraction, pert_style):
+        """
+        np.random.randn return a 3*3 matrix , every element will be a sample of 
+        standard normal distribution N(0,1)
+        """
+        perturbed_system = System()
+        nframes = self.get_nframes() 
+        for ii in range(nframes):
+            for jj in range(pert_num):
+                tmp_system = self[ii].copy()
+                cell_perturb_matrix = np.identity(3) + get_perturb_matrix(pert_fraction, pert_style, False)
+                tmp_system.data['cells'][0] = np.matmul(tmp_system.data['cells'][0],cell_perturb_matrix)
+                tmp_system.data['coords'][0] = np.matmul(tmp_system.data['coords'][0],cell_perturb_matrix)
+                for coord in tmp_system.data['coords'][0]:
+                    atom_delta_matrix = get_perturb_matrix(pert_fraction, pert_style, True)
+                    atom_delta_distance_vector = np.dot(np.diag(atom_delta_matrix),tmp_system.data['cells'][0])
+                    # print(135,atom_delta_matrix,np.linalg.norm(atom_delta_matrix),atom_delta_distance_vector,np.linalg.norm(atom_delta_distance_vector), tmp_system.data['cells'][0],)
+                    tmp_system.data['coords'][0][ii] += atom_delta_distance_vector
+                perturbed_system.append(tmp_system)
+        return perturbed_system
+
+def get_perturb_matrix(pert_fraction, pert_style='uniform', diag_matrix_flag=True):
+    # perturb_matrix = None
+    delta_matrix = None
+    if pert_style == 'uniform':
+        if diag_matrix_flag is True:
+            delta_matrix = np.diag(np.random.rand(3) * 2 *pert_fraction - pert_fraction)
+        if diag_matrix_flag is False:
+            delta_matrix = np.tril(np.random.rand(3,3) * 2 *pert_fraction - pert_fraction)
+    elif pert_style == 'normal':
+        if diag_matrix_flag is True:
+            delta_matrix = np.diag(pert_fraction * np.random.randn(3))
+        if diag_matrix_flag is False:
+            delta_matrix = np.tril(pert_fraction * np.random.randn(3,3))
+    elif pert_style == 'const' : 
+        tmp_vec = np.random.rand(3)
+        tmp_vec = pert_fraction * tmp_vec/np.linalg.norm(tmp_vec)
+        delta_matrix = np.diag(tmp_vec)
+    if delta_matrix is None:
+        RuntimeError('unsupported options pert_style={}, diag_matrix_flag={}'.format(pert_style, diag_matrix_flag))
+    else:
+        pass
+        # perturb_matrix = np.identity(3) + delta_matrix
+    return delta_matrix
 
 class LabeledSystem (System):
     '''
