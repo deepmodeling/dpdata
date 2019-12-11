@@ -1,7 +1,6 @@
 **dpdata** is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats.
 dpdata only works with python 3.x.
 
-[TOC]
 
 # Installation
 One can download the source code of dpdata by 
