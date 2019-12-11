@@ -163,18 +163,166 @@ tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in
 
 # perturb
 dpdata will disturb the box size and shape and change atom coordinates  randomly.
-`pert_num` means for each frame in the system ,the frames perturbed number generated.
-`pert_fraction`  means the realatic length the box change and the atom moves in each atom configuration
-`pert_style` available options:`'uniform' 'normal' 'const'`. The distribution used to move box and atom coordinates.
-
-
-
-`uniform` will become uniform distribution on [-pert_fraction, pert_fraction)
-`normal` will become normal distribution N(0,pert_fraction^2)
-`const` means the box deform and relative distance  atoms move in the box will be a constant pert_fraction
-
-The direction atoms move and box deform is random.
-
 ```python3
-dpdata.System('./POSCAR').perturb(pert_num=3,  pert_fraction=0.05, pert_style='uniform')
+dpdata.System('./POSCAR').perturb(pert_num=3, 
+    box_pert_fraction=0.02, 
+    atom_pert_fraction=0.01, 
+    atom_pert_style='normal')
 ```
+
+### `pert_num`
+
+Each frame in the input system will generate `pert_num` frames.
+ That means the command will return a system containing `frames of input system * pert_num` frames.
+ 
+### `box_pert_fraction`
+A relative length that determines the length the box size change in each frame. It is just a fraction and doesn't have unit. Typlicaly, for cubic box with side length `a` ,  `a` will increase or decrease a random value from the intervel `[-a*box_pert_fraction, a*box_pert_fraction]`.
+
+It will also change the shape of the box. That means an orthogonal box will become a non-orthogonal box after perturbing. The angle of inclination of the box is a random variable.
+ `box_pert_fraction` is also relating to the probability distribution function of the angle.
+ 
+See more details about how it will change the box below.
+
+### `atom_pert_fraction`
+A relative length that determines the length atom moves in each frame. It is just a fraction and doesn't have unit. Typlicaly, for a cubic box with side length `a` , the mean value of the distance that atom  moves is approximate `a*atom_pert_fraction`.
+
+### `atom_pert_style`
+The probability distribution function used to change atom coordinates.
+available options:`'uniform' 'normal' 'const'`. 
+
+`uniform` means that if the box is a cube with side length `a`, how far atoms in the cube move is a random vector with max length `a*atom_pert_fraction `
+
+`normal` means the squares of the distance atoms move are subject to  a chi-square distribution (chi-square distribution can be seen as the sum of squares of normal distributed random variable. This is why we  name this option as 'normal'.).
+If the box is a cube with side length `a`, the mean value of the distance atom moves is `a*atom_pert_fraction `
+
+`const` means that if the box is a cube with side length `a`, the distance atom moves is always `a*atom_pert_fraction `(For triclinic box, the distances are not equal.)
+
+The direction atoms move and box deformation is random.
+
+See more details about how atoms will move below.
+
+## The perturb details
+---
+For each frame in the input system,dpdata will repeat the following steps `pert_num` times. That means the command will return a system containing `frames of input system * pert_num` frames.
+
+### first step: box deform, and atom moves correspondingly
+
+#### 1. generate a perturb matrix for box and atoms
+---
+dpdata will generate a perturb matrix
+
+$L_1=\begin{pmatrix}
+n_1+1 & n_2/2 & n_4/2 \\
+n_2/2 & n_3+1 & n_5/2 \\
+n_4/2 & n_5/2 & n_6+1
+\end{pmatrix}$
+
+$n_i,i\in\{1,2,3,4,5,6\}$ are independent variables which are subject to uniform
+distrubution  on interval $[-box\_pert\_fraction，box\_pert\_fraction]$. 
+That is $n_i \sim U(-box\_pert\_fraction，box\_pert\_fraction)$
+
+#### 2.box deforms
+---
+The origin box matrix of this frame is defined as $B_o$, usually with lower lower triangular matrix form. That is:
+
+$origin\_box\_matrix \equiv B_o=\begin{pmatrix}
+xx &  0 & 0 \\
+xy & yy &  0\\
+xz & yz & zz
+\end{pmatrix}$
+
+The box matrix after deformation will be
+$deformed\_box\_matrix \equiv B_d = B_o L_1$
+
+#### 3.atoms relocate in the new box.
+---
+The atom coordinates in this frame will change correspondingly. 
+That is,
+for atom with index $j, j \in\{0,1,2,3,...,atom\_num-1\}$ in the frame with coordinate $\vec r_j=(x_j, y_j, z_j)$,
+the coordinate after deformation $\vec r_{jd}$ will become the matrix multiplication of $r_j$ and $L_1$.
+That is:
+$\vec r_{jd} = \vec r_j L_1$
+
+### second step: perturb atoms randomly.
+
+#### 1. generate a random vector $\vec l_{j}$ for each atom 
+---
+
+For each atom with index $j, j \in\{0,1,2,3,...,atom\_num-1\}$ in the frame with coordinate $\vec r_{jd}=(x_{jd}, y_{jd}, z_{jd})$, dpdata will generate a random vector $\vec l_{j}=(l_{jx}, l_{jy}, l_{jz})$ .
+
+The method used to generate $\vec l_j$ is described below.
+
+:tada: if pert_style is 'normal':
+
+
+$l_{jx},l_{jy},l_{jz}$ are independent random variables which are subject to normal distribution with mean $\mu=0$ and variance $\sigma^2 = atom\_pert\_fraction^2/3$ . 
+That is:
+$l_{jx},l_{jy},l_{jz} \sim N(0,atom\_pert\_fraction^2/3)$
+
+$\Vert \vec l_{j} \Vert_2$ is the distance the atom moves, and it satisfies the following equation   $\Vert \vec l_{j}  \Vert_2^2=l_{jx}^2 + l_{jy}^2+l_{jz}^2$. 
+$3\Vert \vec l_{j}  \Vert_2^2/atom\_pert\_fraction^2$ will be object to the chi-square distribution with 3 degrees of freedom. That is:
+$\frac{3\Vert \vec l_{j}  \Vert_2^2}{atom\_pert\_fraction^2} \sim \chi(3)$
+The expectation value of $\Vert \vec l_{j}  \Vert_2$ will be `atom_pert_fraction` .That is:
+$E(\Vert \vec l_{j}  \Vert_2)=atom\_pert\_fraction$
+
+:tada: if pert_style is 'uniform':
+
+$\vec l_{j}$ will be a vector point to a random point inside a 3D unit sphere and its internal space.
+
+That is:
+$\{ \vec l_{j} \in \mathbb{R^3} |  \Vert \vec l_{j} \Vert_2 \leq atom\_pert\_fraction \}$.
+
+The point is chosen with equal probability. That means for arbitrary two subsets of the 3D sphere and its internal space $\{(x,y,z)|x,y,z\in\mathbb{R},x^2+y^2+z^2\leq atom\_pert\_fraction^2\}$, if the 'volume' of the subsets are equal, the probability that the random point is in them are equal.
+
+The following method is used to generate such $\vec l_{j}$.
+
+random direction  of equal probability
+>let $\vec x$ become a 3 dimension standard normal distribution. That is
+$\vec x=(x_1,x_2,x_3), x_i(i\in\{1,2,3\})\ are\ independent.$
+$x_i \sim N(0,1)$
+and 
+$\vec l_{j,unit\_surface}=\vec x /\Vert \vec x \Vert_2$
+Now $\vec l_{j,unit\_surface}$ point to a point located at the surface of the 3D unit sphere. 
+
+random point of equal probability
+> let $u$ become a random variable which is object to the uniform on interval [0,1]. That is:
+$u \sim U(0,1)$
+and define $v$ as the 3th root of $u$ (because it is 3 dimension), That is:
+$v\equiv u^{1/3}$
+Then the target vector $\vec l_{j}$ is
+$\vec l_{j}=atom\_pert\_fraction \cdot v \cdot \vec l_{j,unit\_surface}$
+
+:tada: if pert_style is 'const':
+
+$\vec l_j \equiv atom\_pert\_fraction \cdot \vec l_{j,unit\_surface}$
+
+The definition of $\vec l_{j,unit\_surface}$  is described in detail above.
+and it is obvious that
+$\Vert \vec l_{j}  \Vert_2=atom\_pert\_fraction$
+####  2. atom moves according to $\vec l_{j}$
+---
+
+After the $\vec l_j$ generated, the atom coordinates disturbed $\vec {r_{jd,disturbed}}$ will become
+$\vec {r_{jd,disturbed}}=\vec r_{jd}+\vec l_{j} B_d$
+
+
+$B_d$ is  the box matrix after deformatiion, described in first step
+$\vec r_{jd}$ is the coordinate of atom j after deformatiion, described in first step.
+
+### the results the method System.perturb() return
+---
+
+At the beginning, dpdata will create an empty system.
+```python
+perturbed_system = System()
+```
+After every single perturbed frame is generated, it will be appended to the `perturbed_system`.
+
+perturbed_system will contain `pert_num * frames of the input system` frames.
+
+$B_d$ will be used as the final box matrix in the perturbed frame(that is `System.data['cells'][0]`)
+$\vec {r_{jd,disturbed}}$ will be used as the final coordinates in the perturbed frame (that is `System.data['coords'][0][j]`)
+> note: 0 means the index of the frame, j means atom index, 
+
+ Finally dpdata will return `perturbed_system` as results.
+ 
