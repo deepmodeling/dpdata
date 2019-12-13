@@ -601,7 +601,7 @@ class System (MSONable) :
         if len(ncopy) !=3:
             raise RuntimeError('ncopy must be a list or tuple with 3 int')
         for ii in ncopy:
-            if type(ncopy(ii)) is not int:
+            if type(ii) is not int:
                 raise RuntimeError('ncopy must be a list or tuple must with 3 int')
         
         tmp = System()
