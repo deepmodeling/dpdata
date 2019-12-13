@@ -163,11 +163,12 @@ tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in
 
 # perturb
 dpdata will disturb the box size and shape and change atom coordinates  randomly.
-```python3
-dpdata.System('./POSCAR').perturb(pert_num=3, 
-    box_pert_fraction=0.1, 
-    atom_pert_fraction=0.05, 
+```python
+perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3, 
+    box_pert_fraction=0.05, 
+    atom_pert_distance=0.6, 
     atom_pert_style='normal')
+print(perturbed_system.data)
 ```
 
 ### `pert_num`
@@ -179,16 +180,13 @@ That means the command will return a system containing `frames of input system *
 A relative length that determines the length the box size change in each frame. It is just a fraction and doesn't have unit. Typlicaly, for cubic box with side length `side_length` ,  `side_length` will increase or decrease a random value from the intervel `[-side_length*box_pert_fraction, side_length*box_pert_fraction]`.
 
 It will also change the shape of the box. That means an orthogonal box will become a non-orthogonal box after perturbing. The angle of inclination of the box is a random variable.
- `box_pert_fraction` is also relating to the probability distribution function of the angle.
- 
-See more details about how it will change the box below.
+`box_pert_fraction` is also relating to the probability distribution function of the angle.
 
-### `atom_pert_fraction`
-A relative length that determines the length atom moves in each frame. It is just a fraction and doesn't have unit. Typlicaly, for a cubic box with side length `side_length` , the mean value of the distance that atom  moves is approximate `a*atom_pert_fraction`.
+### `atom_pert_distance`
+unit:Angstrom. Determine the distance atoms move in each frame. 
+The mean value of the distance that atom  moves is about `atom_pert_distance`.
 
 ### `atom_pert_style`
 The probability distribution function used to change atom coordinates.
-available options:`'uniform' 'normal' 'const'`.
-
+available options:`'uniform', 'normal', 'const'`.
 The direction atoms move and box deformation is random.
-

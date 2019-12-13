@@ -627,7 +627,7 @@ class System (MSONable) :
     def perturb(self, 
         pert_num, 
         box_pert_fraction,
-        atom_pert_fraction, 
+        atom_pert_distance, 
         atom_pert_style='normal'):
         """
         Perturb each frame in the system randomly.
@@ -643,23 +643,22 @@ class System (MSONable) :
         box_pert_fraction : float
             A fraction determines how much will box deform, typically less than 0.3.
             For a cubic box with side length `side_length`,
-            `side_length` will increase or decrease with the max length `box_pert_fraction*side_length` .
+            `side_length` will increase or decrease with the max value `box_pert_fraction*side_length` .
             If box_pert_fraction is not zero, the shape of the box will also be changed,
-            and that means a orthogonal box will become a non-orthogonal box.
-        atom_pert_fraction : float
-            A fraction determines how far will atoms move, typically less than 0.3.
-            For a cubic box with side length `side_length`,
-            atoms will move about `atom_pert_fraction*side_length` in random direction.
-            The distribution of the distance atoms move is also determined by atom_pert_style
-        atom_pert_fraction : str
+            and that means a orthogonal box will become a non-orthogonal one.
+        atom_pert_distance: float
+            unit: Angstrom. A distance determines how far atoms will move.
+            Atoms will move about `atom_pert_distance` in random direction.
+            The distribution of the distance atoms move is determined by atom_pert_style
+        atom_pert_style : str
             Determines the distribution of the distance atoms move is subject to.
             Avaliable options are
                 - `'normal'`: the `distance` will be object to `chi-square distribution with 3 degrees of freedom` after normalization.
-                    The mean value of the distance is about `atom_pert_fraction*side_length`
-                - `'uniform'`: will generate uniformly random points in a 3D-balls and transform these points linearly as vectors to be used by atoms.
-                    And the max length of the distance atoms move is about `atom_pert_fraction*side_length`
-                - `'const'`: The distance atoms move will be a constant `atom_pert_fraction*side_length` for cubic box.
-                    And for other shape boxes, the distance will not be constant
+                    The mean value of the distance is `atom_pert_fraction*side_length`
+                - `'uniform'`: will generate uniformly random points in a 3D-balls with radius as `atom_pert_distance`.
+                    These points are treated as vector used by atoms to move.
+                    Obviously, the max length of the distance atoms move is `atom_pert_distance`.
+                - `'const'`: The distance atoms move will be a constant `atom_pert_distance`.
 
         Returns
         -------
@@ -675,9 +674,8 @@ class System (MSONable) :
                 tmp_system.data['cells'][0] = np.matmul(tmp_system.data['cells'][0],box_perturb_matrix)
                 tmp_system.data['coords'][0] = np.matmul(tmp_system.data['coords'][0],box_perturb_matrix)
                 for kk in range(len(tmp_system.data['coords'][0])):
-                    atom_perturb_vector = get_atom_perturb_vector(atom_pert_fraction, atom_pert_style)
-                    atom_delta_vector = np.matmul(atom_perturb_vector,tmp_system.data['cells'][0])
-                    tmp_system.data['coords'][0][kk] += atom_delta_vector
+                    atom_perturb_vector = get_atom_perturb_vector(atom_pert_distance, atom_pert_style)
+                    tmp_system.data['coords'][0][kk] += atom_perturb_vector
                 tmp_system.rot_lower_triangular()
                 perturbed_system.append(tmp_system)
         return perturbed_system
@@ -694,14 +692,14 @@ def get_box_perturb_matrix(box_pert_fraction):
     )
     return box_pert_matrix
 
-def get_atom_perturb_vector(atom_pert_fraction, atom_pert_style='normal'):
+def get_atom_perturb_vector(atom_pert_distance, atom_pert_style='normal'):
     random_vector = None
-    if atom_pert_fraction < 0:
-        raise RuntimeError('atom_pert_fraction can not be negative')
+    if atom_pert_distance < 0:
+        raise RuntimeError('atom_pert_distance can not be negative')
     
     if atom_pert_style == 'normal':
         e = np.random.randn(3)
-        random_vector=(atom_pert_fraction/np.sqrt(3))*e
+        random_vector=(atom_pert_distance/np.sqrt(3))*e
     elif atom_pert_style == 'uniform':
         e = np.random.randn(3)
         while np.linalg.norm(e) < 0.1:
@@ -709,13 +707,13 @@ def get_atom_perturb_vector(atom_pert_fraction, atom_pert_style='normal'):
         random_unit_vector = e/np.linalg.norm(e)
         v0 = np.random.rand(1)
         v = np.power(v0,1/3)
-        random_vector = atom_pert_fraction*v*random_unit_vector
+        random_vector = atom_pert_distance*v*random_unit_vector
     elif atom_pert_style == 'const' :
         e = np.random.randn(3)
         while np.linalg.norm(e) < 0.1:
             e = np.random.randn(3)
         random_unit_vector = e/np.linalg.norm(e)
-        random_vector = atom_pert_fraction*random_unit_vector
+        random_vector = atom_pert_distance*random_unit_vector
     else:
         raise RuntimeError('unsupported options atom_pert_style={}'.format(atom_pert_style))
     return random_vector
