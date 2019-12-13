@@ -580,6 +580,30 @@ class System (MSONable) :
         self.data['atom_numbs'].extend([0 for _ in atom_names])
 
     def replicate(self, ncopy):
+        """
+        Replicate the each frame  in the system in 3 dimensions.
+        Each frame in the system will become a supercell.
+
+        Parameters
+        ----------
+        ncopy : 
+            list: [4,2,3]
+            or tuple: (4,2,3,)
+            make `ncopy[0]` copys in x dimensions,
+            make `ncopy[1]` copys in y dimensions,
+            make `ncopy[2]` copys in z dimensions.
+
+        Returns
+        -------
+        tmp : System
+            The system after replication.
+        """
+        if len(ncopy) !=3:
+            raise RuntimeError('ncopy must be a list or tuple with 3 int')
+        for ii in ncopy:
+            if type(ncopy(ii)) is not int:
+                raise RuntimeError('ncopy must be a list or tuple must with 3 int')
+        
         tmp = System()
         nframes = self.get_nframes()
         data = self.data
@@ -605,6 +629,43 @@ class System (MSONable) :
         box_pert_fraction,
         atom_pert_fraction, 
         atom_pert_style='normal'):
+        """
+        Perturb each frame in the system randomly.
+        The box will be changed randomly, 
+        and atoms will move random distance in random direction.
+
+        Parameters
+        ----------
+        pert_num : int
+            Each frame in the system will make `pert_num` copies,
+            and all the copies will be perturbed.
+            That means the system to be returned will contain `pert_num` * frame_num of the input system.
+        box_pert_fraction : float
+            A fraction determines how much will box deform, typically less than 0.3.
+            For a cubic box with side length `side_length`,
+            `side_length` will increase or decrease with the max length `box_pert_fraction*side_length` .
+            If box_pert_fraction is not zero, the shape of the box will also be changed,
+            and that means a orthogonal box will become a non-orthogonal box.
+        atom_pert_fraction : float
+            A fraction determines how far will atoms move, typically less than 0.3.
+            For a cubic box with side length `side_length`,
+            atoms will move about `atom_pert_fraction*side_length` in random direction.
+            The distribution of the distance atoms move is also determined by atom_pert_style
+        atom_pert_fraction : str
+            Determines the distribution of the distance atoms move is subject to.
+            Avaliable options are
+                - `'normal'`: the `distance` will be object to `chi-square distribution with 3 degrees of freedom` after normalization.
+                    The mean value of the distance is about `atom_pert_fraction*side_length`
+                - `'uniform'`: will generate uniformly random points in a 3D-balls and transform these points linearly as vectors to be used by atoms.
+                    And the max length of the distance atoms move is about `atom_pert_fraction*side_length`
+                - `'const'`: The distance atoms move will be a constant `atom_pert_fraction*side_length` for cubic box.
+                    And for other shape boxes, the distance will not be constant
+
+        Returns
+        -------
+        perturbed_system : System
+            The perturbed_system. It contains `pert_num` * frame_num of the input system frames.
+        """
         perturbed_system = System()
         nframes = self.get_nframes() 
         for ii in range(nframes):
@@ -616,13 +677,16 @@ class System (MSONable) :
                 for kk in range(len(tmp_system.data['coords'][0])):
                     atom_perturb_vector = get_atom_perturb_vector(atom_pert_fraction, atom_pert_style)
                     atom_delta_vector = np.matmul(atom_perturb_vector,tmp_system.data['cells'][0])
-                    # print(135,atom_delta_matrix,np.linalg.norm(atom_delta_matrix),atom_delta_distance_vector,np.linalg.norm(atom_delta_distance_vector), tmp_system.data['cells'][0],)
                     tmp_system.data['coords'][0][kk] += atom_delta_vector
+                tmp_system.rot_lower_triangular()
                 perturbed_system.append(tmp_system)
         return perturbed_system
 
 def get_box_perturb_matrix(box_pert_fraction):
-    e = np.random.rand(6) * 2 *box_pert_fraction - box_pert_fraction
+    if box_pert_fraction<0:
+        raise RuntimeError('box_pert_fraction can not be negative')
+    e0 = np.random.rand(6)
+    e = e0 * 2 *box_pert_fraction - box_pert_fraction
     box_pert_matrix = np.array(
         [[1+e[0], 0.5 * e[5], 0.5 * e[4]],
          [0.5 * e[5], 1+e[1], 0.5 * e[3]],
@@ -631,21 +695,25 @@ def get_box_perturb_matrix(box_pert_fraction):
     return box_pert_matrix
 
 def get_atom_perturb_vector(atom_pert_fraction, atom_pert_style='normal'):
-    """
-    np.random.randn return a 3*3 matrix , every element will be a sample of 
-    standard normal distribution N(0,1)
-    """
-    # perturb_matrix = None
     random_vector = None
+    if atom_pert_fraction < 0:
+        raise RuntimeError('atom_pert_fraction can not be negative')
+    
     if atom_pert_style == 'normal':
-        random_vector=(atom_pert_fraction/np.sqrt(3))*np.random.randn(3)
+        e = np.random.randn(3)
+        random_vector=(atom_pert_fraction/np.sqrt(3))*e
     elif atom_pert_style == 'uniform':
         e = np.random.randn(3)
+        while np.linalg.norm(e) < 0.1:
+            e = np.random.randn(3)
         random_unit_vector = e/np.linalg.norm(e)
-        v = np.random.rand(1)^(1/3)
+        v0 = np.random.rand(1)
+        v = np.power(v0,1/3)
         random_vector = atom_pert_fraction*v*random_unit_vector
     elif atom_pert_style == 'const' :
         e = np.random.randn(3)
+        while np.linalg.norm(e) < 0.1:
+            e = np.random.randn(3)
         random_unit_vector = e/np.linalg.norm(e)
         random_vector = atom_pert_fraction*random_unit_vector
     else:

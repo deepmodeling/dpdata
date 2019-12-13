@@ -165,18 +165,18 @@ tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in
 dpdata will disturb the box size and shape and change atom coordinates  randomly.
 ```python3
 dpdata.System('./POSCAR').perturb(pert_num=3, 
-    box_pert_fraction=0.02, 
-    atom_pert_fraction=0.01, 
+    box_pert_fraction=0.1, 
+    atom_pert_fraction=0.05, 
     atom_pert_style='normal')
 ```
 
 ### `pert_num`
 
 Each frame in the input system will generate `pert_num` frames.
- That means the command will return a system containing `frames of input system * pert_num` frames.
+That means the command will return a system containing `frames of input system * pert_num` frames.
  
 ### `box_pert_fraction`
-A relative length that determines the length the box size change in each frame. It is just a fraction and doesn't have unit. Typlicaly, for cubic box with side length `a` ,  `a` will increase or decrease a random value from the intervel `[-a*box_pert_fraction, a*box_pert_fraction]`.
+A relative length that determines the length the box size change in each frame. It is just a fraction and doesn't have unit. Typlicaly, for cubic box with side length `side_length` ,  `side_length` will increase or decrease a random value from the intervel `[-side_length*box_pert_fraction, side_length*box_pert_fraction]`.
 
 It will also change the shape of the box. That means an orthogonal box will become a non-orthogonal box after perturbing. The angle of inclination of the box is a random variable.
  `box_pert_fraction` is also relating to the probability distribution function of the angle.
@@ -184,41 +184,11 @@ It will also change the shape of the box. That means an orthogonal box will beco
 See more details about how it will change the box below.
 
 ### `atom_pert_fraction`
-A relative length that determines the length atom moves in each frame. It is just a fraction and doesn't have unit. Typlicaly, for a cubic box with side length `a` , the mean value of the distance that atom  moves is approximate `a*atom_pert_fraction`.
+A relative length that determines the length atom moves in each frame. It is just a fraction and doesn't have unit. Typlicaly, for a cubic box with side length `side_length` , the mean value of the distance that atom  moves is approximate `a*atom_pert_fraction`.
 
 ### `atom_pert_style`
 The probability distribution function used to change atom coordinates.
-available options:`'uniform' 'normal' 'const'`. 
-
-`uniform` means that if the box is a cube with side length `a`, how far atoms in the cube move is a random vector with max length `a*atom_pert_fraction `
-
-`normal` means the squares of the distance atoms move are subject to  a chi-square distribution with 3 degrees of freedom (chi-square distribution can be seen as the sum of squares of normal distributed random variable. This is why we  name this option as 'normal'.).
-If the box is a cube with side length `a`, the mean value of the distance atom moves is `a*atom_pert_fraction`.
-
-`const` means that if the box is a cube with side length `a`, the distance atom moves is always `a*atom_pert_fraction `(For triclinic box, the distances are not equal.)
+available options:`'uniform' 'normal' 'const'`.
 
 The direction atoms move and box deformation is random.
 
-See more details about how atoms will move below.
-
-## The perturb details
----
-See https://hackmd.io/@yeql5ephQLaGJGgFgpvIDw/rJsyux6aH for the implement of perturb
-
-## the results the method System.perturb() return
----
-
-At the beginning, dpdata will create an empty system.
-```python
-perturbed_system = System()
-```
-After every single perturbed frame is generated, it will be appended to the `perturbed_system`.
-
-perturbed_system will contain `pert_num * frames of the input system` frames.
-
-$B_d$ will be used as the final box matrix in the perturbed frame(that is `System.data['cells'][0]`)
-$\vec {r_{jd,disturbed}}$ will be used as the final coordinates in the perturbed frame (that is `System.data['coords'][0][j]`)
-> note: 0 means the index of the frame, j means atom index, 
-
- Finally dpdata will return `perturbed_system` as results.
- 
