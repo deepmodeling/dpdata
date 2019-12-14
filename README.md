@@ -152,3 +152,20 @@ Frame selection can be implemented by
 dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to_deepmd_raw('dpmd_raw')
 ```
 by which only the first and last frames are dumped to `dpmd_raw`.
+
+## replicate 
+dpdata will create a super cell of the current atom configuration.
+```python
+dpdata.System('./POSCAR').replicate((1,2,3,) )
+```
+tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.
+
+## perturb
+By the following example, each frame of the original system (`dpdata.System('./POSCAR')`) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. `atom_pert_style` indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to `atom_pert_style` are`uniform` (uniform in a ball), and `const` (uniform on a sphere).
+```python
+perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3, 
+    cell_pert_fraction=0.05, 
+    atom_pert_distance=0.6, 
+    atom_pert_style='normal')
+print(perturbed_system.data)
+```
