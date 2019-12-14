@@ -153,40 +153,19 @@ dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to_deepmd_raw('dpmd_raw')
 ```
 by which only the first and last frames are dumped to `dpmd_raw`.
 
-# replicate 
+## replicate 
 dpdata will create a super cell of the current atom configuration.
-
 ```python
 dpdata.System('./POSCAR').replicate((1,2,3,) )
 ```
 tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.
 
-# perturb
-dpdata will disturb the box size and shape and change atom coordinates  randomly.
+## perturb
+By the following example, each frame of the original system (`dpdata.System('./POSCAR')`) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. `atom_pert_style` indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to `atom_pert_style` are`uniform` (uniform in a ball), and `const` (uniform on a sphere).
 ```python
 perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3, 
-    box_pert_fraction=0.05, 
+    cell_pert_fraction=0.05, 
     atom_pert_distance=0.6, 
     atom_pert_style='normal')
 print(perturbed_system.data)
 ```
-
-### `pert_num`
-
-Each frame in the input system will generate `pert_num` frames.
-That means the command will return a system containing `frames of input system * pert_num` frames.
- 
-### `box_pert_fraction`
-A relative length that determines the length the box size change in each frame. It is just a fraction and doesn't have unit. Typlicaly, for cubic box with side length `side_length` ,  `side_length` will increase or decrease a random value from the intervel `[-side_length*box_pert_fraction, side_length*box_pert_fraction]`.
-
-It will also change the shape of the box. That means an orthogonal box will become a non-orthogonal box after perturbing. The angle of inclination of the box is a random variable.
-`box_pert_fraction` is also relating to the probability distribution function of the angle.
-
-### `atom_pert_distance`
-unit:Angstrom. Determine the distance atoms move in each frame. 
-The mean value of the distance that atom  moves is about `atom_pert_distance`.
-
-### `atom_pert_style`
-The probability distribution function used to change atom coordinates.
-available options:`'uniform', 'normal', 'const'`.
-The direction atoms move and box deformation is random.
