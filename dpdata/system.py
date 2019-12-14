@@ -626,13 +626,12 @@ class System (MSONable) :
 
     def perturb(self, 
         pert_num, 
-        box_pert_fraction,
+        cell_pert_fraction,
         atom_pert_distance, 
         atom_pert_style='normal'):
         """
         Perturb each frame in the system randomly.
-        The box will be changed randomly, 
-        and atoms will move random distance in random direction.
+        The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
 
         Parameters
         ----------
@@ -640,12 +639,11 @@ class System (MSONable) :
             Each frame in the system will make `pert_num` copies,
             and all the copies will be perturbed.
             That means the system to be returned will contain `pert_num` * frame_num of the input system.
-        box_pert_fraction : float
-            A fraction determines how much will box deform, typically less than 0.3.
-            For a cubic box with side length `side_length`,
-            `side_length` will increase or decrease with the max value `box_pert_fraction*side_length` .
-            If box_pert_fraction is not zero, the shape of the box will also be changed,
-            and that means a orthogonal box will become a non-orthogonal one.
+        cell_pert_fraction : float
+            A fraction determines how much (relatively) will cell deform.
+            The cell of each frame is deformed by a symmetric matrix perturbed from identity. 
+            The perturbation to the diagonal part is subject to a uniform distribution in [-cell_pert_fraction, cell_pert_fraction), 
+            and the perturbation to the off-diagonal part is subject to a uniform distribution in [-0.5*cell_pert_fraction, 0.5*cell_pert_fraction).
         atom_pert_distance: float
             unit: Angstrom. A distance determines how far atoms will move.
             Atoms will move about `atom_pert_distance` in random direction.
@@ -670,9 +668,9 @@ class System (MSONable) :
         for ii in range(nframes):
             for jj in range(pert_num):
                 tmp_system = self[ii].copy()
-                box_perturb_matrix = get_box_perturb_matrix(box_pert_fraction)
-                tmp_system.data['cells'][0] = np.matmul(tmp_system.data['cells'][0],box_perturb_matrix)
-                tmp_system.data['coords'][0] = np.matmul(tmp_system.data['coords'][0],box_perturb_matrix)
+                cell_perturb_matrix = get_cell_perturb_matrix(cell_pert_fraction)
+                tmp_system.data['cells'][0] = np.matmul(tmp_system.data['cells'][0],cell_perturb_matrix)
+                tmp_system.data['coords'][0] = np.matmul(tmp_system.data['coords'][0],cell_perturb_matrix)
                 for kk in range(len(tmp_system.data['coords'][0])):
                     atom_perturb_vector = get_atom_perturb_vector(atom_pert_distance, atom_pert_style)
                     tmp_system.data['coords'][0][kk] += atom_perturb_vector
@@ -680,17 +678,17 @@ class System (MSONable) :
                 perturbed_system.append(tmp_system)
         return perturbed_system
 
-def get_box_perturb_matrix(box_pert_fraction):
-    if box_pert_fraction<0:
-        raise RuntimeError('box_pert_fraction can not be negative')
+def get_cell_perturb_matrix(cell_pert_fraction):
+    if cell_pert_fraction<0:
+        raise RuntimeError('cell_pert_fraction can not be negative')
     e0 = np.random.rand(6)
-    e = e0 * 2 *box_pert_fraction - box_pert_fraction
-    box_pert_matrix = np.array(
+    e = e0 * 2 *cell_pert_fraction - cell_pert_fraction
+    cell_pert_matrix = np.array(
         [[1+e[0], 0.5 * e[5], 0.5 * e[4]],
          [0.5 * e[5], 1+e[1], 0.5 * e[3]],
          [0.5 * e[4], 0.5 * e[3], 1+e[2]]]
     )
-    return box_pert_matrix
+    return cell_pert_matrix
 
 def get_atom_perturb_vector(atom_pert_distance, atom_pert_style='normal'):
     random_vector = None
