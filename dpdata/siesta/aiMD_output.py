@@ -90,6 +90,18 @@ def get_atom_types(fout, atomnums):
         atomtype.append(int(covert_type[i]) - 1)
     return atomtype
 
+def get_atom_name(fout):
+    file = open(fout, 'r')
+    ret = []
+    for value in file:
+        if 'Species number:' in value:
+            for j in range(len(value.split())):
+                if value.split()[j] == 'Label:':
+                    ret.append(value.split()[j+1])
+                    break              
+    file.close()
+    return ret
+
 def get_atom_numbs(atomtypes):
     atom_numbs = []
     for i in set(atomtypes):
@@ -118,7 +130,7 @@ def covert_dimension(arr, num):
 
 def get_aiMD_frame(fname):
     NumberOfSpecies = int(get_single_line_tail(fname, 'redata: Number of Atomic Species')[0])
-    atom_names = extract_keyword(fname, 'initatom: Reading input for the pseudopotentials and atomic orbitals', NumberOfSpecies, 4, 5, 0, 8)[0].tolist()
+    atom_names = get_atom_name(fname)
     tot_natoms = int(get_single_line_tail(fname, 'Number of atoms', 3)[0])
 
     atom_types = get_atom_types(fname, tot_natoms)

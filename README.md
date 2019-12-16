@@ -51,6 +51,41 @@ The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any),
 
 The `System` or `LabeledSystem` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
 
+The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
+
+Use `dpdata.MultiSystems.from_dir` to read from a  directory, `dpdata.MultiSystems` will walk in the directory 
+Recursively  and  find all file with specific file_name. Supports all the file formats that `dpdata.LabeledSystem` supports.
+
+Use  `dpdata.MultiSystems.from_file` to read from single file. Now only support quip/gap/xyz  format file.
+
+For example, for `quip/gap xyz` files, single .xyz file may contain many different configurations with different atom numbers and atom type.
+
+The following commands relating to `Class dpdata.MultiSystems` may be useful.
+```python
+# load data
+
+xyz_multi_systems = dpdata.MultiSystems.from_file(file_name='tests/xyz/xyz_unittest.xyz',fmt='quip/gap/xyz')
+vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='OUTCAR', fmt='vasp/outcar')
+
+# use wildcard
+vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='*OUTCAR', fmt='vasp/outcar')
+
+# print the multi_system infomation
+print(xyz_multi_systems)
+print(xyz_multi_systems.systems) # return a dictionaries
+
+# print the system infomation
+print(xyz_multi_systems.systems['B1C9'].data)
+
+# dump a system's data to ./my_work_dir/B1C9_raw folder
+xyz_multi_systems.systems['B1C9'].to_deepmd_raw('./my_work_dir/B1C9_raw')
+
+# dump all systems
+xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
+
+
+```
+
 | Software| format | multi frames | labeled | class	    | format key    |
 | ------- | :---   | :---:        | :---:   | :---          | :---          |
 | vasp	  | poscar | False        | False   | System	    | 'vasp/poscar' | 
@@ -70,6 +105,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
 | QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
 | QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
+|quip/gap|xyz|True|True|MultiSystems|'quip/gap/xyz'|
 
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
@@ -116,3 +152,20 @@ Frame selection can be implemented by
 dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to_deepmd_raw('dpmd_raw')
 ```
 by which only the first and last frames are dumped to `dpmd_raw`.
+
+## replicate 
+dpdata will create a super cell of the current atom configuration.
+```python
+dpdata.System('./POSCAR').replicate((1,2,3,) )
+```
+tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.
+
+## perturb
+By the following example, each frame of the original system (`dpdata.System('./POSCAR')`) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. `atom_pert_style` indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to `atom_pert_style` are`uniform` (uniform in a ball), and `const` (uniform on a sphere).
+```python
+perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3, 
+    cell_pert_fraction=0.05, 
+    atom_pert_distance=0.6, 
+    atom_pert_style='normal')
+print(perturbed_system.data)
+```
