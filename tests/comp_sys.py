@@ -83,8 +83,11 @@ class CompLabeledSys (CompSys) :
     def test_virial(self) :
         self.assertEqual(self.system_1.get_nframes(),
                          self.system_2.get_nframes())        
-        if len(self.system_1['virials']) == 0:
-            self.assertEqual(len(self.system_1['virials']), 0)
+        # if len(self.system_1['virials']) == 0:
+        #     self.assertEqual(len(self.system_1['virials']), 0)
+        #     return
+        if not 'virials' in self.system_1:
+            self.assertFalse('virials' in self.system_2)
             return
         for ff in range(self.system_1.get_nframes()) :
             for ii in range(3) :

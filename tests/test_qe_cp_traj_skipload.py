@@ -7,12 +7,12 @@ from comp_sys import CompLabeledSys
 
 class TestPWSCFTrajSkip(unittest.TestCase, CompSys):
     def setUp(self): 
-        self.system_1 = dpdata.System(os.path.join('pwscf.traj', 'traj6'), 
-                                      fmt = 'pwscf/traj',
+        self.system_1 = dpdata.System(os.path.join('qe.traj', 'traj6'), 
+                                      fmt = 'qe/cp/traj',
                                       begin = 1,
                                       step = 2)
-        self.system_2 = dpdata.System(os.path.join('pwscf.traj', 'traj6'), 
-                                      fmt = 'pwscf/traj',
+        self.system_2 = dpdata.System(os.path.join('qe.traj', 'traj6'), 
+                                      fmt = 'qe/cp/traj',
                                       begin = 0,
                                       step = 1) \
                               .sub_system(np.arange(1,6,2))
@@ -23,12 +23,12 @@ class TestPWSCFTrajSkip(unittest.TestCase, CompSys):
 
 class TestPWSCFLabeledTrajSkip(unittest.TestCase, CompLabeledSys):
     def setUp(self): 
-        self.system_1 = dpdata.LabeledSystem(os.path.join('pwscf.traj', 'traj6'), 
-                                             fmt = 'pwscf/traj',
+        self.system_1 = dpdata.LabeledSystem(os.path.join('qe.traj', 'traj6'), 
+                                             fmt = 'qe/cp/traj',
                                              begin = 1,
                                              step = 2)
-        self.system_2 = dpdata.LabeledSystem(os.path.join('pwscf.traj', 'traj6'), 
-                                             fmt = 'pwscf/traj',
+        self.system_2 = dpdata.LabeledSystem(os.path.join('qe.traj', 'traj6'), 
+                                             fmt = 'qe/cp/traj',
                                              begin = 0,
                                              step = 1) \
                               .sub_system(np.arange(1,6,2))

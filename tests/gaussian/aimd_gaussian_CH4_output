@@ -1,0 +1,2615 @@
+ Entering Gaussian System, Link 0=g09
+ Initial command:
+ /home/smc/package/Gaussian/g09/l1.exe /home/smc/package/Gaussian/tmp/Gau-25373.inp -scrdir=/home/smc/package/Gaussian/tmp/
+ Entering Link 1 = /home/smc/package/Gaussian/g09/l1.exe PID=     25375.
+  
+ Copyright (c) 1988,1990,1992,1993,1995,1998,2003,2009,2010,
+            Gaussian, Inc.  All Rights Reserved.
+  
+ This is part of the Gaussian(R) 09 program.  It is based on
+ the Gaussian(R) 03 system (copyright 2003, Gaussian, Inc.),
+ the Gaussian(R) 98 system (copyright 1998, Gaussian, Inc.),
+ the Gaussian(R) 94 system (copyright 1995, Gaussian, Inc.),
+ the Gaussian 92(TM) system (copyright 1992, Gaussian, Inc.),
+ the Gaussian 90(TM) system (copyright 1990, Gaussian, Inc.),
+ the Gaussian 88(TM) system (copyright 1988, Gaussian, Inc.),
+ the Gaussian 86(TM) system (copyright 1986, Carnegie Mellon
+ University), and the Gaussian 82(TM) system (copyright 1983,
+ Carnegie Mellon University). Gaussian is a federally registered
+ trademark of Gaussian, Inc.
+  
+ This software contains proprietary and confidential information,
+ including trade secrets, belonging to Gaussian, Inc.
+  
+ This software is provided under written license and may be
+ used, copied, transmitted, or stored only in accord with that
+ written license.
+  
+ The following legend is applicable only to US Government
+ contracts under FAR:
+  
+                    RESTRICTED RIGHTS LEGEND
+  
+ Use, reproduction and disclosure by the US Government is
+ subject to restrictions as set forth in subparagraphs (a)
+ and (c) of the Commercial Computer Software - Restricted
+ Rights clause in FAR 52.227-19.
+  
+ Gaussian, Inc.
+ 340 Quinnipiac St., Bldg. 40, Wallingford CT 06492
+  
+  
+ ---------------------------------------------------------------
+ Warning -- This program may not be used in any manner that
+ competes with the business of Gaussian, Inc. or will provide
+ assistance to any competitor of Gaussian, Inc.  The licensee
+ of this program is prohibited from giving any competitor of
+ Gaussian, Inc. access to this program.  By using this program,
+ the user acknowledges that Gaussian, Inc. is engaged in the
+ business of creating and licensing software in the field of
+ computational chemistry and represents and warrants to the
+ licensee that it is not a competitor of Gaussian, Inc. and that
+ it will not use this program in any manner prohibited above.
+ ---------------------------------------------------------------
+  
+
+ Cite this work as:
+ Gaussian 09, Revision B.01,
+ M. J. Frisch, G. W. Trucks, H. B. Schlegel, G. E. Scuseria, 
+ M. A. Robb, J. R. Cheeseman, G. Scalmani, V. Barone, B. Mennucci, 
+ G. A. Petersson, H. Nakatsuji, M. Caricato, X. Li, H. P. Hratchian, 
+ A. F. Izmaylov, J. Bloino, G. Zheng, J. L. Sonnenberg, M. Hada, 
+ M. Ehara, K. Toyota, R. Fukuda, J. Hasegawa, M. Ishida, T. Nakajima, 
+ Y. Honda, O. Kitao, H. Nakai, T. Vreven, J. A. Montgomery, Jr., 
+ J. E. Peralta, F. Ogliaro, M. Bearpark, J. J. Heyd, E. Brothers, 
+ K. N. Kudin, V. N. Staroverov, T. Keith, R. Kobayashi, J. Normand, 
+ K. Raghavachari, A. Rendell, J. C. Burant, S. S. Iyengar, J. Tomasi, 
+ M. Cossi, N. Rega, J. M. Millam, M. Klene, J. E. Knox, J. B. Cross, 
+ V. Bakken, C. Adamo, J. Jaramillo, R. Gomperts, R. E. Stratmann, 
+ O. Yazyev, A. J. Austin, R. Cammi, C. Pomelli, J. W. Ochterski, 
+ R. L. Martin, K. Morokuma, V. G. Zakrzewski, G. A. Voth, 
+ P. Salvador, J. J. Dannenberg, S. Dapprich, A. D. Daniels, 
+ O. Farkas, J. B. Foresman, J. V. Ortiz, J. Cioslowski, 
+ and D. J. Fox, Gaussian, Inc., Wallingford CT, 2010.
+ 
+ ******************************************
+ Gaussian 09:  EM64L-G09RevB.01 12-Aug-2010
+                15-Sep-2019 
+ ******************************************
+ %CPU=0,1,2,3
+ SetSPE:  set environment variable "MP_BIND" = "yes"
+ SetSPE:  set environment variable "MP_BLIST" = "0,1,2,3"
+ Will use up to    4 processors via shared memory.
+ ----------------------------------------------------------------------
+ #N ADMP(MaxPoint = 10000,StepSize=1000,FullSCF)/temperature=300/B3LYP/
+ 6-31G
+ ----------------------------------------------------------------------
+ 1/8=1000,14=-1,26=3,29=20000,38=1,42=10000,75=1,112=300000/1,21;
+ 2/12=2,17=6,18=5,29=2,40=1/2;
+ 3/5=1,6=6,11=2,16=1,25=1,30=1,65=-1,71=1,74=-5,89=400,90=600/1,2,3;
+ 4//1;
+ 5/5=2,14=200,38=5/2;
+ 6/7=2,8=2,9=2,10=2,28=1/1;
+ 7/7=1/1,2,3,16;
+ 1/8=1000,14=-1,42=10000,75=1/21(2);
+ 2/29=1/2;
+ 99/12=1/99;
+ 2/29=1/2;
+ 3/5=1,6=6,11=2,16=1,25=1,30=1,65=-1,71=1,74=-5,89=400,90=600/1,2,3;
+ 4/5=5,16=3/1;
+ 5/5=2,14=200/2;
+ 7/7=1/1,2,3,16;
+ 1/8=1000,14=-1,42=10000,75=1/21(-5);
+ 2/29=1/2;
+ 6/7=2,8=2,9=2,10=2,19=2,28=1/1;
+ 99/9=1,12=1/99;
+ ----------
+ methane MD
+ ----------
+ Symbolic Z-matrix:
+ Charge =  0 Multiplicity = 1
+ H                     5.36586   4.05415   3.59848 
+ H                     3.92611   4.82628   4.42448 
+ H                     5.5636    5.65033   4.43064 
+ H                     5.28729   4.14347   5.36703 
+ C                     5.01936   4.68879   4.44103 
+ 
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+ ------------------------------------------------------------------------
+ INPUT DATA FOR L121
+ ------------------------------------------------------------------------
+
+ General parameters:
+ Maximum Steps                =   10000
+ Random Number Generator Seed =  398465
+ Time Step                    =  0.10000 femtosec
+ Ficticious electronic mass   =  0.10000 amu
+ MW individual basis funct.   = True 
+ Initial nuclear kin. energy  =  0.10000 hartree
+ Initial electr. kin. energy  =  0.00000 hartree
+   Initial electr. KE scheme  =  0
+ Multitime step - NDtrC       =       1
+ Multitime step - NDtrP       =       1
+ No Thermostats chosen to control nuclear temperature
+
+ Integration parameters:
+
+ Follow Rxn Path (DVV)        = False
+ Read in converged density
+ Projection of angular mom.   = True 
+ Rotate density with nuclei   = True 
+ ------------------------------------------------------------------------
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+ ---------------------------------------------------------------------------------------------------
+                            Z-MATRIX (ANGSTROMS AND DEGREES)
+   CD    Cent   Atom    N1       Length/X        N2       Alpha/Y        N3        Beta/Z          J
+ ---------------------------------------------------------------------------------------------------
+      1      1  H        0   5.365862          4.054149          3.598478
+      2      2  H        0   3.926107          4.826280          4.424482
+      3      3  H        0   5.563601          5.650326          4.430643
+      4      4  H        0   5.287288          4.143469          5.367026
+      5      5  C        0   5.019365          4.688792          4.441028
+ ---------------------------------------------------------------------------------------------------
+                         Z-Matrix orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        5.365862    4.054149    3.598478
+      2          1           0        3.926107    4.826280    4.424482
+      3          1           0        5.563601    5.650326    4.430643
+      4          1           0        5.287288    4.143469    5.367026
+      5          6           0        5.019365    4.688792    4.441028
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.830673   0.000000
+     3  H    1.810906   1.833160   0.000000
+     4  H    1.772544   1.790931   1.795488   0.000000
+     5  C    1.110280   1.101993   1.104920   1.107534   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    156.5839234    154.4576521    150.2083673
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.2399414015 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ Integral accuracy reduced to 1.0D-05 until final iterations.
+ Initial convergence to 1.0D-05 achieved.  Increase integral accuracy.
+ SCF Done:  E(RB3LYP) =  -40.5096755160     A.U. after   10 cycles
+             Convg  =    0.1204D-08             -V/T =  2.0084
+
+ **********************************************************************
+
+            Population analysis using the SCF density.
+
+ **********************************************************************
+
+ Alpha  occ. eigenvalues --  -10.16545  -0.68917  -0.39368  -0.38862  -0.38084
+ Alpha virt. eigenvalues --    0.11378   0.16845   0.17148   0.17414   0.54530
+ Alpha virt. eigenvalues --    0.54958   0.55164   0.91716   0.92621   0.93145
+ Alpha virt. eigenvalues --    0.93559   1.10791
+          Condensed to atoms (all electrons):
+              1          2          3          4          5
+     1  H    0.564929  -0.025216  -0.027531  -0.031558   0.376581
+     2  H   -0.025216   0.554491  -0.024945  -0.029330   0.379313
+     3  H   -0.027531  -0.024945   0.558187  -0.028744   0.378354
+     4  H   -0.031558  -0.029330  -0.028744   0.573083   0.374756
+     5  C    0.376581   0.379313   0.378354   0.374756   5.065949
+ Mulliken atomic charges:
+              1
+     1  H    0.142795
+     2  H    0.145687
+     3  H    0.144679
+     4  H    0.141793
+     5  C   -0.574955
+ Sum of Mulliken atomic charges =   0.00000
+ Mulliken charges with hydrogens summed into heavy atoms:
+              1
+     5  C    0.000000
+ Sum of Mulliken charges with hydrogens summed into heavy atoms =   0.00000
+ Electronic spatial extent (au):  <R**2>=           2426.4181
+ Charge=              0.0000 electrons
+ Dipole moment (field-independent basis, Debye):
+    X=              0.0218    Y=             -0.0300    Z=              0.0283  Tot=              0.0467
+ Quadrupole moment (field-independent basis, Debye-Ang):
+   XX=             -7.9988   YY=             -8.5835   ZZ=             -8.1878
+   XY=             -0.0312   XZ=              0.1921   YZ=              0.0292
+ Traceless Quadrupole moment (field-independent basis, Debye-Ang):
+   XX=              0.2579   YY=             -0.3268   ZZ=              0.0689
+   XY=             -0.0312   XZ=              0.1921   YZ=              0.0292
+ Octapole moment (field-independent basis, Debye-Ang**2):
+  XXX=           -123.0056  YYY=           -118.2529  ZZZ=           -110.7845  XYY=            -42.0265
+  XXY=            -37.7993  XXZ=            -35.3531  XZZ=            -40.8497  YZZ=            -39.2074
+  YYZ=            -37.3134  XYZ=              0.4972
+ Hexadecapole moment (field-independent basis, Debye-Ang**3):
+ XXXX=          -1264.7339 YYYY=          -1113.6942 ZZZZ=          -1004.6257 XXXY=           -574.9402
+ XXXZ=           -547.2701 YYYX=           -583.9679 YYYZ=           -521.5875 ZZZX=           -553.7584
+ ZZZY=           -526.8876 XXYY=           -388.8289 XXZZ=           -371.9396 YYZZ=           -357.3001
+ XXYZ=           -165.8953 YYXZ=           -183.2825 ZZXY=           -195.2043
+ N-N= 1.323994140150D+01 E-N=-1.196248925061D+02  KE= 4.017262785688D+01
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1          -0.006678199    0.008590903    0.004647135
+      2        1           0.007476313    0.001379989   -0.003287391
+      3        1          -0.007030955   -0.005685168   -0.001238420
+      4        1          -0.002455766    0.005531818   -0.004600468
+      5        6           0.008688607   -0.009817542    0.004479144
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.009817542 RMS     0.006009040
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      0
+ GnVelC Random: Velocity
+ I=    1 X=   6.776577902369D-01 Y=   7.429033107124D-01 Z=   8.096585665196D-01
+ I=    2 X=   5.918403073752D-01 Y=   3.410950604214D-01 Z=   2.852121111959D-01
+ I=    3 X=   1.912162494242D-01 Y=   7.195232935778D-01 Z=   5.673842562704D-01
+ I=    4 X=   4.035037873473D-02 Y=   3.464603346208D-01 Z=   5.858358356755D-01
+ I=    5 X=   6.576648108690D-01 Y=   9.959465304093D-02 Z=   8.182893439322D-01
+ GnVelC Scaled: Velocity
+ I=    1 X=   1.358240268004D-01 Y=   1.489012900582D-01 Z=   1.622811519656D-01
+ I=    2 X=   1.186234924598D-01 Y=   6.836622450981D-02 Z=   5.716551627233D-02
+ I=    3 X=   3.832577646217D-02 Y=   1.442151961040D-01 Z=   1.137217273085D-01
+ I=    4 X=   8.087490473260D-03 Y=   6.944159493592D-02 Z=   1.174200066638D-01
+ I=    5 X=   1.318168022032D-01 Y=   1.996191443335D-02 Z=   1.640110323853D-01
+ GnVelC MW: Velocity
+ I=    1 X=   1.801037906080D-02 Y=   1.016152558572D-01 Z=   8.173086826976D-02
+ I=    2 X=   7.438163761701D-02 Y=   7.121373808880D-02 Z=   5.798979768678D-02
+ I=    3 X=   2.027689147847D-02 Y=   9.578287950148D-02 Z=   1.166402975961D-02
+ I=    4 X=  -1.212644215586D-03 Y=   3.535178182037D-02 Z=   4.102434646497D-02
+ I=    5 X=  -3.230029061291D-02 Y=  -8.808939088554D-02 Z=  -5.576059845598D-02
+ GnVelC Scaled: Velocity
+ I=    1 X=   3.299690892526D-02 Y=   1.861698374931D-01 Z=   1.497395478227D-01
+ I=    2 X=   1.362749842118D-01 Y=   1.304710590494D-01 Z=   1.062434092256D-01
+ I=    3 X=   3.714939808561D-02 Y=   1.754843105100D-01 Z=   2.136972944212D-02
+ I=    4 X=  -2.221691759254D-03 Y=   6.476818289800D-02 Z=   7.516091801582D-02
+ I=    5 X=  -5.917753002396D-02 Y=  -1.613890300986D-01 Z=  -1.021592817485D-01
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=   6.678199187941D-03 Y=  -8.590902717657D-03 Z=  -4.647134873120D-03
+ I=    2 X=  -7.476312989884D-03 Y=  -1.379989062315D-03 Z=   3.287390969723D-03
+ I=    3 X=   7.030955220314D-03 Y=   5.685168181030D-03 Z=   1.238420036969D-03
+ I=    4 X=   2.455765969580D-03 Y=  -5.531818342046D-03 Z=   4.600467600911D-03
+ I=    5 X=  -8.688607387960D-03 Y=   9.817541940995D-03 Z=  -4.479143734483D-03
+
+ Summary information for step      0
+ Time (fs)     0.000000
+ EKinC      =      0.1000000; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.1000000; EPot   =    -40.5096755; ETot   =    -40.4096755
+ ETot-EKinP =    -40.4096755
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.875165884684D-01
+ Angular momentum
+   JX =  0.7038403605D-15  JY =  0.2863573386D-13  JZ =  0.9588008857D-14
+ Jtot =  0.3020646552D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967552D+01 A.U.
+ Total angular momentum   3.020647D-14 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.470158273036D-01 Y=  -1.189685802020D+00 Z=  -1.598902310053D+00
+ I=    2 X=  -2.073726424307D+00 Y=   2.694306668416D-01 Z=  -3.798213701533D-02
+ I=    3 X=   1.020688364197D+00 Y=   1.826651228543D+00 Z=  -2.633862724208D-02
+ I=    4 X=   4.985325239327D-01 Y=  -1.020895085886D+00 Z=   1.743168344714D+00
+ I=    5 X=  -7.769515631457D-03 Y=   9.616245947853D-03 Z=  -6.714237091813D-03
+ MW Cartesian velocity:
+ I=    1 X=   3.299690892526D+13 Y=   1.861698374931D+14 Z=   1.497395478227D+14
+ I=    2 X=   1.362749842118D+14 Y=   1.304710590494D+14 Z=   1.062434092256D+14
+ I=    3 X=   3.714939808561D+13 Y=   1.754843105100D+14 Z=   2.136972944212D+13
+ I=    4 X=  -2.221691759254D+12 Y=   6.476818289800D+13 Z=   7.516091801582D+13
+ I=    5 X=  -5.917753002396D+13 Y=  -1.613890300986D+14 Z=  -1.021592817485D+14
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.344109   -0.619720   -0.838198
+      2          1           0       -1.090167    0.149457   -0.014507
+      3          1           0        0.542066    0.975858   -0.012814
+      4          1           0        0.263689   -0.536807    0.926396
+      5          6           0       -0.005014    0.002621   -0.005113
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.824075   0.000000
+     3  H    1.807295   1.829515   0.000000
+     4  H    1.768370   1.785828   1.802156   0.000000
+     5  C    1.096917   1.095083   1.116488   1.109455   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    156.8980249    155.1034292    150.6415334
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.2608856678 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.5096341093     A.U. after    7 cycles
+             Convg  =    0.2976D-08             -V/T =  2.0082
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1          -0.004970580    0.003697596   -0.001337769
+      2        1           0.003013749    0.001005001   -0.004117764
+      3        1          -0.009739673   -0.011522311   -0.001098638
+      4        1          -0.002519160    0.005692401   -0.005819284
+      5        6           0.014215663    0.001127312    0.012373455
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.014215663 RMS     0.006952798
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      1
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=   4.970579881954D-03 Y=  -3.697596201863D-03 Z=   1.337768633541D-03
+ I=    2 X=  -3.013749478836D-03 Y=  -1.005000854725D-03 Z=   4.117764104218D-03
+ I=    3 X=   9.739672760430D-03 Y=   1.152231086330D-02 Z=   1.098638206965D-03
+ I=    4 X=   2.519160158545D-03 Y=  -5.692401392450D-03 Z=   5.819283814787D-03
+ I=    5 X=  -1.421566332209D-02 Y=  -1.127312414268D-03 Z=  -1.237345475951D-02
+
+ Summary information for step      1
+ Time (fs)     0.100000
+ EKinC      =      0.0999583; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0999583; EPot   =    -40.5096341; ETot   =    -40.4096758
+ ETot-EKinP =    -40.4096758
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.874759589420D-01
+ Angular momentum
+   JX = -0.2980256506D-14  JY =  0.3057303303D-13  JZ =  0.2454409546D-14
+ Jtot =  0.3081584664D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967583D+01  Delta-E  -3.175966D-07 A.U.
+ Total angular momentum   3.081585D-14  Delta-A   6.093811D-16 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.502716152732D-01 Y=  -1.171101272704D+00 Z=  -1.583964984602D+00
+ I=    2 X=  -2.060117154049D+00 Y=   2.824334599866D-01 Z=  -2.741441916778D-02
+ I=    3 X=   1.024356164935D+00 Y=   1.844104948455D+00 Z=  -2.421571829702D-02
+ I=    4 X=   4.982997817565D-01 Y=  -1.014417738204D+00 Z=   1.750633800692D+00
+ I=    5 X=  -9.474429460938D-03 Y=   4.953510655191D-03 Z=  -9.661571711882D-03
+ MW Cartesian velocity:
+ I=    1 X=   3.245286715137D+13 Y=   1.867436622906D+14 Z=   1.498940592855D+14
+ I=    2 X=   1.367648872428D+14 Y=   1.305827714327D+14 Z=   1.058974895112D+14
+ I=    3 X=   3.636656630083D+13 Y=   1.746806161166D+14 Z=   2.126077077391D+13
+ I=    4 X=  -2.454282941785D+12 Y=   6.529214009068D+13 Z=   7.467432298561D+13
+ I=    5 X=  -5.886756849421D+13 Y=  -1.615066318989D+14 Z=  -1.019312183020D+14
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.345807   -0.609867   -0.830300
+      2          1           0       -1.082950    0.156343   -0.008935
+      3          1           0        0.543959    0.985038   -0.011696
+      4          1           0        0.263553   -0.533351    0.930317
+      5          6           0       -0.005910    0.000154   -0.006667
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.817434   0.000000
+     3  H    1.803635   1.825808   0.000000
+     4  H    1.764198   1.780715   1.808735   0.000000
+     5  C    1.083606   1.088309   1.127997   1.111386   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    157.3979458    155.6368916    150.9515336
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.2832343010 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.5091423840     A.U. after    7 cycles
+             Convg  =    0.3631D-08             -V/T =  2.0079
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1          -0.002977416   -0.001511088   -0.007834035
+      2        1          -0.001541923    0.000706936   -0.004922726
+      3        1          -0.012167998   -0.016922949   -0.000993530
+      4        1          -0.002573184    0.005833762   -0.007046116
+      5        6           0.019260522    0.011893339    0.020796408
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.020796408 RMS     0.010231572
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      2
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=   2.977416139120D-03 Y=   1.511088111514D-03 Z=   7.834035140729D-03
+ I=    2 X=   1.541923417137D-03 Y=  -7.069364741325D-04 Z=   4.922726194231D-03
+ I=    3 X=   1.216799814622D-02 Y=   1.692294946019D-02 Z=   9.935299083783D-04
+ I=    4 X=   2.573183877856D-03 Y=  -5.833762368844D-03 Z=   7.046116473874D-03
+ I=    5 X=  -1.926052158033D-02 Y=  -1.189333872873D-02 Z=  -2.079640771721D-02
+
+ Summary information for step      2
+ Time (fs)     0.200000
+ EKinC      =      0.0994665; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0994665; EPot   =    -40.5091424; ETot   =    -40.4096759
+ ETot-EKinP =    -40.4096759
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.870094774116D-01
+ Angular momentum
+   JX = -0.5846905663D-14  JY =  0.2854784379D-13  JZ =  0.6784918754D-15
+ Jtot =  0.2914834544D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967593D+01  Delta-E  -9.739118D-08 A.U.
+ Total angular momentum   2.914835D-14  Delta-A  -1.667501D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.534811543146D-01 Y=  -1.152482345133D+00 Z=  -1.569040106946D+00
+ I=    2 X=  -2.046479841885D+00 Y=   2.954456354231D-01 Z=  -1.688502112280D-02
+ I=    3 X=   1.027933386410D+00 Y=   1.861451460535D+00 Z=  -2.210301271475D-02
+ I=    4 X=   4.980435766319D-01 Y=  -1.007887451307D+00 Z=   1.758045117086D+00
+ I=    5 X=  -1.116823628313D-02 Y=   2.916562075802D-04 Z=  -1.259923872436D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.208165448541D+13 Y=   1.868457621514D+14 Z=   1.494657414030D+14
+ I=    2 X=   1.368336639561D+14 Y=   1.306630265848D+14 Z=   1.054752064956D+14
+ I=    3 X=   3.534382924898D+13 Y=   1.733521660391D+14 Z=   2.116324555589D+13
+ I=    4 X=  -2.692344333154D+12 Y=   6.583020549652D+13 Z=   7.407352433210D+13
+ I=    5 X=  -5.841453944500D+13 Y=  -1.613304234564D+14 Z=  -1.014823362166D+14
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.347491   -0.600022   -0.822441
+      2          1           0       -1.075742    0.163232   -0.003387
+      3          1           0        0.545792    0.994134   -0.010583
+      4          1           0        0.263405   -0.529867    0.934205
+      5          6           0       -0.006798   -0.002308   -0.008213
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.810800   0.000000
+     3  H    1.799936   1.822037   0.000000
+     4  H    1.760056   1.775607   1.815198   0.000000
+     5  C    1.070397   1.081696   1.139411   1.113319   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    158.1489162    155.9509300    151.1738248
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.3068585527 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.5082005821     A.U. after    7 cycles
+             Convg  =    0.4146D-08             -V/T =  2.0076
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1          -0.000681780   -0.007026153   -0.014846917
+      2        1          -0.006167512    0.000487043   -0.005699534
+      3        1          -0.014329582   -0.021899956   -0.000918596
+      4        1          -0.002617224    0.005953202   -0.008277194
+      5        6           0.023796098    0.022485864    0.029742241
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.029742241 RMS     0.014362180
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      3
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=   6.817804377754D-04 Y=   7.026153352150D-03 Z=   1.484691716737D-02
+ I=    2 X=   6.167511799597D-03 Y=  -4.870434013641D-04 Z=   5.699533751616D-03
+ I=    3 X=   1.432958192883D-02 Y=   2.189995635411D-02 Z=   9.185962536270D-04
+ I=    4 X=   2.617224034129D-03 Y=  -5.953201817544D-03 Z=   8.277194095501D-03
+ I=    5 X=  -2.379609820033D-02 Y=  -2.248586448736D-02 Z=  -2.974224126812D-02
+
+ Summary information for step      3
+ Time (fs)     0.300000
+ EKinC      =      0.0985248; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0985248; EPot   =    -40.5082006; ETot   =    -40.4096758
+ ETot-EKinP =    -40.4096758
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.861135029857D-01
+ Angular momentum
+   JX = -0.1923650947D-14  JY =  0.2551859253D-13  JZ =  0.5741420827D-14
+ Jtot =  0.2622714073D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967578D+01  Delta-E   1.555734D-07 A.U.
+ Total angular momentum   2.622714D-14  Delta-A  -2.921205D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.566629885327D-01 Y=  -1.133877475272D+00 Z=  -1.554188111865D+00
+ I=    2 X=  -2.032856869789D+00 Y=   3.084644171646D-01 Z=  -6.401431367045D-03
+ I=    3 X=   1.031397435367D+00 Y=   1.878640523888D+00 Z=  -1.999953294441D-02
+ I=    4 X=   4.977634073752D-01 Y=  -1.001302909127D+00 Z=   1.765390880720D+00
+ I=    5 X=  -1.284699446825D-02 Y=  -4.360905685909D-03 Z=  -1.552065712514D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.191073695222D+13 Y=   1.864471044843D+14 Z=   1.484065927971D+14
+ I=    2 X=   1.364737005437D+14 Y=   1.307190595880D+14 Z=   1.049790567970D+14
+ I=    3 X=   3.410672937785D+13 Y=   1.715391295315D+14 Z=   2.107412688331D+13
+ I=    4 X=  -2.934972181022D+12 Y=   6.638046031352D+13 Z=   7.335795102972D+13
+ I=    5 X=  -5.783186026773D+13 Y=  -1.608651728731D+14 Z=  -1.007984054156D+14
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.349171   -0.590211   -0.814655
+      2          1           0       -1.068563    0.170124    0.002132
+      3          1           0        0.547555    1.003122   -0.009475
+      4          1           0        0.263244   -0.526353    0.938051
+      5          6           0       -0.007677   -0.004760   -0.009747
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.804223   0.000000
+     3  H    1.796213   1.818201   0.000000
+     4  H    1.755972   1.770518   1.821519   0.000000
+     5  C    1.057341   1.075270   1.150699   1.115248   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    159.0684317    156.0949851    151.3343832
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.3315916851 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.5068133501     A.U. after    7 cycles
+             Convg  =    0.4505D-08             -V/T =  2.0073
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.001930343   -0.012831557   -0.022372788
+      2        1          -0.010837227    0.000345380   -0.006445892
+      3        1          -0.016239584   -0.026469816   -0.000869574
+      4        1          -0.002650687    0.006048178   -0.009508574
+      5        6           0.027797156    0.032907815    0.039196828
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.039196828 RMS     0.018831144
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      4
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -1.930342534582D-03 Y=   1.283155705695D-02 Z=   2.237278762150D-02
+ I=    2 X=   1.083722699039D-02 Y=  -3.453798994895D-04 Z=   6.445891891794D-03
+ I=    3 X=   1.623958381822D-02 Y=   2.646981628336D-02 Z=   8.695743023011D-04
+ I=    4 X=   2.650687277877D-03 Y=  -6.048178460847D-03 Z=   9.508574316038D-03
+ I=    5 X=  -2.779715555191D-02 Y=  -3.290781497997D-02 Z=  -3.919682813163D-02
+
+ Summary information for step      4
+ Time (fs)     0.400000
+ EKinC      =      0.0971380; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0971380; EPot   =    -40.5068134; ETot   =    -40.4096753
+ ETot-EKinP =    -40.4096753
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.847847741088D-01
+ Angular momentum
+   JX = -0.2573476394D-14  JY =  0.2780820236D-13  JZ =  0.4036931971D-14
+ Jtot =  0.2821729468D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967532D+01  Delta-E   4.510878D-07 A.U.
+ Total angular momentum   2.821729D-14  Delta-A   1.990154D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.598384770312D-01 Y=  -1.115337969102D+00 Z=  -1.539474239975D+00
+ I=    2 X=  -2.019291270278D+00 Y=   3.214877556114D-01 Z=   4.029122713452D-03
+ I=    3 X=   1.034728199259D+00 Y=   1.895625839102D+00 Z=  -1.790458176758D-02
+ I=    4 X=   4.974588654312D-01 Y=  -9.946629993327D-01 Z=   1.772659639126D+00
+ I=    5 X=  -1.450716029246D-02 Y=  -8.995898878572D-03 Z=  -1.841883737442D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.196902811259D+13 Y=   1.855198287626D+14 Z=   1.466685352470D+14
+ I=    2 X=   1.356796703841D+14 Y=   1.307581656955D+14 Z=   1.044117699790D+14
+ I=    3 X=   3.267946292279D+13 Y=   1.692803055215D+14 Z=   2.099080134555D+13
+ I=    4 X=  -3.181208287915D+12 Y=   6.694073845531D+13 Z=   7.252739129633D+13
+ I=    5 X=  -5.713365632806D+13 Y=  -1.601155365686D+14 Z=  -9.986546500274D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.350861   -0.580464   -0.806979
+      2          1           0       -1.061438    0.177017    0.007620
+      3          1           0        0.549237    1.011980   -0.008370
+      4          1           0        0.263070   -0.522810    0.941851
+      5          6           0       -0.008544   -0.007200   -0.011264
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.797759   0.000000
+     3  H    1.792486   1.814302   0.000000
+     4  H    1.751980   1.765464   1.827674   0.000000
+     5  C    1.044493   1.069055   1.161833   1.117164   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    160.0598195    156.1421236    151.4491093
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.3572290290 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.5049903498     A.U. after    7 cycles
+             Convg  =    0.4702D-08             -V/T =  2.0069
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.004868911   -0.018903147   -0.030397482
+      2        1          -0.015522932    0.000280701   -0.007160064
+      3        1          -0.017913986   -0.030651368   -0.000842456
+      4        1          -0.002673009    0.006116337   -0.010736163
+      5        6           0.031241016    0.043157476    0.049136164
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.049136164 RMS     0.023482230
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      5
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -4.868910619083D-03 Y=   1.890314679116D-02 Z=   3.039748160476D-02
+ I=    2 X=   1.552293179472D-02 Y=  -2.807012812464D-04 Z=   7.160064023123D-03
+ I=    3 X=   1.791398602943D-02 Y=   3.065136751355D-02 Z=   8.424557493818D-04
+ I=    4 X=   2.673009221389D-03 Y=  -6.116337370700D-03 Z=   1.073616261844D-02
+ I=    5 X=  -3.124101642646D-02 Y=  -4.315747565277D-02 Z=  -4.913616399571D-02
+
+ Summary information for step      5
+ Time (fs)     0.500000
+ EKinC      =      0.0953158; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0953158; EPot   =    -40.5049903; ETot   =    -40.4096745
+ ETot-EKinP =    -40.4096745
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.830206625204D-01
+ Angular momentum
+   JX = -0.3487923567D-14  JY =  0.3091750255D-13  JZ =  0.3490203291D-14
+ Jtot =  0.3130877024D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967453D+01  Delta-E   7.967970D-07 A.U.
+ Total angular momentum   3.130877D-14  Delta-A   3.091476D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.630319241342D-01 Y=  -1.096917833019D+00 Z=  -1.524968504297D+00
+ I=    2 X=  -2.005826486505D+00 Y=   3.345143281522D-01 Z=   1.439969642135D-02
+ I=    3 X=   1.037907905254D+00 Y=   1.912364894885D+00 Z=  -1.581770228243D-02
+ I=    4 X=   4.971296405103D-01 Y=  -9.879668373877D-01 Z=   1.779839936940D+00
+ I=    5 X=  -1.614560765433D-02 Y=  -1.360518049984D-02 Z=  -2.128639243535D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.228655446466D+13 Y=   1.840379535947D+14 Z=   1.442043172779D+14
+ I=    2 X=   1.344487652737D+14 Y=   1.307875878377D+14 Z=   1.037762707253D+14
+ I=    3 X=   3.108477434121D+13 Y=   1.666128421650D+14 Z=   2.091104244409D+13
+ I=    4 X=  -3.430036584615D+12 Y=   6.750864109864D+13 Z=   7.158200521296D+13
+ I=    5 X=  -5.633470140977D+13 Y=  -1.590861545315D+14 Z=  -9.867007011567D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.352575   -0.570809   -0.799452
+      2          1           0       -1.054389    0.183912    0.013073
+      3          1           0        0.550832    1.020687   -0.007270
+      4          1           0        0.262882   -0.519236    0.945598
+      5          6           0       -0.009398   -0.009621   -0.012761
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.791466   0.000000
+     3  H    1.788776   1.810342   0.000000
+     4  H    1.748114   1.760461   1.833640   0.000000
+     5  C    1.031911   1.063075   1.172784   1.119060   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    161.0687178    156.1299555    151.5265000
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.3835283547 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.5027469701     A.U. after    7 cycles
+             Convg  =    0.4735D-08             -V/T =  2.0065
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.008138107   -0.025207465   -0.038894293
+      2        1          -0.020194429    0.000290354   -0.007840947
+      3        1          -0.019369049   -0.034464798   -0.000833508
+      4        1          -0.002683663    0.006155535   -0.011955731
+      5        6           0.034109033    0.053226374    0.059524479
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.059524479 RMS     0.028254954
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      6
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -8.138106944172D-03 Y=   2.520746489617D-02 Z=   3.889429268564D-02
+ I=    2 X=   2.019442868284D-02 Y=  -2.903539123728D-04 Z=   7.840947344190D-03
+ I=    3 X=   1.936904853447D-02 Y=   3.446479814091D-02 Z=   8.335084760353D-04
+ I=    4 X=   2.683662575165D-03 Y=  -6.155535182086D-03 Z=   1.195573061051D-02
+ I=    5 X=  -3.410903284831D-02 Y=  -5.322637394261D-02 Z=  -5.952447911638D-02
+
+ Summary information for step      6
+ Time (fs)     0.600000
+ EKinC      =      0.0930736; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0930736; EPot   =    -40.5027470; ETot   =    -40.4096733
+ ETot-EKinP =    -40.4096733
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.808194954750D-01
+ Angular momentum
+   JX = -0.6842996072D-14  JY =  0.3286801063D-13  JZ =  0.1217038374D-14
+ Jtot =  0.3359484931D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967333D+01  Delta-E   1.197556D-06 A.U.
+ Total angular momentum   3.359485D-14  Delta-A   2.286079D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.662706708863D-01 Y=  -1.078673549071D+00 Z=  -1.510745558985D+00
+ I=    2 X=  -1.992506110443D+00 Y=   3.475435281387D-01 Z=   2.470364503209D-02
+ I=    3 X=   1.040920972004D+00 Y=   1.928818792557D+00 Z=  -1.373864083817D-02
+ I=    4 X=   4.967755264808D-01 Y=  -9.812137888596D-01 Z=   1.786920353585D+00
+ I=    5 X=  -1.775964579482D-02 Y=  -1.818074229288D-02 Z=  -2.411555652864D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.289399087005D+13 Y=   1.819781863755D+14 Z=   1.409685922495D+14
+ I=    2 X=   1.327809017894D+14 Y=   1.308143931479D+14 Z=   1.030756274857D+14
+ I=    3 X=   2.934390782819D+13 Y=   1.635720622133D+14 Z=   2.083298042551D+13
+ I=    4 X=  -3.680383711736D+12 Y=   6.808155731298D+13 Z=   7.052233862833D+13
+ I=    5 X=  -5.545032866493D+13 Y=  -1.577818045449D+14 Z=  -9.719958476347D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.354329   -0.561279   -0.792117
+      2          1           0       -1.047439    0.190808    0.018487
+      3          1           0        0.552331    1.029224   -0.006174
+      4          1           0        0.262682   -0.515632    0.949285
+      5          6           0       -0.010238   -0.012020   -0.014234
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.785404   0.000000
+     3  H    1.785108   1.806326   0.000000
+     4  H    1.744410   1.755523   1.839397   0.000000
+     5  C    1.019655   1.057354   1.183528   1.120928   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    162.0647698    156.0766233    151.5700559
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.4102106992 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.5001050975     A.U. after    7 cycles
+             Convg  =    0.4607D-08             -V/T =  2.0061
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.011734329   -0.031700487   -0.047821449
+      2        1          -0.024819810    0.000370174   -0.008488119
+      3        1          -0.020620960   -0.037930952   -0.000839294
+      4        1          -0.002682167    0.006163859   -0.013162933
+      5        6           0.036388608    0.063097406    0.070311795
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.070311795 RMS     0.033115970
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      7
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -1.173432936559D-02 Y=   3.170048663991D-02 Z=   4.782144907244D-02
+ I=    2 X=   2.481981000155D-02 Y=  -3.701738035048D-04 Z=   8.488118763804D-03
+ I=    3 X=   2.062096004881D-02 Y=   3.793095248934D-02 Z=   8.392942864819D-04
+ I=    4 X=   2.682167143249D-03 Y=  -6.163859041439D-03 Z=   1.316293300137D-02
+ I=    5 X=  -3.638860782802D-02 Y=  -6.309740628430D-02 Z=  -7.031179512410D-02
+
+ Summary information for step      7
+ Time (fs)     0.700000
+ EKinC      =      0.0904334; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0904334; EPot   =    -40.5001051; ETot   =    -40.4096717
+ ETot-EKinP =    -40.4096717
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.781809465967D-01
+ Angular momentum
+   JX = -0.6363284241D-14  JY =  0.3106095651D-13  JZ =  0.1557287279D-14
+ Jtot =  0.3174428373D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040967168D+01  Delta-E   1.654360D-06 A.U.
+ Total angular momentum   3.174428D-14  Delta-A  -1.850566D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.695851327207D-01 Y=  -1.060663764055D+00 Z=  -1.496884451109D+00
+ I=    2 X=  -1.979373601868D+00 Y=   3.605754408886D-01 Z=   3.493463515125D-02
+ I=    3 X=   1.043753858988D+00 Y=   1.944952057897D+00 Z=  -1.166731302908D-02
+ I=    4 X=   4.963964268897D-01 Y=  -9.744034893669D-01 Z=   1.793889542440D+00
+ I=    5 X=  -1.934703387247D-02 Y=  -2.271471723257D-02 Z=  -2.689821307818D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.382202950423D+13 Y=   1.793208477172D+14 Z=   1.369192108161D+14
+ I=    2 X=   1.306788975677D+14 Y=   1.308453368268D+14 Z=   1.023129875439D+14
+ I=    3 X=   2.747659810578D+13 Y=   1.601913690133D+14 Z=   2.075507286433D+13
+ I=    4 X=  -3.931125487345D+12 Y=   6.865668847758D+13 Z=   6.934933780511D+13
+ I=    5 X=  -5.449629427684D+13 Y=  -1.562076104712D+14 Z=  -9.544253328625D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.356141   -0.551905   -0.785018
+      2          1           0       -1.040612    0.197706    0.023859
+      3          1           0        0.553728    1.037575   -0.005082
+      4          1           0        0.262468   -0.511998    0.952909
+      5          6           0       -0.011063   -0.014393   -0.015677
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.779640   0.000000
+     3  H    1.781512   1.802259   0.000000
+     4  H    1.740906   1.750666   1.844927   0.000000
+     5  C    1.007790   1.051913   1.194043   1.122759   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    163.0281607    155.9928226    151.5798375
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.4369618274 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4970938821     A.U. after    7 cycles
+             Convg  =    0.4325D-08             -V/T =  2.0056
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.015644130   -0.038326497   -0.057119383
+      2        1          -0.029365809    0.000514437   -0.009101876
+      3        1          -0.021685600   -0.041070927   -0.000856686
+      4        1          -0.002668099    0.006139641   -0.014353326
+      5        6           0.038075378    0.072743345    0.081431272
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.081431272 RMS     0.038037504
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      8
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -1.564413047867D-02 Y=   3.832649651140D-02 Z=   5.711938332233D-02
+ I=    2 X=   2.936580920908D-02 Y=  -5.144366319129D-04 Z=   9.101876093186D-03
+ I=    3 X=   2.168560049327D-02 Y=   4.107092651098D-02 Z=   8.566862838221D-04
+ I=    4 X=   2.668098813791D-03 Y=  -6.139640983497D-03 Z=   1.435332610768D-02
+ I=    5 X=  -3.807537803747D-02 Y=  -7.274334540696D-02 Z=  -8.143127180702D-02
+
+ Summary information for step      8
+ Time (fs)     0.800000
+ EKinC      =      0.0874244; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0874244; EPot   =    -40.4970939; ETot   =    -40.4096695
+ ETot-EKinP =    -40.4096695
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.751064931066D-01
+ Angular momentum
+   JX = -0.5414516760D-14  JY =  0.2834988486D-13  JZ =  0.7393204039D-14
+ Jtot =  0.2979416771D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040966951D+01  Delta-E   2.162423D-06 A.U.
+ Total angular momentum   2.979417D-14  Delta-A  -1.950116D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.730087652403D-01 Y=  -1.042948880586D+00 Z=  -1.483468231903D+00
+ I=    2 X=  -1.966471991415D+00 Y=   3.736108055385D-01 Z=   4.508664906259D-02
+ I=    3 X=   1.046394916450D+00 Y=   1.960732446909D+00 Z=  -9.603772489560D-03
+ I=    4 X=   4.959923595674D-01 Y=  -9.675358620240D-01 Z=   1.800736271445D+00
+ I=    5 X=  -2.090599081188D-02 Y=  -2.719939288838D-02 Z=  -2.962593375714D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.510056302519D+13 Y=   1.760509101849D+14 Z=   1.320187583876D+14
+ I=    2 X=   1.281486144597D+14 Y=   1.308867164722D+14 Z=   1.014915046015D+14
+ I=    3 X=   2.550108638636D+13 Y=   1.565022051025D+14 Z=   2.067607795187D+13
+ I=    4 X=  -4.181096298976D+12 Y=   6.923107255280D+13 Z=   6.806436193494D+13
+ I=    5 X=  -5.348858413143D+13 Y=  -1.543692960988D+14 Z=  -9.338902081487D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.358030   -0.542719   -0.778199
+      2          1           0       -1.033929    0.204607    0.029186
+      3          1           0        0.555019    1.045723   -0.003994
+      4          1           0        0.262241   -0.508334    0.956461
+      5          6           0       -0.011872   -0.016736   -0.017087
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.774237   0.000000
+     3  H    1.778018   1.798148   0.000000
+     4  H    1.737643   1.745904   1.850213   0.000000
+     5  C    0.996382   1.046774   1.204308   1.124545   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    163.9439876    155.8866385    151.5533958
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.4634345448 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4937504123     A.U. after    7 cycles
+             Convg  =    0.3908D-08             -V/T =  2.0052
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.019842407   -0.045017540   -0.066708635
+      2        1          -0.033798261    0.000715861   -0.009683273
+      3        1          -0.022578379   -0.043905760   -0.000882877
+      4        1          -0.002641095    0.006081466   -0.015522383
+      5        6           0.039175328    0.082125973    0.092797168
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.092797168 RMS     0.042989007
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step      9
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -1.984240662959D-02 Y=   4.501754032354D-02 Z=   6.670863527201D-02
+ I=    2 X=   3.379826149010D-02 Y=  -7.158610990300D-04 Z=   9.683272880781D-03
+ I=    3 X=   2.257837870576D-02 Y=   4.390575951956D-02 Z=   8.828768768129D-04
+ I=    4 X=   2.641094575719D-03 Y=  -6.081465873300D-03 Z=   1.552238305462D-02
+ I=    5 X=  -3.917532814199D-02 Y=  -8.212597287076D-02 Z=  -9.279716808422D-02
+
+ Summary information for step      9
+ Time (fs)     0.900000
+ EKinC      =      0.0840836; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0840836; EPot   =    -40.4937504; ETot   =    -40.4096668
+ ETot-EKinP =    -40.4096668
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.715999242322D-01
+ Angular momentum
+   JX = -0.9561036521D-14  JY =  0.2869191858D-13  JZ =  0.5069488188D-14
+ Jtot =  0.3066495266D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040966680D+01  Delta-E   2.708201D-06 A.U.
+ Total angular momentum   3.066495D-14  Delta-A   8.707850D-16 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.765779391551D-01 Y=  -1.025590539257D+00 Z=  -1.470583402250D+00
+ I=    2 X=  -1.953843571050D+00 Y=   3.866509620266D-01 Z=   5.515398165861D-02
+ I=    3 X=   1.048834237922D+00 Y=   1.976130749420D+00 Z=  -7.548182209580D-03
+ I=    4 X=   4.955634602766D-01 Y=  -9.606111325532D-01 Z=   1.807449464762D+00
+ I=    5 X=  -2.243519871715D-02 Y=  -3.162723269829D-02 Z=  -3.229003070887D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.675768703132D+13 Y=   1.721591183288D+14 Z=   1.262363157813D+14
+ I=    2 X=   1.251990634775D+14 Y=   1.309442229723D+14 Z=   1.006142641965D+14
+ I=    3 X=   2.343415371429D+13 Y=   1.525340448940D+14 Z=   2.059502966981D+13
+ I=    4 X=  -4.429097862668D+12 Y=   6.980160654915D+13 Z=   6.666919202290D+13
+ I=    5 X=  -5.244316226487D+13 Y=  -1.522734709107D+14 Z=  -9.103121727795D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.360016   -0.533755   -0.771709
+      2          1           0       -1.027413    0.211511    0.034466
+      3          1           0        0.556199    1.053656   -0.002911
+      4          1           0        0.262001   -0.504639    0.959937
+      5          6           0       -0.012665   -0.019046   -0.018459
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.769265   0.000000
+     3  H    1.774658   1.793999   0.000000
+     4  H    1.734662   1.741251   1.855239   0.000000
+     5  C    0.985497   1.041955   1.214305   1.126277   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    164.7999175    155.7654363    151.4863840
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.4892520715 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4901201781     A.U. after    7 cycles
+             Convg  =    0.3394D-08             -V/T =  2.0047
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.024291006   -0.051693712   -0.076488964
+      2        1          -0.038082633    0.000965680   -0.010234145
+      3        1          -0.023314106   -0.046456221   -0.000915379
+      4        1          -0.002600854    0.005988173   -0.016665508
+      5        6           0.039706587    0.091196080    0.104303997
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.104303997 RMS     0.047933566
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     10
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -2.429100590929D-02 Y=   5.169371234309D-02 Z=   7.648896444500D-02
+ I=    2 X=   3.808263316982D-02 Y=  -9.656804678584D-04 Z=   1.023414479513D-02
+ I=    3 X=   2.331410557787D-02 Y=   4.645622067124D-02 Z=   9.153789781019D-04
+ I=    4 X=   2.600854403246D-03 Y=  -5.988172904949D-03 Z=   1.666550841664D-02
+ I=    5 X=  -3.970658724164D-02 Y=  -9.119607964152D-02 Z=  -1.043039966349D-01
+
+ Summary information for step     10
+ Time (fs)     1.000000
+ EKinC      =      0.0804566; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0804566; EPot   =    -40.4901202; ETot   =    -40.4096635
+ ETot-EKinP =    -40.4096635
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.676678691253D-01
+ Angular momentum
+   JX = -0.7769915286D-14  JY =  0.2662682541D-13  JZ =  0.1077557957D-13
+ Jtot =  0.2975689046D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040966353D+01  Delta-E   3.269960D-06 A.U.
+ Total angular momentum   2.975689D-14  Delta-A  -9.080622D-16 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.803317073310D-01 Y=  -1.008650986574D+00 Z=  -1.458319173166D+00
+ I=    2 X=  -1.941529576217D+00 Y=   3.996977832398D-01 Z=   6.513122993031D-02
+ I=    3 X=   1.051063516802D+00 Y=   1.991120593385D+00 Z=  -5.500788275678D-03
+ I=    4 X=   4.951099855721D-01 Y=  -9.536298422529D-01 Z=   1.814018245145D+00
+ I=    5 X=  -2.393379819696D-02 Y=  -3.599090583046D-02 Z=  -3.488162353715D-02
+ MW Cartesian velocity:
+ I=    1 X=   3.881855138052D+13 Y=   1.676431219081D+14 Z=   1.195493579692D+14
+ I=    2 X=   1.218424633424D+14 Y=   1.310227945718D+14 Z=   9.968420869344D+13
+ I=    3 X=   2.129116734330D+13 Y=   1.483144119901D+14 Z=   2.051121266205D+13
+ I=    4 X=  -4.673906267605D+12 Y=   7.036506843904D+13 Z=   6.516603722029D+13
+ I=    5 X=  -5.137566633936D+13 Y=  -1.499279275708D+14 Z=  -8.836388047837D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.362122   -0.525046   -0.765596
+      2          1           0       -1.021084    0.218420    0.039695
+      3          1           0        0.557264    1.061359   -0.001832
+      4          1           0        0.261748   -0.500915    0.963331
+      5          6           0       -0.013442   -0.021317   -0.019787
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.764793   0.000000
+     3  H    1.771467   1.789820   0.000000
+     4  H    1.732006   1.736723   1.859992   0.000000
+     5  C    0.975203   1.037475   1.224016   1.127947   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    165.5851611    155.6365258    151.3731017
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.5140126695 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4862572038     A.U. after    7 cycles
+             Convg  =    0.2853D-08             -V/T =  2.0043
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.028937869   -0.058264146   -0.086339505
+      2        1          -0.042184665    0.001253754   -0.010757108
+      3        1          -0.023906894   -0.048742582   -0.000952020
+      4        1          -0.002547139    0.005858854   -0.017778059
+      5        6           0.039700829    0.099894120    0.115826691
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.115826691 RMS     0.052826399
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     11
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -2.893786930194D-02 Y=   5.826414595894D-02 Z=   8.633950475115D-02
+ I=    2 X=   4.218466500240D-02 Y=  -1.253754082981D-03 Z=   1.075710753982D-02
+ I=    3 X=   2.390689400005D-02 Y=   4.874258233734D-02 Z=   9.520196200883D-04
+ I=    4 X=   2.547139492917D-03 Y=  -5.858854369757D-03 Z=   1.777805886519D-02
+ I=    5 X=  -3.970082919343D-02 Y=  -9.989411984354D-02 Z=  -1.158266907763D-01
+
+ Summary information for step     11
+ Time (fs)     1.100000
+ EKinC      =      0.0765975; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0765975; EPot   =    -40.4862572; ETot   =    -40.4096597
+ ETot-EKinP =    -40.4096597
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.633203096909D-01
+ Angular momentum
+   JX = -0.7399599109D-14  JY =  0.2905515645D-13  JZ =  0.1131246340D-13
+ Jtot =  0.3204571753D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040965972D+01  Delta-E   3.818718D-06 A.U.
+ Total angular momentum   3.204572D-14  Delta-A   2.288827D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.843114508845D-01 Y=  -9.921923313506D-01 Z=  -1.446766533016D+00
+ I=    2 X=  -1.929569864642D+00 Y=   4.127535929237D-01 Z=   7.501327495412D-02
+ I=    3 X=   1.053075908116D+00 Y=   2.005678251941D+00 Z=  -3.461896192554D-03
+ I=    4 X=   4.946323150469D-01 Y=  -9.465928587443D-01 Z=   1.820431976868D+00
+ I=    5 X=  -2.540137419624D-02 Y=  -4.028332563250D-02 Z=  -3.739172172695D-02
+ MW Cartesian velocity:
+ I=    1 X=   4.130410347300D+13 Y=   1.625085476340D+14 Z=   1.119456872090D+14
+ I=    2 X=   1.180942443937D+14 Y=   1.311264808020D+14 Z=   9.870406369891D+13
+ I=    3 X=   1.908613879655D+13 Y=   1.438689163587D+14 Z=   2.042413430769D+13
+ I=    4 X=  -4.914277272050D+12 Y=   7.091814029839D+13 Z=   6.355753976156D+13
+ I=    5 X=  -5.030105986742D+13 Y=  -1.473419305645D+14 Z=  -8.538488833180D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.364370   -0.516623   -0.759908
+      2          1           0       -1.014963    0.225335    0.044872
+      3          1           0        0.558211    1.068823   -0.000758
+      4          1           0        0.261483   -0.497163    0.966638
+      5          6           0       -0.014202   -0.023547   -0.021067
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.760890   0.000000
+     3  H    1.768480   1.785618   0.000000
+     4  H    1.729717   1.732331   1.864460   0.000000
+     5  C    0.965570   1.033350   1.233427   1.129546   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    166.2900224    155.5071573    151.2071468
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.5372956679 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4822237434     A.U. after    7 cycles
+             Convg  =    0.2425D-08             -V/T =  2.0038
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.033716741   -0.064628734   -0.096119892
+      2        1          -0.046071076    0.001568716   -0.011255527
+      3        1          -0.024370083   -0.050784411   -0.000990931
+      4        1          -0.002479770    0.005692854   -0.018855372
+      5        6           0.039204187    0.108151575    0.127221722
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.127221722 RMS     0.057614545
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     12
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -3.371674092207D-02 Y=   6.462873388100D-02 Z=   9.611989165036D-02
+ I=    2 X=   4.607107565505D-02 Y=  -1.568716086150D-03 Z=   1.125552705661D-02
+ I=    3 X=   2.437008267543D-02 Y=   5.078441098869D-02 Z=   9.909308297188D-04
+ I=    4 X=   2.479769657268D-03 Y=  -5.692853516010D-03 Z=   1.885537232626D-02
+ I=    5 X=  -3.920418706567D-02 Y=  -1.081515752675D-01 Z=  -1.272217218629D-01
+
+ Summary information for step     12
+ Time (fs)     1.200000
+ EKinC      =      0.0725683; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0725683; EPot   =    -40.4822237; ETot   =    -40.4096554
+ ETot-EKinP =    -40.4096554
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.585710479779D-01
+ Angular momentum
+   JX = -0.4748946343D-14  JY =  0.2909036915D-13  JZ =  0.5328273872D-14
+ Jtot =  0.2995317297D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040965540D+01  Delta-E   4.318972D-06 A.U.
+ Total angular momentum   2.995317D-14  Delta-A  -2.092545D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.885603958658D-01 Y=  -9.762756991259D-01 Z=  -1.436017122875D+00
+ I=    2 X=  -1.918002597705D+00 Y=   4.258210707212D-01 Z=   8.479525672200D-02
+ I=    3 X=   1.054865896669D+00 Y=   2.019782455114D+00 Z=  -1.431850187693D-03
+ I=    4 X=   4.941309531360D-01 Y=  -9.395013843294D-01 Z=   1.826680309075D+00
+ I=    5 X=  -2.683793124245D-02 Y=  -4.449769615789D-02 Z=  -3.981132236346D-02
+ MW Cartesian velocity:
+ I=    1 X=   4.422977215660D+13 Y=   1.567699412047D+14 Z=   1.034253061917D+14
+ I=    2 X=   1.139729902287D+14 Y=   1.312583226468D+14 Z=   9.767627014395D+13
+ I=    3 X=   1.683179385626D+13 Y=   1.392213097187D+14 Z=   2.033349295166D+13
+ I=    4 X=  -5.148949511184D+12 Y=   7.145743244426D+13 Z=   6.184677779083D+13
+ I=    5 X=  -4.923325324507D+13 Y=  -1.445264775206D+14 Z=  -8.209575363889D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.366785   -0.508518   -0.754692
+      2          1           0       -1.009069    0.232258    0.049993
+      3          1           0        0.559038    1.076036    0.000312
+      4          1           0        0.261205   -0.493382    0.969851
+      5          6           0       -0.014946   -0.025733   -0.022295
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.757624   0.000000
+     3  H    1.765731   1.781401   0.000000
+     4  H    1.727839   1.728088   1.868632   0.000000
+     5  C    0.956664   1.029594   1.242523   1.131066   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    166.9057234    155.3840839    150.9822401
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.5586689643 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4780894431     A.U. after    7 cycles
+             Convg  =    0.2278D-08             -V/T =  2.0034
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.038547388   -0.070680861   -0.105672672
+      2        1          -0.049710275    0.001898156   -0.011733457
+      3        1          -0.024716188   -0.052600405   -0.001030541
+      4        1          -0.002398623    0.005489762   -0.019892812
+      5        6           0.038277698    0.115893348    0.138329481
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.138329481 RMS     0.062237530
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     13
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -3.854738788563D-02 Y=   7.068086148824D-02 Z=   1.056726715098D-01
+ I=    2 X=   4.971027495410D-02 Y=  -1.898155951731D-03 Z=   1.173345747199D-02
+ I=    3 X=   2.471618782091D-02 Y=   5.260040456422D-02 Z=   1.030540825817D-03
+ I=    4 X=   2.398622697630D-03 Y=  -5.489761681121D-03 Z=   1.989281153145D-02
+ I=    5 X=  -3.827769758700D-02 Y=  -1.158933484196D-01 Z=  -1.383294813390D-01
+
+ Summary information for step     13
+ Time (fs)     1.300000
+ EKinC      =      0.0684388; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0684388; EPot   =    -40.4780894; ETot   =    -40.4096507
+ ETot-EKinP =    -40.4096507
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.534380923694D-01
+ Angular momentum
+   JX = -0.9438678800D-14  JY =  0.2491176158D-13  JZ =  0.1502152148D-13
+ Jtot =  0.3058317560D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040965067D+01  Delta-E   4.730222D-06 A.U.
+ Total angular momentum   3.058318D-14  Delta-A   6.300026D-16 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.931229971582D-01 Y=  -9.609603008905D-01 Z=  -1.426161930574D+00
+ I=    2 X=  -1.906863930870D+00 Y=   4.389031462089D-01 Z=   9.447254259766D-02
+ I=    3 X=   1.056429172743D+00 Y=   2.033414207905D+00 Z=   5.889841378612D-04
+ I=    4 X=   4.936065307241D-01 Y=  -9.323569619292D-01 Z=   1.832753219275D+00
+ I=    5 X=  -2.824385739765D-02 Y=  -4.862756570265D-02 Z=  -4.213152227322D-02
+ MW Cartesian velocity:
+ I=    1 X=   4.760414527899D+13 Y=   1.504515008106D+14 Z=   9.400212511843D+13
+ I=    2 X=   1.095003136057D+14 Y=   1.314202503217D+14 Z=   9.660292313581D+13
+ I=    3 X=   1.453965044503D+13 Y=   1.343935571455D+14 Z=   2.023914587149D+13
+ I=    4 X=  -5.376646507452D+12 Y=   7.197950668754D+13 Z=   6.003726417080D+13
+ I=    5 X=  -4.818470652746D+13 Y=  -1.414945096492D+14 Z=  -7.850209145070D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.369389   -0.500762   -0.749997
+      2          1           0       -1.003419    0.239190    0.055056
+      3          1           0        0.559744    1.082991    0.001376
+      4          1           0        0.260916   -0.489574    0.972967
+      5          6           0       -0.015674   -0.027870   -0.023466
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.755062   0.000000
+     3  H    1.763255   1.777178   0.000000
+     4  H    1.726412   1.724007   1.872498   0.000000
+     5  C    0.948551   1.026220   1.251294   1.132498   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    167.4243693    155.2729163    150.6931204
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.5776979860 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4739299048     A.U. after    7 cycles
+             Convg  =    0.2407D-08             -V/T =  2.0030
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.043336429   -0.076310969   -0.114827076
+      2        1          -0.053073029    0.002228838   -0.012195544
+      3        1          -0.024956883   -0.054208296   -0.001069566
+      4        1          -0.002303635    0.005249417   -0.020885818
+      5        6           0.036997118    0.123041010    0.148978004
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.148978004 RMS     0.066628845
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     14
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -4.333642876958D-02 Y=   7.631096933641D-02 Z=   1.148270760320D-01
+ I=    2 X=   5.307302861367D-02 Y=  -2.228838388278D-03 Z=   1.219554351122D-02
+ I=    3 X=   2.495688270884D-02 Y=   5.420829648790D-02 Z=   1.069566333741D-03
+ I=    4 X=   2.303635445438D-03 Y=  -5.249417312508D-03 Z=   2.088581764837D-02
+ I=    5 X=  -3.699711799836D-02 Y=  -1.230410101235D-01 Z=  -1.489780035253D-01
+
+ Summary information for step     14
+ Time (fs)     1.400000
+ EKinC      =      0.0642842; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0642842; EPot   =    -40.4739299; ETot   =    -40.4096457
+ ETot-EKinP =    -40.4096457
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.479439228033D-01
+ Angular momentum
+   JX = -0.8100691879D-14  JY =  0.2710684943D-13  JZ =  0.1274817023D-13
+ Jtot =  0.3103092553D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040964566D+01  Delta-E   5.010938D-06 A.U.
+ Total angular momentum   3.103093D-14  Delta-A   4.477499D-16 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   6.980441917004D-01 Y=  -9.463024413702D-01 Z=  -1.417289825968D+00
+ I=    2 X=  -1.896187719779D+00 Y=   4.520028835712D-01 Z=   1.040406899647D-01
+ I=    3 X=   1.057762515766D+00 Y=   2.046556616271D+00 Z=   2.600234123159D-03
+ I=    4 X=   4.930598065488D-01 Y=  -9.251614788087D-01 Z=   1.838641056454D+00
+ I=    5 X=  -2.961987657090D-02 Y=  -5.266688548137D-02 Z=  -4.434364272656D-02
+ MW Cartesian velocity:
+ I=    1 X=   5.142770079083D+13 Y=   1.435875194530D+14 Z=   8.370537987344D+13
+ I=    2 X=   1.047006676108D+14 Y=   1.316129968781D+14 Z=   9.548571474948D+13
+ I=    3 X=   1.222009714089D+13 Y=   1.294059222932D+14 Z=   2.014108237174D+13
+ I=    4 X=  -5.596080593090D+12 Y=   7.248089786543D+13 Z=   5.813294033621D+13
+ I=    5 X=  -4.716602859222D+13 Y=  -1.382610458265D+14 Z=  -7.461400390110D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.372207   -0.493381   -0.745868
+      2          1           0       -0.998031    0.246133    0.060059
+      3          1           0        0.560327    1.089679    0.002435
+      4          1           0        0.260615   -0.485741    0.975980
+      5          6           0       -0.016387   -0.029957   -0.024575
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.753268   0.000000
+     3  H    1.761086   1.772955   0.000000
+     4  H    1.725477   1.720099   1.876050   0.000000
+     5  C    0.941292   1.023237   1.259727   1.133834   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    167.8389889    155.1775759    150.3362657
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.5939559722 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4698246386     A.U. after    7 cycles
+             Convg  =    0.2596D-08             -V/T =  2.0026
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.047979105   -0.081410349   -0.123403700
+      2        1          -0.056133046    0.002546960   -0.012646894
+      3        1          -0.025103000   -0.055624823   -0.001107007
+      4        1          -0.002194807    0.004971899   -0.021829980
+      5        6           0.035451748    0.129516313    0.158987581
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.158987581 RMS     0.070717941
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     15
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -4.797910480721D-02 Y=   8.141034933797D-02 Z=   1.234037003513D-01
+ I=    2 X=   5.613304597465D-02 Y=  -2.546959995834D-03 Z=   1.264689374770D-02
+ I=    3 X=   2.510299954291D-02 Y=   5.562482255936D-02 Z=   1.107007102971D-03
+ I=    4 X=   2.194806914297D-03 Y=  -4.971899355990D-03 Z=   2.182997954255D-02
+ I=    5 X=  -3.545174762465D-02 Y=  -1.295163125455D-01 Z=  -1.589875807446D-01
+
+ Summary information for step     15
+ Time (fs)     1.500000
+ EKinC      =      0.0601841; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0601841; EPot   =    -40.4698246; ETot   =    -40.4096405
+ ETot-EKinP =    -40.4096405
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.421156083893D-01
+ Angular momentum
+   JX = -0.4570287209D-14  JY =  0.2502831124D-13  JZ =  0.7455645613D-14
+ Jtot =  0.2651208291D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040964053D+01  Delta-E   5.123484D-06 A.U.
+ Total angular momentum   2.651208D-14  Delta-A  -4.518843D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   7.033685295941D-01 Y=  -9.323544996330D-01 Z=  -1.409485972455D+00
+ I=    2 X=  -1.886005248300D+00 Y=   4.651233584247D-01 Z=   1.134954032854D-01
+ I=    3 X=   1.058863685655D+00 Y=   2.059194722178D+00 Z=   4.601532036391D-03
+ I=    4 X=   4.924916680266D-01 Y=  -9.179171682256D-01 Z=   1.844334583339D+00
+ I=    5 X=  -3.096698932808D-02 Y=  -5.661007090529D-02 Z=  -4.643936379698D-02
+ MW Cartesian velocity:
+ I=    1 X=   5.569166489325D+13 Y=   1.362224853903D+14 Z=   7.258065661187D+13
+ I=    2 X=   9.960109780493D+13 Y=   1.318360308542D+14 Z=   9.432588238973D+13
+ I=    3 X=   9.882469676947D+12 Y=   1.242770603103D+14 Z=   2.003940103707D+13
+ I=    4 X=  -5.805959832655D+12 Y=   7.295813484918D+13 Z=   5.613816500519D+13
+ I=    5 X=  -4.618559456316D+13 Y=  -1.348432252018D+14 Z=  -7.044635230616D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.375260   -0.486401   -0.742346
+      2          1           0       -0.992919    0.253088    0.065000
+      3          1           0        0.560786    1.096093    0.003489
+      4          1           0        0.260304   -0.481883    0.978885
+      5          6           0       -0.017085   -0.031990   -0.025618
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.752303   0.000000
+     3  H    1.759254   1.768739   0.000000
+     4  H    1.725071   1.716373   1.879281   0.000000
+     5  C    0.934945   1.020653   1.267814   1.135066   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    168.1436130    155.1001079    149.9102069
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.6070353125 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4658544560     A.U. after    7 cycles
+             Convg  =    0.2651D-08             -V/T =  2.0023
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.052362213   -0.085875292   -0.131220301
+      2        1          -0.058867487    0.002838439   -0.013092928
+      3        1          -0.025164544   -0.056865730   -0.001142140
+      4        1          -0.002072197    0.004657518   -0.022721088
+      5        6           0.033742015    0.135245064    0.168176457
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.168176457 RMS     0.074432776
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     16
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -5.236221293935D-02 Y=   8.587529171730D-02 Z=   1.312203008422D-01
+ I=    2 X=   5.886748706782D-02 Y=  -2.838439461286D-03 Z=   1.309292838518D-02
+ I=    3 X=   2.516454427620D-02 Y=   5.686572992829D-02 Z=   1.142139723067D-03
+ I=    4 X=   2.072196881758D-03 Y=  -4.657518090646D-03 Z=   2.272108824564D-02
+ I=    5 X=  -3.374201528643D-02 Y=  -1.352450640937D-01 Z=  -1.681764571961D-01
+
+ Summary information for step     16
+ Time (fs)     1.600000
+ EKinC      =      0.0562190; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0562190; EPot   =    -40.4658545; ETot   =    -40.4096355
+ ETot-EKinP =    -40.4096355
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.359847598971D-01
+ Angular momentum
+   JX = -0.1133191807D-13  JY =  0.2861249073D-13  JZ =  0.9175806946D-14
+ Jtot =  0.3211358632D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040963550D+01  Delta-E   5.036650D-06 A.U.
+ Total angular momentum   3.211359D-14  Delta-A   5.601503D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   7.091391998438D-01 Y=  -9.191639173625D-01 Z=  -1.402830158122D+00
+ I=    2 X=  -1.876344984006D+00 Y=   4.782675290749D-01 Z=   1.228324864617D-01
+ I=    3 X=   1.059731321722D+00 Y=   2.071315348100D+00 Z=   6.592524856845D-03
+ I=    4 X=   4.919031312771D-01 Y=  -9.106266089707D-01 Z=   1.849825017269D+00
+ I=    5 X=  -3.228640311627D-02 Y=  -6.045206271824D-02 Z=  -4.841086477330D-02
+ MW Cartesian velocity:
+ I=    1 X=   6.037708965199D+13 Y=   1.284108102143D+14 Z=   6.069042814491D+13
+ I=    2 X=   9.423094332757D+13 Y=   1.320875152618D+14 Z=   9.312416963884D+13
+ I=    3 X=   7.535127452275D+12 Y=   1.190241114147D+14 Z=   1.993428619321D+13
+ I=    4 X=  -6.004995756180D+12 Y=   7.340776199501D+13 Z=   5.405769797958D+13
+ I=    5 X=  -4.524921181167D+13 Y=  -1.312602498426D+14 Z=  -6.601888974714D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.378572   -0.479843   -0.739470
+      2          1           0       -0.988097    0.260058    0.069877
+      3          1           0        0.561121    1.102227    0.004537
+      4          1           0        0.259982   -0.478002    0.981679
+      5          6           0       -0.017769   -0.033967   -0.026592
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.752221   0.000000
+     3  H    1.757787   1.764538   0.000000
+     4  H    1.725230   1.712839   1.882183   0.000000
+     5  C    0.929563   1.018475   1.275547   1.136188   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    168.3333697    155.0409200    149.4153821
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.6165595292 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4620984051     A.U. after    7 cycles
+             Convg  =    0.2464D-08             -V/T =  2.0020
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.056368153   -0.089611675   -0.138098804
+      2        1          -0.061257406    0.003089220   -0.013539220
+      3        1          -0.025150720   -0.057945811   -0.001174510
+      4        1          -0.001935924    0.004306798   -0.023555197
+      5        6           0.031975897    0.140161468    0.176367732
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.176367732 RMS     0.077702979
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     17
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -5.636815273386D-02 Y=   8.961167548035D-02 Z=   1.380988038094D-01
+ I=    2 X=   6.125740551398D-02 Y=  -3.089220403167D-03 Z=   1.353922019213D-02
+ I=    3 X=   2.515072044014D-02 Y=   5.794581088142D-02 Z=   1.174510173525D-03
+ I=    4 X=   1.935923773991D-03 Y=  -4.306797802531D-03 Z=   2.355519745016D-02
+ I=    5 X=  -3.197589699426D-02 Y=  -1.401614681561D-01 Z=  -1.763677316252D-01
+
+ Summary information for step     17
+ Time (fs)     1.700000
+ EKinC      =      0.0524676; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0524676; EPot   =    -40.4620984; ETot   =    -40.4096308
+ ETot-EKinP =    -40.4096308
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.295872951735D-01
+ Angular momentum
+   JX = -0.8542653329D-14  JY =  0.2650026779D-13  JZ =  0.6953353366D-14
+ Jtot =  0.2869826200D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040963077D+01  Delta-E   4.729989D-06 A.U.
+ Total angular momentum   2.869826D-14  Delta-A  -3.415324D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   7.153969777048D-01 Y=  -9.067722336373D-01 Z=  -1.397395100404D+00
+ I=    2 X=  -1.867232365759D+00 Y=   4.914381051698D-01 Z=   1.320477920940D-01
+ I=    3 X=   1.060364849261D+00 Y=   2.082906950713D+00 Z=   8.572881574462D-03
+ I=    4 X=   4.912953404083D-01 Y=  -9.032927227419D-01 Z=   1.855104069230D+00
+ I=    5 X=  -3.357945379009D-02 Y=  -6.418838496334D-02 Z=  -5.025096617369D-02
+ MW Cartesian velocity:
+ I=    1 X=   6.545425309900D+13 Y=   1.202161466682D+14 Z=   4.811399245762D+13
+ I=    2 X=   8.862149407237D+13 Y=   1.323642968965D+14 Z=   9.188080398619D+13
+ I=    3 X=   5.185530712864D+12 Y=   1.136627910462D+14 Z=   1.982598185145D+13
+ I=    4 X=  -6.191909995697D+12 Y=   7.382636041275D+13 Z=   5.189667896471D+13
+ I=    5 X=  -4.435986719745D+13 Y=  -1.275332162285D+14 Z=  -6.135622310973D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.382161   -0.473727   -0.737273
+      2          1           0       -0.983576    0.267043    0.074687
+      3          1           0        0.561332    1.108076    0.005579
+      4          1           0        0.259651   -0.474100    0.984356
+      5          6           0       -0.018441   -0.035886   -0.027492
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.753070   0.000000
+     3  H    1.756710   1.760356   0.000000
+     4  H    1.725983   1.709504   1.884754   0.000000
+     5  C    0.925189   1.016707   1.282918   1.137191   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    168.4045812    154.9992928    148.8536941
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.6221953499 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4586304160     A.U. after    7 cycles
+             Convg  =    0.2001D-08             -V/T =  2.0018
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.059879872   -0.092539712   -0.143873177
+      2        1          -0.063288038    0.003285585   -0.013991315
+      3        1          -0.025069962   -0.058878950   -0.001203925
+      4        1          -0.001786161    0.003920456   -0.024328677
+      5        6           0.030264289    0.144212621    0.183397094
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.183397094 RMS     0.080463427
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     18
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -5.987987226288D-02 Y=   9.253971218936D-02 Z=   1.438731770954D-01
+ I=    2 X=   6.328803776224D-02 Y=  -3.285585231547D-03 Z=   1.399131527880D-02
+ I=    3 X=   2.506996216836D-02 Y=   5.887894979533D-02 Z=   1.203925087470D-03
+ I=    4 X=   1.786161390039D-03 Y=  -3.920455979121D-03 Z=   2.432867655136D-02
+ I=    5 X=  -3.026428905776D-02 Y=  -1.442126207740D-01 Z=  -1.833970940131D-01
+
+ Summary information for step     18
+ Time (fs)     1.800000
+ EKinC      =      0.0490038; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0490038; EPot   =    -40.4586304; ETot   =    -40.4096266
+ ETot-EKinP =    -40.4096266
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.229629997866D-01
+ Angular momentum
+   JX = -0.6197533439D-14  JY =  0.3101023723D-13  JZ =  0.1093064850D-13
+ Jtot =  0.3345927839D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040962657D+01  Delta-E   4.198577D-06 A.U.
+ Total angular momentum   3.345928D-14  Delta-A   4.761016D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   7.221791309098D-01 Y=  -8.952142091105D-01 Z=  -1.393244789483D+00
+ I=    2 X=  -1.858689627494D+00 Y=   5.046374168272D-01 Z=   1.411371694050D-01
+ I=    3 X=   1.060764393828D+00 Y=   2.093959483352D+00 Z=   1.054229778096D-02
+ I=    4 X=   4.906695662192D-01 Y=  -8.959187694483D-01 Z=   1.860163980502D+00
+ I=    5 X=  -3.484752124304D-02 Y=  -6.781519639025D-02 Z=  -5.195326796618D-02
+ MW Cartesian velocity:
+ I=    1 X=   7.088247690342D+13 Y=   1.117102696008D+14 Z=   3.494671603037D+13
+ I=    2 X=   8.280561395939D+13 Y=   1.326619258565D+14 Z=   9.059549232615D+13
+ I=    3 X=   2.840316403072D+12 Y=   1.082074754851D+14 Z=   1.971476463744D+13
+ I=    4 X=  -6.365439551816D+12 Y=   7.421056777487D+13 Z=   4.966060100567D+13
+ I=    5 X=  -4.351758550817D+13 Y=  -1.236848271592D+14 Z=  -5.648757694857D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.386044   -0.468066   -0.735785
+      2          1           0       -0.979367    0.274044    0.079428
+      3          1           0        0.561420    1.113635    0.006615
+      4          1           0        0.259311   -0.470178    0.986914
+      5          6           0       -0.019099   -0.037746   -0.028317
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.754893   0.000000
+     3  H    1.756045   1.756201   0.000000
+     4  H    1.727356   1.706377   1.886987   0.000000
+     5  C    0.921861   1.015350   1.289922   1.138071   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    168.3548522    154.9739319    148.2280028
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.6236642036 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4555158860     A.U. after    7 cycles
+             Convg  =    0.1795D-08             -V/T =  2.0016
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.062786415   -0.094598387   -0.148397576
+      2        1          -0.064949041    0.003414451   -0.014454571
+      3        1          -0.024929969   -0.059678166   -0.001230433
+      4        1          -0.001623135    0.003499381   -0.025038259
+      5        6           0.028715729    0.147362721    0.189120838
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.189120838 RMS     0.082657991
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     19
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -6.278641547494D-02 Y=   9.459838716719D-02 Z=   1.483975755281D-01
+ I=    2 X=   6.494904060366D-02 Y=  -3.414451052707D-03 Z=   1.445457059178D-02
+ I=    3 X=   2.492996892560D-02 Y=   5.967816568736D-02 Z=   1.230433336470D-03
+ I=    4 X=   1.623135031606D-03 Y=  -3.499380524470D-03 Z=   2.503825865731D-02
+ I=    5 X=  -2.871572908592D-02 Y=  -1.473627212774D-01 Z=  -1.891208381137D-01
+
+ Summary information for step     19
+ Time (fs)     1.900000
+ EKinC      =      0.0458928; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0458928; EPot   =    -40.4555159; ETot   =    -40.4096231
+ ETot-EKinP =    -40.4096231
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.161548798820D-01
+ Angular momentum
+   JX = -0.8397733356D-14  JY =  0.3046770234D-13  JZ =  0.3861752038D-14
+ Jtot =  0.3183890608D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040962311D+01  Delta-E   3.456106D-06 A.U.
+ Total angular momentum   3.183891D-14  Delta-A  -1.620372D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   7.295183306933D-01 Y=  -8.845170837274D-01 Z=  -1.390432943685D+00
+ I=    2 X=  -1.850735660858D+00 Y=   5.178672871763D-01 Z=   1.500964126021D-01
+ I=    3 X=   1.060930702942D+00 Y=   2.104464266767D+00 Z=   1.250049757622D-02
+ I=    4 X=   4.900272044350D-01 Y=  -8.885083406378D-01 Z=   1.864997556408D+00
+ I=    5 X=  -3.609194276085D-02 Y=  -7.132933178885D-02 Z=  -5.351227794941D-02
+ MW Cartesian velocity:
+ I=    1 X=   7.661043337302D+13 Y=   1.029715282598D+14 Z=   2.129852870277D+13
+ I=    2 X=   7.681733968377D+13 Y=   1.329747035592D+14 Z=   8.926743331426D+13
+ I=    3 X=   5.053708706491D+11 Y=   1.026712832855D+14 Z=   1.960091787793D+13
+ I=    4 X=  -6.524340957404D+12 Y=   7.455709579130D+13 Z=   4.735527884858D+13
+ I=    5 X=  -4.271942200903D+13 Y=  -1.197389858044D+14 Z=  -5.144634419738D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.390237   -0.462871   -0.735028
+      2          1           0       -0.975478    0.281061    0.084097
+      3          1           0        0.561386    1.118900    0.007645
+      4          1           0        0.258963   -0.466240    0.989349
+      5          6           0       -0.019746   -0.039545   -0.029064
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.757720   0.000000
+     3  H    1.755806   1.752075   0.000000
+     4  H    1.729370   1.703462   1.888880   0.000000
+     5  C    0.919607   1.014405   1.296555   1.138821   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    168.1831444    154.9633955    147.5417178
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.6207524139 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4528084824     A.U. after    7 cycles
+             Convg  =    0.2783D-08             -V/T =  2.0015
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.064988660   -0.095749152   -0.151554106
+      2        1          -0.066234563    0.003463656   -0.014933989
+      3        1          -0.024737746   -0.060355665   -0.001254308
+      4        1          -0.001447118    0.003044604   -0.025681080
+      5        6           0.027430767    0.149596557    0.193423482
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.193423482 RMS     0.084243120
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     20
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -6.498866030799D-02 Y=   9.574915217485D-02 Z=   1.515541057076D-01
+ I=    2 X=   6.623456301858D-02 Y=  -3.463655537162D-03 Z=   1.493398890104D-02
+ I=    3 X=   2.473774646990D-02 Y=   6.035566488419D-02 Z=   1.254307560169D-03
+ I=    4 X=   1.447118215350D-03 Y=  -3.044604327195D-03 Z=   2.568107983695D-02
+ I=    5 X=  -2.743076739585D-02 Y=  -1.495965571947D-01 Z=  -1.934234820058D-01
+
+ Summary information for step     20
+ Time (fs)     2.000000
+ EKinC      =      0.0431879; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0431879; EPot   =    -40.4528085; ETot   =    -40.4096206
+ ETot-EKinP =    -40.4096206
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.092083226515D-01
+ Angular momentum
+   JX = -0.7663329690D-14  JY =  0.2490898825D-13  JZ =  0.5603696181D-14
+ Jtot =  0.2665681392D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040962058D+01  Delta-E   2.535502D-06 A.U.
+ Total angular momentum   2.665681D-14  Delta-A  -5.182092D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   7.374416191795D-01 Y=  -8.747000092427D-01 Z=  -1.389001652743D+00
+ I=    2 X=  -1.843385918923D+00 Y=   5.311289110516D-01 Z=   1.589212112624D-01
+ I=    3 X=   1.060865074853D+00 Y=   2.114413867798D+00 Z=   1.444723299689D-02
+ I=    4 X=   4.893697735807D-01 Y=  -8.810653513193D-01 Z=   1.869598196654D+00
+ I=    5 X=  -3.731392822269D-02 Y=  -7.472832995892D-02 Z=  -5.492352403330D-02
+ MW Cartesian velocity:
+ I=    1 X=   8.257698029983D+13 Y=   9.408291964877D+13 Z=   7.291675271313D+12
+ I=    2 X=   7.069146488595D+13 Y=   1.332957568651D+14 Z=   8.789534475654D+13
+ I=    3 X=  -1.814101978807D+12 Y=   9.706615283614D+13 Z=   1.948470832231D+13
+ I=    4 X=  -6.667393857381D+12 Y=   7.486274501965D+13 Z=   4.498681293249D+13
+ I=    5 X=  -4.195960258848D+13 Y=  -1.157202856085D+14 Z=  -4.626942533267D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.394750   -0.458148   -0.735017
+      2          1           0       -0.971915    0.288096    0.088694
+      3          1           0        0.561229    1.123868    0.008669
+      4          1           0        0.258608   -0.462286    0.991657
+      5          6           0       -0.020381   -0.041281   -0.029731
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.761576   0.000000
+     3  H    1.756006   1.747984   0.000000
+     4  H    1.732037   1.700765   1.890431   0.000000
+     5  C    0.918444   1.013869   1.302811   1.139436   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    167.8898314    154.9663464    146.7985426
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.6133193807 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.
+ Harris functional with IExCor=  402 diagonalized for initial guess.
+ ExpMin= 1.61D-01 ExpMax= 3.05D+03 ExpMxC= 4.57D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
+ ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=           4 NGrid=           0.
+ Symmetry not used in FoFCou.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Keep R1 ints in memory in canonical form, NReq=929948.
+ SCF Done:  E(RB3LYP) =  -40.4505474479     A.U. after    7 cycles
+             Convg  =    0.3537D-08             -V/T =  2.0015
+ Calling FoFJK, ICntrl=      2127 FMM=F ISym2X=0 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        1           0.066404765   -0.095978417   -0.153259443
+      2        1          -0.067143224    0.003422206   -0.015434072
+      3        1          -0.024499648   -0.060922867   -0.001276017
+      4        1          -0.001258431    0.002557282   -0.026254712
+      5        6           0.026496537    0.150921796    0.196224244
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.196224244 RMS     0.085190899
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+
+ ADMP step     21
+ Frobenius norm of [F,P] =     0.000000D+00
+ Current gradient on entry to l121
+ I=    1 X=  -6.640476532081D-02 Y=   9.597841725240D-02 Z=   1.532594429237D-01
+ I=    2 X=   6.714322375868D-02 Y=  -3.422206402515D-03 Z=   1.543407212145D-02
+ I=    3 X=   2.449964774162D-02 Y=   6.092286715168D-02 Z=   1.276017027946D-03
+ I=    4 X=   1.258430678879D-03 Y=  -2.557281852880D-03 Z=   2.625471207727D-02
+ I=    5 X=  -2.649653685837D-02 Y=  -1.509217961487D-01 Z=  -1.962242441504D-01
+
+ Summary information for step     21
+ Time (fs)     2.100000
+ EKinC      =      0.0409284; EKinPA =      0.0000000; EKinPB =      0.0000000
+ EKin       =      0.0409284; EPot   =    -40.4505474; ETot   =    -40.4096191
+ ETot-EKinP =    -40.4096191
+ Adiabaticity Index =    0.0000D+00
+ Total Fictitiious Kinetic Energy =      0.0000000
+ Integrand for the Velocity-Velocity Auto-Correlation  Function =   1.021700997956D-01
+ Angular momentum
+   JX = -0.8111285869D-14  JY =  0.2815430191D-13  JZ =  0.7119650559D-14
+ Jtot =  0.3015206624D-13 H-BAR;  J (Quantum Number) =  0.0000000000D+00
+ Total energy  -4.040961909D+01  Delta-E   1.487727D-06 A.U.
+ Total angular momentum   3.015207D-14  Delta-A   3.495252D-15 h-bar
+ Tr(PA)-NA = -5.000D+00
+ Tr(PA**2-PA) =  0.000D+00
+ Tr[(PA**2-PA)**2] =  0.000D+00
+ Cartesian coordinates:
+ I=    1 X=   7.459694867262D-01 Y=  -8.657736907679D-01 Z=  -1.388980281125D+00
+ I=    2 X=  -1.836652361676D+00 Y=   5.444227423013D-01 Z=   1.676071041520D-01
+ I=    3 X=   1.060569293811D+00 Y=   2.123801985584D+00 Z=   1.638228128522D-02
+ I=    4 X=   4.886989125033D-01 Y=  -8.735940304403D-01 Z=   1.873959921904D+00
+ I=    5 X=  -3.851448154581D-02 Y=  -7.801044559352D-02 Z=  -5.618364446651D-02
+ MW Cartesian velocity:
+ I=    1 X=   8.871252002635D+13 Y=   8.512987393091D+13 Z=  -6.942204281282D+12
+ I=    2 X=   6.446312175023D+13 Y=   1.336171356715D+14 Z=   8.647750417977D+13
+ I=    3 X=  -4.113517808930D+12 Y=   9.140291704875D+13 Z=   1.936636619419D+13
+ I=    4 X=  -6.793404809264D+12 Y=   7.512441731773D+13 Z=   4.256155008479D+13
+ I=    5 X=  -4.122981348439D+13 Y=  -1.116534220321D+14 Z=  -4.099637680301D+13
+ TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ-TRJ
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          1           0        0.399590   -0.453897   -0.735760
+      2          1           0       -0.968682    0.295148    0.093214
+      3          1           0        0.560952    1.128536    0.009687
+      4          1           0        0.258247   -0.458320    0.993836
+      5          6           0       -0.021005   -0.042956   -0.030317
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3          4          5
+     1  H    0.000000
+     2  H    1.766475   0.000000
+     3  H    1.756650   1.743930   0.000000
+     4  H    1.735367   1.698289   1.891637   0.000000
+     5  C    0.918380   1.013738   1.308689   1.139911   0.000000
+ Symmetry turned off by external request.
+ Stoichiometry    CH4
+ Framework group  C1[X(CH4)]
+ Deg. of freedom     9
+ Full point group                 C1      NOp   1
+ Rotational constants (GHZ):    167.4767385    154.9816452    146.0023476
+ Standard basis: 6-31G (6D, 7F)
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned off.
+    17 basis functions,    38 primitive gaussians,    17 cartesian basis functions
+     5 alpha electrons        5 beta electrons
+       nuclear repulsion energy        13.6013031368 Hartrees.
+ NAtoms=    5 NActive=    5 NUniq=    5 SFac= 1.00D+00 NAtFMM=   50 NAOKFM=F Big=F
+ One-electron integrals computed using PRISM.
+ NBasis=    17 RedAO= T  NBF=    17
+ NBsUse=    17 1.00D-06 NBFU=    17
+ Initial guess read from the read-write file.
+ B after Tr=     0.000000    0.000000    0.000000
+         Rot=    1.000000    0.000000    0.000000    0.000000 Ang=   0.00 deg.

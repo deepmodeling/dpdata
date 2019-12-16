@@ -58,10 +58,18 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | vasp    | xml    | True         | True    | LabeledSystem | 'vasp/xml'    |	
 | lammps  | lmp    | False        | False   | System        | 'lammps/lmp'  |
 | lammps  | dump   | True         | False   | System        | 'lammps/dump' |
+| deepmd  | raw    | True         | False   | System	    | 'deepmd/raw'  |
+| deepmd  | npy    | True         | False   | System        | 'deepmd/npy'  |
 | deepmd  | raw    | True         | True    | LabeledSystem | 'deepmd/raw'  |
+| deepmd  | npy    | True         | True    | LabeledSystem | 'deepmd/npy'  |
 | gaussian| log    | False        | True    | LabeledSystem | 'gaussian/log'|
-
-
+| gaussian| log    | True         | True    | LabeledSystem | 'gaussian/md' |
+| siesta| output    | False        | True    | LabeledSystem | 'siesta/output'|
+| siesta| aimd_output    | True         | True    | LabeledSystem | 'siesta/aimd_output' |
+| cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output' |
+| QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
+| QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
+| QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
 
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
