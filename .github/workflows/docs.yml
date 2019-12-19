@@ -19,7 +19,10 @@ jobs:
         FOLDER: html-site
         BUILD_SCRIPT: |
           apt-get install python3-pip -y &&
-          pip3 install sphinx &&
+          pip3 install sphinx==1.7.5 &&  
           pip3 install sphinxcontrib-napoleon &&
+          pip3 install numpy &&  
+          pip3 install monty &&  
           pip3 install m2r &&
+          python3 setup.py install &&  
           cd docs && make html && mv _build/html/  ../html-site && cd  ..
