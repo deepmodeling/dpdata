@@ -416,6 +416,43 @@ class System (MSONable) :
             self.data = dpdata.lammps.lmp.to_system_data(lines, type_map)
         self._shift_orig_zero()
 
+    def to_pymatgen_structure(self):
+        '''
+        convert System to Pymatgen Structure obj
+
+        '''
+        structures=[]
+        try:
+           from pymatgen import Structure
+        except:
+           raise ImportError('No module pymatgen.Structure')
+
+        for system in self.to_list():
+            species=[]
+            for name,numb in zip(system.data['atom_names'],system.data['atom_numbs']):
+                species.extend([name]*numb)
+            structure=Structure(system.data['cells'][0],species,system.data['coords'][0],coords_are_cartesian=True)
+            structures.append(structure)
+        return structures
+
+    def to_ase_structure(self):
+        '''
+        convert System to ASE Atom obj
+
+        '''
+        structures=[]
+        try:
+           from ase import Atoms
+        except:
+           raise ImportError('No module ase.Atoms')
+
+        for system in self.to_list():
+            species=[]
+            for name,numb in zip(system.data['atom_names'],system.data['atom_numbs']):
+                species.extend([name]*numb)
+            structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
+            structures.append(structure)
+        return structures
 
     def to_lammps_lmp(self, file_name, frame_idx = 0) :
         """
@@ -450,7 +487,19 @@ class System (MSONable) :
             self.data = dpdata.vasp.poscar.to_system_data(lines)
         self.rot_lower_triangular()
 
-
+    def to_vasp_string(self, frame_idx=0):
+        """
+        Dump the system in vasp POSCAR format string
+        
+        Parameters
+        ----------
+        frame_idx : int
+            The index of the frame to dump
+        """
+        assert(frame_idx < len(self.data['coords']))
+        w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
+        return w_str
+    
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
         """
         Dump the system in vasp POSCAR format
@@ -462,8 +511,7 @@ class System (MSONable) :
         frame_idx : int
             The index of the frame to dump
         """
-        assert(frame_idx < len(self.data['coords']))
-        w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
+        w_str=self.to_vasp_string( frame_idx= frame_idx )
         with open(file_name, 'w') as fp:
             fp.write(w_str)
 
