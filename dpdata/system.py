@@ -1256,7 +1256,7 @@ class MultiSystems:
 def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
     assert( isinstance(data,dict) )
-    assert( set(data.keys())==keys )
+    assert( keys.issubset(set(data.keys())) )
     if len(data['coords']) > 0 :
         assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
     else :
