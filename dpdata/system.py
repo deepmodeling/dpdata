@@ -319,6 +319,9 @@ class System (MSONable) :
             assert(all(eq))
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+        if self.nopbc and not system.nopbc:
+            # appended system uses PBC, cancel nopbc 
+            self.data['nopbc'] = False
         return True
 
     def sort_atom_names(self, type_map=None):
@@ -725,6 +728,12 @@ class System (MSONable) :
                 tmp_system.rot_lower_triangular()
                 perturbed_system.append(tmp_system)
         return perturbed_system
+
+    @property
+    def nopbc(self):
+        if self.data.get("nopbc", False):
+            return True
+        return False
 
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:

@@ -58,6 +58,9 @@ class CompSys :
                                            places = self.places,
                                            msg = 'coord[%d][%d][%d] failed' % (ff,ii,jj))
 
+    def test_nopbc(self):
+        self.assertEqual(self.system_1.nopbc, self.system_2.nopbc)
+
 
 class CompLabeledSys (CompSys) :
     def test_energy(self) :
