@@ -105,7 +105,7 @@ def dump(folder,
             np.save(os.path.join(set_folder, "atom_pref"), atom_pref[set_stt:set_end])
     try:
         os.remove(os.path.join(folder, "nopbc"))
-    except:
+    except OSError:
         pass
     if data.get("nopbc", False):
         os.mknod(os.path.join(folder, "nopbc"))
