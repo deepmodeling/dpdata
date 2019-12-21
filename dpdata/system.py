@@ -284,6 +284,7 @@ class System (MSONable) :
             tmp.data[ii] = self.data[ii]
         tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
         tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
+        tmp.data['nopbc'] = self.nopbc
         return tmp
 
 
@@ -1027,6 +1028,7 @@ class LabeledSystem (System):
             self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
+            self.data['nopbc'] = True
 
 
     def from_cp2k_output(self, file_name) :
