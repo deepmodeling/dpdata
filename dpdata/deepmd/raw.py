@@ -69,6 +69,10 @@ def dump (folder, data) :
         np.savetxt(os.path.join(folder, 'force.raw'),   np.reshape(data['forces'],   [nframes, -1]))
     if 'virials' in data :
         np.savetxt(os.path.join(folder, 'virial.raw'), np.reshape(data['virials'], [nframes, 9]))
+    try:
+        os.remove(os.path.join(folder, "nopbc"))
+    except OSError:
+        pass
     if data.get("nopbc", False):
         os.mknod(os.path.join(folder, "nopbc"))
 
