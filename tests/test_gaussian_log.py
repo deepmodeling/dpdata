@@ -19,7 +19,7 @@ class TestGaussianLog :
             self.assertEqual(self.system.data['atom_types'][ii], self.atom_types[ii])
 
     def test_nopbc(self):
-        self.assertEqual(self.nopbc, True)
+        self.assertEqual(self.system.nopbc, True)
 
 class TestGaussianLoadLog(unittest.TestCase, TestGaussianLog):
     def setUp (self) :
