@@ -2,9 +2,9 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompLabeledSys
+from comp_sys import CompLabeledSys, IsPBC
 
-class TestJsonLoad(unittest.TestCase, CompLabeledSys):
+class TestJsonLoad(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md',
                                              fmt = 'vasp/outcar')
@@ -14,7 +14,7 @@ class TestJsonLoad(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 4
 
-class TestAsDict(unittest.TestCase, CompLabeledSys):
+class TestAsDict(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md',
                                              fmt = 'vasp/outcar')

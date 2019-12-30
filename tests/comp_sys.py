@@ -58,6 +58,9 @@ class CompSys :
                                            places = self.places,
                                            msg = 'coord[%d][%d][%d] failed' % (ff,ii,jj))
 
+    def test_nopbc(self):
+        self.assertEqual(self.system_1.nopbc, self.system_2.nopbc)
+
 
 class CompLabeledSys (CompSys) :
     def test_energy(self) :
@@ -97,4 +100,12 @@ class CompLabeledSys (CompSys) :
                                            places = self.v_places,
                                            msg = 'virials[%d][%d][%d] failed' % (ff,ii,jj))
             
-                    
+class IsPBC:                    
+    def test_is_pbc(self):
+        self.assertFalse(self.system_1.nopbc)
+        self.assertFalse(self.system_2.nopbc)
+
+class IsNoPBC:                    
+    def test_is_nopbc(self):
+        self.assertTrue(self.system_1.nopbc)
+        self.assertTrue(self.system_2.nopbc)

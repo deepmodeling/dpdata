@@ -4,8 +4,9 @@ import unittest
 from context import dpdata
 from comp_sys import CompSys
 from comp_sys import CompLabeledSys
+from comp_sys import IsPBC
 
-class TestVaspXml(unittest.TestCase, CompSys):
+class TestVaspXml(unittest.TestCase, CompSys, IsPBC):
     def setUp (self) :
         self.places = 6
         xml_sys = dpdata.LabeledSystem()
@@ -18,7 +19,7 @@ class TestVaspXml(unittest.TestCase, CompSys):
         self.system_2 = xml_sys.sub_system([-1])
 
 
-class TestVaspXmlRotSys(unittest.TestCase, CompLabeledSys):
+class TestVaspXmlRotSys(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.places = 4
         # rotated vasp computation, subject to numerical error
@@ -29,7 +30,7 @@ class TestVaspXmlRotSys(unittest.TestCase, CompLabeledSys):
         self.system_2 = dpdata.LabeledSystem('poscars/vasprun.h2o.md.tribox.lower.xml')
 
 
-class TestVaspXmlSkip(unittest.TestCase, CompLabeledSys):
+class TestVaspXmlSkip(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.places = 6
         # rotated vasp computation, subject to numerical error

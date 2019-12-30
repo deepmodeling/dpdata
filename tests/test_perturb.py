@@ -2,7 +2,7 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompSys
+from comp_sys import CompSys, IsPBC
 
 from unittest.mock import Mock
 from unittest.mock import patch, MagicMock 
@@ -103,7 +103,7 @@ class ConstGenerator(object):
         yield np.asarray([0.01525907, 0.68387374, 0.39768541, 0.55596047, 0.26557088, 0.60883073])
 
 # %%
-class TestPerturbNormal(unittest.TestCase, CompSys):
+class TestPerturbNormal(unittest.TestCase, CompSys, IsPBC):
     @patch('numpy.random')
     def setUp (self, random_mock):
         random_mock.rand = NormalGenerator().rand
@@ -113,7 +113,7 @@ class TestPerturbNormal(unittest.TestCase, CompSys):
         self.system_2 = dpdata.System('poscars/POSCAR.SiC.normal',fmt='vasp/poscar')
         self.places = 6
 
-class TestPerturbUniform(unittest.TestCase, CompSys):
+class TestPerturbUniform(unittest.TestCase, CompSys, IsPBC):
     @patch('numpy.random')
     def setUp (self, random_mock) :
         random_mock.rand = UniformGenerator().rand
@@ -123,7 +123,7 @@ class TestPerturbUniform(unittest.TestCase, CompSys):
         self.system_2 = dpdata.System('poscars/POSCAR.SiC.uniform',fmt='vasp/poscar')
         self.places = 6
 
-class TestPerturbConst(unittest.TestCase, CompSys):
+class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):
     @patch('numpy.random')
     def setUp (self, random_mock) :
         random_mock.rand = ConstGenerator().rand

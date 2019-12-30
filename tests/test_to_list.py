@@ -2,9 +2,9 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompLabeledSys
+from comp_sys import CompLabeledSys, IsPBC
 
-class TestToList(unittest.TestCase, CompLabeledSys):
+class TestToList(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         system = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md',
                                              fmt = 'vasp/outcar')

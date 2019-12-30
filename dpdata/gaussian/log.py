@@ -69,4 +69,5 @@ def to_system_data(file_name, md=False):
     data['coords'] = np.array(coords_t)
     data['orig'] = np.array([0, 0, 0])
     data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]] for _ in energy_t])
+    data['nopbc'] = True
     return data
