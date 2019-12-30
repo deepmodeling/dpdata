@@ -2,7 +2,6 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompLabeledSys
 
 class TestGaussianLog :
     def test_atom_names(self) :

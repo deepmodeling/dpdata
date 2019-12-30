@@ -2,9 +2,9 @@ import os,shutil
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompLabeledSys, CompSys
+from comp_sys import CompLabeledSys, CompSys, IsPBC
 
-class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys):
+class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
                                              fmt = 'vasp/outcar')
@@ -17,7 +17,7 @@ class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys):
         self.v_places = 6
 
 
-class TestDeepmdDumpRaw(unittest.TestCase, CompLabeledSys):
+class TestDeepmdDumpRaw(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
                                              fmt = 'vasp/outcar')
@@ -131,7 +131,7 @@ class TestDeepmdTypeMap(unittest.TestCase):
 
 
 
-class TestDeepmdRawNoLabels(unittest.TestCase, CompSys) :
+class TestDeepmdRawNoLabels(unittest.TestCase, CompSys, IsPBC) :
     def setUp (self) :
         self.system_1 = dpdata.System('poscars/POSCAR.h2o.md',
                                       fmt = 'vasp/poscar')
@@ -149,7 +149,7 @@ class TestDeepmdRawNoLabels(unittest.TestCase, CompSys) :
             shutil.rmtree('tmp.deepmd')
 
 
-class TestDeepmdCompNoLabels(unittest.TestCase, CompSys) :
+class TestDeepmdCompNoLabels(unittest.TestCase, CompSys, IsPBC) :
     def setUp(self) :
         self.dir_name = 'tmp.deepmd.nol'
         natoms = 3

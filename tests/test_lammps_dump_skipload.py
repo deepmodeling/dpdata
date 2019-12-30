@@ -2,9 +2,9 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompSys
+from comp_sys import CompSys, IsNoPBC
 
-class TestLmpDumpSkip(unittest.TestCase, CompSys):
+class TestLmpDumpSkip(unittest.TestCase, CompSys, IsNoPBC):
     
     def setUp(self): 
         self.system_1 = dpdata.System(os.path.join('poscars', 'conf.5.dump'), 

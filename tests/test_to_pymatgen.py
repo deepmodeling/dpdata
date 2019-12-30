@@ -2,7 +2,7 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompSys
+from comp_sys import CompSys, IsPBC
 try:
    from pymatgen import  Structure
    exist_module=True
@@ -10,7 +10,7 @@ except:
    exist_module=False
 
 @unittest.skipIf(not exist_module,"skip pymatgen")
-class TestPymatgen(unittest.TestCase, CompSys):
+class TestPymatgen(unittest.TestCase, CompSys, IsPBC):
     
     def setUp(self): 
         system_1 = dpdata.System()

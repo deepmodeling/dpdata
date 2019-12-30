@@ -2,7 +2,7 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompSys
+from comp_sys import CompSys, IsPBC
 from poscars.poscar_ref_oh import TestPOSCARoh
 
 class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):
@@ -17,7 +17,7 @@ class TestPOSCARDirect(unittest.TestCase, TestPOSCARoh):
         self.system = dpdata.System()
         self.system.from_vasp_poscar(os.path.join('poscars', 'POSCAR.oh.d'))
 
-class TestVaspPOSCARTypeMap(unittest.TestCase, CompSys):
+class TestVaspPOSCARTypeMap(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
         sys0 = dpdata.System('poscars/POSCAR.oh.d', fmt =  'vasp/poscar')
         sys0.data['atom_names'] = ['A', 'H', 'B', 'O', 'D']

@@ -4,8 +4,9 @@ import unittest
 from context import dpdata
 from comp_sys import CompSys
 from comp_sys import CompLabeledSys
+from comp_sys import IsPBC
 
-class TestPWSCFTrajSkip(unittest.TestCase, CompSys):
+class TestPWSCFTrajSkip(unittest.TestCase, CompSys, IsPBC):
     def setUp(self): 
         self.system_1 = dpdata.System(os.path.join('qe.traj', 'traj6'), 
                                       fmt = 'qe/cp/traj',
@@ -21,7 +22,7 @@ class TestPWSCFTrajSkip(unittest.TestCase, CompSys):
         self.f_places = 6
         self.v_places = 4
 
-class TestPWSCFLabeledTrajSkip(unittest.TestCase, CompLabeledSys):
+class TestPWSCFLabeledTrajSkip(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self): 
         self.system_1 = dpdata.LabeledSystem(os.path.join('qe.traj', 'traj6'), 
                                              fmt = 'qe/cp/traj',

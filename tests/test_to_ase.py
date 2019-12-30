@@ -2,7 +2,7 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompSys
+from comp_sys import CompSys, IsPBC
 try:
    from ase import Atoms
    from ase.io import write
@@ -11,7 +11,7 @@ except:
    exist_module=False
 
 @unittest.skipIf(not exist_module,"skip test_ase")
-class TestASE(unittest.TestCase, CompSys):
+class TestASE(unittest.TestCase, CompSys, IsPBC):
     
     def setUp(self): 
         system_1 = dpdata.System()

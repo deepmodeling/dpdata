@@ -4,6 +4,7 @@ import unittest
 from context import dpdata
 from comp_sys import CompSys
 from comp_sys import CompLabeledSys
+from comp_sys import IsNoPBC
 from itertools import permutations
 
 class MultiSystems:
@@ -17,7 +18,7 @@ class MultiSystems:
     def test_atom_names(self):
         self.assertEqual(self.atom_names, self.systems.atom_names)
 
-class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems):
+class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):
     def setUp(self):
         self.places = 6
         self.e_places = 6
@@ -39,7 +40,7 @@ class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems):
         self.atom_names = ['C', 'H']
 
 
-class TestMultiSystemsAdd(unittest.TestCase, CompLabeledSys, MultiSystems):
+class TestMultiSystemsAdd(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):
     def setUp(self):
         self.places = 6
         self.e_places = 6
@@ -76,7 +77,7 @@ class TestMultiSystemsSorted(unittest.TestCase, MultiSystems):
         self.system_sizes = {'C1H4O0':1, 'C0H0O2':1}
         self.atom_names = ['C', 'H', 'O']
         
-class TestMultiDeepmdDumpRaw(unittest.TestCase, CompLabeledSys):
+class TestMultiDeepmdDumpRaw(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp (self) :
         self.places = 6
         self.e_places = 6
@@ -94,7 +95,7 @@ class TestMultiDeepmdDumpRaw(unittest.TestCase, CompLabeledSys):
         self.system_1 = dpdata.LabeledSystem(os.path.join(path, 'C1H3'), fmt='deepmd/raw', type_map = ['C', 'H'])
         self.system_2 = system_3
 
-class TestMultiDeepmdDumpComp(unittest.TestCase, CompLabeledSys):
+class TestMultiDeepmdDumpComp(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.places = 6
         self.e_places = 4
