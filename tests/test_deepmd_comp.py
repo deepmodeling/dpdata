@@ -2,9 +2,9 @@ import os,shutil
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompLabeledSys, CompSys
+from comp_sys import CompLabeledSys, CompSys, IsPBC
 
-class TestDeepmdLoadDumpComp(unittest.TestCase, CompLabeledSys):
+class TestDeepmdLoadDumpComp(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.system_1 = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
                                              fmt = 'vasp/outcar')
@@ -25,7 +25,7 @@ class TestDeepmdLoadDumpComp(unittest.TestCase, CompLabeledSys):
             shutil.rmtree('tmp.deepmd.npy')
 
 
-class TestDeepmdCompNoLabels(unittest.TestCase, CompSys) :
+class TestDeepmdCompNoLabels(unittest.TestCase, CompSys, IsPBC) :
     def setUp (self) :
         self.system_1 = dpdata.System('poscars/POSCAR.h2o.md',
                                       fmt = 'vasp/poscar')
@@ -45,7 +45,7 @@ class TestDeepmdCompNoLabels(unittest.TestCase, CompSys) :
             shutil.rmtree('tmp.deepmd.npy')
         
 
-class TestDeepmdCompNoLabels(unittest.TestCase, CompSys) :
+class TestDeepmdCompNoLabels(unittest.TestCase, CompSys, IsPBC) :
     def setUp(self) :
         self.dir_name = 'tmp.deepmd.npy.nol'
         natoms = 3

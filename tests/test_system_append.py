@@ -4,8 +4,9 @@ import unittest
 from context import dpdata
 from comp_sys import CompSys
 from comp_sys import CompLabeledSys
+from comp_sys import IsPBC, IsNoPBC
 
-class TestVaspXmlAppend(unittest.TestCase, CompLabeledSys):
+class TestVaspXmlAppend(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.places = 6
         # rotated vasp computation, subject to numerical error
@@ -23,7 +24,7 @@ class TestVaspXmlAppend(unittest.TestCase, CompLabeledSys):
         self.system_2 = dpdata.LabeledSystem('poscars/vasprun.h2o.md.10.xml').sub_system(np.arange(0,10,2))
 
 
-class TestDifferentOrderAppend(unittest.TestCase, CompLabeledSys):
+class TestDifferentOrderAppend(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp (self) :
         self.places = 6
         self.e_places = 6

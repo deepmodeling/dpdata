@@ -284,6 +284,7 @@ class System (MSONable) :
             tmp.data[ii] = self.data[ii]
         tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
         tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
+        tmp.data['nopbc'] = self.nopbc
         return tmp
 
 
@@ -319,6 +320,9 @@ class System (MSONable) :
             assert(all(eq))
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+        if self.nopbc and not system.nopbc:
+            # appended system uses PBC, cancel nopbc 
+            self.data['nopbc'] = False
         return True
 
     def sort_atom_names(self, type_map=None):
@@ -726,6 +730,12 @@ class System (MSONable) :
                 perturbed_system.append(tmp_system)
         return perturbed_system
 
+    @property
+    def nopbc(self):
+        if self.data.get("nopbc", False):
+            return True
+        return False
+
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
         raise RuntimeError('cell_pert_fraction can not be negative')
@@ -1018,6 +1028,7 @@ class LabeledSystem (System):
             self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
+            self.data['nopbc'] = True
 
 
     def from_cp2k_output(self, file_name) :
@@ -1245,7 +1256,7 @@ class MultiSystems:
 def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
     assert( isinstance(data,dict) )
-    assert( set(data.keys())==keys )
+    assert( keys.issubset(set(data.keys())) )
     if len(data['coords']) > 0 :
         assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
     else :

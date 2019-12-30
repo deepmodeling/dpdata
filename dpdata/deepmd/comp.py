@@ -48,6 +48,8 @@ def to_system_data(folder,
         data['forces'] = np.concatenate(all_forces, axis = 0)
     if len(all_virs) > 0:
         data['virials'] = np.concatenate(all_virs, axis = 0)
+    if os.path.isfile(os.path.join(folder, "nopbc")):
+        data['nopbc'] = True
     return data
 
 
@@ -101,5 +103,10 @@ def dump(folder,
             np.save(os.path.join(set_folder, 'virial'), virials[set_stt:set_end])
         if 'atom_pref' in data:
             np.save(os.path.join(set_folder, "atom_pref"), atom_pref[set_stt:set_end])
-        
+    try:
+        os.remove(os.path.join(folder, "nopbc"))
+    except OSError:
+        pass
+    if data.get("nopbc", False):
+        os.mknod(os.path.join(folder, "nopbc"))
         
