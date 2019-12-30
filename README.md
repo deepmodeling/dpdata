@@ -102,7 +102,7 @@ xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
 | siesta| output    | False        | True    | LabeledSystem | 'siesta/output'|
 | siesta| aimd_output    | True         | True    | LabeledSystem | 'siesta/aimd_output' |
 | cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output' |
-| cp2k    | a dir (contains *pos*.xyz and *.log file) | False        | True    | LabeledSystem | 'cp2k/aimd_output' |
+| cp2k    | dir | False        | True    | LabeledSystem | 'cp2k/aimd_output' |
 | QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
 | QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
 | QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |

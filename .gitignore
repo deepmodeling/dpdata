@@ -19,3 +19,4 @@ build
 dist
 dpdata.egg-info
 _version.py
+!tests/cp2k/aimd/cp2k.log

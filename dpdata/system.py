@@ -817,7 +817,7 @@ class LabeledSystem (System):
                 - ``gaussian/log``: gaussian logs
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
-                - ``cp2k/aimd_output``: cp2k output file
+                - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file)
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -907,8 +907,6 @@ class LabeledSystem (System):
 
 
     def from_cp2k_aimd_output(self, file_dir):
-        print(1387,glob.glob("{}/*pos*.xyz".format(file_dir)))
-        print(1387,glob.glob("{}/*.log".format(file_dir)))
         xyz_file=glob.glob("{}/*pos*.xyz".format(file_dir))[0]
         log_file=glob.glob("{}/*.log".format(file_dir))[0]
         for info_dict in Cp2kSystems(log_file, xyz_file):
