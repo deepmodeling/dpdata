@@ -16,6 +16,7 @@ import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.cp2k.output
+from dpdata.cp2k.output import Cp2kSystems
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
@@ -806,6 +807,7 @@ class LabeledSystem (System):
                 - ``gaussian/log``: gaussian logs
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
+                - ``cp2k/aimd_output``: cp2k output file
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -848,6 +850,8 @@ class LabeledSystem (System):
             self.from_gaussian_log(file_name, md=True)
         elif fmt == 'cp2k/output':
             self.from_cp2k_output(file_name)
+        elif fmt == 'cp2k/aimd_output':
+            self.from_cp2k_aimd_output(file_dir=file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -890,6 +894,14 @@ class LabeledSystem (System):
     def has_virial(self) :
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
         return ('virials' in self.data)
+
+
+    def from_cp2k_aimd_output(self, file_dir):
+        xyz_file=glob.glob("{}/*pos*.xyz".format(file_dir))[0]
+        log_file=glob.glob("{}/*.log".format(file_dir))[0]
+        for info_dict in Cp2kSystems(log_file, xyz_file):
+            l = LabeledSystem(data=info_dict)
+            self.append(l)
 
     def from_vasp_xml(self, file_name, begin = 0, step = 1) :
         self.data['atom_names'], \
