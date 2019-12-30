@@ -95,7 +95,7 @@ class TestMultiDeepmdDumpRaw(unittest.TestCase, CompLabeledSys, IsNoPBC):
         self.system_1 = dpdata.LabeledSystem(os.path.join(path, 'C1H3'), fmt='deepmd/raw', type_map = ['C', 'H'])
         self.system_2 = system_3
 
-class TestMultiDeepmdDumpComp(unittest.TestCase, CompLabeledSys, IsPBC):
+class TestMultiDeepmdDumpComp(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp (self) :
         self.places = 6
         self.e_places = 4
