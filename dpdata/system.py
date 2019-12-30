@@ -909,6 +909,8 @@ class LabeledSystem (System):
     def from_cp2k_aimd_output(self, file_dir):
         xyz_file=glob.glob("{}/*pos*.xyz".format(file_dir))[0]
         log_file=glob.glob("{}/*.log".format(file_dir))[0]
+        print(1387,glob.glob("{}/*pos*.xyz".format(file_dir)))
+        print(1387,glob.glob("{}/*.log".format(file_dir)))
         for info_dict in Cp2kSystems(log_file, xyz_file):
             l = LabeledSystem(data=info_dict)
             self.append(l)

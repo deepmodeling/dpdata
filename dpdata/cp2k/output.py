@@ -29,6 +29,7 @@ class Cp2kSystems(object):
         self.cell=None
     def __del__(self):
         self.log_file_object.close()
+        self.xyz_file_object.close()
     def __iter__(self):
         return self
     def __next__(self):
