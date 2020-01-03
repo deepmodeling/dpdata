@@ -16,6 +16,7 @@ import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.cp2k.output
+from dpdata.cp2k.output import Cp2kSystems
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
@@ -284,6 +285,7 @@ class System (MSONable) :
             tmp.data[ii] = self.data[ii]
         tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
         tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
+        tmp.data['nopbc'] = self.nopbc
         return tmp
 
 
@@ -319,6 +321,9 @@ class System (MSONable) :
             assert(all(eq))
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+        if self.nopbc and not system.nopbc:
+            # appended system uses PBC, cancel nopbc 
+            self.data['nopbc'] = False
         return True
 
     def sort_atom_names(self, type_map=None):
@@ -416,6 +421,43 @@ class System (MSONable) :
             self.data = dpdata.lammps.lmp.to_system_data(lines, type_map)
         self._shift_orig_zero()
 
+    def to_pymatgen_structure(self):
+        '''
+        convert System to Pymatgen Structure obj
+
+        '''
+        structures=[]
+        try:
+           from pymatgen import Structure
+        except:
+           raise ImportError('No module pymatgen.Structure')
+
+        for system in self.to_list():
+            species=[]
+            for name,numb in zip(system.data['atom_names'],system.data['atom_numbs']):
+                species.extend([name]*numb)
+            structure=Structure(system.data['cells'][0],species,system.data['coords'][0],coords_are_cartesian=True)
+            structures.append(structure)
+        return structures
+
+    def to_ase_structure(self):
+        '''
+        convert System to ASE Atom obj
+
+        '''
+        structures=[]
+        try:
+           from ase import Atoms
+        except:
+           raise ImportError('No module ase.Atoms')
+
+        for system in self.to_list():
+            species=[]
+            for name,numb in zip(system.data['atom_names'],system.data['atom_numbs']):
+                species.extend([name]*numb)
+            structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
+            structures.append(structure)
+        return structures
 
     def to_lammps_lmp(self, file_name, frame_idx = 0) :
         """
@@ -450,7 +492,19 @@ class System (MSONable) :
             self.data = dpdata.vasp.poscar.to_system_data(lines)
         self.rot_lower_triangular()
 
-
+    def to_vasp_string(self, frame_idx=0):
+        """
+        Dump the system in vasp POSCAR format string
+        
+        Parameters
+        ----------
+        frame_idx : int
+            The index of the frame to dump
+        """
+        assert(frame_idx < len(self.data['coords']))
+        w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
+        return w_str
+    
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
         """
         Dump the system in vasp POSCAR format
@@ -462,8 +516,7 @@ class System (MSONable) :
         frame_idx : int
             The index of the frame to dump
         """
-        assert(frame_idx < len(self.data['coords']))
-        w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
+        w_str=self.to_vasp_string( frame_idx= frame_idx )
         with open(file_name, 'w') as fp:
             fp.write(w_str)
 
@@ -579,6 +632,148 @@ class System (MSONable) :
         self.data['atom_names'].extend(atom_names)
         self.data['atom_numbs'].extend([0 for _ in atom_names])
 
+    def replicate(self, ncopy):
+        """
+        Replicate the each frame  in the system in 3 dimensions.
+        Each frame in the system will become a supercell.
+
+        Parameters
+        ----------
+        ncopy : 
+            list: [4,2,3]
+            or tuple: (4,2,3,)
+            make `ncopy[0]` copys in x dimensions,
+            make `ncopy[1]` copys in y dimensions,
+            make `ncopy[2]` copys in z dimensions.
+
+        Returns
+        -------
+        tmp : System
+            The system after replication.
+        """
+        if len(ncopy) !=3:
+            raise RuntimeError('ncopy must be a list or tuple with 3 int')
+        for ii in ncopy:
+            if type(ii) is not int:
+                raise RuntimeError('ncopy must be a list or tuple must with 3 int')
+        
+        tmp = System()
+        nframes = self.get_nframes()
+        data = self.data
+        tmp.data['atom_names'] = list(np.copy(data['atom_names']))
+        tmp.data['atom_numbs'] = list(np.array(np.copy(data['atom_numbs'])) * np.prod(ncopy))
+        tmp.data['atom_types'] = np.sort(np.tile(np.copy(data['atom_types']),np.prod(ncopy)))
+        tmp.data['cells'] = np.copy(data['cells'])
+        for ii in range(3):
+            tmp.data['cells'][:,ii,:] *= ncopy[ii]
+        tmp.data['coords'] = np.tile(np.copy(data['coords']),tuple(ncopy)+(1,1,1))
+
+        for xx in range(ncopy[0]):
+            for yy in range(ncopy[1]):
+                for zz in range(ncopy[2]):
+                    tmp.data['coords'][xx,yy,zz,:,:,:] += xx * np.reshape(data['cells'][:,0,:], [-1,1,3])\
+                                                + yy * np.reshape(data['cells'][:,1,:], [-1,1,3])\
+                                                + zz * np.reshape(data['cells'][:,2,:], [-1,1,3])
+        tmp.data['coords'] = np.reshape(np.transpose(tmp.data['coords'], [3,4,0,1,2,5]), (nframes, -1 , 3))
+        return tmp
+
+    def perturb(self, 
+        pert_num, 
+        cell_pert_fraction,
+        atom_pert_distance, 
+        atom_pert_style='normal'):
+        """
+        Perturb each frame in the system randomly.
+        The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
+
+        Parameters
+        ----------
+        pert_num : int
+            Each frame in the system will make `pert_num` copies,
+            and all the copies will be perturbed.
+            That means the system to be returned will contain `pert_num` * frame_num of the input system.
+        cell_pert_fraction : float
+            A fraction determines how much (relatively) will cell deform.
+            The cell of each frame is deformed by a symmetric matrix perturbed from identity. 
+            The perturbation to the diagonal part is subject to a uniform distribution in [-cell_pert_fraction, cell_pert_fraction), 
+            and the perturbation to the off-diagonal part is subject to a uniform distribution in [-0.5*cell_pert_fraction, 0.5*cell_pert_fraction).
+        atom_pert_distance: float
+            unit: Angstrom. A distance determines how far atoms will move.
+            Atoms will move about `atom_pert_distance` in random direction.
+            The distribution of the distance atoms move is determined by atom_pert_style
+        atom_pert_style : str
+            Determines the distribution of the distance atoms move is subject to.
+            Avaliable options are
+                - `'normal'`: the `distance` will be object to `chi-square distribution with 3 degrees of freedom` after normalization.
+                    The mean value of the distance is `atom_pert_fraction*side_length`
+                - `'uniform'`: will generate uniformly random points in a 3D-balls with radius as `atom_pert_distance`.
+                    These points are treated as vector used by atoms to move.
+                    Obviously, the max length of the distance atoms move is `atom_pert_distance`.
+                - `'const'`: The distance atoms move will be a constant `atom_pert_distance`.
+
+        Returns
+        -------
+        perturbed_system : System
+            The perturbed_system. It contains `pert_num` * frame_num of the input system frames.
+        """
+        perturbed_system = System()
+        nframes = self.get_nframes() 
+        for ii in range(nframes):
+            for jj in range(pert_num):
+                tmp_system = self[ii].copy()
+                cell_perturb_matrix = get_cell_perturb_matrix(cell_pert_fraction)
+                tmp_system.data['cells'][0] = np.matmul(tmp_system.data['cells'][0],cell_perturb_matrix)
+                tmp_system.data['coords'][0] = np.matmul(tmp_system.data['coords'][0],cell_perturb_matrix)
+                for kk in range(len(tmp_system.data['coords'][0])):
+                    atom_perturb_vector = get_atom_perturb_vector(atom_pert_distance, atom_pert_style)
+                    tmp_system.data['coords'][0][kk] += atom_perturb_vector
+                tmp_system.rot_lower_triangular()
+                perturbed_system.append(tmp_system)
+        return perturbed_system
+
+    @property
+    def nopbc(self):
+        if self.data.get("nopbc", False):
+            return True
+        return False
+
+def get_cell_perturb_matrix(cell_pert_fraction):
+    if cell_pert_fraction<0:
+        raise RuntimeError('cell_pert_fraction can not be negative')
+    e0 = np.random.rand(6)
+    e = e0 * 2 *cell_pert_fraction - cell_pert_fraction
+    cell_pert_matrix = np.array(
+        [[1+e[0], 0.5 * e[5], 0.5 * e[4]],
+         [0.5 * e[5], 1+e[1], 0.5 * e[3]],
+         [0.5 * e[4], 0.5 * e[3], 1+e[2]]]
+    )
+    return cell_pert_matrix
+
+def get_atom_perturb_vector(atom_pert_distance, atom_pert_style='normal'):
+    random_vector = None
+    if atom_pert_distance < 0:
+        raise RuntimeError('atom_pert_distance can not be negative')
+    
+    if atom_pert_style == 'normal':
+        e = np.random.randn(3)
+        random_vector=(atom_pert_distance/np.sqrt(3))*e
+    elif atom_pert_style == 'uniform':
+        e = np.random.randn(3)
+        while np.linalg.norm(e) < 0.1:
+            e = np.random.randn(3)
+        random_unit_vector = e/np.linalg.norm(e)
+        v0 = np.random.rand(1)
+        v = np.power(v0,1/3)
+        random_vector = atom_pert_distance*v*random_unit_vector
+    elif atom_pert_style == 'const' :
+        e = np.random.randn(3)
+        while np.linalg.norm(e) < 0.1:
+            e = np.random.randn(3)
+        random_unit_vector = e/np.linalg.norm(e)
+        random_vector = atom_pert_distance*random_unit_vector
+    else:
+        raise RuntimeError('unsupported options atom_pert_style={}'.format(atom_pert_style))
+    return random_vector
 
 class LabeledSystem (System):
     '''
@@ -622,6 +817,7 @@ class LabeledSystem (System):
                 - ``gaussian/log``: gaussian logs
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
+                - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file)
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -664,6 +860,8 @@ class LabeledSystem (System):
             self.from_gaussian_log(file_name, md=True)
         elif fmt == 'cp2k/output':
             self.from_cp2k_output(file_name)
+        elif fmt == 'cp2k/aimd_output':
+            self.from_cp2k_aimd_output(file_dir=file_name)
         else :
             raise RuntimeError('unknow data format ' + fmt)
 
@@ -706,6 +904,14 @@ class LabeledSystem (System):
     def has_virial(self) :
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
         return ('virials' in self.data)
+
+
+    def from_cp2k_aimd_output(self, file_dir):
+        xyz_file=glob.glob("{}/*pos*.xyz".format(file_dir))[0]
+        log_file=glob.glob("{}/*.log".format(file_dir))[0]
+        for info_dict in Cp2kSystems(log_file, xyz_file):
+            l = LabeledSystem(data=info_dict)
+            self.append(l)
 
     def from_vasp_xml(self, file_name, begin = 0, step = 1) :
         self.data['atom_names'], \
@@ -834,6 +1040,7 @@ class LabeledSystem (System):
             self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
+            self.data['nopbc'] = True
 
 
     def from_cp2k_output(self, file_name) :
@@ -1061,7 +1268,7 @@ class MultiSystems:
 def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
     assert( isinstance(data,dict) )
-    assert( set(data.keys())==keys )
+    assert( keys.issubset(set(data.keys())) )
     if len(data['coords']) > 0 :
         assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
     else :

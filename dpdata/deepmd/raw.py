@@ -49,6 +49,8 @@ def to_system_data(folder, type_map = None, labels = True) :
             if os.path.exists(os.path.join(folder, 'virial.raw')) :
                 data['virials'] = np.loadtxt(os.path.join(folder, 'virial.raw'))
                 data['virials'] = np.reshape(data['virials'], [nframes, 3, 3])
+        if os.path.isfile(os.path.join(folder, "nopbc")):
+            data['nopbc'] = True
         return data
     else :        
         raise RuntimeError('not dir ' + folder)
@@ -67,5 +69,10 @@ def dump (folder, data) :
         np.savetxt(os.path.join(folder, 'force.raw'),   np.reshape(data['forces'],   [nframes, -1]))
     if 'virials' in data :
         np.savetxt(os.path.join(folder, 'virial.raw'), np.reshape(data['virials'], [nframes, 9]))
-    
+    try:
+        os.remove(os.path.join(folder, "nopbc"))
+    except OSError:
+        pass
+    if data.get("nopbc", False):
+        os.mknod(os.path.join(folder, "nopbc"))
 

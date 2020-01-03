@@ -2,9 +2,9 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompLabeledSys
+from comp_sys import CompLabeledSys, IsPBC
 
-class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys):
+class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.system_1 = dpdata.LabeledSystem()
         self.system_1.from_vasp_xml('poscars/vasprun.h2o.md.xml')
@@ -15,7 +15,7 @@ class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 4
 
-class TestVaspOUTCARTypeMap(unittest.TestCase, CompLabeledSys):
+class TestVaspOUTCARTypeMap(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         sys0 = dpdata.LabeledSystem('poscars/OUTCAR.ch4.unconverged', fmt =  'vasp/outcar')
         sys0.data['atom_names'] = ['A', 'C', 'B', 'H', 'D']
@@ -29,7 +29,7 @@ class TestVaspOUTCARTypeMap(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 6
 
-class TestVaspOUTCARSkip(unittest.TestCase, CompLabeledSys):
+class TestVaspOUTCARSkip(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         begin = 1
         step = 3

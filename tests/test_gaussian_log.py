@@ -2,7 +2,6 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
-from comp_sys import CompLabeledSys
 
 class TestGaussianLog :
     def test_atom_names(self) :
@@ -17,6 +16,9 @@ class TestGaussianLog :
     def test_atom_types(self) :
         for ii in range(len(self.atom_types)) :
             self.assertEqual(self.system.data['atom_types'][ii], self.atom_types[ii])
+
+    def test_nopbc(self):
+        self.assertEqual(self.system.nopbc, True)
 
 class TestGaussianLoadLog(unittest.TestCase, TestGaussianLog):
     def setUp (self) :
