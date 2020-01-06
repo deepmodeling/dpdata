@@ -525,7 +525,7 @@ class System (MSONable) :
                         prefix,
                         begin = 0,
                         step = 1) :
-        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+        self.data, _ = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
@@ -991,13 +991,14 @@ class LabeledSystem (System):
 
 
     def from_qe_cp_traj(self, prefix, begin = 0, step = 1) :
-        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+        self.data, cs = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
             )
-        self.data['energies'], self.data['forces'] \
+        self.data['energies'], self.data['forces'], es \
             = dpdata.qe.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
+        assert(cs == es), "the step key between files are not consistent" 
         self.rot_lower_triangular()
 
     def from_qe_pw_scf(self, file_name) :
