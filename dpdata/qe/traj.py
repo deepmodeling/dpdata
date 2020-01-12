@@ -1,7 +1,7 @@
 #!/usr/bin/python3 
 
 import numpy as np
-import dpdata
+import dpdata,warnings
 
 ry2ev = 13.605693009
 hartree2ev = 27.211386018
@@ -36,8 +36,10 @@ def convert_celldm(ibrav, celldm) :
         return celldm[0] * 0.5 * np.array([[1,1,1], [-1,1,1], [-1,-1,1]])
     elif ibrav == -3 :
         return celldm[0] * 0.5 * np.array([[-1,1,1], [1,-1,1], [1,1,-1]])
-    else :
-        raise RuntimeError('unsupported ibrav ' + str(ibrav))    
+    else :        
+        warnings.warn('unsupported ibrav ' + str(ibrav) + ' if no .cel file, the cell convertion may be wrong. ')
+        return np.eye(3)
+        #raise RuntimeError('unsupported ibrav ' + str(ibrav))
 
 def load_cell_parameters(lines) :
     blk = load_block(lines, 'CELL_PARAMETERS', 3)
@@ -152,11 +154,13 @@ def load_energy(fname, begin = 0, step = 1) :
     for ii in data[begin::step,0]:
         steps.append('%d'%ii)
     with open(fname) as fp:
-        line = fp.readline()
-        if line :
-            nw = len(line.split())
-        else :
-            return None
+        while True:
+            line = fp.readline()
+            if not line :
+                return None
+            if line.split()[0][0] != '#':
+                nw = len(line.split())
+                break
     data = np.reshape(data, [-1, nw])
     return energy_convert * data[begin::step,5], steps
 
