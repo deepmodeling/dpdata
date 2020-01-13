@@ -116,8 +116,9 @@ class System (MSONable) :
             self.apply_type_map(type_map)
 
     register_from_funcs = Register()
+    register_to_funcs = Register()
 
-    def from_fmt(self, file_name, fmt, **kwargs):
+    def from_fmt(self, file_name, fmt='auto', **kwargs):
         fmt = fmt.lower()
         if fmt == 'auto':
             fmt = os.path.basename(file_name).split('.')[-1].lower()
@@ -129,6 +130,17 @@ class System (MSONable) :
             func(self, file_name, **kwargs)
         else :
             raise RuntimeError('unknow data format ' + fmt)
+    
+    def to(self, fmt, *args, **kwargs):
+        fmt = fmt.lower()
+        to_funcs = self.register_to_funcs.funcs
+        if fmt in to_funcs:
+            func = to_funcs[fmt]
+            func_args = inspect.getfullargspec(func).args
+            kwargs = {kk: kwargs[kk] for kk in kwargs if kk in func_args}
+            func(self, *args, **kwargs)
+        else :
+            raise RuntimeError('unknow data format %s. Accepted format:' % (fmt, " ".join(to_funcs)))
 
     def __repr__(self):
         return self.__str__()
@@ -215,7 +227,7 @@ class System (MSONable) :
 
         return new_atom_types
 
-
+    @register_to_funcs.register_funcs("list")
     def to_list(self):
         """
         convert system to list, usefull for data collection
@@ -430,6 +442,7 @@ class System (MSONable) :
             self.data = dpdata.lammps.lmp.to_system_data(lines, type_map)
         self._shift_orig_zero()
 
+    @register_to_funcs.register_funcs("pymatgen/structure")
     def to_pymatgen_structure(self):
         '''
         convert System to Pymatgen Structure obj
@@ -449,6 +462,7 @@ class System (MSONable) :
             structures.append(structure)
         return structures
 
+    @register_to_funcs.register_funcs("ase/structure")
     def to_ase_structure(self):
         '''
         convert System to ASE Atom obj
@@ -468,6 +482,7 @@ class System (MSONable) :
             structures.append(structure)
         return structures
 
+    @register_to_funcs.register_funcs("lammps/lmp")
     def to_lammps_lmp(self, file_name, frame_idx = 0) :
         """
         Dump the system in lammps data format
@@ -505,6 +520,7 @@ class System (MSONable) :
             self.data = dpdata.vasp.poscar.to_system_data(lines)
         self.rot_lower_triangular()
 
+    @register_to_funcs.register_funcs("vasp/string")
     def to_vasp_string(self, frame_idx=0):
         """
         Dump the system in vasp POSCAR format string
@@ -518,6 +534,7 @@ class System (MSONable) :
         w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
         return w_str
     
+    @register_to_funcs.register_funcs("vasp/poscar")
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
         """
         Dump the system in vasp POSCAR format
@@ -556,6 +573,7 @@ class System (MSONable) :
         if tmp_data is not None :
             self.data = tmp_data
 
+    @register_to_funcs.register_funcs("deepmd/npy")
     def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
         """
         Dump the system in deepmd compressed format (numpy binary) to `folder`.
@@ -578,6 +596,7 @@ class System (MSONable) :
                                 set_size = set_size,
                                 comp_prec = prec)
 
+    @register_to_funcs.register_funcs("deepmd/raw")
     def to_deepmd_raw(self, folder) :
         """
         Dump the system in deepmd raw format to `folder`
