@@ -614,7 +614,7 @@ class System (MSONable) :
             = dpdata.siesta.output.obtain_frame(fname)
         # self.rot_lower_triangular()
 
-    @register_from_funcs.register_funcs('aimd/output')
+    @register_from_funcs.register_funcs('siesta/aimd_output')
     def from_siesta_aiMD_output(self, fname):
         self.data['atom_names'], \
         self.data['atom_numbs'], \
