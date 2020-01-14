@@ -131,26 +131,26 @@ Available properties are (nframe: number of frames in the system, natoms: total 
 ## Dump data
 The data stored in `System` or `LabeledSystem` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
 ```python
-d_outcar.to_lammps_lmp('conf.lmp', frame_idx=0)
+d_outcar.to('lammps/lmp', 'conf.lmp', frame_idx=0)
 ```
 The first frames of `d_outcar` will be dumped to 'conf.lmp'
 ```python
-d_outcar.to_vasp_poscar('POSCAR', frame_idx=-1)
+d_outcar.to('vasp/poscar', 'POSCAR', frame_idx=-1)
 ```
 The last frames of `d_outcar` will be dumped to 'POSCAR'.
 
 
 The data stored in `LabeledSystem` can be dumped to deepmd-kit raw format, for example
 ```python
-d_outcar.to_deepmd_raw('dpmd_raw')
+d_outcar.to('deepmd/raw', 'dpmd_raw')
 ```
 Or a simpler command:
 ```python
-dpdata.LabeledSystem('OUTCAR').to_deepmd_raw('dpmd_raw')
+dpdata.LabeledSystem('OUTCAR').to('deepmd/raw', 'dpmd_raw')
 ```
 Frame selection can be implemented by
 ```python
-dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to_deepmd_raw('dpmd_raw')
+dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to('deepmd/raw', 'dpmd_raw')
 ```
 by which only the first and last frames are dumped to `dpmd_raw`.
 
