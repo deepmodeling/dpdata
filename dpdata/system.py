@@ -773,6 +773,14 @@ class System (MSONable) :
             return True
         return False
 
+    def shuffle(self):
+        """Shuffle frames randomly."""
+        idx = np.random.permutation(self.get_nframes())
+        for ii in ['cells', 'coords']:
+            self.data[ii] = self.data[ii][idx]
+        return idx
+
+
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
         raise RuntimeError('cell_pert_fraction can not be negative')
@@ -1130,6 +1138,14 @@ class LabeledSystem (System):
         for ii in ['atom_pref']:
             if ii in self.data:
                 self.data[ii] = self.data[ii][:, idx]
+
+    def shuffle(self):
+        """Also shuffle labeled data e.g. energies and forces."""
+        idx = System.shuffle(self)
+        for ii in ['energies', 'forces', 'virials', 'atom_pref']:
+            if ii in self.data:
+                self.data[ii] = self.data[ii][idx]
+        return idx
 
 
 class MultiSystems:
