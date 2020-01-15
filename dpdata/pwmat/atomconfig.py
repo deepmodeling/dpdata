@@ -67,6 +67,8 @@ def from_system_data(system, f_idx = 0, skip_zeros = True) :
         ret += '\n'
     ret += 'POSITION'
     ret += '\n'
+    atom_numbs = system['atom_numbs']
+    atom_names = system['atom_names']
     atype = system['atom_types']
     posis = system['coords'][f_idx]    
     # atype_idx = [[idx,tt] for idx,tt in enumerate(atype)]
@@ -77,7 +79,7 @@ def from_system_data(system, f_idx = 0, skip_zeros = True) :
     symbal = []
     for ii, jj in zip(atom_numbs, atom_names):
         for kk in range(ii):
-            symbal.append(kk) 
+            symbal.append(jj) 
     ELEMENTS=['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', \
             'Sc', 'Ti', 'V', 'Cr','Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', \
             'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd',\
@@ -86,13 +88,19 @@ def from_system_data(system, f_idx = 0, skip_zeros = True) :
             'Md', 'No', 'Lr']
     atomic_numbers = []
     for ii in symbal:
-        atomic_numbers.append(symbal.index(ii)+1)
+        atomic_numbers.append(ELEMENTS.index(ii)+1)
     posi_list = []
     for jj, ii in zip(atomic_numbers,posis) :
         ii = np.matmul(ii, np.linalg.inv(system['cells'][0]))
         posi_list.append('%d %15.10f %15.10f %15.10f 1 1 1' % \
                          (jj, ii[0], ii[1], ii[2])
         )
+    for kk in range(len(posi_list)):
+        min = kk
+        for jj in range(kk,len(posi_list)):
+            if int(posi_list[jj].split()[0]) < int(posi_list[min].split()[0]):
+                min = jj
+                posi_list[min], posi_list[kk] = posi_list[kk],posi_list[min]
     posi_list.append('')
     ret += '\n'.join(posi_list)
     return ret
