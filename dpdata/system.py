@@ -100,29 +100,7 @@ class System (MSONable) :
             return
         if file_name is None :
             return
-        if fmt == 'auto':
-            fmt = os.path.basename(file_name).split('.')[-1]
-        if fmt == 'lmp' or fmt == 'lammps/lmp' :
-            self.from_lammps_lmp(file_name, type_map = type_map)
-        elif fmt == 'dump' or fmt == 'lammps/dump' :
-            self.from_lammps_dump(file_name, type_map = type_map, begin = begin, step = step)
-        elif fmt.lower() == 'poscar' or fmt.lower() == 'contcar' or fmt.lower() == 'vasp/poscar' or fmt.lower() == 'vasp/contcar':
-            self.from_vasp_poscar(file_name)
-        elif fmt == 'deepmd' or fmt == 'deepmd/raw':
-            self.from_deepmd_raw(file_name, type_map = type_map)
-        elif fmt == 'deepmd/npy':
-            self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'qe/cp/traj':
-            self.from_qe_cp_traj(file_name, begin = begin, step = step)
-        elif fmt.lower() == 'siesta/output':
-            self.from_siesta_output(file_name)
-        elif fmt.lower() == 'siesta/aimd_output':
-            self.from_siesta_aiMD_output(file_name)
-        elif fmt.lower() == 'atom.config' or fmt.lower() == 'final.config' \
-                or fmt.lower() == 'pwmat/atom.config' or fmt.lower() == 'pwmat/final.config':
-            self.from_pwmat_atomconfig(file_name)
-        else :
-            raise RuntimeError('unknow data format ' + fmt)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
 
         if type_map is not None:
             self.apply_type_map(type_map)
@@ -593,14 +571,17 @@ class System (MSONable) :
         self.data['coords'], \
         _e, _f, _v \
             = dpdata.siesta.aiMD_output.get_aiMD_frame(fname)
-    
+    @register_from_funcs.register_funcs('atom.config')
+    @register_from_funcs.register_funcs('final.config')
+    @register_from_funcs.register_funcs('pwmat/atom.config')
+    @register_from_funcs.register_funcs('pwmat/final.config')
     def from_pwmat_atomconfig(self, file_name) :
         with open(file_name) as fp:
             lines = [line.rstrip('\n') for line in fp]
             self.data = dpdata.pwmat.atomconfig.to_system_data(lines)
         self.rot_lower_triangular()
 
-
+    @register_to_funcs.register_funcs("pwmat/atom.config")
     def to_pwmat_atomconfig(self, file_name, frame_idx = 0) :
         """
         Dump the system in pwmat atom.config format
@@ -868,39 +849,7 @@ class LabeledSystem (System):
            return
         if file_name is None :
             return
-        if fmt == 'auto':
-            fmt = os.path.basename(file_name).split('.')[-1]
-        if fmt == 'xml' or fmt == 'XML' or fmt == 'vasp/xml' :
-            self.from_vasp_xml(file_name, begin = begin, step = step)
-        elif fmt == 'outcar' or fmt == 'OUTCAR' or fmt == 'vasp/outcar' :
-            self.from_vasp_outcar(file_name, begin = begin, step = step)
-        elif fmt == 'deepmd' or fmt == 'deepmd/raw':
-            self.from_deepmd_raw(file_name, type_map = type_map)
-        elif fmt == 'deepmd/npy':
-            self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'qe/cp/traj':
-            self.from_qe_cp_traj(file_name, begin = begin, step = step)
-        elif fmt == 'qe/pw/scf':
-            self.from_qe_pw_scf(file_name)
-        elif fmt.lower() == 'siesta/output':
-            self.from_siesta_output(file_name)
-        elif fmt.lower() == 'siesta/aimd_output':
-            self.from_siesta_aiMD_output(file_name)
-        elif fmt == 'gaussian/log':
-            self.from_gaussian_log(file_name)
-        elif fmt == 'gaussian/md':
-            self.from_gaussian_log(file_name, md=True)
-        elif fmt == 'cp2k/output':
-            self.from_cp2k_output(file_name)
-        elif fmt == 'cp2k/aimd_output':
-            self.from_cp2k_aimd_output(file_dir=file_name)
-        elif fmt == 'movement' or fmt == 'MOVEMENT' or fmt == 'pwmat/movement' or fmt == 'pwmat/MOVEMENT' :
-            self.from_pwmat_output(file_name)
-        elif fmt == 'mlmd' or fmt == 'MLMD' or fmt == 'pwmat/mlmd' or fmt == 'pwmat/MLMD' :
-            self.from_pwmat_output(file_name)
-        else :
-            raise RuntimeError('unknow data format ' + fmt)
-
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
         if type_map is not None:
             self.apply_type_map(type_map)
 
@@ -1089,7 +1038,14 @@ class LabeledSystem (System):
             self.data['energies'], \
             self.data['forces'], \
             = dpdata.cp2k.output.get_frames(file_name)
-    
+    @register_from_funcs.register_funcs('movement')
+    @register_from_funcs.register_funcs('MOVEMENT')
+    @register_from_funcs.register_funcs('mlmd')
+    @register_from_funcs.register_funcs('MLMD')
+    @register_from_funcs.register_funcs('pwmat/movement')
+    @register_from_funcs.register_funcs('pwmat/MOVEMENT')
+    @register_from_funcs.register_funcs('pwmat/mlmd')
+    @register_from_funcs.register_funcs('pwmat/MLMD')
     def from_pwmat_output(self, file_name, begin = 0, step = 1) :
         self.data['atom_names'], \
             self.data['atom_numbs'], \

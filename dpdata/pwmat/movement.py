@@ -6,7 +6,7 @@ def system_info (lines, type_idx_zero = False) :
     nelm = 0
     natoms = int(lines[0].split()[0])
     iteration = float(lines[0].split('Etot')[0].split('=')[1].split(',')[0])
-    print(iteration)
+#    print(iteration)
     if iteration > 0 :
         nelm = 40
     else:
