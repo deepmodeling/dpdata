@@ -434,6 +434,35 @@ class System (MSONable) :
         ncoord = ncoord % 1
         self.data['coords'] = np.matmul(ncoord, self.data['cells'])
 
+
+    def remove_pbc(self, protect_layer = 9):
+        """
+        This method does NOT delete the definition of the cells, it
+        (1) revises the cell to a cubic cell and ensures that the cell 
+        boundary to any atom in the system is no less than `protect_layer`
+        (2) translates the system such that the center-of-geometry of the system 
+        locates at the center of the cell.
+
+        Parameters
+        ----------
+        protect_layer : the protect layer between the atoms and the cell
+                        boundary
+        """
+        nframes = self.get_nframes()
+        natoms = self.get_natoms()
+        assert(protect_layer >= 0), "the protect_layer should be no less than 0"
+        for ff in range(nframes):
+            tmpcoord = self.data['coords'][ff]
+            cog = np.average(tmpcoord, axis = 0)
+            dist = tmpcoord - np.tile(cog, [natoms, 1])
+            max_dist = np.max(np.linalg.norm(dist, axis = 1))
+            h_cell_size = max_dist + protect_layer            
+            cell_size = h_cell_size * 2
+            shift = np.array([1,1,1]) * h_cell_size - cog
+            self.data['coords'][ff] = self.data['coords'][ff] + np.tile(shift, [natoms, 1])
+            self.data['cells'][ff] = cell_size * np.eye(3)            
+        
+
     @register_from_funcs.register_funcs("lmp")
     @register_from_funcs.register_funcs("lammps/lmp")
     def from_lammps_lmp (self, file_name, type_map = None) :
