@@ -1,6 +1,7 @@
 #%%
 import os
 import glob
+import inspect
 import numpy as np
 import dpdata.lammps.lmp
 import dpdata.lammps.dump
@@ -22,6 +23,18 @@ from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
 from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
+
+
+class Register:
+    def __init__(self):
+        self.funcs = {}
+
+    def register_funcs(self, fmt):
+        def decorator(func):
+            self.funcs[fmt] = func
+            return func
+        return decorator
+
 
 class System (MSONable) :
     '''
@@ -97,30 +110,37 @@ class System (MSONable) :
             return
         if file_name is None :
             return
-        if fmt == 'auto':
-            fmt = os.path.basename(file_name).split('.')[-1]
-        if fmt == 'lmp' or fmt == 'lammps/lmp' :
-            self.from_lammps_lmp(file_name, type_map = type_map)
-        elif fmt == 'dump' or fmt == 'lammps/dump' :
-            self.from_lammps_dump(file_name, type_map = type_map, begin = begin, step = step)
-        elif fmt.lower() == 'poscar' or fmt.lower() == 'contcar' or fmt.lower() == 'vasp/poscar' or fmt.lower() == 'vasp/contcar':
-            self.from_vasp_poscar(file_name)
-        elif fmt == 'deepmd' or fmt == 'deepmd/raw':
-            self.from_deepmd_raw(file_name, type_map = type_map)
-        elif fmt == 'deepmd/npy':
-            self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'qe/cp/traj':
-            self.from_qe_cp_traj(file_name, begin = begin, step = step)
-        elif fmt.lower() == 'siesta/output':
-            self.from_siesta_output(file_name)
-        elif fmt.lower() == 'siesta/aimd_output':
-            self.from_siesta_aiMD_output(file_name)
-        else :
-            raise RuntimeError('unknow data format ' + fmt)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
 
         if type_map is not None:
             self.apply_type_map(type_map)
 
+    register_from_funcs = Register()
+    register_to_funcs = Register()
+
+    def from_fmt(self, file_name, fmt='auto', **kwargs):
+        fmt = fmt.lower()
+        if fmt == 'auto':
+            fmt = os.path.basename(file_name).split('.')[-1].lower()
+        from_funcs = self.register_from_funcs.funcs
+        if fmt in from_funcs:
+            func = from_funcs[fmt]
+            args = inspect.getfullargspec(func).args
+            kwargs = {kk: kwargs[kk] for kk in kwargs if kk in args}
+            func(self, file_name, **kwargs)
+        else :
+            raise RuntimeError('unknow data format ' + fmt)
+    
+    def to(self, fmt, *args, **kwargs):
+        fmt = fmt.lower()
+        to_funcs = self.register_to_funcs.funcs
+        if fmt in to_funcs:
+            func = to_funcs[fmt]
+            func_args = inspect.getfullargspec(func).args
+            kwargs = {kk: kwargs[kk] for kk in kwargs if kk in func_args}
+            func(self, *args, **kwargs)
+        else :
+            raise RuntimeError('unknow data format %s. Accepted format:' % (fmt, " ".join(to_funcs)))
 
     def __repr__(self):
         return self.__str__()
@@ -207,7 +227,7 @@ class System (MSONable) :
 
         return new_atom_types
 
-
+    @register_to_funcs.register_funcs("list")
     def to_list(self):
         """
         convert system to list, usefull for data collection
@@ -415,12 +435,43 @@ class System (MSONable) :
         self.data['coords'] = np.matmul(ncoord, self.data['cells'])
 
 
+    def remove_pbc(self, protect_layer = 9):
+        """
+        This method does NOT delete the definition of the cells, it
+        (1) revises the cell to a cubic cell and ensures that the cell 
+        boundary to any atom in the system is no less than `protect_layer`
+        (2) translates the system such that the center-of-geometry of the system 
+        locates at the center of the cell.
+
+        Parameters
+        ----------
+        protect_layer : the protect layer between the atoms and the cell
+                        boundary
+        """
+        nframes = self.get_nframes()
+        natoms = self.get_natoms()
+        assert(protect_layer >= 0), "the protect_layer should be no less than 0"
+        for ff in range(nframes):
+            tmpcoord = self.data['coords'][ff]
+            cog = np.average(tmpcoord, axis = 0)
+            dist = tmpcoord - np.tile(cog, [natoms, 1])
+            max_dist = np.max(np.linalg.norm(dist, axis = 1))
+            h_cell_size = max_dist + protect_layer            
+            cell_size = h_cell_size * 2
+            shift = np.array([1,1,1]) * h_cell_size - cog
+            self.data['coords'][ff] = self.data['coords'][ff] + np.tile(shift, [natoms, 1])
+            self.data['cells'][ff] = cell_size * np.eye(3)            
+        
+
+    @register_from_funcs.register_funcs("lmp")
+    @register_from_funcs.register_funcs("lammps/lmp")
     def from_lammps_lmp (self, file_name, type_map = None) :
         with open(file_name) as fp:
             lines = [line.rstrip('\n') for line in fp]
             self.data = dpdata.lammps.lmp.to_system_data(lines, type_map)
         self._shift_orig_zero()
 
+    @register_to_funcs.register_funcs("pymatgen/structure")
     def to_pymatgen_structure(self):
         '''
         convert System to Pymatgen Structure obj
@@ -440,6 +491,7 @@ class System (MSONable) :
             structures.append(structure)
         return structures
 
+    @register_to_funcs.register_funcs("ase/structure")
     def to_ase_structure(self):
         '''
         convert System to ASE Atom obj
@@ -459,6 +511,7 @@ class System (MSONable) :
             structures.append(structure)
         return structures
 
+    @register_to_funcs.register_funcs("lammps/lmp")
     def to_lammps_lmp(self, file_name, frame_idx = 0) :
         """
         Dump the system in lammps data format
@@ -475,7 +528,8 @@ class System (MSONable) :
         with open(file_name, 'w') as fp:
             fp.write(w_str)
 
-
+    @register_from_funcs.register_funcs('dump')
+    @register_from_funcs.register_funcs('lammps/dump')
     def from_lammps_dump (self,
                           file_name,
                           type_map = None,
@@ -485,13 +539,17 @@ class System (MSONable) :
         self.data = dpdata.lammps.dump.system_data(lines, type_map)
         self._shift_orig_zero()
 
-
+    @register_from_funcs.register_funcs('poscar')
+    @register_from_funcs.register_funcs('contcar')
+    @register_from_funcs.register_funcs('vasp/poscar')
+    @register_from_funcs.register_funcs('vasp/contcar')
     def from_vasp_poscar(self, file_name) :
         with open(file_name) as fp:
             lines = [line.rstrip('\n') for line in fp]
             self.data = dpdata.vasp.poscar.to_system_data(lines)
         self.rot_lower_triangular()
 
+    @register_to_funcs.register_funcs("vasp/string")
     def to_vasp_string(self, frame_idx=0):
         """
         Dump the system in vasp POSCAR format string
@@ -505,6 +563,7 @@ class System (MSONable) :
         w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
         return w_str
     
+    @register_to_funcs.register_funcs("vasp/poscar")
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
         """
         Dump the system in vasp POSCAR format
@@ -520,27 +579,30 @@ class System (MSONable) :
         with open(file_name, 'w') as fp:
             fp.write(w_str)
 
-
+    @register_from_funcs.register_funcs('qe/cp/traj')
     def from_qe_cp_traj(self,
                         prefix,
                         begin = 0,
                         step = 1) :
-        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+        self.data, _ = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
             )
         self.rot_lower_triangular()
 
-
+    @register_from_funcs.register_funcs('deepmd/npy')
     def from_deepmd_comp(self, folder, type_map = None) :
         self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = False)
 
+    @register_from_funcs.register_funcs('deepmd')
+    @register_from_funcs.register_funcs('deepmd/raw')
     def from_deepmd_raw(self, folder, type_map = None) :
         tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = False)
         if tmp_data is not None :
             self.data = tmp_data
 
+    @register_to_funcs.register_funcs("deepmd/npy")
     def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
         """
         Dump the system in deepmd compressed format (numpy binary) to `folder`.
@@ -563,12 +625,14 @@ class System (MSONable) :
                                 set_size = set_size,
                                 comp_prec = prec)
 
+    @register_to_funcs.register_funcs("deepmd/raw")
     def to_deepmd_raw(self, folder) :
         """
         Dump the system in deepmd raw format to `folder`
         """
         dpdata.deepmd.raw.dump(folder, self.data) 
 
+    @register_from_funcs.register_funcs('siesta/output')
     def from_siesta_output(self, fname):
         self.data['atom_names'], \
         self.data['atom_numbs'], \
@@ -579,6 +643,7 @@ class System (MSONable) :
             = dpdata.siesta.output.obtain_frame(fname)
         # self.rot_lower_triangular()
 
+    @register_from_funcs.register_funcs('siesta/aimd_output')
     def from_siesta_aiMD_output(self, fname):
         self.data['atom_names'], \
         self.data['atom_numbs'], \
@@ -737,6 +802,14 @@ class System (MSONable) :
             return True
         return False
 
+    def shuffle(self):
+        """Shuffle frames randomly."""
+        idx = np.random.permutation(self.get_nframes())
+        for ii in ['cells', 'coords']:
+            self.data[ii] = self.data[ii][idx]
+        return idx
+
+
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
         raise RuntimeError('cell_pert_fraction can not be negative')
@@ -836,38 +909,11 @@ class LabeledSystem (System):
            return
         if file_name is None :
             return
-        if fmt == 'auto':
-            fmt = os.path.basename(file_name).split('.')[-1]
-        if fmt == 'xml' or fmt == 'XML' or fmt == 'vasp/xml' :
-            self.from_vasp_xml(file_name, begin = begin, step = step)
-        elif fmt == 'outcar' or fmt == 'OUTCAR' or fmt == 'vasp/outcar' :
-            self.from_vasp_outcar(file_name, begin = begin, step = step)
-        elif fmt == 'deepmd' or fmt == 'deepmd/raw':
-            self.from_deepmd_raw(file_name, type_map = type_map)
-        elif fmt == 'deepmd/npy':
-            self.from_deepmd_comp(file_name, type_map = type_map)
-        elif fmt == 'qe/cp/traj':
-            self.from_qe_cp_traj(file_name, begin = begin, step = step)
-        elif fmt == 'qe/pw/scf':
-            self.from_qe_pw_scf(file_name)
-        elif fmt.lower() == 'siesta/output':
-            self.from_siesta_output(file_name)
-        elif fmt.lower() == 'siesta/aimd_output':
-            self.from_siesta_aiMD_output(file_name)
-        elif fmt == 'gaussian/log':
-            self.from_gaussian_log(file_name)
-        elif fmt == 'gaussian/md':
-            self.from_gaussian_log(file_name, md=True)
-        elif fmt == 'cp2k/output':
-            self.from_cp2k_output(file_name)
-        elif fmt == 'cp2k/aimd_output':
-            self.from_cp2k_aimd_output(file_dir=file_name)
-        else :
-            raise RuntimeError('unknow data format ' + fmt)
-
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
         if type_map is not None:
             self.apply_type_map(type_map)
 
+    register_from_funcs = Register()
 
     def __repr__(self):
         return self.__str__()
@@ -905,7 +951,7 @@ class LabeledSystem (System):
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
         return ('virials' in self.data)
 
-
+    @register_from_funcs.register_funcs('cp2k/aimd_output')
     def from_cp2k_aimd_output(self, file_dir):
         xyz_file=glob.glob("{}/*pos*.xyz".format(file_dir))[0]
         log_file=glob.glob("{}/*.log".format(file_dir))[0]
@@ -913,6 +959,8 @@ class LabeledSystem (System):
             l = LabeledSystem(data=info_dict)
             self.append(l)
 
+    @register_from_funcs.register_funcs('xml')
+    @register_from_funcs.register_funcs('vasp/xml')
     def from_vasp_xml(self, file_name, begin = 0, step = 1) :
         self.data['atom_names'], \
             self.data['atom_types'], \
@@ -937,7 +985,8 @@ class LabeledSystem (System):
         # rotate the system to lammps convention
         self.rot_lower_triangular()
 
-
+    @register_from_funcs.register_funcs('outcar')
+    @register_from_funcs.register_funcs('vasp/outcar')
     def from_vasp_outcar(self, file_name, begin = 0, step = 1) :
         # with open(file_name) as fp:
         #     lines = [line.rstrip('\n') for line in fp]
@@ -979,27 +1028,30 @@ class LabeledSystem (System):
         self.affine_map_fv(trans, f_idx = f_idx)
         return trans
 
-
+    @register_from_funcs.register_funcs('deepmd/npy')
     def from_deepmd_comp(self, folder, type_map = None) :
         self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = True)
 
-
+    @register_from_funcs.register_funcs('deepmd')
+    @register_from_funcs.register_funcs('deepmd/raw')
     def from_deepmd_raw(self, folder, type_map = None) :
         tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = True)
         if tmp_data is not None :
             self.data = tmp_data
 
-
+    @register_from_funcs.register_funcs('qe/cp/traj')
     def from_qe_cp_traj(self, prefix, begin = 0, step = 1) :
-        self.data = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
+        self.data, cs = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
         self.data['coords'] \
             = dpdata.md.pbc.apply_pbc(self.data['coords'],
                                       self.data['cells'],
             )
-        self.data['energies'], self.data['forces'] \
+        self.data['energies'], self.data['forces'], es \
             = dpdata.qe.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
+        assert(cs == es), "the step key between files are not consistent" 
         self.rot_lower_triangular()
 
+    @register_from_funcs.register_funcs('qe/pw/scf')
     def from_qe_pw_scf(self, file_name) :
         self.data['atom_names'], \
             self.data['atom_numbs'], \
@@ -1012,6 +1064,7 @@ class LabeledSystem (System):
             = dpdata.qe.scf.get_frame(file_name)
         self.rot_lower_triangular()
     
+    @register_from_funcs.register_funcs('siesta/output')
     def from_siesta_output(self, file_name) :
         self.data['atom_names'], \
         self.data['atom_numbs'], \
@@ -1024,6 +1077,7 @@ class LabeledSystem (System):
             = dpdata.siesta.output.obtain_frame(file_name)
         # self.rot_lower_triangular()
 
+    @register_from_funcs.register_funcs('siesta/aimd_output')
     def from_siesta_aiMD_output(self, file_name):
         self.data['atom_names'], \
         self.data['atom_numbs'], \
@@ -1035,14 +1089,19 @@ class LabeledSystem (System):
         self.data['virials'] \
             = dpdata.siesta.aiMD_output.get_aiMD_frame(file_name)
     
+    @register_from_funcs.register_funcs('gaussian/log')
     def from_gaussian_log(self, file_name, md=False):
         try:
             self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
             self.data['nopbc'] = True
+    
+    @register_from_funcs.register_funcs('gaussian/md')
+    def from_gaussian_md(self, file_name):
+        self.from_gaussian_log(file_name, md=True)
 
-
+    @register_from_funcs.register_funcs('cp2k/output')
     def from_cp2k_output(self, file_name) :
         self.data['atom_names'], \
             self.data['atom_numbs'], \
@@ -1108,6 +1167,14 @@ class LabeledSystem (System):
         for ii in ['atom_pref']:
             if ii in self.data:
                 self.data[ii] = self.data[ii][:, idx]
+
+    def shuffle(self):
+        """Also shuffle labeled data e.g. energies and forces."""
+        idx = System.shuffle(self)
+        for ii in ['energies', 'forces', 'virials', 'atom_pref']:
+            if ii in self.data:
+                self.data[ii] = self.data[ii][idx]
+        return idx
 
 
 class MultiSystems:

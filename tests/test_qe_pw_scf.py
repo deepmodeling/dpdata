@@ -38,6 +38,7 @@ class TestPWSCFSinglePointEnergy:
         for ii in range(cell.shape[0]) :
             for jj in range(cell.shape[1]) :
                 self.assertAlmostEqual(self.system_h2o.data['cells'][0][ii][jj], cell[ii][jj])
+        fp.close()
 
 
     def test_coord(self) :

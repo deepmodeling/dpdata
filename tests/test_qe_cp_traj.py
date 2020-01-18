@@ -4,7 +4,7 @@ import unittest
 from context import dpdata
 
 
-class TestPWSCFProps :
+class TestCPTRAJProps :
     def test_atom_names(self) :
         self.assertEqual(self.system.data['atom_names'], ['O','H'])
 
@@ -44,18 +44,25 @@ class TestPWSCFProps :
                 self.assertAlmostEqual(self.system['coords'][-1][ii][jj], coords[ii][jj])
 
 
-class TestPWSCFTraj(unittest.TestCase, TestPWSCFProps):    
+class TestCPTRAJTraj(unittest.TestCase, TestCPTRAJProps):    
 
     def setUp(self): 
         self.system = dpdata.System('qe.traj/oh-md', fmt = 'qe/cp/traj')
 
 
-class TestPWSCFLabeledTraj(unittest.TestCase, TestPWSCFProps):    
+class TestCPTRAJLabeledTraj(unittest.TestCase, TestCPTRAJProps):    
 
     def setUp(self): 
         self.system = dpdata.LabeledSystem('qe.traj/oh-md', fmt = 'qe/cp/traj')
 
 
+class TestConverCellDim(unittest.TestCase):    
+    def test_case_null(self):
+        cell = dpdata.qe.traj.convert_celldm(8, [1, 1, 1])
+        ref = np.eye(3)
+        for ii in range(3):
+            for jj in range(3):
+                self.assertAlmostEqual(cell[ii][jj], ref[ii][jj])
 
 
 if __name__ == '__main__':

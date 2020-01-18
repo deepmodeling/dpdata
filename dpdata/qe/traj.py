@@ -1,7 +1,7 @@
 #!/usr/bin/python3 
 
 import numpy as np
-import dpdata
+import dpdata,warnings
 
 ry2ev = 13.605693009
 hartree2ev = 27.211386018
@@ -36,8 +36,10 @@ def convert_celldm(ibrav, celldm) :
         return celldm[0] * 0.5 * np.array([[1,1,1], [-1,1,1], [-1,-1,1]])
     elif ibrav == -3 :
         return celldm[0] * 0.5 * np.array([[-1,1,1], [1,-1,1], [1,1,-1]])
-    else :
-        raise RuntimeError('unsupported ibrav ' + str(ibrav))    
+    else :        
+        warnings.warn('unsupported ibrav ' + str(ibrav) + ' if no .cel file, the cell convertion may be wrong. ')
+        return np.eye(3)
+        #raise RuntimeError('unsupported ibrav ' + str(ibrav))
 
 def load_cell_parameters(lines) :
     blk = load_block(lines, 'CELL_PARAMETERS', 3)
@@ -98,15 +100,16 @@ def _load_pos_block(fp, natoms) :
     head = fp.readline()
     if not head:
         # print('get None')
-        return None
+        return None, None
     else :
+        ss = head.split()[0]
         blk = []
         for ii in range(natoms) :
             newline = fp.readline()
             if not newline :
-                return None
+                return None, None
             blk.append([float(jj) for jj in newline.split()])
-        return blk
+        return blk, ss
 
 
 def load_data(fname, 
@@ -115,18 +118,20 @@ def load_data(fname,
               step = 1,
               convert = 1.) :
     coords = []
+    steps = []
     cc = 0
     with open(fname) as fp:
         while True:
-            blk = _load_pos_block(fp, natoms)
+            blk, ss = _load_pos_block(fp, natoms)
             if blk == None :
                 break
             else :
                 if cc >= begin and (cc - begin) % step == 0 :
                     coords.append(blk)
+                    steps.append(ss)
             cc += 1
     coords= convert * np.array(coords)
-    return coords
+    return coords, steps
 
 
 # def load_pos(fname, natoms) :
@@ -145,14 +150,19 @@ def load_data(fname,
 
 def load_energy(fname, begin = 0, step = 1) :
     data = np.loadtxt(fname)
+    steps = []
+    for ii in data[begin::step,0]:
+        steps.append('%d'%ii)
     with open(fname) as fp:
-        line = fp.readline()
-        if line :
-            nw = len(line.split())
-        else :
-            return None
+        while True:
+            line = fp.readline()
+            if not line :
+                return None
+            if line.split()[0][0] != '#':
+                nw = len(line.split())
+                break
     data = np.reshape(data, [-1, nw])
-    return energy_convert * data[begin::step,5]
+    return energy_convert * data[begin::step,5], steps
 
 
 # def load_force(fname, natoms) :
@@ -176,35 +186,48 @@ def to_system_data(input_name, prefix, begin = 0, step = 1) :
         data['atom_types'], \
         cell \
         = load_param_file(input_name)
-    data['coords'] \
+    data['coords'], csteps\
         = load_data(prefix + '.pos', 
                     np.sum(data['atom_numbs']), 
                     begin = begin, 
                     step = step, 
                     convert = length_convert)
     data['orig'] = np.zeros(3)
-    data['cells'] = np.tile(cell, (data['coords'].shape[0], 1, 1))
-    return data
+    try :
+        data['cells'], tmp_steps \
+            = load_data(prefix + '.cel', 
+                        3, 
+                        begin = begin, 
+                        step = step, 
+                        convert = length_convert)
+        assert(csteps == tmp_steps), "the step key between files are not consistent"
+    except FileNotFoundError :
+        data['cells'] = np.tile(cell, (data['coords'].shape[0], 1, 1))
+    return data, csteps
 
 
 def to_system_label(input_name, prefix, begin = 0, step = 1) :
     atom_names, atom_numbs, atom_types, cell = load_param_file(input_name)
-    energy = load_energy(prefix + '.evp', 
-                         begin = begin, 
-                         step = step)
-    force = load_data(prefix + '.for', 
-                      np.sum(atom_numbs), 
-                      begin = begin,
-                      step = step, 
-                      convert = force_convert)
-    return energy, force
+    energy, esteps = load_energy(prefix + '.evp', 
+                                 begin = begin, 
+                                 step = step)
+    force, fsteps = load_data(prefix + '.for', 
+                              np.sum(atom_numbs), 
+                              begin = begin,
+                              step = step, 
+                              convert = force_convert)
+    assert(esteps == fsteps), "the step key between files are not consistent "
+    return energy, force, esteps
 
 
 if __name__ == '__main__':
-    atom_names, atom_numbs, atom_types, cell = load_param_file('oh-md.in')
-    coords = load_pos('oh-md.pos', np.sum(atom_numbs))
+    prefix='nacl'
+    atom_names, atom_numbs, atom_types, cell = load_param_file(prefix+'.in')
+    coords = load_data(prefix+'.pos', np.sum(atom_numbs))
+    cells = load_data(prefix+'.cel', 3)
     print(atom_names)
     print(atom_numbs)
     print(atom_types)
-    print(cell)
+    print(cells)
     print(coords.shape)
+    print(cells.shape)
