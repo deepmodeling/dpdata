@@ -18,6 +18,8 @@ import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.cp2k.output
 from dpdata.cp2k.output import Cp2kSystems
+import dpdata.pwmat.movement
+import dpdata.pwmat.atomconfig
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
@@ -86,6 +88,7 @@ class System (MSONable) :
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
+                - ``pwmat/atom.config``: pwmat atom.config
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
@@ -652,7 +655,34 @@ class System (MSONable) :
         self.data['coords'], \
         _e, _f, _v \
             = dpdata.siesta.aiMD_output.get_aiMD_frame(fname)
-    
+    @register_from_funcs.register_funcs('atom.config')
+    @register_from_funcs.register_funcs('final.config')
+    @register_from_funcs.register_funcs('pwmat/atom.config')
+    @register_from_funcs.register_funcs('pwmat/final.config')
+    def from_pwmat_atomconfig(self, file_name) :
+        with open(file_name) as fp:
+            lines = [line.rstrip('\n') for line in fp]
+            self.data = dpdata.pwmat.atomconfig.to_system_data(lines)
+        self.rot_lower_triangular()
+
+    @register_to_funcs.register_funcs("pwmat/atom.config")
+    def to_pwmat_atomconfig(self, file_name, frame_idx = 0) :
+        """
+        Dump the system in pwmat atom.config format
+
+        Parameters
+        ----------
+        file_name : str
+            The output file name
+        frame_idx : int
+            The index of the frame to dump
+        """
+        assert(frame_idx < len(self.data['coords']))
+        w_str = dpdata.pwmat.atomconfig.from_system_data(self.data, frame_idx)
+        with open(file_name, 'w') as fp:
+            fp.write(w_str)
+
+
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
         self.data['cells'][f_idx] = np.matmul(self.data['cells'][f_idx], trans)
@@ -891,6 +921,8 @@ class LabeledSystem (System):
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
                 - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file)
+                - ``pwmat/movement``: pwmat md output file
+                - ``pwmat/out.mlmd``: pwmat scf output file
 
         type_map : list of str
             Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
@@ -1111,6 +1143,34 @@ class LabeledSystem (System):
             self.data['energies'], \
             self.data['forces'], \
             = dpdata.cp2k.output.get_frames(file_name)
+    @register_from_funcs.register_funcs('movement')
+    @register_from_funcs.register_funcs('MOVEMENT')
+    @register_from_funcs.register_funcs('mlmd')
+    @register_from_funcs.register_funcs('MLMD')
+    @register_from_funcs.register_funcs('pwmat/movement')
+    @register_from_funcs.register_funcs('pwmat/MOVEMENT')
+    @register_from_funcs.register_funcs('pwmat/mlmd')
+    @register_from_funcs.register_funcs('pwmat/MLMD')
+    def from_pwmat_output(self, file_name, begin = 0, step = 1) :
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            tmp_virial, \
+            = dpdata.pwmat.movement.get_frames(file_name, begin = begin, step = step)
+        if tmp_virial is not None :
+            self.data['virials'] = tmp_virial
+        # scale virial to the unit of eV
+        if 'virials' in self.data :
+            v_pref = 1 * 1e3 / 1.602176621e6
+            for ii in range (self.get_nframes()) :
+                vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
+                self.data['virials'][ii] *= v_pref * vol
+        # rotate the system to lammps convention
+        self.rot_lower_triangular()
 
 
     def sub_system(self, f_idx) :
