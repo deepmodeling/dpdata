@@ -162,7 +162,7 @@ class System (MSONable) :
 
     def __getitem__(self, key):
         """Returns proerty stored in System by key or by idx"""
-        if isinstance(key, int):
+        if isinstance(key, (int, slice)):
             return self.sub_system(key)
         return self.data[key]
 
