@@ -33,6 +33,8 @@ def to_system_data(folder,
         nframes = np.reshape(cells, [-1,3,3]).shape[0]
         all_cells.append(np.reshape(cells, [nframes,3,3]))
         all_coords.append(np.reshape(coords, [nframes,-1,3]))
+        if eners is not None:
+            eners = np.reshape(eners, [nframes])
         if labels:
             if eners is not None and len(eners) > 0:
                 all_eners.append(np.reshape(eners, [nframes]))
