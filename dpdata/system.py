@@ -143,7 +143,7 @@ class System (MSONable) :
             kwargs = {kk: kwargs[kk] for kk in kwargs if kk in func_args}
             func(self, *args, **kwargs)
         else :
-            raise RuntimeError('unknow data format %s. Accepted format:' % (fmt, " ".join(to_funcs)))
+            raise RuntimeError('unknow data format %s. Accepted format: %s' % (fmt, " ".join(to_funcs)))
 
     def __repr__(self):
         return self.__str__()
