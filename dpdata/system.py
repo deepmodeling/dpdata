@@ -839,6 +839,44 @@ class System (MSONable) :
             self.data[ii] = self.data[ii][idx]
         return idx
 
+    def predict(self, dp):
+        """
+        Predict energies and forces by deepmd-kit.
+
+        Parameters
+        ----------
+        dp : deepmd.DeepPot or str
+            The deepmd-kit potential class or the filename of the model.
+
+        Returns
+        -------
+        labeled_sys LabeledSystem
+            The labeled system.
+        """
+        import deepmd.DeepPot as DeepPot
+        if not isinstance(dp, DeepPot):
+            dp = DeepPot(dp)
+        type_map = dp.get_type_map()
+        ori_sys = self.copy()
+        ori_sys.sort_atom_names(type_map=type_map)
+        atype = ori_sys['atom_types']
+
+        labeled_sys = LabeledSystem()
+
+        for ss in self:
+            coord = ss['coords'].reshape((-1,1))
+            if not ss.nopbc:
+                cell = ss['cells'].reshape((-1,1))
+            else:
+                cell = None
+            e, f, v = dp.eval(coord, cell, atype)
+            data = ss.data
+            data['energies'] = e.reshape((1, 1))
+            data['forces'] = f.reshape((1, -1, 3))
+            data['virials'] = v.reshape((1, 3, 3))
+            this_sys = LabeledSystem.from_dict({'data': data})
+            labeled_sys.append(this_sys)
+        return labeled_sys
 
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
