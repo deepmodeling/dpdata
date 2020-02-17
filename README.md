@@ -110,6 +110,7 @@ xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
 | PWmat   | atom.config | False        | False   | System        | 'pwmat/atom.config'  |
 | PWmat   | movement    | True         | True    | LabeledSystem | 'pwmat/movement'     |
 | PWmat   | OUT.MLMD    | True         | True    | LabeledSystem | 'pwmat/out.mlmd'     |
+| Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
 ```python
