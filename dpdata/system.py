@@ -16,6 +16,7 @@ import dpdata.siesta.output
 import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
 import dpdata.gaussian.log
+import dpdata.amber.md
 import dpdata.cp2k.output
 from dpdata.cp2k.output import Cp2kSystems
 import dpdata.pwmat.movement
@@ -1170,6 +1171,19 @@ class LabeledSystem (System):
     @register_from_funcs.register_funcs('gaussian/md')
     def from_gaussian_md(self, file_name):
         self.from_gaussian_log(file_name, md=True)
+
+    @register_from_funcs.register_funcs('amber/md')
+    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None):
+        # assume the prefix is the same if the spefic name is not given
+        if parm7_file is None:
+            parm7_file = file_name + ".parm7"
+        if nc_file is None:
+            nc_file = file_name + ".nc"
+        if mdfrc_file is None:
+            mdfrc_file = file_name + ".mdfrc"
+        if mden_file is None:
+            mden_file = file_name + ".mden"
+        self.data = dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file)
 
     @register_from_funcs.register_funcs('cp2k/output')
     def from_cp2k_output(self, file_name) :
