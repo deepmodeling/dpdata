@@ -21,6 +21,7 @@ import dpdata.cp2k.output
 from dpdata.cp2k.output import Cp2kSystems
 import dpdata.pwmat.movement
 import dpdata.pwmat.atomconfig
+import dpdata.fhi_aims.output
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
@@ -1029,6 +1030,34 @@ class LabeledSystem (System):
         for info_dict in Cp2kSystems(log_file, xyz_file):
             l = LabeledSystem(data=info_dict)
             self.append(l)
+
+    @register_from_funcs.register_funcs('fhi_aims/md')
+    def from_fhi_aims_output(self, file_name, md=True, begin=0, step =1):
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            tmp_virial, \
+            = dpdata.fhi_aims.output.get_frames(file_name, md = md, begin = begin, step = step)
+        if tmp_virial is not None :
+            self.data['virials'] = tmp_virial
+
+    @register_from_funcs.register_funcs('fhi_aims/scf')
+    def from_fhi_aims_output(self, file_name ):
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            tmp_virial, \
+            = dpdata.fhi_aims.output.get_frames(file_name, md = False, begin = 0, step = 1)
+        if tmp_virial is not None :
+            self.data['virials'] = tmp_virial
 
     @register_from_funcs.register_funcs('xml')
     @register_from_funcs.register_funcs('vasp/xml')
