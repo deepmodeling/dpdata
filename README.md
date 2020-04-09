@@ -51,6 +51,34 @@ The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any),
 
 The `System` or `LabeledSystem` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
 
+| Software| format | multi frames | labeled | class	    | format key    |
+| ------- | :---   | :---:        | :---:   | :---          | :---          |
+| vasp	  | poscar | False        | False   | System	    | 'vasp/poscar' | 
+| vasp    | outcar | True         | True    | LabeledSystem | 'vasp/outcar' |	
+| vasp    | xml    | True         | True    | LabeledSystem | 'vasp/xml'    |	
+| lammps  | lmp    | False        | False   | System        | 'lammps/lmp'  |
+| lammps  | dump   | True         | False   | System        | 'lammps/dump' |
+| deepmd  | raw    | True         | False   | System	    | 'deepmd/raw'  |
+| deepmd  | npy    | True         | False   | System        | 'deepmd/npy'  |
+| deepmd  | raw    | True         | True    | LabeledSystem | 'deepmd/raw'  |
+| deepmd  | npy    | True         | True    | LabeledSystem | 'deepmd/npy'  |
+| gaussian| log    | False        | True    | LabeledSystem | 'gaussian/log'|
+| gaussian| log    | True         | True    | LabeledSystem | 'gaussian/md' |
+| siesta  | output | False        | True    | LabeledSystem | 'siesta/output'|
+| siesta  | aimd_output  | True         | True    | LabeledSystem | 'siesta/aimd_output' |
+| cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output' |
+| cp2k    | aimd_output  | True         | True    | LabeledSystem | 'cp2k/aimd_output' |
+| QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
+| QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
+| QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
+|quip/gap|xyz|True|True|MultiSystems|'quip/gap/xyz'|
+| PWmat   | atom.config | False        | False   | System        | 'pwmat/atom.config'  |
+| PWmat   | movement    | True         | True    | LabeledSystem | 'pwmat/movement'     |
+| PWmat   | OUT.MLMD    | True         | True    | LabeledSystem | 'pwmat/out.mlmd'     |
+| Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
+| Gromacs | gro         | False        | False   | System        | 'gromacs/gro'        |
+
+
 The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
 
 Use `dpdata.MultiSystems.from_dir` to read from a  directory, `dpdata.MultiSystems` will walk in the directory 
@@ -82,35 +110,8 @@ xyz_multi_systems.systems['B1C9'].to_deepmd_raw('./my_work_dir/B1C9_raw')
 
 # dump all systems
 xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
-
-
 ```
 
-| Software| format | multi frames | labeled | class	    | format key    |
-| ------- | :---   | :---:        | :---:   | :---          | :---          |
-| vasp	  | poscar | False        | False   | System	    | 'vasp/poscar' | 
-| vasp    | outcar | True         | True    | LabeledSystem | 'vasp/outcar' |	
-| vasp    | xml    | True         | True    | LabeledSystem | 'vasp/xml'    |	
-| lammps  | lmp    | False        | False   | System        | 'lammps/lmp'  |
-| lammps  | dump   | True         | False   | System        | 'lammps/dump' |
-| deepmd  | raw    | True         | False   | System	    | 'deepmd/raw'  |
-| deepmd  | npy    | True         | False   | System        | 'deepmd/npy'  |
-| deepmd  | raw    | True         | True    | LabeledSystem | 'deepmd/raw'  |
-| deepmd  | npy    | True         | True    | LabeledSystem | 'deepmd/npy'  |
-| gaussian| log    | False        | True    | LabeledSystem | 'gaussian/log'|
-| gaussian| log    | True         | True    | LabeledSystem | 'gaussian/md' |
-| siesta  | output | False        | True    | LabeledSystem | 'siesta/output'|
-| siesta  | aimd_output  | True         | True    | LabeledSystem | 'siesta/aimd_output' |
-| cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output' |
-| cp2k    | aimd_output  | True         | True    | LabeledSystem | 'cp2k/aimd_output' |
-| QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
-| QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
-| QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
-|quip/gap|xyz|True|True|MultiSystems|'quip/gap/xyz'|
-| PWmat   | atom.config | False        | False   | System        | 'pwmat/atom.config'  |
-| PWmat   | movement    | True         | True    | LabeledSystem | 'pwmat/movement'     |
-| PWmat   | OUT.MLMD    | True         | True    | LabeledSystem | 'pwmat/out.mlmd'     |
-| Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
 ```python
@@ -130,7 +131,6 @@ Available properties are (nframe: number of frames in the system, natoms: total 
 | 'virials'	| np.ndarray	| nframes x 3 x 3	| True		| The virial tensor of each frame
 
 
-
 ## Dump data
 The data stored in `System` or `LabeledSystem` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
 ```python
@@ -141,7 +141,6 @@ The first frames of `d_outcar` will be dumped to 'conf.lmp'
 d_outcar.to('vasp/poscar', 'POSCAR', frame_idx=-1)
 ```
 The last frames of `d_outcar` will be dumped to 'POSCAR'.
-
 
 The data stored in `LabeledSystem` can be dumped to deepmd-kit raw format, for example
 ```python
@@ -157,12 +156,14 @@ dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to('deepmd/raw', 'dpmd_raw')
 ```
 by which only the first and last frames are dumped to `dpmd_raw`.
 
+
 ## replicate 
 dpdata will create a super cell of the current atom configuration.
 ```python
 dpdata.System('./POSCAR').replicate((1,2,3,) )
 ```
 tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.
+
 
 ## perturb
 By the following example, each frame of the original system (`dpdata.System('./POSCAR')`) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. `atom_pert_style` indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to `atom_pert_style` are`uniform` (uniform in a ball), and `const` (uniform on a sphere).
