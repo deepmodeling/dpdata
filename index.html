@@ -1,0 +1,766 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to dpdata’s documentation! &#8212; dpdata 0.0.0-rc documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-dpdata-s-documentation">
+<h1>Welcome to dpdata’s documentation!<a class="headerlink" href="#welcome-to-dpdata-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p><strong>dpdata</strong> is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats.
+dpdata only works with python 3.x.</p>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>One can download the source code of dpdata by</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/deepmodeling/dpdata.git dpdata
+</pre></div>
+</div>
+<p>then use <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> to install the module</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> dpdata
+python setup.py install
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dpdata</span></code> can also by install via pip</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install dpdata
+</pre></div>
+</div>
+</div>
+<div class="section" id="quick-start">
+<h1>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>This section gives some examples on how dpdata works. Firstly one needs to import the module in a python 3.x compatible code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpdata</span>
+</pre></div>
+</div>
+<p>The typicall workflow of <code class="docutils literal notranslate"><span class="pre">dpdata</span></code> is</p>
+<ol class="arabic simple">
+<li>Load data from vasp or lammps or deepmd-kit data files.</li>
+<li>Manipulate data</li>
+<li>Dump data to in a desired format</li>
+</ol>
+<div class="section" id="load-data">
+<h2>Load data<a class="headerlink" href="#load-data" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_poscar</span> <span class="o">=</span> <span class="n">dpdata</span><span class="o">.</span><span class="n">System</span><span class="p">(</span><span class="s1">&#39;POSCAR&#39;</span><span class="p">,</span> <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;vasp/poscar&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or let dpdata infer the format (<code class="docutils literal notranslate"><span class="pre">vasp/poscar</span></code>) of the file from the file name extension</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_poscar</span> <span class="o">=</span> <span class="n">dpdata</span><span class="o">.</span><span class="n">System</span><span class="p">(</span><span class="s1">&#39;my.POSCAR&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The number of atoms, atom types, coordinates are loaded from the <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code> and stored to a data <code class="docutils literal notranslate"><span class="pre">System</span></code> called <code class="docutils literal notranslate"><span class="pre">d_poscar</span></code>.
+A data <code class="docutils literal notranslate"><span class="pre">System</span></code> (a concept used by <a class="reference external" href="https://github.com/deepmodeling/deepmd-kit">deepmd-kit</a>) contains frames that has the same number of atoms of the same type. The order of the atoms should be consistent among the frames in one <code class="docutils literal notranslate"><span class="pre">System</span></code>.
+It is noted that <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code> only contains one frame.
+If the multiple frames stored in, for example, a <code class="docutils literal notranslate"><span class="pre">OUTCAR</span></code> is wanted,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_outcar</span> <span class="o">=</span> <span class="n">dpdata</span><span class="o">.</span><span class="n">LabeledSystem</span><span class="p">(</span><span class="s1">&#39;OUTCAR&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The labels provided in the <code class="docutils literal notranslate"><span class="pre">OUTCAR</span></code>, i.e. energies, forces and virials (if any), are loaded by <code class="docutils literal notranslate"><span class="pre">LabeledSystem</span></code>. It is noted that the forces of atoms are always assumed to exist. <code class="docutils literal notranslate"><span class="pre">LabeledSystem</span></code> is a derived class of <code class="docutils literal notranslate"><span class="pre">System</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">System</span></code> or <code class="docutils literal notranslate"><span class="pre">LabeledSystem</span></code> can be constructed from the following file formats with the <code class="docutils literal notranslate"><span class="pre">format</span> <span class="pre">key</span></code> in the table passed to argument <code class="docutils literal notranslate"><span class="pre">fmt</span></code>:</p>
+<p>The Class <code class="docutils literal notranslate"><span class="pre">dpdata.MultiSystems</span></code>  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">dpdata.MultiSystems.from_dir</span></code> to read from a  directory, <code class="docutils literal notranslate"><span class="pre">dpdata.MultiSystems</span></code> will walk in the directory
+Recursively  and  find all file with specific file_name. Supports all the file formats that <code class="docutils literal notranslate"><span class="pre">dpdata.LabeledSystem</span></code> supports.</p>
+<p>Use  <code class="docutils literal notranslate"><span class="pre">dpdata.MultiSystems.from_file</span></code> to read from single file. Now only support quip/gap/xyz  format file.</p>
+<p>For example, for <code class="docutils literal notranslate"><span class="pre">quip/gap</span> <span class="pre">xyz</span></code> files, single .xyz file may contain many different configurations with different atom numbers and atom type.</p>
+<p>The following commands relating to <code class="docutils literal notranslate"><span class="pre">Class</span> <span class="pre">dpdata.MultiSystems</span></code> may be useful.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># load data</span>
+
+<span class="n">xyz_multi_systems</span> <span class="o">=</span> <span class="n">dpdata</span><span class="o">.</span><span class="n">MultiSystems</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;tests/xyz/xyz_unittest.xyz&#39;</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;quip/gap/xyz&#39;</span><span class="p">)</span>
+<span class="n">vasp_multi_systems</span> <span class="o">=</span> <span class="n">dpdata</span><span class="o">.</span><span class="n">MultiSystems</span><span class="o">.</span><span class="n">from_dir</span><span class="p">(</span><span class="n">dir_name</span><span class="o">=</span><span class="s1">&#39;./mgal_outcar&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;OUTCAR&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;vasp/outcar&#39;</span><span class="p">)</span>
+
+<span class="c1"># use wildcard</span>
+<span class="n">vasp_multi_systems</span> <span class="o">=</span> <span class="n">dpdata</span><span class="o">.</span><span class="n">MultiSystems</span><span class="o">.</span><span class="n">from_dir</span><span class="p">(</span><span class="n">dir_name</span><span class="o">=</span><span class="s1">&#39;./mgal_outcar&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;*OUTCAR&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;vasp/outcar&#39;</span><span class="p">)</span>
+
+<span class="c1"># print the multi_system infomation</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">xyz_multi_systems</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">xyz_multi_systems</span><span class="o">.</span><span class="n">systems</span><span class="p">)</span> <span class="c1"># return a dictionaries</span>
+
+<span class="c1"># print the system infomation</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">xyz_multi_systems</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="s1">&#39;B1C9&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># dump a system&#39;s data to ./my_work_dir/B1C9_raw folder</span>
+<span class="n">xyz_multi_systems</span><span class="o">.</span><span class="n">systems</span><span class="p">[</span><span class="s1">&#39;B1C9&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_deepmd_raw</span><span class="p">(</span><span class="s1">&#39;./my_work_dir/B1C9_raw&#39;</span><span class="p">)</span>
+
+<span class="c1"># dump all systems</span>
+<span class="n">xyz_multi_systems</span><span class="o">.</span><span class="n">to_deepmd_raw</span><span class="p">(</span><span class="s1">&#39;./my_deepmd_data/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Software</th>
+<th class="head">format</th>
+<th class="head">multi frames</th>
+<th class="head">labeled</th>
+<th class="head">class</th>
+<th class="head">format key</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>vasp</td>
+<td>poscar</td>
+<td>False</td>
+<td>False</td>
+<td>System</td>
+<td>‘vasp/poscar’</td>
+</tr>
+<tr class="row-odd"><td>vasp</td>
+<td>outcar</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘vasp/outcar’</td>
+</tr>
+<tr class="row-even"><td>vasp</td>
+<td>xml</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘vasp/xml’</td>
+</tr>
+<tr class="row-odd"><td>lammps</td>
+<td>lmp</td>
+<td>False</td>
+<td>False</td>
+<td>System</td>
+<td>‘lammps/lmp’</td>
+</tr>
+<tr class="row-even"><td>lammps</td>
+<td>dump</td>
+<td>True</td>
+<td>False</td>
+<td>System</td>
+<td>‘lammps/dump’</td>
+</tr>
+<tr class="row-odd"><td>deepmd</td>
+<td>raw</td>
+<td>True</td>
+<td>False</td>
+<td>System</td>
+<td>‘deepmd/raw’</td>
+</tr>
+<tr class="row-even"><td>deepmd</td>
+<td>npy</td>
+<td>True</td>
+<td>False</td>
+<td>System</td>
+<td>‘deepmd/npy’</td>
+</tr>
+<tr class="row-odd"><td>deepmd</td>
+<td>raw</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘deepmd/raw’</td>
+</tr>
+<tr class="row-even"><td>deepmd</td>
+<td>npy</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘deepmd/npy’</td>
+</tr>
+<tr class="row-odd"><td>gaussian</td>
+<td>log</td>
+<td>False</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘gaussian/log’</td>
+</tr>
+<tr class="row-even"><td>gaussian</td>
+<td>log</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘gaussian/md’</td>
+</tr>
+<tr class="row-odd"><td>siesta</td>
+<td>output</td>
+<td>False</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘siesta/output’</td>
+</tr>
+<tr class="row-even"><td>siesta</td>
+<td>aimd_output</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘siesta/aimd_output’</td>
+</tr>
+<tr class="row-odd"><td>cp2k</td>
+<td>output</td>
+<td>False</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘cp2k/output’</td>
+</tr>
+<tr class="row-even"><td>cp2k</td>
+<td>aimd_output</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘cp2k/aimd_output’</td>
+</tr>
+<tr class="row-odd"><td>QE</td>
+<td>log</td>
+<td>False</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘qe/pw/scf’</td>
+</tr>
+<tr class="row-even"><td>QE</td>
+<td>log</td>
+<td>True</td>
+<td>False</td>
+<td>System</td>
+<td>‘qe/cp/traj’</td>
+</tr>
+<tr class="row-odd"><td>QE</td>
+<td>log</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘qe/cp/traj’</td>
+</tr>
+<tr class="row-even"><td>quip/gap</td>
+<td>xyz</td>
+<td>True</td>
+<td>True</td>
+<td>MultiSystems</td>
+<td>‘quip/gap/xyz’</td>
+</tr>
+<tr class="row-odd"><td>PWmat</td>
+<td>atom.config</td>
+<td>False</td>
+<td>False</td>
+<td>System</td>
+<td>‘pwmat/atom.config’</td>
+</tr>
+<tr class="row-even"><td>PWmat</td>
+<td>movement</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘pwmat/movement’</td>
+</tr>
+<tr class="row-odd"><td>PWmat</td>
+<td>OUT.MLMD</td>
+<td>True</td>
+<td>True</td>
+<td>LabeledSystem</td>
+<td>‘pwmat/out.mlmd’</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="access-data">
+<h2>Access data<a class="headerlink" href="#access-data" title="Permalink to this headline">¶</a></h2>
+<p>These properties stored in <code class="docutils literal notranslate"><span class="pre">System</span></code> and <code class="docutils literal notranslate"><span class="pre">LabeledSystem</span></code> can be accessed by operator <code class="docutils literal notranslate"><span class="pre">[]</span></code> with the key of the property supplied, for example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coords</span> <span class="o">=</span> <span class="n">d_outcar</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Available properties are (nframe: number of frames in the system, natoms: total number of atoms in the system)</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">key</th>
+<th class="head">type</th>
+<th class="head">dimension</th>
+<th class="head">are labels</th>
+<th class="head">description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>‘atom_names’</td>
+<td>list of str</td>
+<td>ntypes</td>
+<td>False</td>
+<td>The name of each atom type</td>
+</tr>
+<tr class="row-odd"><td>‘atom_numbs’</td>
+<td>list of int</td>
+<td>ntypes</td>
+<td>False</td>
+<td>The number of atoms of each atom type</td>
+</tr>
+<tr class="row-even"><td>‘atom_types’</td>
+<td>np.ndarray</td>
+<td>natoms</td>
+<td>False</td>
+<td>Array assigning type to each atom</td>
+</tr>
+<tr class="row-odd"><td>‘cells’</td>
+<td>np.ndarray</td>
+<td>nframes x 3 x 3</td>
+<td>False</td>
+<td>The cell tensor of each frame</td>
+</tr>
+<tr class="row-even"><td>‘coords’</td>
+<td>np.ndarray</td>
+<td>nframes x natoms x 3</td>
+<td>False</td>
+<td>The atom coordinates</td>
+</tr>
+<tr class="row-odd"><td>‘energies’</td>
+<td>np.ndarray</td>
+<td>nframes</td>
+<td>True</td>
+<td>The frame energies</td>
+</tr>
+<tr class="row-even"><td>‘forces’</td>
+<td>np.ndarray</td>
+<td>nframes x natoms x 3</td>
+<td>True</td>
+<td>The atom forces</td>
+</tr>
+<tr class="row-odd"><td>‘virials’</td>
+<td>np.ndarray</td>
+<td>nframes x 3 x 3</td>
+<td>True</td>
+<td>The virial tensor of each frame</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="dump-data">
+<h2>Dump data<a class="headerlink" href="#dump-data" title="Permalink to this headline">¶</a></h2>
+<p>The data stored in <code class="docutils literal notranslate"><span class="pre">System</span></code> or <code class="docutils literal notranslate"><span class="pre">LabeledSystem</span></code> can be dumped in ‘lammps/lmp’ or ‘vasp/poscar’ format, for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_outcar</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;lammps/lmp&#39;</span><span class="p">,</span> <span class="s1">&#39;conf.lmp&#39;</span><span class="p">,</span> <span class="n">frame_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first frames of <code class="docutils literal notranslate"><span class="pre">d_outcar</span></code> will be dumped to ‘conf.lmp’</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_outcar</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;vasp/poscar&#39;</span><span class="p">,</span> <span class="s1">&#39;POSCAR&#39;</span><span class="p">,</span> <span class="n">frame_idx</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The last frames of <code class="docutils literal notranslate"><span class="pre">d_outcar</span></code> will be dumped to ‘POSCAR’.</p>
+<p>The data stored in <code class="docutils literal notranslate"><span class="pre">LabeledSystem</span></code> can be dumped to deepmd-kit raw format, for example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_outcar</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;deepmd/raw&#39;</span><span class="p">,</span> <span class="s1">&#39;dpmd_raw&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or a simpler command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dpdata</span><span class="o">.</span><span class="n">LabeledSystem</span><span class="p">(</span><span class="s1">&#39;OUTCAR&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;deepmd/raw&#39;</span><span class="p">,</span> <span class="s1">&#39;dpmd_raw&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Frame selection can be implemented by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dpdata</span><span class="o">.</span><span class="n">LabeledSystem</span><span class="p">(</span><span class="s1">&#39;OUTCAR&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sub_system</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;deepmd/raw&#39;</span><span class="p">,</span> <span class="s1">&#39;dpmd_raw&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>by which only the first and last frames are dumped to <code class="docutils literal notranslate"><span class="pre">dpmd_raw</span></code>.</p>
+</div>
+<div class="section" id="replicate">
+<h2>replicate<a class="headerlink" href="#replicate" title="Permalink to this headline">¶</a></h2>
+<p>dpdata will create a super cell of the current atom configuration.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dpdata</span><span class="o">.</span><span class="n">System</span><span class="p">(</span><span class="s1">&#39;./POSCAR&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replicate</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>tuple(1,2,3) means don’t copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.</p>
+</div>
+<div class="section" id="perturb">
+<h2>perturb<a class="headerlink" href="#perturb" title="Permalink to this headline">¶</a></h2>
+<p>By the following example, each frame of the original system (<code class="docutils literal notranslate"><span class="pre">dpdata.System('./POSCAR')</span></code>) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. <code class="docutils literal notranslate"><span class="pre">atom_pert_style</span></code> indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to <code class="docutils literal notranslate"><span class="pre">atom_pert_style</span></code> are<code class="docutils literal notranslate"><span class="pre">uniform</span></code> (uniform in a ball), and <code class="docutils literal notranslate"><span class="pre">const</span></code> (uniform on a sphere).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">perturbed_system</span> <span class="o">=</span> <span class="n">dpdata</span><span class="o">.</span><span class="n">System</span><span class="p">(</span><span class="s1">&#39;./POSCAR&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">perturb</span><span class="p">(</span><span class="n">pert_num</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">cell_pert_fraction</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">atom_pert_distance</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">atom_pert_style</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">perturbed_system</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="module-dpdata">
+<span id="api-documentation"></span><h1>API documentation<a class="headerlink" href="#module-dpdata" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dpdata.System">
+<em class="property">class </em><code class="descclassname">dpdata.</code><code class="descname">System</code><span class="sig-paren">(</span><em>file_name=None</em>, <em>fmt='auto'</em>, <em>type_map=None</em>, <em>begin=0</em>, <em>step=1</em>, <em>data=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System" title="Permalink to this definition">¶</a></dt>
+<dd><p>The data System</p>
+<p>A data System (a concept used by <a class="reference external" href="https://github.com/deepmodeling/deepmd-kit">deepmd-kit</a>)
+contains frames (e.g. produced by an MD simulation) that has the same number of atoms of the same type.
+The order of the atoms should be consistent among the frames in one System.</p>
+<dl class="docutils">
+<dt>For example, a water system named <cite>d_example</cite> has two molecules. The properties can be accessed by</dt>
+<dd><ul class="first last simple">
+<li><cite>d_example[‘atom_numbs’]</cite> : [2, 4]</li>
+<li><cite>d_example[‘atom_names’]</cite> : [‘O’, ‘H’]</li>
+<li><cite>d_example[‘atom_types’]</cite> : [0, 1, 1, 0, 1, 1]</li>
+<li><cite>d_example[‘orig’]</cite> : [0, 0, 0]</li>
+<li><cite>d_example[‘cells’]</cite> : a numpy array of size nframes x 3 x 3</li>
+<li><cite>d_example[‘coords’]</cite> : a numpy array of size nframes x natoms x 3</li>
+</ul>
+</dd>
+<dt>It is noted that</dt>
+<dd><ul class="first last simple">
+<li>The order of frames stored in <cite>‘atom_types’</cite>, <cite>‘cells’</cite> and <cite>‘coords’</cite> should be consistent.</li>
+<li>The order of atoms in <strong>all</strong> frames of <cite>‘atom_types’</cite> and  <cite>‘coords’</cite> should be consistent.</li>
+</ul>
+</dd>
+<dt>Restrictions:</dt>
+<dd><ul class="first last simple">
+<li><cite>d_example[‘orig’]</cite> is always [0, 0, 0]</li>
+<li><cite>d_example[‘cells’][ii]</cite> is always lower triangular (lammps cell tensor convention)</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="dpdata.System.__getitem__">
+<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns proerty stored in System by key or by idx</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>file_name=None</em>, <em>fmt='auto'</em>, <em>type_map=None</em>, <em>begin=0</em>, <em>step=1</em>, <em>data=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> (<em>str</em>) – The file to load the system</li>
+<li><strong>fmt</strong> (<em>str</em>) – <dl class="docutils">
+<dt>Format of the file, supported formats are</dt>
+<dd><ul class="first last">
+<li><code class="docutils literal notranslate"><span class="pre">auto</span></code>: infered from <cite>file_name</cite>’s extension</li>
+<li><code class="docutils literal notranslate"><span class="pre">lammps/lmp</span></code>: Lammps data</li>
+<li><code class="docutils literal notranslate"><span class="pre">lammps/dump</span></code>: Lammps dump</li>
+<li><code class="docutils literal notranslate"><span class="pre">deepmd/raw</span></code>: deepmd-kit raw</li>
+<li><code class="docutils literal notranslate"><span class="pre">deepmd/npy</span></code>: deepmd-kit compressed format (numpy binary)</li>
+<li><code class="docutils literal notranslate"><span class="pre">vasp/poscar</span></code>: vasp POSCAR</li>
+<li><code class="docutils literal notranslate"><span class="pre">qe/cp/traj</span></code>: Quantum Espresso CP trajectory files. should have: file_name+’.in’ and file_name+’.pos’</li>
+<li><code class="docutils literal notranslate"><span class="pre">siesta/output</span></code>: siesta SCF output file</li>
+<li><code class="docutils literal notranslate"><span class="pre">siesta/aimd_output</span></code>: siesta aimd output file</li>
+<li><code class="docutils literal notranslate"><span class="pre">pwmat/atom.config</span></code>: pwmat atom.config</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>type_map</strong> (<em>list of str</em>) – Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type <cite>ii</cite> is mapped to <cite>type_map[ii]</cite>.
+If not provided the atom names are assigned to <cite>‘Type_1’</cite>, <cite>‘Type_2’</cite>, <cite>‘Type_3’</cite>…</li>
+<li><strong>begin</strong> (<em>int</em>) – The beginning frame when loading MD trajectory.</li>
+<li><strong>step</strong> (<em>int</em>) – The number of skipped frames when loading MD trajectory.</li>
+<li><strong>data</strong> (<em>dict</em>) – The raw data of System class.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>system</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a system to this system</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>system</strong> (<a class="reference internal" href="#dpdata.System" title="dpdata.System"><em>System</em></a>) – The system to append</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.apply_pbc">
+<code class="descname">apply_pbc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.apply_pbc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.apply_pbc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append periodic boundary condition</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.get_natoms">
+<code class="descname">get_natoms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.get_natoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.get_natoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns total number of atoms in the system</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.get_nframes">
+<code class="descname">get_nframes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.get_nframes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.get_nframes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns number of frames in the system</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.sub_system">
+<code class="descname">sub_system</code><span class="sig-paren">(</span><em>f_idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.sub_system"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.sub_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a subsystem from the system</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f_idx</strong> (<em>int</em><em> or </em><em>index</em>) – Which frame to use in the subsystem</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>sub_system</strong> – The subsystem</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#dpdata.System" title="dpdata.System">System</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.to_lammps_lmp">
+<code class="descname">to_lammps_lmp</code><span class="sig-paren">(</span><em>file_name</em>, <em>frame_idx=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.to_lammps_lmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.to_lammps_lmp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump the system in lammps data format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> (<em>str</em>) – The output file name</li>
+<li><strong>frame_idx</strong> (<em>int</em>) – The index of the frame to dump</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.System.to_vasp_poscar">
+<code class="descname">to_vasp_poscar</code><span class="sig-paren">(</span><em>file_name</em>, <em>frame_idx=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#System.to_vasp_poscar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.System.to_vasp_poscar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump the system in vasp POSCAR format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> (<em>str</em>) – The output file name</li>
+<li><strong>frame_idx</strong> (<em>int</em>) – The index of the frame to dump</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dpdata.LabeledSystem">
+<em class="property">class </em><code class="descclassname">dpdata.</code><code class="descname">LabeledSystem</code><span class="sig-paren">(</span><em>file_name=None</em>, <em>fmt='auto'</em>, <em>type_map=None</em>, <em>begin=0</em>, <em>step=1</em>, <em>data=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#LabeledSystem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.LabeledSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>The labeled data System</p>
+<dl class="docutils">
+<dt>For example, a labeled water system named <cite>d_example</cite> has two molecules (6 atoms) and <cite>nframes</cite> frames. The labels can be accessed by</dt>
+<dd><ul class="first last simple">
+<li><cite>d_example[‘energies’]</cite> : a numpy array of size nframes</li>
+<li><cite>d_example[‘forces’]</cite> : a numpy array of size nframes x 6 x 3</li>
+<li><cite>d_example[‘virials’]</cite> : optional, a numpy array of size nframes x 3 x 3</li>
+</ul>
+</dd>
+<dt>It is noted that</dt>
+<dd><ul class="first last simple">
+<li>The order of frames stored in <cite>‘energies’</cite>, <cite>‘forces’</cite> and <cite>‘virials’</cite> should be consistent with <cite>‘atom_types’</cite>, <cite>‘cells’</cite> and <cite>‘coords’</cite>.</li>
+<li>The order of atoms in <strong>every</strong> frame of <cite>‘forces’</cite> should be consistent with <cite>‘coords’</cite> and <cite>‘atom_types’</cite>.</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="dpdata.LabeledSystem.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>file_name=None</em>, <em>fmt='auto'</em>, <em>type_map=None</em>, <em>begin=0</em>, <em>step=1</em>, <em>data=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#LabeledSystem.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.LabeledSystem.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> (<em>str</em>) – The file to load the system</li>
+<li><strong>fmt</strong> (<em>str</em>) – <dl class="docutils">
+<dt>Format of the file, supported formats are</dt>
+<dd><ul class="first last">
+<li><code class="docutils literal notranslate"><span class="pre">auto</span></code>: infered from <cite>file_name</cite>’s extension</li>
+<li><code class="docutils literal notranslate"><span class="pre">vasp/xml</span></code>: vasp xml</li>
+<li><code class="docutils literal notranslate"><span class="pre">vasp/outcar</span></code>: vasp OUTCAR</li>
+<li><code class="docutils literal notranslate"><span class="pre">deepmd/raw</span></code>: deepmd-kit raw</li>
+<li><code class="docutils literal notranslate"><span class="pre">deepmd/npy</span></code>: deepmd-kit compressed format (numpy binary)</li>
+<li><code class="docutils literal notranslate"><span class="pre">qe/cp/traj</span></code>: Quantum Espresso CP trajectory files. should have: file_name+’.in’, file_name+’.pos’, file_name+’.evp’ and file_name+’.for’</li>
+<li><code class="docutils literal notranslate"><span class="pre">qe/pw/scf</span></code>: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing ‘out’ by ‘in’ from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.</li>
+<li><code class="docutils literal notranslate"><span class="pre">siesta/output</span></code>: siesta SCF output file</li>
+<li><code class="docutils literal notranslate"><span class="pre">siesta/aimd_output</span></code>: siesta aimd output file</li>
+<li><code class="docutils literal notranslate"><span class="pre">gaussian/log</span></code>: gaussian logs</li>
+<li><code class="docutils literal notranslate"><span class="pre">gaussian/md</span></code>: gaussian ab initio molecular dynamics</li>
+<li><code class="docutils literal notranslate"><span class="pre">cp2k/output</span></code>: cp2k output file</li>
+<li><code class="docutils literal notranslate"><span class="pre">cp2k/aimd_output</span></code>: cp2k aimd output  dir(contains <em>pos</em>.xyz and <a href="#id2"><span class="problematic" id="id3">*</span></a>.log file)</li>
+<li><code class="docutils literal notranslate"><span class="pre">pwmat/movement</span></code>: pwmat md output file</li>
+<li><code class="docutils literal notranslate"><span class="pre">pwmat/out.mlmd</span></code>: pwmat scf output file</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>type_map</strong> (<em>list of str</em>) – Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type <cite>ii</cite> is mapped to <cite>type_map[ii]</cite>.
+If not provided the atom names are assigned to <cite>‘Type_1’</cite>, <cite>‘Type_2’</cite>, <cite>‘Type_3’</cite>…</li>
+<li><strong>begin</strong> (<em>int</em>) – The beginning frame when loading MD trajectory.</li>
+<li><strong>step</strong> (<em>int</em>) – The number of skipped frames when loading MD trajectory.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.LabeledSystem.sub_system">
+<code class="descname">sub_system</code><span class="sig-paren">(</span><em>f_idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpdata/system.html#LabeledSystem.sub_system"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpdata.LabeledSystem.sub_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a subsystem from the system</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>f_idx</strong> (<em>int</em><em> or </em><em>index</em>) – Which frame to use in the subsystem</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>sub_system</strong> – The subsystem</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#dpdata.LabeledSystem" title="dpdata.LabeledSystem">LabeledSystem</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.LabeledSystem.to_deepmd_npy">
+<code class="descname">to_deepmd_npy</code><span class="sig-paren">(</span><em>folder</em>, <em>set_size=5000</em>, <em>prec=&lt;class 'numpy.float32'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#dpdata.LabeledSystem.to_deepmd_npy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump the system in deepmd compressed format (numpy binary) to <cite>folder</cite>.</p>
+<p>The frames are firstly split to sets, then dumped to seperated subfolders named as <cite>folder/set.000</cite>, <cite>folder/set.001</cite>, ….</p>
+<p>Each set contains <cite>set_size</cite> frames.
+The last set may have less frames than <cite>set_size</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>folder</strong> (<em>str</em>) – The output folder</li>
+<li><strong>set_size</strong> (<em>int</em>) – The size of each set.</li>
+<li><strong>prec</strong> (<em>{numpy.float32</em><em>, </em><em>numpy.float64}</em>) – The floating point precision of the compressed data</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dpdata.LabeledSystem.to_deepmd_raw">
+<code class="descname">to_deepmd_raw</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="headerlink" href="#dpdata.LabeledSystem.to_deepmd_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump the system in deepmd raw format to <cite>folder</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to dpdata’s documentation!</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#quick-start">Quick start</a><ul>
+<li><a class="reference internal" href="#load-data">Load data</a></li>
+<li><a class="reference internal" href="#access-data">Access data</a></li>
+<li><a class="reference internal" href="#dump-data">Dump data</a></li>
+<li><a class="reference internal" href="#replicate">replicate</a></li>
+<li><a class="reference internal" href="#perturb">perturb</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dpdata">API documentation</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Han Wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
