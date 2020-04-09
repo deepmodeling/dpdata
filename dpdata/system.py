@@ -16,10 +16,13 @@ import dpdata.siesta.output
 import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
 import dpdata.gaussian.log
+import dpdata.amber.md
 import dpdata.cp2k.output
 from dpdata.cp2k.output import Cp2kSystems
 import dpdata.pwmat.movement
 import dpdata.pwmat.atomconfig
+import dpdata.fhi_aims.output
+import dpdata.gromacs.gro
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
@@ -144,7 +147,7 @@ class System (MSONable) :
             kwargs = {kk: kwargs[kk] for kk in kwargs if kk in func_args}
             func(self, *args, **kwargs)
         else :
-            raise RuntimeError('unknow data format %s. Accepted format:' % (fmt, " ".join(to_funcs)))
+            raise RuntimeError('unknow data format %s. Accepted format: %s' % (fmt, " ".join(to_funcs)))
 
     def __repr__(self):
         return self.__str__()
@@ -163,7 +166,7 @@ class System (MSONable) :
 
     def __getitem__(self, key):
         """Returns proerty stored in System by key or by idx"""
-        if isinstance(key, int):
+        if isinstance(key, (int, slice)):
             return self.sub_system(key)
         return self.data[key]
 
@@ -606,6 +609,19 @@ class System (MSONable) :
         if tmp_data is not None :
             self.data = tmp_data
 
+    @register_from_funcs.register_funcs("gro")
+    @register_from_funcs.register_funcs("gromacs/gro")
+    def from_gromacs_gro(self, file_name) :
+        """
+        Load gromacs .gro file
+
+        Parameters
+        ----------
+        file_name : str
+            The input file name
+        """
+        self.data = dpdata.gromacs.gro.file_to_system_data(file_name)
+
     @register_to_funcs.register_funcs("deepmd/npy")
     def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
         """
@@ -840,6 +856,44 @@ class System (MSONable) :
             self.data[ii] = self.data[ii][idx]
         return idx
 
+    def predict(self, dp):
+        """
+        Predict energies and forces by deepmd-kit.
+
+        Parameters
+        ----------
+        dp : deepmd.DeepPot or str
+            The deepmd-kit potential class or the filename of the model.
+
+        Returns
+        -------
+        labeled_sys LabeledSystem
+            The labeled system.
+        """
+        import deepmd.DeepPot as DeepPot
+        if not isinstance(dp, DeepPot):
+            dp = DeepPot(dp)
+        type_map = dp.get_type_map()
+        ori_sys = self.copy()
+        ori_sys.sort_atom_names(type_map=type_map)
+        atype = ori_sys['atom_types']
+
+        labeled_sys = LabeledSystem()
+
+        for ss in self:
+            coord = ss['coords'].reshape((-1,1))
+            if not ss.nopbc:
+                cell = ss['cells'].reshape((-1,1))
+            else:
+                cell = None
+            e, f, v = dp.eval(coord, cell, atype)
+            data = ss.data
+            data['energies'] = e.reshape((1, 1))
+            data['forces'] = f.reshape((1, -1, 3))
+            data['virials'] = v.reshape((1, 3, 3))
+            this_sys = LabeledSystem.from_dict({'data': data})
+            labeled_sys.append(this_sys)
+        return labeled_sys
 
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
@@ -993,6 +1047,34 @@ class LabeledSystem (System):
             l = LabeledSystem(data=info_dict)
             self.append(l)
 
+    @register_from_funcs.register_funcs('fhi_aims/md')
+    def from_fhi_aims_output(self, file_name, md=True, begin=0, step =1):
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            tmp_virial, \
+            = dpdata.fhi_aims.output.get_frames(file_name, md = md, begin = begin, step = step)
+        if tmp_virial is not None :
+            self.data['virials'] = tmp_virial
+
+    @register_from_funcs.register_funcs('fhi_aims/scf')
+    def from_fhi_aims_output(self, file_name ):
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            tmp_virial, \
+            = dpdata.fhi_aims.output.get_frames(file_name, md = False, begin = 0, step = 1)
+        if tmp_virial is not None :
+            self.data['virials'] = tmp_virial
+
     @register_from_funcs.register_funcs('xml')
     @register_from_funcs.register_funcs('vasp/xml')
     def from_vasp_xml(self, file_name, begin = 0, step = 1) :
@@ -1134,6 +1216,19 @@ class LabeledSystem (System):
     @register_from_funcs.register_funcs('gaussian/md')
     def from_gaussian_md(self, file_name):
         self.from_gaussian_log(file_name, md=True)
+
+    @register_from_funcs.register_funcs('amber/md')
+    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None):
+        # assume the prefix is the same if the spefic name is not given
+        if parm7_file is None:
+            parm7_file = file_name + ".parm7"
+        if nc_file is None:
+            nc_file = file_name + ".nc"
+        if mdfrc_file is None:
+            mdfrc_file = file_name + ".mdfrc"
+        if mden_file is None:
+            mden_file = file_name + ".mden"
+        self.data = dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file)
 
     @register_from_funcs.register_funcs('cp2k/output')
     def from_cp2k_output(self, file_name) :

@@ -12,7 +12,7 @@ except ImportError:
         readme = f.read()
 
 # install_requires = ['xml']
-install_requires=['numpy>=1.14.3', 'monty']
+install_requires=['numpy>=1.14.3', 'monty', 'scipy']
 
 setuptools.setup(
     name="dpdata",
@@ -24,7 +24,19 @@ setuptools.setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/deepmodeling/dpdata",
-    packages=['dpdata', 'dpdata/vasp', 'dpdata/lammps', 'dpdata/md', 'dpdata/deepmd', 'dpdata/qe', 'dpdata/siesta', 'dpdata/gaussian', 'dpdata/cp2k','dpdata/xyz','dpdata/pwmat'],
+    packages=['dpdata',
+              'dpdata/vasp', 
+              'dpdata/lammps', 
+              'dpdata/md', 
+              'dpdata/deepmd', 
+              'dpdata/qe', 
+              'dpdata/siesta', 
+              'dpdata/gaussian', 
+              'dpdata/cp2k',
+              'dpdata/xyz',
+              'dpdata/pwmat', 
+              'dpdata/amber',
+              'dpdata/fhi_aims'],
     package_data={'dpdata':['*.json']},
     classifiers=[
         "Programming Language :: Python :: 3.6",
