@@ -22,6 +22,7 @@ from dpdata.cp2k.output import Cp2kSystems
 import dpdata.pwmat.movement
 import dpdata.pwmat.atomconfig
 import dpdata.fhi_aims.output
+import dpdata.gromacs.gro
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
@@ -606,6 +607,19 @@ class System (MSONable) :
         tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = False)
         if tmp_data is not None :
             self.data = tmp_data
+
+    @register_from_funcs.register_funcs("gro")
+    @register_from_funcs.register_funcs("gromacs/gro")
+    def from_gromacs_gro(self, file_name) :
+        """
+        Load gromacs .gro file
+
+        Parameters
+        ----------
+        file_name : str
+            The input file name
+        """
+        self.data = dpdata.gromacs.gro.file_to_system_data(file_name)
 
     @register_to_funcs.register_funcs("deepmd/npy")
     def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
