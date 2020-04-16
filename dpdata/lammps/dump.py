@@ -178,7 +178,7 @@ def system_data(lines, type_map = None, type_idx_zero = True) :
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
         system['cells'].append(cell)
-        system['coords'].append(safe_get_posi(array_lines[ii], cell) - np.array(orig))
+        system['coords'].append(safe_get_posi(array_lines[ii], cell, np.array(orig)))
     system['cells'] = np.array(system['cells'])
     system['coords'] = np.array(system['coords'])
     return system
