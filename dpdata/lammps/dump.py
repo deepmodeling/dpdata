@@ -83,9 +83,9 @@ def get_posi_frac(lines) :
     posis = np.array(posis)     
     return posis[:,1:4]
 
-def safe_get_posi(lines, cell):
+def safe_get_posi(lines, cell, orig = np.zeros(3)):
     try:
-        posis = get_posi(lines)
+        posis = get_posi(lines) - orig
     except ValueError:
         fposis = get_posi_frac(lines)
         posis = fposis @ cell
@@ -173,7 +173,7 @@ def system_data(lines, type_map = None, type_idx_zero = True) :
     system['cells'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
     system['atom_types'] = get_atype(lines, type_idx_zero = type_idx_zero)
-    system['coords'] = [safe_get_posi(lines, cell) - np.array(orig)]
+    system['coords'] = [safe_get_posi(lines, cell, np.array(orig))]
     for ii in range(1, len(array_lines)) :
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
