@@ -510,9 +510,7 @@ class System (MSONable) :
            raise ImportError('No module ase.Atoms')
 
         for system in self.to_list():
-            species=[]
-            for name,numb in zip(system.data['atom_names'],system.data['atom_numbs']):
-                species.extend([name]*numb)
+            species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
             structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
             structures.append(structure)
         return structures
