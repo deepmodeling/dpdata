@@ -112,6 +112,27 @@ xyz_multi_systems.systems['B1C9'].to_deepmd_raw('./my_work_dir/B1C9_raw')
 xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
 ```
 
+You may also use the following code to parse muti-system:
+```
+from dpdata import LabeledSystem,MultiSystems
+from glob import glob
+"""
+process multi systems
+"""
+fs=glob('./*/OUTCAR')  # remeber to change here !!!
+ms=MultiSystems()
+for f in fs:
+    try:
+        ls=LabeledSystem(f)
+    except:
+        print(f)
+    if len(ls)>0:
+        ms.append(ls)
+
+ms.to_deepmd_raw('deepmd')
+ms.to_deepmd_npy('deepmd')
+```
+
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
 ```python
