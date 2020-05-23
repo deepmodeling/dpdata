@@ -71,6 +71,8 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
 | QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
 | QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
+| Fhi-aims| output | True         | True    | LabeledSystem | 'fhi_aims/md'  |
+| Fhi-aims| output | False        | True    | LabeledSystem | 'fhi_aims/scf'  |
 |quip/gap|xyz|True|True|MultiSystems|'quip/gap/xyz'|
 | PWmat   | atom.config | False        | False   | System        | 'pwmat/atom.config'  |
 | PWmat   | movement    | True         | True    | LabeledSystem | 'pwmat/movement'     |
