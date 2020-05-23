@@ -71,6 +71,8 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
 | QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
 | QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
+| Fhi-aims| output | True         | True    | LabeledSystem | 'fhi_aims/md'  |
+| Fhi-aims| output | False        | True    | LabeledSystem | 'fhi_aims/scf'  |
 |quip/gap|xyz|True|True|MultiSystems|'quip/gap/xyz'|
 | PWmat   | atom.config | False        | False   | System        | 'pwmat/atom.config'  |
 | PWmat   | movement    | True         | True    | LabeledSystem | 'pwmat/movement'     |
@@ -110,6 +112,27 @@ xyz_multi_systems.systems['B1C9'].to_deepmd_raw('./my_work_dir/B1C9_raw')
 
 # dump all systems
 xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
+```
+
+You may also use the following code to parse muti-system:
+```
+from dpdata import LabeledSystem,MultiSystems
+from glob import glob
+"""
+process multi systems
+"""
+fs=glob('./*/OUTCAR')  # remeber to change here !!!
+ms=MultiSystems()
+for f in fs:
+    try:
+        ls=LabeledSystem(f)
+    except:
+        print(f)
+    if len(ls)>0:
+        ms.append(ls)
+
+ms.to_deepmd_raw('deepmd')
+ms.to_deepmd_npy('deepmd')
 ```
 
 ## Access data
