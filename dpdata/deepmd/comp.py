@@ -36,11 +36,11 @@ def to_system_data(folder,
         if eners is not None:
             eners = np.reshape(eners, [nframes])
         if labels:
-            if eners is not None and len(eners) > 0:
+            if eners is not None and eners.size > 0:
                 all_eners.append(np.reshape(eners, [nframes]))
-            if forces is not None and len(forces) > 0:
+            if forces is not None and forces.size > 0:
                 all_forces.append(np.reshape(forces, [nframes,-1,3]))
-            if virs is not None and len(virs) > 0:
+            if virs is not None and virs.size > 0:
                 all_virs.append(np.reshape(virs, [nframes,3,3]))
     data['cells'] = np.concatenate(all_cells, axis = 0)
     data['coords'] = np.concatenate(all_coords, axis = 0)    
