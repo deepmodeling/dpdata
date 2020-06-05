@@ -22,7 +22,7 @@ def to_system_data(folder,
     # data is empty
     data = load_type(folder, type_map = type_map)
     data['orig'] = np.zeros([3])
-    sets = glob.glob(os.path.join(folder, 'set.*'))
+    sets = sorted(glob.glob(os.path.join(folder, 'set.*')))
     all_cells = []
     all_coords = []
     all_eners = []
@@ -61,7 +61,7 @@ def dump(folder,
          comp_prec = np.float32,
          remove_sets = True) :
     os.makedirs(folder, exist_ok = True)
-    sets = glob.glob(os.path.join(folder, 'set.*'))
+    sets = sorted(glob.glob(os.path.join(folder, 'set.*')))
     if len(sets) > 0:
         if remove_sets :
             for ii in sets :
