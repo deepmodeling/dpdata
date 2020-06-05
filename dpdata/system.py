@@ -1037,8 +1037,8 @@ class LabeledSystem (System):
 
     @register_from_funcs.register_funcs('cp2k/aimd_output')
     def from_cp2k_aimd_output(self, file_dir):
-        xyz_file=glob.glob("{}/*pos*.xyz".format(file_dir))[0]
-        log_file=glob.glob("{}/*.log".format(file_dir))[0]
+        xyz_file=sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
+        log_file=sorted(glob.glob("{}/*.log".format(file_dir)))[0]
         for info_dict in Cp2kSystems(log_file, xyz_file):
             l = LabeledSystem(data=info_dict)
             self.append(l)
@@ -1380,11 +1380,11 @@ class MultiSystems:
         return multi_systems
 
     @classmethod
-    def from_dir(cls,dir_name, file_name, fmt='auto'):
+    def from_dir(cls,dir_name, file_name, fmt='auto', type_map=None):
         multi_systems = cls()
-        target_file_list = glob.glob('./{}/**/{}'.format(dir_name, file_name), recursive=True)
+        target_file_list = sorted(glob.glob('./{}/**/{}'.format(dir_name, file_name), recursive=True))
         for target_file in target_file_list:
-            multi_systems.append(LabeledSystem(file_name=target_file, fmt=fmt))
+            multi_systems.append(LabeledSystem(file_name=target_file, fmt=fmt, type_map=type_map))
         return multi_systems
 
 
