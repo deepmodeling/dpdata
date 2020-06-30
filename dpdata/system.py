@@ -496,6 +496,7 @@ class System (MSONable) :
             structure=Structure(system.data['cells'][0],species,system.data['coords'][0],coords_are_cartesian=True)
             structures.append(structure)
         return structures
+    
 
     @register_to_funcs.register_funcs("ase/structure")
     def to_ase_structure(self):
@@ -1329,6 +1330,26 @@ class LabeledSystem (System):
                 self.data[ii] = self.data[ii][idx]
         return idx
 
+    def to_pymatgen_ComputedStructureEntry(self):
+        '''
+        convert System to Pymagen ComputedStructureEntry obj
+
+        '''
+        try:
+           from pymatgen.entries.computed_entries import ComputedStructureEntry
+        except:
+           raise ImportError('No module ComputedStructureEntry in pymatgen.entries.computed_entries')
+
+        entries=[]
+        for system in self.to_list():
+            structure=system.to_pymatgen_structure()[0]
+            energy=system.data['energies'][0]
+            data={'forces':system.data['forces'][0],
+                  'virials':system.data['virials'][0]}
+
+            entry=ComputedStructureEntry(structure,energy,data=data)
+            entries.append(entry)
+        return entries
 
 class MultiSystems:
     '''A set containing several systems.'''
