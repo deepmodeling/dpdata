@@ -1485,6 +1485,17 @@ class MultiSystems:
                                  set_size = set_size,
                                  prec = prec)
 
+    def from_deepmd_raw(self, folder):
+        for dd in os.listdir(folder):
+            self.append(LabeledSystem(os.path.join(folder, dd), fmt='deepmd/raw'))
+        return self
+
+    def from_deepmd_npy(self, folder):
+        for dd in os.listdir(folder):
+            self.append(LabeledSystem(os.path.join(folder, dd), fmt='deepmd/npy'))
+        return self
+
+
 def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
     assert( isinstance(data,dict) )
