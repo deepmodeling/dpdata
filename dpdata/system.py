@@ -1516,6 +1516,15 @@ class MultiSystems:
             self.append(LabeledSystem(os.path.join(folder, dd), fmt='deepmd/npy'))
         return self
 
+    def predict(self, dp):
+        import deepmd.DeepPot as DeepPot
+        if not isinstance(dp, DeepPot):
+            dp = DeepPot(dp)
+        new_multisystems = dpdata.MultiSystems()
+        for ss in self:
+            new_multisystems.append(ss.predict(dp))
+        return new_multisystems
+
 
 def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
