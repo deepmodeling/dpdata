@@ -20,7 +20,7 @@ avail_patterns.append(re.compile(r'^ ENSEMBLE TYPE'))
 
 class Cp2kSystems(object):
     """
-    deal with cp2k outputfile 
+    deal with cp2k outputfile
     """
     def __init__(self, log_file_name, xyz_file_name):
         self.log_file_object = open(log_file_name, 'r')
@@ -69,7 +69,7 @@ class Cp2kSystems(object):
                 break
         if delimiter_flag is True:
             raise RuntimeError('This file lacks some content, please check')
-    
+
     def get_xyz_block_generator(self):
         p3 = re.compile(r'^\s*(\d+)\s*')
         while True:
@@ -116,7 +116,7 @@ class Cp2kSystems(object):
             if cell_length_pattern.match(line):
                 cell_A = float(cell_length_pattern.match(line).groupdict()['A']) * AU_TO_ANG
                 cell_B = float(cell_length_pattern.match(line).groupdict()['B']) * AU_TO_ANG
-                cell_C = float(cell_length_pattern.match(line).groupdict()['C']) * AU_TO_ANG 
+                cell_C = float(cell_length_pattern.match(line).groupdict()['C']) * AU_TO_ANG
                 cell_flag+=1
             if cell_angle_pattern.match(line):
                 cell_alpha = np.deg2rad(float(cell_angle_pattern.match(line).groupdict()['alpha']))
@@ -148,10 +148,10 @@ class Cp2kSystems(object):
                 element_index +=1
                 element_dict[line_list[2]]=[element_index,1]
             atom_types_list.append(element_dict[line_list[2]][0])
-            forces_list.append([float(line_list[3])*AU_TO_EV_EVERY_ANG, 
-                float(line_list[4])*AU_TO_EV_EVERY_ANG, 
+            forces_list.append([float(line_list[3])*AU_TO_EV_EVERY_ANG,
+                float(line_list[4])*AU_TO_EV_EVERY_ANG,
                 float(line_list[5])*AU_TO_EV_EVERY_ANG])
-        
+
         atom_names=list(element_dict.keys())
         atom_numbs=[]
         for ii in atom_names:
@@ -190,8 +190,8 @@ class Cp2kSystems(object):
                 element_index +=1
                 element_dict[line_list[0]]=[element_index,1]
             atom_types_list.append(element_dict[line_list[0]][0])
-            coords_list.append([float(line_list[1])*AU_TO_ANG, 
-                float(line_list[2])*AU_TO_ANG, 
+            coords_list.append([float(line_list[1])*AU_TO_ANG,
+                float(line_list[2])*AU_TO_ANG,
                 float(line_list[3])*AU_TO_ANG])
         atom_names=list(element_dict.keys())
         atom_numbs=[]
@@ -203,7 +203,7 @@ class Cp2kSystems(object):
         info_dict['coords'] = np.asarray([coords_list]).astype('float32')
         info_dict['energies'] = np.array([energy]).astype('float32')
         info_dict['orig']=[0,0,0]
-        return info_dict        
+        return info_dict
 
 #%%
 
@@ -211,21 +211,22 @@ def get_frames (fname) :
     coord_flag = False
     force_flag = False
     eV = 2.72113838565563E+01 # hatree to eV
-    angstrom = 5.29177208590000E-01 # Bohrto Angstrom 
+    angstrom = 5.29177208590000E-01 # Bohrto Angstrom
     fp = open(fname)
     atom_symbol_list = []
     cell = []
     coord = []
     force = []
-
+    coord_count = 0
     for idx, ii in enumerate(fp) :
         if 'CELL| Vector' in ii :
             cell.append(ii.split()[4:7])
         if 'Atom  Kind  Element' in ii :
             coord_flag = True
             coord_idx = idx
+            coord_count += 1
         # get the coord block info
-        if coord_flag :
+        if coord_flag and (coord_count == 1):
             if (idx > coord_idx + 1) :
                 if (ii == '\n') :
                     coord_flag = False
