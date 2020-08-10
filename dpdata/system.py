@@ -414,8 +414,8 @@ class System (MSONable) :
         """
         Return the formula of this system, like C3H5O2
         """
-        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in sorted(
-            zip(self.data['atom_names'], self.data['atom_numbs']))])
+        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in 
+            zip(self.data['atom_names'], self.data['atom_numbs'])])
 
 
     def extend(self, systems):
@@ -1460,18 +1460,17 @@ class MultiSystems:
         if len(new_in_system):
             # A new atom_name appear, add to self.atom_names
             self.atom_names.extend(new_in_system)
-            self.atom_names.sort()
             # Add this atom_name to each system, and change their names
             new_systems = {}
             for each_system in self.systems.values():
                 each_system.add_atom_names(new_in_system)
-                each_system.sort_atom_names()
+                each_system.sort_atom_names(type_map=self.atom_names)
                 new_systems[each_system.formula] = each_system
             self.systems = new_systems
         if len(new_in_self):
             # Previous atom_name not in this system
             system.add_atom_names(new_in_self)
-        system.sort_atom_names()
+        system.sort_atom_names(type_map=self.atom_names)
 
     def from_quip_gap_xyz_file(self,file_name):
         # quip_gap_xyz_systems = QuipGapxyzSystems(file_name)
