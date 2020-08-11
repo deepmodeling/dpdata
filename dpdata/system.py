@@ -368,7 +368,8 @@ class System (MSONable) :
             # atom_names must be a subset of type_map
             assert (set(self.data['atom_names']).issubset(set(type_map)))
             # for the condition that type_map is a proper superset of atom_names
-            new_atoms = set(type_map) - set(self.data["atom_names"])
+            # new_atoms = set(type_map) - set(self.data["atom_names"])
+            new_atoms = [e for e in type_map if e not in self.data["atom_names"]]
             if new_atoms:
                 self.add_atom_names(new_atoms)
             # index that will sort an array by type_map
@@ -1455,8 +1456,10 @@ class MultiSystems:
         """
         Make atom_names in all systems equal, prevent inconsistent atom_types.
         """
-        new_in_system = set(system["atom_names"]) - set(self.atom_names)
-        new_in_self = set(self.atom_names) - set(system["atom_names"])
+        # new_in_system = set(system["atom_names"]) - set(self.atom_names)
+        # new_in_self = set(self.atom_names) - set(system["atom_names"])
+        new_in_system = [e for e in system["atom_names"] if e not in self.atom_names]
+        new_in_self = [e for e in self.atom_names if e not in system["atom_names"]]
         if len(new_in_system):
             # A new atom_name appear, add to self.atom_names
             self.atom_names.extend(new_in_system)
@@ -1477,6 +1480,7 @@ class MultiSystems:
         # print(next(quip_gap_xyz_systems))
         for info_dict in QuipGapxyzSystems(file_name):
             system=LabeledSystem(data=info_dict)
+            system.sort_atom_names()
             self.append(system)
 
 
