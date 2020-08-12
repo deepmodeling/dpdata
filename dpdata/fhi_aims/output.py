@@ -8,6 +8,7 @@ force_patt="\|\s+[0-9]{1,}\s+([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\s+([-]?[0-
 eng_patt="Total energy uncorrected.*([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\s+eV"
 #atom_numb_patt="Number of atoms.*([0-9]{1,})"
 
+debug = False
 def get_info (lines, type_idx_zero = False) :
 
     atom_types = []
@@ -31,8 +32,7 @@ def get_info (lines, type_idx_zero = False) :
         v_str=ii.split('|')[1].split()
         vect=[float(kk) for kk in v_str]
         cell.append(vect)
-   # print(cell)
-    #atom name
+
     _tmp=re.findall(pos_patt_first,contents)
     for ii in _tmp:
         _atom_names.append(ii[0])
@@ -40,17 +40,15 @@ def get_info (lines, type_idx_zero = False) :
     for ii in _atom_names:
         if not ii in atom_names:
            atom_names.append(ii)
-    #atom number
-    #_atom_numb_patt=re.compile(atom_numb_patt)
-    atom_numbs =[_atom_names.count(ii) for ii in atom_names] 
-    assert(atom_numbs is not None), "cannot find ion type info in aims output"
     
-    for idx,ii in enumerate(atom_numbs) :
-        for jj in range(ii) :
-            if type_idx_zero :
-                atom_types.append(idx)
-            else :
-                atom_types.append(idx+1)
+    atom_numbs =[_atom_names.count(ii) for ii in atom_names] 
+    if type_idx_zero :
+       type_map=dict(zip(atom_names,range(len(atom_names)))) 
+    else:
+       type_map=dict(zip(atom_names,range(1,len(atom_names)+1))) 
+    atom_types=list(map(lambda  k: type_map[k], _atom_names)) 
+    assert(atom_numbs is not None), "cannot find ion type info in aims output"
+     
 
     return [cell, atom_numbs, atom_names, atom_types ]
 
@@ -81,8 +79,9 @@ def get_frames (fname, md=True, begin = 0, step = 1) :
 
     cc = 0
     while len(blk) > 0 :
-     #   with open(str(cc),'w') as f:
-     #        f.write('\n'.join(blk))
+        if debug:
+           with open(str(cc),'w') as f:
+                f.write('\n'.join(blk))
         if cc >= begin and (cc - begin) % step == 0 :
             if cc==0:
                 coord, _cell, energy, force, virial, is_converge = analyze_block(blk, first_blk=True, md=md)
