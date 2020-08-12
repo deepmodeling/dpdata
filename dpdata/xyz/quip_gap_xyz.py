@@ -127,6 +127,7 @@ class QuipGapxyzSystems(object):
         info_dict['coords'] = np.array([coords_array]).astype('float32')
         info_dict['energies'] = np.array([field_dict['energy']]).astype('float32')
         info_dict['forces'] = np.array([force_array]).astype('float32')
-        info_dict['virials'] = virials
+        if virials is not None:
+            info_dict['virials'] = virials
         info_dict['orig'] = [0,0,0]
         return info_dict

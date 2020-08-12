@@ -75,6 +75,17 @@ class TestQuipGapxyzfield2(unittest.TestCase, CompLabeledSys, IsPBC):
         self.f_places = 6
         self.v_places = 4
 
+class TestQuipGapxyzNoVirials(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp(self):
+        self.multi_systems_1 = dpdata.MultiSystems.from_file('xyz/xyz_B5C7_novirials.xyz', fmt='quip/gap/xyz')
+        self.system_1 = self.multi_systems_1.systems['B5C7']
+        self.system_1.sort_atom_types()
+        self.system_2 = dpdata.LabeledSystem('xyz/B5C7_novirials', fmt='deepmd/raw')
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+
+
 
 if __name__ == '__main__':
     unittest.main()
