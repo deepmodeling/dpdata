@@ -6,6 +6,16 @@ from comp_sys import CompSys
 from comp_sys import CompLabeledSys
 from comp_sys import IsPBC, IsNoPBC
 
+
+class TestFailedAppend(unittest.TestCase):
+    def test_failed_append(self):
+        sys1 = dpdata.System('poscars/POSCAR.h2o.md', fmt='vasp/poscar')
+        sys2 = dpdata.System('poscars/POSCAR.h4o3', fmt='vasp/poscar')
+        with self.assertRaises(Exception) as c:
+            sys1.append(sys2)
+        self.assertTrue("systems with inconsistent formula could not be append" in str(c.exception))
+
+
 class TestVaspXmlAppend(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.places = 6
