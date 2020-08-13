@@ -331,7 +331,8 @@ class System (MSONable) :
             # this system is non-converged but the system to append is converged
             self.data = system.data
             return False
-        assert(system.formula == self.formula)
+        if system.uniq_formula != self.uniq_formula:
+            raise RuntimeError('systems with inconsistent formula could not be append: %s v.s. %s' % (self.uniq_formula, system.uniq_formula))
         if system.data['atom_names'] != self.data['atom_names']:
             # allow to append a system with different atom_names order
             system.sort_atom_names()
@@ -417,6 +418,16 @@ class System (MSONable) :
         """
         return ''.join(["{}{}".format(symbol,numb) for symbol,numb in 
             zip(self.data['atom_names'], self.data['atom_numbs'])])
+
+    @property
+    def uniq_formula(self):
+        """
+        Return the uniq_formula of this system. 
+        The uniq_formula sort the elements in formula by names.
+        Systems with the same uniq_formula can be append together.
+        """
+        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in sorted(
+            zip(self.data['atom_names'], self.data['atom_numbs']))])
 
 
     def extend(self, systems):
