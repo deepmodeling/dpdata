@@ -136,7 +136,7 @@ class System (MSONable) :
             func(self, file_name, **kwargs)
         else :
             raise RuntimeError('unknow data format ' + fmt)
-    
+
     def to(self, fmt, *args, **kwargs):
         fmt = fmt.lower()
         to_funcs = self.register_to_funcs.funcs
@@ -349,7 +349,7 @@ class System (MSONable) :
         for ii in ['coords', 'cells'] :
             self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
         if self.nopbc and not system.nopbc:
-            # appended system uses PBC, cancel nopbc 
+            # appended system uses PBC, cancel nopbc
             self.data['nopbc'] = False
         return True
 
@@ -357,7 +357,7 @@ class System (MSONable) :
         """
         Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
         to atom_names. If type_map is not given, atom_names will be sorted by
-        alphabetical order. If type_map is given, atom_names will be type_map. 
+        alphabetical order. If type_map is given, atom_names will be type_map.
 
         Parameters
         ----------
@@ -394,7 +394,7 @@ class System (MSONable) :
         Parameters
         ----------
         type_map : list
-            type_map       
+            type_map
         """
         if type_map is not None and type_map != self.data['atom_names']:
             self.sort_atom_names(type_map=type_map)
@@ -416,13 +416,13 @@ class System (MSONable) :
         """
         Return the formula of this system, like C3H5O2
         """
-        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in 
+        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in
             zip(self.data['atom_names'], self.data['atom_numbs'])])
 
     @property
     def uniq_formula(self):
         """
-        Return the uniq_formula of this system. 
+        Return the uniq_formula of this system.
         The uniq_formula sort the elements in formula by names.
         Systems with the same uniq_formula can be append together.
         """
@@ -456,9 +456,9 @@ class System (MSONable) :
     def remove_pbc(self, protect_layer = 9):
         """
         This method does NOT delete the definition of the cells, it
-        (1) revises the cell to a cubic cell and ensures that the cell 
+        (1) revises the cell to a cubic cell and ensures that the cell
         boundary to any atom in the system is no less than `protect_layer`
-        (2) translates the system such that the center-of-geometry of the system 
+        (2) translates the system such that the center-of-geometry of the system
         locates at the center of the cell.
 
         Parameters
@@ -474,12 +474,12 @@ class System (MSONable) :
             cog = np.average(tmpcoord, axis = 0)
             dist = tmpcoord - np.tile(cog, [natoms, 1])
             max_dist = np.max(np.linalg.norm(dist, axis = 1))
-            h_cell_size = max_dist + protect_layer            
+            h_cell_size = max_dist + protect_layer
             cell_size = h_cell_size * 2
             shift = np.array([1,1,1]) * h_cell_size - cog
             self.data['coords'][ff] = self.data['coords'][ff] + np.tile(shift, [natoms, 1])
-            self.data['cells'][ff] = cell_size * np.eye(3)            
-        
+            self.data['cells'][ff] = cell_size * np.eye(3)
+
 
     @register_from_funcs.register_funcs("lmp")
     @register_from_funcs.register_funcs("lammps/lmp")
@@ -508,7 +508,7 @@ class System (MSONable) :
             structure=Structure(system.data['cells'][0],species,system.data['coords'][0],coords_are_cartesian=True)
             structures.append(structure)
         return structures
-    
+
 
     @register_to_funcs.register_funcs("ase/structure")
     def to_ase_structure(self):
@@ -570,7 +570,7 @@ class System (MSONable) :
     def to_vasp_string(self, frame_idx=0):
         """
         Dump the system in vasp POSCAR format string
-        
+
         Parameters
         ----------
         frame_idx : int
@@ -579,7 +579,7 @@ class System (MSONable) :
         assert(frame_idx < len(self.data['coords']))
         w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
         return w_str
-    
+
     @register_to_funcs.register_funcs("vasp/poscar")
     def to_vasp_poscar(self, file_name, frame_idx = 0) :
         """
@@ -660,7 +660,7 @@ class System (MSONable) :
         """
         Dump the system in deepmd raw format to `folder`
         """
-        dpdata.deepmd.raw.dump(folder, self.data) 
+        dpdata.deepmd.raw.dump(folder, self.data)
 
     @register_from_funcs.register_funcs('siesta/output')
     def from_siesta_output(self, fname):
@@ -761,7 +761,7 @@ class System (MSONable) :
 
         Parameters
         ----------
-        ncopy : 
+        ncopy :
             list: [4,2,3]
             or tuple: (4,2,3,)
             make `ncopy[0]` copys in x dimensions,
@@ -778,7 +778,7 @@ class System (MSONable) :
         for ii in ncopy:
             if type(ii) is not int:
                 raise RuntimeError('ncopy must be a list or tuple must with 3 int')
-        
+
         tmp = System()
         nframes = self.get_nframes()
         data = self.data
@@ -799,10 +799,10 @@ class System (MSONable) :
         tmp.data['coords'] = np.reshape(np.transpose(tmp.data['coords'], [3,4,0,1,2,5]), (nframes, -1 , 3))
         return tmp
 
-    def perturb(self, 
-        pert_num, 
+    def perturb(self,
+        pert_num,
         cell_pert_fraction,
-        atom_pert_distance, 
+        atom_pert_distance,
         atom_pert_style='normal'):
         """
         Perturb each frame in the system randomly.
@@ -816,8 +816,8 @@ class System (MSONable) :
             That means the system to be returned will contain `pert_num` * frame_num of the input system.
         cell_pert_fraction : float
             A fraction determines how much (relatively) will cell deform.
-            The cell of each frame is deformed by a symmetric matrix perturbed from identity. 
-            The perturbation to the diagonal part is subject to a uniform distribution in [-cell_pert_fraction, cell_pert_fraction), 
+            The cell of each frame is deformed by a symmetric matrix perturbed from identity.
+            The perturbation to the diagonal part is subject to a uniform distribution in [-cell_pert_fraction, cell_pert_fraction),
             and the perturbation to the off-diagonal part is subject to a uniform distribution in [-0.5*cell_pert_fraction, 0.5*cell_pert_fraction).
         atom_pert_distance: float
             unit: Angstrom. A distance determines how far atoms will move.
@@ -839,7 +839,7 @@ class System (MSONable) :
             The perturbed_system. It contains `pert_num` * frame_num of the input system frames.
         """
         perturbed_system = System()
-        nframes = self.get_nframes() 
+        nframes = self.get_nframes()
         for ii in range(nframes):
             for jj in range(pert_num):
                 tmp_system = self[ii].copy()
@@ -921,7 +921,7 @@ def get_atom_perturb_vector(atom_pert_distance, atom_pert_style='normal'):
     random_vector = None
     if atom_pert_distance < 0:
         raise RuntimeError('atom_pert_distance can not be negative')
-    
+
     if atom_pert_style == 'normal':
         e = np.random.randn(3)
         random_vector=(atom_pert_distance/np.sqrt(3))*e
@@ -1173,7 +1173,7 @@ class LabeledSystem (System):
             )
         self.data['energies'], self.data['forces'], es \
             = dpdata.qe.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
-        assert(cs == es), "the step key between files are not consistent" 
+        assert(cs == es), "the step key between files are not consistent"
         self.rot_lower_triangular()
 
     @register_from_funcs.register_funcs('qe/pw/scf')
@@ -1188,7 +1188,7 @@ class LabeledSystem (System):
             self.data['virials'], \
             = dpdata.qe.scf.get_frame(file_name)
         self.rot_lower_triangular()
-    
+
     @register_from_funcs.register_funcs('siesta/output')
     def from_siesta_output(self, file_name) :
         self.data['atom_names'], \
@@ -1213,7 +1213,7 @@ class LabeledSystem (System):
         self.data['forces'], \
         self.data['virials'] \
             = dpdata.siesta.aiMD_output.get_aiMD_frame(file_name)
-    
+
     @register_from_funcs.register_funcs('gaussian/log')
     def from_gaussian_log(self, file_name, md=False):
         try:
@@ -1221,7 +1221,7 @@ class LabeledSystem (System):
         except AssertionError:
             self.data['energies'], self.data['forces']= [], []
             self.data['nopbc'] = True
-    
+
     @register_from_funcs.register_funcs('gaussian/md')
     def from_gaussian_md(self, file_name):
         self.from_gaussian_log(file_name, md=True)
@@ -1248,6 +1248,7 @@ class LabeledSystem (System):
             self.data['coords'], \
             self.data['energies'], \
             self.data['forces'], \
+            self.data['virials'] \
             = dpdata.cp2k.output.get_frames(file_name)
     @register_from_funcs.register_funcs('movement')
     @register_from_funcs.register_funcs('MOVEMENT')
@@ -1405,7 +1406,7 @@ class MultiSystems:
        elif isinstance(others, list):
           return self.__class__(self, *others)
        raise RuntimeError("Unspported data structure")
-    
+
     @classmethod
     def from_file(cls,file_name,fmt):
         multi_systems = cls()
@@ -1547,7 +1548,7 @@ def check_System(data):
     if len(data['coords']) > 0 :
         assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
     else :
-        assert( len(data['atom_types'])==sum(data['atom_numbs']) )        
+        assert( len(data['atom_types'])==sum(data['atom_numbs']) )
     assert( len(data['cells']) == len(data['coords']) )
     assert( len(data['atom_names'])==len(data['atom_numbs']) )
 
