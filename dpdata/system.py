@@ -8,6 +8,7 @@ import dpdata.lammps.dump
 import dpdata.vasp.poscar
 import dpdata.vasp.xml
 import dpdata.vasp.outcar
+import dpdata.ase.db
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.qe.traj
@@ -1137,6 +1138,21 @@ class LabeledSystem (System):
         # rotate the system to lammps convention
         self.rot_lower_triangular()
 
+    @register_from_funcs.register_funcs('db')
+    @register_from_funcs.register_funcs('ase/db')
+    def from_ase_db(self, file_name, begin = 0, step = 1) :
+        self.data['atom_names'], \
+            self.data['atom_numbs'], \
+            self.data['atom_types'], \
+            self.data['cells'], \
+            self.data['coords'], \
+            self.data['energies'], \
+            self.data['forces'], \
+            tmp_virial, \
+            = dpdata.ase.db.get_frames(file_name, begin = begin, step = step)
+
+        # rotate the system to lammps convention
+        self.rot_lower_triangular()
 
     def affine_map_fv(self, trans, f_idx) :
         assert(np.linalg.det(trans) != 0)
