@@ -32,7 +32,7 @@ def get_frames(fname, begin=0, step=1):
         energy = data['energy']
         cell = ats.get_cell().view()
         coord = ats.positions
-        forces = data['forces']
+        forces = data['forces'][sorted_numbers]
         all_coords.append(coord)
         all_cells.append(cell)
         all_forces.append(forces)
