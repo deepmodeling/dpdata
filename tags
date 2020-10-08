@@ -1,0 +1,2105 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+0	tests/qe.traj/oh-md.for	/^     0.10014992808490E-01     0.10019983634481E-01     0.90694191035741E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10220260079288E-01     0.10373723748428E-01     0.95492007700433E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10271865664142E-02    -0.13153984025014E-01     0.35648077780266E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10385796917822E-01     0.17177267379574E-01    -0.76343193669515E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10432136684999E-01    -0.29919801119988E-02    -0.91405629872180E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10508266895108E-01     0.23439829181602E-02     0.28479697226574E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10559787647954E-01     0.26659539350620E-02     0.30767790143479E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10617351369147E-01    -0.30624728334643E-02    -0.93259578148023E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10815392419262E-01    -0.20182662985617E-01    -0.15346623491988E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10834215582982E-01     0.30044008251662E-03    -0.10530753149876E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.10942127744348E-01     0.17817150153055E-01    -0.83257564530755E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.11094178738499E-01    -0.46177809593040E-04    -0.11064728008807E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.11348930124666E-01    -0.21011579308841E-01    -0.16219206264179E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.11634689307175E-01    -0.24897281222335E-01    -0.16172401328007E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.11730615647743E-04    -0.15405472190170E-01    -0.10554630023494E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.11886317719677E-01    -0.79170659460962E-02     0.16469686719439E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.11909918172264E-01    -0.25312946513209E-01    -0.16252279924213E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.12336707374254E-01    -0.51652547898073E-02     0.26696715972729E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.12362233431519E-01     0.42336412611342E-02    -0.13905121689446E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.12427087470825E-01    -0.83986789844593E-02     0.17171128681010E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.12513784552684E-01    -0.50713059881506E-02     0.27212835583972E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.12862641567940E-01     0.43431162386407E-02    -0.14799634019560E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.13151359744689E-01     0.17881274247725E-01     0.86654377755996E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.13356178185340E-01     0.18154318990255E-01     0.87940866479982E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.13452693616244E-01    -0.68546285592109E-02    -0.28341150176630E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.13823588785018E-01    -0.40420967148510E-02     0.27302192305899E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.13942414023698E-02     0.66837690823760E-02     0.63230122712962E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.13954951037786E-01    -0.71245774482717E-02    -0.31334018926055E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.14143143075961E-01    -0.40963591593547E-02     0.27868131422442E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.14329142110253E-01     0.23265597722080E-01    -0.11352974213210E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.14475262846902E-03     0.10145961100385E-01    -0.97527025613936E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.14827594227218E-03    -0.14556904010556E-01    -0.10443734776691E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.14865978882055E-01    -0.26579665796316E-02    -0.13224404191634E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.14970795837666E-01     0.17533267653742E-01     0.58147583989904E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.15136721594787E-01    -0.26503604928788E-02    -0.13411852986914E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.15212819240554E-01     0.17883056099128E-01     0.59031116598632E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.15257650971704E-01    -0.65823155527345E-03     0.18538185229984E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.15268706008102E-01     0.10602191002466E-01     0.20001322013629E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.15352966662236E-01     0.24705972419964E-01    -0.12032078487220E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.15447415971368E-01    -0.55554229791321E-03     0.18338859393160E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16034605861901E-02     0.68984502442850E-02     0.66469205734402E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16104082997495E-01     0.14585298182781E-01     0.74344428047899E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16290270596766E-01     0.11118150332698E-01     0.20929938650176E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16340091221263E-01    -0.10563634390948E-01     0.20055632812052E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16545772698784E-01    -0.13830636241941E-02     0.18968791638015E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16596431664182E-01    -0.10786812430408E-01     0.20495946072668E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16810310807254E-01    -0.14144039581841E-02     0.19182496179647E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16852765590740E-02     0.12930934207349E-01    -0.25102850385934E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.16985363690500E-01     0.15174770113125E-01     0.78877079858091E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.17045146764103E-02     0.13057591648504E-01    -0.25479067546037E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.17174045364240E-01     0.10085448559764E-01    -0.48383607089226E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.17222259466793E-02     0.20118582567651E-01    -0.94647463714931E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.17388422551386E-02     0.19948758978347E-01    -0.92383736738942E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.17817788855912E-01     0.10582451949843E-01    -0.49257238309863E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.17898989655403E-01    -0.43446683526580E-02     0.30844579508207E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.17904889353751E-01    -0.15381384010884E-01     0.20266648347783E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18173012712530E-01    -0.27929301107039E-01     0.32184700446113E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18215675374501E-01    -0.64836824394994E-02    -0.11727289573890E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18238338152889E-01     0.32489195279584E-02     0.29400526551483E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18280540986493E-03     0.43910558707246E-03     0.11078618904201E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18401699208899E-01     0.33100888977788E-02     0.30687127922291E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18502753345586E-01    -0.66153597496484E-02    -0.11965520749580E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18629206441975E-01    -0.47494839370626E-02     0.32582354648899E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18721191949947E-02     0.12197964519486E-01     0.10179095516963E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18785298551085E-01    -0.29167242636649E-01     0.33685240020328E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.18842243695536E-01    -0.16074169831158E-01     0.21099437941774E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19024568774550E-03     0.44665666589087E-03     0.11245964499958E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19097948191223E-02    -0.40556576834803E-02    -0.28088821821617E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19211558900184E-01    -0.25105451461022E-01    -0.69898270730683E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19253969835404E-02     0.12429466261720E-01     0.10297789377572E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19412373500702E-02    -0.20090734879015E-01    -0.40817753414803E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19468480706928E-02    -0.40860114843080E-02    -0.28641973531621E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19489439495057E-01    -0.25448469600018E-01    -0.69879709966162E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19641340039174E-01    -0.65381448325335E-02     0.12622385248295E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.19849210465289E-02    -0.20336266640259E-01    -0.41239274664676E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.20076554228039E-01    -0.66129613418923E-02     0.12823785883487E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.21364474139142E-01     0.17321589176646E-01    -0.23138709424397E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.21871218791736E-01    -0.19671181794601E-01    -0.25265652580432E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.22145708397463E-01    -0.20124925234947E-01    -0.23982215255439E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.22290191682110E-01     0.18136888575413E-01    -0.24274119500601E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.22329886024401E-01    -0.17137618784351E-02     0.13713194692693E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.22369623145387E-01    -0.18309946493589E-01    -0.91500875832853E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.22705839172473E-01    -0.18020741320485E-02     0.13948468223971E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.22768163470104E-01    -0.18651600665854E-01    -0.91682656954594E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.23059125496525E-01    -0.11308995660313E-01    -0.63464124975560E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.23547678229239E-01     0.12403793997964E-01    -0.27979455656310E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.23643477287095E-01    -0.21988467725781E-01     0.26929232371433E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.23840932089365E-01     0.12629806513935E-01    -0.28562108654498E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.23859341498989E-01    -0.15249791118496E-01    -0.77171937738584E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.24032441482040E-01    -0.22373152154282E-01     0.27451379817823E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.24302382078346E-01    -0.11750982368093E-01    -0.67042106266953E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.25253126868361E-01    -0.15965450763179E-01    -0.80011775857556E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.25510096462430E-01    -0.50715686382141E-02     0.14184199571139E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.25852021713890E-02    -0.49069428713040E-02     0.32063208107079E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.25964894173418E-02    -0.24773953540220E-02    -0.73333189669519E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.26205089309707E-02    -0.25319960298059E-02    -0.74011925873093E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.26349976700258E-01    -0.17177013340258E-01    -0.13696805332350E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.26922882093730E-02    -0.51259702729365E-02     0.34107101991611E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27018148961853E-01     0.11849905975083E-02    -0.17457742498469E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27035069811177E-01    -0.57372882898636E-02     0.14961197134292E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27190185714788E-02     0.63157730026309E-03     0.85053047244621E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27337458247892E-01    -0.87247915378199E-02     0.95600403365592E-05$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27494949302001E-01     0.11124010458921E-02    -0.17815293744361E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27640387171260E-01    -0.18207625985342E-01    -0.14338152159457E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27727206390686E-01    -0.88399440022310E-02     0.21767160219177E-04$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.27970924126552E-02     0.66191737919219E-03     0.86184705018250E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.29002141569230E-02    -0.91939238378476E-03    -0.97618031035340E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.29477107347864E-02    -0.58338364624402E-02     0.22110115600730E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.29674834553777E-02    -0.91071021097654E-03    -0.99741608748272E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.29802003986454E-02    -0.59449741363886E-02     0.22065908741093E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.30414234836663E-02     0.11317571085999E-01    -0.72221716579433E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.30569474508238E-02     0.11252653583243E-01    -0.71071628493600E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.31069260075263E-02     0.28422842430429E-02    -0.76565116974769E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.31460424487919E-02     0.28809214362655E-02    -0.78218230718174E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.33003520070137E-01     0.30996265001606E-02     0.18158061186951E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.34055990676888E-03     0.31860533953536E-01     0.46287061732578E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.34791416980590E-01     0.32608169877015E-02     0.19213875658141E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.36327718536246E-02    -0.30111734008901E-01     0.10054509595281E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.36629729236613E-02    -0.31549747724898E-01     0.10257159934007E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.37801084910857E-03     0.30432252141826E-01     0.44514209073413E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.38106902811996E-03     0.14103861736312E-01     0.13192328626191E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.38544678964766E-02    -0.19358673978665E-01    -0.28407317871857E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.38981432004246E-02    -0.19696797105387E-01    -0.28692282201328E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.39545231295195E-01     0.13081559057337E-01     0.26548863364276E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.39798288735605E-01    -0.52190459050536E-02     0.37686029054544E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.41604330758807E-02    -0.21326442116768E-02    -0.14839440447371E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.41673913877551E-01     0.13746527043965E-01     0.27631197146419E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.41875899655363E-02    -0.22288383703037E-02    -0.14884166950498E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.42170542211539E-01    -0.53274960314956E-02     0.35166522868322E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.42629794757277E-01    -0.17418081254868E-01     0.12733594417820E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.44924939198113E-02     0.87764784321536E-02    -0.69301937430551E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.45001743325144E-01    -0.18471590188304E-01     0.13359332211653E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.45099465573488E-02    -0.18567638246131E-02     0.36546073671755E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.45977177368790E-02     0.89316574363755E-02    -0.70274002792977E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.46191893698755E-02    -0.18674746391866E-02     0.37093397068770E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.46998808551255E-01    -0.25517836742214E-01     0.32611178544377E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.49471173651555E-01    -0.26600520232946E-01     0.34325089106937E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.53488650010958E-03    -0.68975038031904E-02     0.33107547025363E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.54145816519626E-02    -0.35774056053035E-02    -0.45637450217624E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.54421114023667E-02    -0.35986140129183E-02    -0.45761144457300E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.57109547135092E-03    -0.68082515158696E-02     0.32440159918794E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.58484442781085E-02    -0.43892950722905E-02    -0.45523418786692E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.58774672616755E-02    -0.44667704076148E-02    -0.46213655701580E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.59338065733252E-02     0.17674540179054E-01    -0.25707961659337E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.60130442246339E-02     0.17904704132641E-01    -0.26870111976540E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.61056879606456E-02    -0.15418436257294E-02     0.20338764207674E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.61634020457646E-03     0.14930424930816E-01     0.13600603280212E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.61753868114857E-02     0.65284244067975E-02     0.12930202684893E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.62193754964817E-02    -0.15648937723337E-02     0.20659822920149E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.65010289411169E-02    -0.75150828415813E-03     0.74105735916581E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.65461616719454E-02     0.69157973667052E-02     0.13553840159591E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.66303138510444E-02     0.12508634011100E-02    -0.98811235822477E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.66323564540082E-02    -0.76515125319898E-03     0.75110143628609E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.67717123349051E-02     0.12177523508492E-02    -0.10172195900724E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.68810120375591E-02    -0.96482781441276E-03    -0.13419129956498E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.69882117381578E-02    -0.11630251099561E-02    -0.14041591450737E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.71630938356779E-02    -0.78030846103103E-02     0.22841472735849E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.72683146299156E-02    -0.79144558254839E-02     0.23609775869609E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.73072648139081E-02    -0.24755608882484E-01     0.76245583559396E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.73084943281509E-02    -0.33063156911182E-02     0.24814917265235E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.73176829459021E-02    -0.24571195530213E-01     0.75294462679411E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.73727024517500E-02    -0.33252763088296E-02     0.24986265570637E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.77711074924742E-02    -0.19209908554848E-01     0.15535373438787E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.78777251534934E-04     0.10929282126705E-01    -0.10498107866582E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.79584767869558E-02     0.16520497362833E-01    -0.24199851446291E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.79908638009929E-03     0.43717222405457E-02     0.70219500921037E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.82691987710926E-02    -0.20185769789962E-01     0.14528863426409E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.83032130096865E-02     0.17262598195047E-01    -0.25426673947097E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.83451091248751E-02    -0.17789942220684E-01    -0.55324300770053E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.84051804077995E-03     0.43378388745465E-02     0.69547314611453E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.84222592553626E-02    -0.28820780468802E-02    -0.21821627460966E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.84802487825081E-02    -0.18585591093442E-01    -0.57041970432991E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.85562146421022E-02     0.79163880255686E-02     0.98687177940459E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.85606577546886E-02    -0.29017549139938E-02    -0.22678396344210E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.86375985709541E-02     0.79969576143035E-02     0.98840363706054E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.86575778809546E-01    -0.54512599287293E-02    -0.31127234295580E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.87789833828886E-02     0.25592587277054E-01    -0.19887390271975E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.88702097305297E-02     0.45618133525127E-02    -0.14020540307027E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.89301631274203E-02     0.26053327758912E-01    -0.18802948138982E-02$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.90333163965369E-02     0.14462212366132E-01     0.45690006640586E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.90498369709134E-02     0.46060035708894E-02    -0.14320117923704E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.91275062841746E-01    -0.54635740736703E-02    -0.33000157372150E-01$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.91740018095161E-02     0.14727024770508E-01     0.51453092556064E-03$/;"	l	file:
+0	tests/qe.traj/oh-md.for	/^     0.93964622742410E-03    -0.12925361806288E-01     0.35549471503635E-02$/;"	l	file:
+0	tests/qe.traj/traj6.for	/^     0.13452693616244E-01    -0.68546285592109E-02    -0.28341150176630E-02$/;"	l	file:
+0	tests/qe.traj/traj6.for	/^     0.13954951037786E-01    -0.71245774482717E-02    -0.31334018926055E-02$/;"	l	file:
+0	tests/qe.traj/traj6.for	/^     0.23859341498989E-01    -0.15249791118496E-01    -0.77171937738584E-02$/;"	l	file:
+0	tests/qe.traj/traj6.for	/^     0.25253126868361E-01    -0.15965450763179E-01    -0.80011775857556E-02$/;"	l	file:
+2	tests/qe.traj/traj6.for	/^     2.13452693616244E-01    -0.68546285592109E-02    -0.28341150176630E-02$/;"	l	file:
+200	tests/qe.traj/oh-md.for	/^    200  0.00967554$/;"	l	file:
+200	tests/qe.traj/traj6.for	/^    200  0.00967554$/;"	l	file:
+201	tests/qe.traj/traj6.for	/^ 201  0.00967554$/;"	l	file:
+202	tests/qe.traj/traj6.for	/^ 202  0.00967554$/;"	l	file:
+203	tests/qe.traj/traj6.for	/^ 203  0.00967554$/;"	l	file:
+204	tests/qe.traj/traj6.for	/^ 204  0.00967554$/;"	l	file:
+3	tests/qe.traj/traj6.for	/^     3.13452693616244E-01    -0.68546285592109E-02    -0.28341150176630E-02$/;"	l	file:
+4	tests/qe.traj/traj6.for	/^     4.13452693616244E-01    -0.68546285592109E-02    -0.28341150176630E-02$/;"	l	file:
+5	tests/qe.traj/traj6.for	/^     5.13452693616244E-01    -0.68546285592109E-02    -0.28341150176630E-02$/;"	l	file:
+AU_TO_ANG	build/lib/dpdata/cp2k/output.py	/^AU_TO_ANG = 5.29177208590000E-01$/;"	v
+AU_TO_ANG	dpdata/cp2k/output.py	/^AU_TO_ANG = 5.29177208590000E-01$/;"	v
+AU_TO_EV	build/lib/dpdata/cp2k/output.py	/^AU_TO_EV = 2.72113838565563E+01$/;"	v
+AU_TO_EV	dpdata/cp2k/output.py	/^AU_TO_EV = 2.72113838565563E+01$/;"	v
+AU_TO_EV_EVERY_ANG	build/lib/dpdata/cp2k/output.py	/^AU_TO_EV_EVERY_ANG = AU_TO_EV\/AU_TO_ANG$/;"	v
+AU_TO_EV_EVERY_ANG	dpdata/cp2k/output.py	/^AU_TO_EV_EVERY_ANG = AU_TO_EV\/AU_TO_ANG$/;"	v
+Atoms	build/lib/dpdata/md/rdf.py	/^    from ase import Atoms$/;"	i
+Atoms	build/lib/dpdata/md/water.py	/^    from ase import Atoms$/;"	i
+Atoms	build/lib/dpdata/system.py	/^           from ase import Atoms$/;"	i
+Atoms	dpdata/md/rdf.py	/^    from ase import Atoms$/;"	i
+Atoms	dpdata/md/water.py	/^    from ase import Atoms$/;"	i
+Atoms	dpdata/system.py	/^           from ase import Atoms$/;"	i
+Atoms	tests/test_to_ase.py	/^   from ase import Atoms$/;"	i
+BUILDDIR	docs/Makefile	/^BUILDDIR      = _build$/;"	m
+BY_HANDLE_FILE_INFORMATION	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^class BY_HANDLE_FILE_INFORMATION(ctypes.Structure):$/;"	c
+CompLabeledSys	tests/comp_sys.py	/^class CompLabeledSys (CompSys) :$/;"	c
+CompLabeledSys	tests/test_amber_md.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_cp2k_aimd_output.py	/^from comp_sys import CompLabeledSys$/;"	i
+CompLabeledSys	tests/test_deepmd_comp.py	/^from comp_sys import CompLabeledSys, CompSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_deepmd_raw.py	/^from comp_sys import CompLabeledSys, CompSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_json.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_multisystems.py	/^from comp_sys import CompLabeledSys$/;"	i
+CompLabeledSys	tests/test_qe_cp_traj_skipload.py	/^from comp_sys import CompLabeledSys$/;"	i
+CompLabeledSys	tests/test_quip_gap_xyz.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_shuffle.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_system_append.py	/^from comp_sys import CompLabeledSys$/;"	i
+CompLabeledSys	tests/test_to_list.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_vasp_outcar.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+CompLabeledSys	tests/test_vasp_xml.py	/^from comp_sys import CompLabeledSys$/;"	i
+CompSys	tests/comp_sys.py	/^class CompSys :$/;"	c
+CompSys	tests/test_deepmd_comp.py	/^from comp_sys import CompLabeledSys, CompSys, IsPBC$/;"	i
+CompSys	tests/test_deepmd_raw.py	/^from comp_sys import CompLabeledSys, CompSys, IsPBC$/;"	i
+CompSys	tests/test_lammps_dump_shift_origin.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_lammps_dump_skipload.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_multisystems.py	/^from comp_sys import CompSys$/;"	i
+CompSys	tests/test_perturb.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_qe_cp_traj_skipload.py	/^from comp_sys import CompSys$/;"	i
+CompSys	tests/test_replicate.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_system_append.py	/^from comp_sys import CompSys$/;"	i
+CompSys	tests/test_to_ase.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_to_pymatgen.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_to_pymatgen_entry.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_vasp_poscar_to_system.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+CompSys	tests/test_vasp_xml.py	/^from comp_sys import CompSys$/;"	i
+ComputedStructureEntry	build/lib/dpdata/system.py	/^           from pymatgen.entries.computed_entries import ComputedStructureEntry$/;"	i
+ComputedStructureEntry	dpdata/system.py	/^           from pymatgen.entries.computed_entries import ComputedStructureEntry$/;"	i
+ComputedStructureEntry	tests/test_to_pymatgen_entry.py	/^   from pymatgen.entries.computed_entries import ComputedStructureEntry$/;"	i
+Configuration	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^class Configuration(object):$/;"	c
+Configuration	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^from .config import Configuration$/;"	i
+Configuration	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^from .config import Configuration$/;"	i
+Configuration	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^from . import _get_version, Configuration$/;"	i
+Configuration	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^from .config import Configuration$/;"	i
+ConstGenerator	tests/test_perturb.py	/^class ConstGenerator(object):$/;"	c
+Cp2kSystems	build/lib/dpdata/cp2k/output.py	/^class Cp2kSystems(object):$/;"	c
+Cp2kSystems	build/lib/dpdata/system.py	/^from dpdata.cp2k.output import Cp2kSystems$/;"	i
+Cp2kSystems	dpdata/cp2k/output.py	/^class Cp2kSystems(object):$/;"	c
+Cp2kSystems	dpdata/system.py	/^from dpdata.cp2k.output import Cp2kSystems$/;"	i
+CreateFile	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^CreateFile = ctypes.windll.kernel32.CreateFileW$/;"	v
+DEBUG	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^DEBUG = bool(os.environ.get("SETUPTOOLS_SCM_DEBUG"))$/;"	v
+DEFAULT_DESCRIBE	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^DEFAULT_DESCRIBE = "git describe --dirty --tags --long --match *.*"$/;"	v
+DEFAULT_LOCAL_SCHEME	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^DEFAULT_LOCAL_SCHEME = "node-and-date"$/;"	v
+DEFAULT_TAG_REGEX	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^DEFAULT_TAG_REGEX = r"^(?:[\\w-]+-)?(?P<version>[vV]?\\d+(?:\\.\\d+){0,2}[^\\+]*)(?:\\+.*)?$"$/;"	v
+DEFAULT_VERSION_SCHEME	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^DEFAULT_VERSION_SCHEME = "guess-next-dev"$/;"	v
+DeepPot	build/lib/dpdata/system.py	/^        import deepmd.DeepPot as DeepPot$/;"	i
+DeepPot	dpdata/system.py	/^        import deepmd.DeepPot as DeepPot$/;"	i
+ELEMENTS	build/lib/dpdata/periodic_table.py	/^         'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr']$/;"	v
+ELEMENTS	dpdata/periodic_table.py	/^         'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr']$/;"	v
+ET	build/lib/dpdata/vasp/xml.py	/^import xml.etree.ElementTree as ET$/;"	i
+ET	dpdata/vasp/xml.py	/^import xml.etree.ElementTree as ET$/;"	i
+Element	build/lib/dpdata/periodic_table.py	/^class Element:$/;"	c
+Element	build/lib/dpdata/system.py	/^from dpdata.periodic_table import Element$/;"	i
+Element	dpdata/periodic_table.py	/^class Element:$/;"	c
+Element	dpdata/system.py	/^from dpdata.periodic_table import Element$/;"	i
+ElementIndexMap	tests/test_elements_index.py	/^class ElementIndexMap(unittest.TestCase):$/;"	c
+FILE_ATTRIBUTE_NORMAL	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^FILE_ATTRIBUTE_NORMAL = 0x80$/;"	v
+FILE_FLAG_BACKUP_SEMANTICS	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^FILE_FLAG_BACKUP_SEMANTICS = 0x2000000$/;"	v
+FILE_FLAG_OPEN_REPARSE_POINT	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^FILE_FLAG_OPEN_REPARSE_POINT = 0x00200000$/;"	v
+FILE_READ_ATTRIBUTES	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^FILE_READ_ATTRIBUTES = 0x80$/;"	v
+GetFileInformationByHandle	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^GetFileInformationByHandle = ctypes.windll.kernel32.GetFileInformationByHandle$/;"	v
+GitWorkdir	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^class GitWorkdir(object):$/;"	c
+INVALID_HANDLE_VALUE	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^INVALID_HANDLE_VALUE = ctypes.wintypes.HANDLE(-1).value$/;"	v
+IS_WINDOWS	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^IS_WINDOWS = platform.system() == "Windows"$/;"	v
+IsNoPBC	tests/comp_sys.py	/^class IsNoPBC:                    $/;"	c
+IsNoPBC	tests/test_multisystems.py	/^from comp_sys import IsNoPBC$/;"	i
+IsNoPBC	tests/test_system_append.py	/^from comp_sys import IsPBC, IsNoPBC$/;"	i
+IsPBC	tests/comp_sys.py	/^class IsPBC:                    $/;"	c
+IsPBC	tests/test_amber_md.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+IsPBC	tests/test_deepmd_comp.py	/^from comp_sys import CompLabeledSys, CompSys, IsPBC$/;"	i
+IsPBC	tests/test_deepmd_raw.py	/^from comp_sys import CompLabeledSys, CompSys, IsPBC$/;"	i
+IsPBC	tests/test_json.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+IsPBC	tests/test_lammps_dump_shift_origin.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_lammps_dump_skipload.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_perturb.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_qe_cp_traj_skipload.py	/^from comp_sys import IsPBC$/;"	i
+IsPBC	tests/test_quip_gap_xyz.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+IsPBC	tests/test_replicate.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_shuffle.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+IsPBC	tests/test_system_append.py	/^from comp_sys import IsPBC, IsNoPBC$/;"	i
+IsPBC	tests/test_to_ase.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_to_list.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+IsPBC	tests/test_to_pymatgen.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_to_pymatgen_entry.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_vasp_outcar.py	/^from comp_sys import CompLabeledSys, IsPBC$/;"	i
+IsPBC	tests/test_vasp_poscar_to_system.py	/^from comp_sys import CompSys, IsPBC$/;"	i
+IsPBC	tests/test_vasp_xml.py	/^from comp_sys import IsPBC$/;"	i
+LPSECURITY_ATTRIBUTES	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^LPSECURITY_ATTRIBUTES = ctypes.POINTER(SECURITY_ATTRIBUTES)$/;"	v
+LabeledSystem	build/lib/dpdata/__init__.py	/^from .system import LabeledSystem$/;"	i
+LabeledSystem	build/lib/dpdata/system.py	/^class LabeledSystem (System):$/;"	c
+LabeledSystem	dpdata/__init__.py	/^from .system import LabeledSystem$/;"	i
+LabeledSystem	dpdata/system.py	/^class LabeledSystem (System):$/;"	c
+MSONable	build/lib/dpdata/system.py	/^from monty.json import MSONable$/;"	i
+MSONable	dpdata/system.py	/^from monty.json import MSONable$/;"	i
+MagicMock	tests/test_perturb.py	/^from unittest.mock import patch, MagicMock $/;"	i
+Mock	tests/test_perturb.py	/^from unittest.mock import Mock$/;"	i
+MultiSystems	build/lib/dpdata/__init__.py	/^from .system import MultiSystems$/;"	i
+MultiSystems	build/lib/dpdata/system.py	/^class MultiSystems:$/;"	c
+MultiSystems	dpdata/__init__.py	/^from .system import MultiSystems$/;"	i
+MultiSystems	dpdata/system.py	/^class MultiSystems:$/;"	c
+MultiSystems	tests/test_multisystems.py	/^class MultiSystems:$/;"	c
+NormalGenerator	tests/test_perturb.py	/^class NormalGenerator(object):$/;"	c
+OPEN_EXISTING	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^OPEN_EXISTING = 3$/;"	v
+OrderedDict	build/lib/dpdata/cp2k/cell.py	/^from collections import OrderedDict$/;"	i
+OrderedDict	build/lib/dpdata/cp2k/output.py	/^from collections import OrderedDict$/;"	i
+OrderedDict	build/lib/dpdata/xyz/quip_gap_xyz.py	/^from collections import OrderedDict$/;"	i
+OrderedDict	dpdata/cp2k/cell.py	/^from collections import OrderedDict$/;"	i
+OrderedDict	dpdata/cp2k/output.py	/^from collections import OrderedDict$/;"	i
+OrderedDict	dpdata/xyz/quip_gap_xyz.py	/^from collections import OrderedDict$/;"	i
+PRETEND_KEY	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^PRETEND_KEY = "SETUPTOOLS_SCM_PRETEND_VERSION"$/;"	v
+PY2	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^PY2 = sys.version_info < (3,)$/;"	v
+PY3	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^PY3 = sys.version_info > (3,)$/;"	v
+Path	build/lib/dpdata/periodic_table.py	/^from pathlib import Path$/;"	i
+Path	dpdata/periodic_table.py	/^from pathlib import Path$/;"	i
+QuipGapxyzSystems	build/lib/dpdata/system.py	/^from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems$/;"	i
+QuipGapxyzSystems	build/lib/dpdata/xyz/quip_gap_xyz.py	/^class QuipGapxyzSystems(object):$/;"	c
+QuipGapxyzSystems	dpdata/system.py	/^from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems$/;"	i
+QuipGapxyzSystems	dpdata/xyz/quip_gap_xyz.py	/^class QuipGapxyzSystems(object):$/;"	c
+Register	build/lib/dpdata/system.py	/^class Register:$/;"	c
+Register	dpdata/system.py	/^class Register:$/;"	c
+SECURITY_ATTRIBUTES	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^class SECURITY_ATTRIBUTES(ctypes.Structure):$/;"	c
+SEMVER_LEN	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^SEMVER_LEN = 3$/;"	v
+SEMVER_MINOR	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^SEMVER_MINOR = 2$/;"	v
+SEMVER_PATCH	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^SEMVER_PATCH = 3$/;"	v
+SOURCEDIR	docs/Makefile	/^SOURCEDIR     = .$/;"	m
+SPHINXBUILD	docs/Makefile	/^SPHINXBUILD   = sphinx-build$/;"	m
+SPHINXOPTS	docs/Makefile	/^SPHINXOPTS    =$/;"	m
+SPHINXPROJ	docs/Makefile	/^SPHINXPROJ    = dpdata$/;"	m
+ScmVersion	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^class ScmVersion(object):$/;"	c
+SetuptoolsOutdatedWarning	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^class SetuptoolsOutdatedWarning(Warning):$/;"	c
+Structure	build/lib/dpdata/system.py	/^           from pymatgen import Structure$/;"	i
+Structure	dpdata/system.py	/^           from pymatgen import Structure$/;"	i
+Structure	tests/test_to_pymatgen.py	/^   from pymatgen import  Structure$/;"	i
+System	build/lib/dpdata/__init__.py	/^from .system import System$/;"	i
+System	build/lib/dpdata/system.py	/^class System (MSONable) :$/;"	c
+System	dpdata/__init__.py	/^from .system import System$/;"	i
+System	dpdata/system.py	/^class System (MSONable) :$/;"	c
+TEMPLATES	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^TEMPLATES = {$/;"	v
+TestASE	tests/test_to_ase.py	/^class TestASE(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestAimdSIESTALabeledOutput	tests/test_siesta_aiMD_output.py	/^class TestAimdSIESTALabeledOutput(unittest.TestCase, TestSIESTASinglePointEnergy):$/;"	c
+TestAmberMD	tests/test_amber_md.py	/^class TestAmberMD(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestAsDict	tests/test_json.py	/^class TestAsDict(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestAseComputeBond	tests/test_water_ions.py	/^class TestAseComputeBond(unittest.TestCase):$/;"	c
+TestCP2KLabeledOutput	tests/test_cp2k_output.py	/^class TestCP2KLabeledOutput(unittest.TestCase, TestCP2KSinglePointEnergy):$/;"	c
+TestCP2KSinglePointEnergy	tests/test_cp2k_output.py	/^class TestCP2KSinglePointEnergy:$/;"	c
+TestCPTRAJLabeledTraj	tests/test_qe_cp_traj.py	/^class TestCPTRAJLabeledTraj(unittest.TestCase, TestCPTRAJProps):    $/;"	c
+TestCPTRAJProps	tests/test_qe_cp_traj.py	/^class TestCPTRAJProps :$/;"	c
+TestCPTRAJTraj	tests/test_qe_cp_traj.py	/^class TestCPTRAJTraj(unittest.TestCase, TestCPTRAJProps):    $/;"	c
+TestCellToLowTriangle	tests/test_cell_to_low_triangle.py	/^class TestCellToLowTriangle(unittest.TestCase):$/;"	c
+TestConverCellDim	tests/test_qe_cp_traj.py	/^class TestConverCellDim(unittest.TestCase):    $/;"	c
+TestCp2kAimdOutput	tests/test_cp2k_aimd_output.py	/^class TestCp2kAimdOutput(unittest.TestCase, CompLabeledSys):$/;"	c
+TestDeepmdCompNoLabels	tests/test_deepmd_comp.py	/^class TestDeepmdCompNoLabels(unittest.TestCase, CompSys, IsPBC) :$/;"	c
+TestDeepmdCompNoLabels	tests/test_deepmd_raw.py	/^class TestDeepmdCompNoLabels(unittest.TestCase, CompSys, IsPBC) :$/;"	c
+TestDeepmdDumpRaw	tests/test_deepmd_raw.py	/^class TestDeepmdDumpRaw(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestDeepmdLoadDumpComp	tests/test_deepmd_comp.py	/^class TestDeepmdLoadDumpComp(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestDeepmdLoadRaw	tests/test_deepmd_raw.py	/^class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestDeepmdLoadRaw	tests/test_shuffle.py	/^class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestDeepmdRawNoLabels	tests/test_deepmd_raw.py	/^class TestDeepmdRawNoLabels(unittest.TestCase, CompSys, IsPBC) :$/;"	c
+TestDeepmdTypeMap	tests/test_deepmd_raw.py	/^class TestDeepmdTypeMap(unittest.TestCase):$/;"	c
+TestDifferentOrderAppend	tests/test_system_append.py	/^class TestDifferentOrderAppend(unittest.TestCase, CompLabeledSys, IsNoPBC):$/;"	c
+TestDump	tests/test_lammps_dump_to_system.py	/^class TestDump(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestDump2	tests/test_lammps_dump_to_system.py	/^class TestDump2(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestEmptySystem	tests/test_empty.py	/^class TestEmptySystem(unittest.TestCase):$/;"	c
+TestFailedAppend	tests/test_system_append.py	/^class TestFailedAppend(unittest.TestCase):$/;"	c
+TestFhiOutput	tests/test_fhi_output.py	/^class TestFhiOutput(unittest.TestCase, TestFhi_aims):$/;"	c
+TestFhi_aims	tests/test_fhi_output.py	/^class TestFhi_aims:$/;"	c
+TestFhi_aims_MD	tests/test_fhi_md_multi_elem_output.py	/^class TestFhi_aims_MD:$/;"	c
+TestFhi_aims_MD	tests/test_fhi_md_output.py	/^class TestFhi_aims_MD:$/;"	c
+TestFhi_aims_Output	tests/test_fhi_md_multi_elem_output.py	/^class TestFhi_aims_Output(unittest.TestCase, TestFhi_aims_MD):$/;"	c
+TestFhi_aims_Output	tests/test_fhi_md_output.py	/^class TestFhi_aims_Output(unittest.TestCase, TestFhi_aims_MD):$/;"	c
+TestGaussianLoadLog	tests/test_gaussian_log.py	/^class TestGaussianLoadLog(unittest.TestCase, TestGaussianLog):$/;"	c
+TestGaussianLoadMD	tests/test_gaussian_log.py	/^class TestGaussianLoadMD(unittest.TestCase, TestGaussianLog):$/;"	c
+TestGaussianLog	tests/test_gaussian_log.py	/^class TestGaussianLog :$/;"	c
+TestGromacsGro	tests/test_gromacs_gro.py	/^class TestGromacsGro(unittest.TestCase):$/;"	c
+TestIons	tests/test_water_ions.py	/^class TestIons(unittest.TestCase):$/;"	c
+TestJsonLoad	tests/test_json.py	/^class TestJsonLoad(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestLammpsDumpShiftOrigin	tests/test_lammps_dump_shift_origin.py	/^class TestLammpsDumpShiftOrigin(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestLmp	tests/test_lammps_lmp_to_system.py	/^class TestLmp(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestLmpDump	tests/test_lammps_lmp_dump.py	/^class TestLmpDump(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestLmpDumpSkip	tests/test_lammps_dump_skipload.py	/^class TestLmpDumpSkip(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestMSD	tests/test_msd.py	/^class TestMSD (unittest.TestCase) :$/;"	c
+TestMultiDeepmdDumpComp	tests/test_multisystems.py	/^class TestMultiDeepmdDumpComp(unittest.TestCase, CompLabeledSys, IsNoPBC):$/;"	c
+TestMultiDeepmdDumpRaw	tests/test_multisystems.py	/^class TestMultiDeepmdDumpRaw(unittest.TestCase, CompLabeledSys, IsNoPBC):$/;"	c
+TestMultiSystems	tests/test_multisystems.py	/^class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):$/;"	c
+TestMultiSystemsAdd	tests/test_multisystems.py	/^class TestMultiSystemsAdd(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):$/;"	c
+TestMultiSystemsSorted	tests/test_multisystems.py	/^class TestMultiSystemsSorted(unittest.TestCase, MultiSystems):$/;"	c
+TestNonCoveragedGaussianLoadLog	tests/test_gaussian_log.py	/^class TestNonCoveragedGaussianLoadLog(unittest.TestCase, TestGaussianLog):$/;"	c
+TestPBC	tests/test_system_apply_pbc.py	/^class TestPBC(unittest.TestCase) :$/;"	c
+TestPOSCARCart	tests/test_vasp_poscar_to_system.py	/^class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestPOSCARDirect	tests/test_vasp_poscar_to_system.py	/^class TestPOSCARDirect(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestPOSCARDump	tests/test_vasp_poscar_dump.py	/^class TestPOSCARDump(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestPOSCARDump1	tests/test_vasp_poscar_dump.py	/^class TestPOSCARDump1(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestPOSCARSkipZeroAtomNumb	tests/test_vasp_poscar_dump.py	/^class TestPOSCARSkipZeroAtomNumb(unittest.TestCase) :$/;"	c
+TestPOSCARoh	tests/poscars/poscar_ref_oh.py	/^class TestPOSCARoh :$/;"	c
+TestPOSCARoh	tests/test_lammps_dump_to_system.py	/^from poscars.poscar_ref_oh import TestPOSCARoh        $/;"	i
+TestPOSCARoh	tests/test_lammps_lmp_dump.py	/^from poscars.poscar_ref_oh import TestPOSCARoh        $/;"	i
+TestPOSCARoh	tests/test_lammps_lmp_to_system.py	/^from poscars.poscar_ref_oh import TestPOSCARoh        $/;"	i
+TestPOSCARoh	tests/test_vasp_poscar_dump.py	/^from poscars.poscar_ref_oh import TestPOSCARoh        $/;"	i
+TestPOSCARoh	tests/test_vasp_poscar_to_system.py	/^from poscars.poscar_ref_oh import TestPOSCARoh$/;"	i
+TestPWSCFLabeledOutput	tests/test_qe_pw_scf.py	/^class TestPWSCFLabeledOutput(unittest.TestCase, TestPWSCFSinglePointEnergy):$/;"	c
+TestPWSCFLabeledOutputListInput	tests/test_qe_pw_scf.py	/^class TestPWSCFLabeledOutputListInput(unittest.TestCase, TestPWSCFSinglePointEnergy):$/;"	c
+TestPWSCFLabeledTrajSkip	tests/test_qe_cp_traj_skipload.py	/^class TestPWSCFLabeledTrajSkip(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestPWSCFSinglePointEnergy	tests/test_qe_pw_scf.py	/^class TestPWSCFSinglePointEnergy:$/;"	c
+TestPWSCFTrajSkip	tests/test_qe_cp_traj_skipload.py	/^class TestPWSCFTrajSkip(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestPeriodicTable	tests/test_periodic_table.py	/^class TestPeriodicTable(unittest.TestCase):$/;"	c
+TestPerturbConst	tests/test_perturb.py	/^class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestPerturbNormal	tests/test_perturb.py	/^class TestPerturbNormal(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestPerturbUniform	tests/test_perturb.py	/^class TestPerturbUniform(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestPymatgen	tests/test_to_pymatgen.py	/^class TestPymatgen(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestPymatgen	tests/test_to_pymatgen_entry.py	/^class TestPymatgen(unittest.TestCase):$/;"	c
+TestQuipGapxyz1	tests/test_quip_gap_xyz.py	/^class TestQuipGapxyz1(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestQuipGapxyz2	tests/test_quip_gap_xyz.py	/^class TestQuipGapxyz2(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestQuipGapxyzNoVirials	tests/test_quip_gap_xyz.py	/^class TestQuipGapxyzNoVirials(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestQuipGapxyzfield	tests/test_quip_gap_xyz.py	/^class TestQuipGapxyzfield(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestQuipGapxyzfield2	tests/test_quip_gap_xyz.py	/^class TestQuipGapxyzfield2(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestQuipGapxyzsort1	tests/test_quip_gap_xyz.py	/^class TestQuipGapxyzsort1(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestQuipGapxyzsort2	tests/test_quip_gap_xyz.py	/^class TestQuipGapxyzsort2(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestRemovePBC	tests/test_remove_pbc.py	/^class TestRemovePBC(unittest.TestCase):$/;"	c
+TestReplicate123	tests/test_replicate.py	/^class TestReplicate123(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestReplicate123_not_change_origin	tests/test_replicate.py	/^class TestReplicate123_not_change_origin(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestSIESTALabeledOutput	tests/test_siesta_output.py	/^class TestSIESTALabeledOutput(unittest.TestCase, TestSIESTASinglePointEnergy):$/;"	c
+TestSIESTASinglePointEnergy	tests/test_siesta_aiMD_output.py	/^class TestSIESTASinglePointEnergy:$/;"	c
+TestSIESTASinglePointEnergy	tests/test_siesta_output.py	/^class TestSIESTASinglePointEnergy:$/;"	c
+TestSetAtomTypes	tests/test_system_set_type.py	/^class TestSetAtomTypes(unittest.TestCase):$/;"	c
+TestSingleStep	tests/test_pwmat_mlmd.py	/^class TestSingleStep(unittest.TestCase):$/;"	c
+TestSingleStep	tests/test_vasp_unconverged_outcar.py	/^class TestSingleStep(unittest.TestCase):$/;"	c
+TestToFunc	tests/test_lammps_lmp_dump.py	/^class TestToFunc(unittest.TestCase, TestPOSCARoh):$/;"	c
+TestToList	tests/test_to_list.py	/^class TestToList(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestTypeMap	tests/test_multisystems.py	/^class TestTypeMap(unittest.TestCase):$/;"	c
+TestTypeMap	tests/test_type_map.py	/^class TestTypeMap():$/;"	c
+TestTypeMap1	tests/test_type_map.py	/^class TestTypeMap1(TestTypeMap, unittest.TestCase):$/;"	c
+TestTypeMap2	tests/test_type_map.py	/^class TestTypeMap2(TestTypeMap, unittest.TestCase):$/;"	c
+TestVaspOUTCAR	tests/test_vasp_outcar.py	/^class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestVaspOUTCARSkip	tests/test_vasp_outcar.py	/^class TestVaspOUTCARSkip(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestVaspOUTCARTypeMap	tests/test_vasp_outcar.py	/^class TestVaspOUTCARTypeMap(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestVaspPOSCARTypeMap	tests/test_vasp_poscar_to_system.py	/^class TestVaspPOSCARTypeMap(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestVaspXml	tests/test_vasp_xml.py	/^class TestVaspXml(unittest.TestCase, CompSys, IsPBC):$/;"	c
+TestVaspXmlAppend	tests/test_system_append.py	/^class TestVaspXmlAppend(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestVaspXmlRotSys	tests/test_vasp_xml.py	/^class TestVaspXmlRotSys(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestVaspXmlSkip	tests/test_vasp_xml.py	/^class TestVaspXmlSkip(unittest.TestCase, CompLabeledSys, IsPBC):$/;"	c
+TestatomconfigDump	tests/test_pwmat_config_dump.py	/^class TestatomconfigDump(unittest.TestCase, Testconfigoh):$/;"	c
+TestatomconfigDump1	tests/test_pwmat_config_dump.py	/^class TestatomconfigDump1(unittest.TestCase, Testconfigoh):$/;"	c
+TestatomconfigSkipZeroAtomNumb	tests/test_pwmat_config_dump.py	/^class TestatomconfigSkipZeroAtomNumb(unittest.TestCase) :$/;"	c
+Testconfig	tests/test_pwmat_config_to_system.py	/^class Testconfig(unittest.TestCase, Testconfigch4):$/;"	c
+Testconfigch4	tests/pwmat/config_ref_ch4.py	/^class Testconfigch4 :$/;"	c
+Testconfigch4	tests/test_pwmat_config_to_system.py	/^from pwmat.config_ref_ch4 import Testconfigch4$/;"	i
+Testconfigoh	tests/pwmat/config_ref_oh.py	/^class Testconfigoh :$/;"	c
+Testconfigoh	tests/test_pwmat_config_dump.py	/^from pwmat.config_ref_oh import Testconfigoh       $/;"	i
+TestpwmatLabeledOutput	tests/test_pwmat_movement.py	/^class TestpwmatLabeledOutput(unittest.TestCase, TestpwmatSinglePointEnergy):$/;"	c
+TestpwmatSinglePointEnergy	tests/test_pwmat_movement.py	/^class TestpwmatSinglePointEnergy:$/;"	c
+TestpwmatconfigTypeMap	tests/test_pwmat_config_to_system.py	/^class TestpwmatconfigTypeMap(unittest.TestCase):$/;"	c
+UTC	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^class UTC(datetime.tzinfo):$/;"	c
+UniformGenerator	tests/test_perturb.py	/^class UniformGenerator(object):$/;"	c
+VERSION_CLASS	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^VERSION_CLASS = _get_version_class()$/;"	v
+WindowsError	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^class WindowsError(builtins.WindowsError):$/;"	c
+X	build/lib/dpdata/periodic_table.py	/^    def X(self):$/;"	m	class:Element
+X	dpdata/periodic_table.py	/^    def X(self):$/;"	m	class:Element
+Z	build/lib/dpdata/periodic_table.py	/^    def Z(self):$/;"	m	class:Element
+Z	dpdata/periodic_table.py	/^    def Z(self):$/;"	m	class:Element
+_ZERO	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^    _ZERO = datetime.timedelta(0)$/;"	v	class:UTC
+__add__	build/lib/dpdata/system.py	/^    def __add__(self, others) :$/;"	m	class:MultiSystems	file:
+__add__	build/lib/dpdata/system.py	/^    def __add__(self,others) :$/;"	m	class:LabeledSystem	file:
+__add__	build/lib/dpdata/system.py	/^    def __add__(self,others) :$/;"	m	class:System	file:
+__add__	dpdata/system.py	/^    def __add__(self, others) :$/;"	m	class:MultiSystems	file:
+__add__	dpdata/system.py	/^    def __add__(self,others) :$/;"	m	class:LabeledSystem	file:
+__add__	dpdata/system.py	/^    def __add__(self,others) :$/;"	m	class:System	file:
+__append	build/lib/dpdata/system.py	/^    def __append(self, system):$/;"	m	class:MultiSystems	file:
+__append	dpdata/system.py	/^    def __append(self, system):$/;"	m	class:MultiSystems	file:
+__del__	build/lib/dpdata/cp2k/output.py	/^    def __del__(self):$/;"	m	class:Cp2kSystems	file:
+__del__	build/lib/dpdata/xyz/quip_gap_xyz.py	/^    def __del__(self):$/;"	m	class:QuipGapxyzSystems	file:
+__del__	dpdata/cp2k/output.py	/^    def __del__(self):$/;"	m	class:Cp2kSystems	file:
+__del__	dpdata/xyz/quip_gap_xyz.py	/^    def __del__(self):$/;"	m	class:QuipGapxyzSystems	file:
+__getitem__	build/lib/dpdata/system.py	/^    def __getitem__(self, key):$/;"	m	class:MultiSystems	file:
+__getitem__	build/lib/dpdata/system.py	/^    def __getitem__(self, key):$/;"	m	class:System	file:
+__getitem__	dpdata/system.py	/^    def __getitem__(self, key):$/;"	m	class:MultiSystems	file:
+__getitem__	dpdata/system.py	/^    def __getitem__(self, key):$/;"	m	class:System	file:
+__init__	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def __init__($/;"	m	class:Configuration
+__init__	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def __init__(self, path):$/;"	m	class:GitWorkdir
+__init__	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    def __init__($/;"	m	class:ScmVersion
+__init__	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	def __init__(self, value=None):$/;"	m	class:WindowsError
+__init__	build/lib/dpdata/cp2k/output.py	/^    def __init__(self, log_file_name, xyz_file_name):$/;"	m	class:Cp2kSystems
+__init__	build/lib/dpdata/periodic_table.py	/^    def __init__(self, symbol: str):$/;"	m	class:Element
+__init__	build/lib/dpdata/system.py	/^    def __init__ (self,$/;"	m	class:LabeledSystem
+__init__	build/lib/dpdata/system.py	/^    def __init__ (self,$/;"	m	class:System
+__init__	build/lib/dpdata/system.py	/^    def __init__(self):$/;"	m	class:Register
+__init__	build/lib/dpdata/system.py	/^    def __init__(self, *systems,type_map=None):$/;"	m	class:MultiSystems
+__init__	build/lib/dpdata/xyz/quip_gap_xyz.py	/^    def __init__(self, file_name):$/;"	m	class:QuipGapxyzSystems
+__init__	dpdata/cp2k/output.py	/^    def __init__(self, log_file_name, xyz_file_name):$/;"	m	class:Cp2kSystems
+__init__	dpdata/periodic_table.py	/^    def __init__(self, symbol: str):$/;"	m	class:Element
+__init__	dpdata/system.py	/^    def __init__ (self,$/;"	m	class:LabeledSystem
+__init__	dpdata/system.py	/^    def __init__ (self,$/;"	m	class:System
+__init__	dpdata/system.py	/^    def __init__(self):$/;"	m	class:Register
+__init__	dpdata/system.py	/^    def __init__(self, *systems,type_map=None):$/;"	m	class:MultiSystems
+__init__	dpdata/xyz/quip_gap_xyz.py	/^    def __init__(self, file_name):$/;"	m	class:QuipGapxyzSystems
+__init__	tests/test_perturb.py	/^    def __init__(self):$/;"	m	class:ConstGenerator
+__init__	tests/test_perturb.py	/^    def __init__(self):$/;"	m	class:NormalGenerator
+__init__	tests/test_perturb.py	/^    def __init__(self):$/;"	m	class:UniformGenerator
+__iter__	build/lib/dpdata/cp2k/output.py	/^    def __iter__(self):$/;"	m	class:Cp2kSystems	file:
+__iter__	build/lib/dpdata/xyz/quip_gap_xyz.py	/^    def __iter__(self):$/;"	m	class:QuipGapxyzSystems	file:
+__iter__	dpdata/cp2k/output.py	/^    def __iter__(self):$/;"	m	class:Cp2kSystems	file:
+__iter__	dpdata/xyz/quip_gap_xyz.py	/^    def __iter__(self):$/;"	m	class:QuipGapxyzSystems	file:
+__len__	build/lib/dpdata/system.py	/^    def __len__(self) :$/;"	m	class:System	file:
+__len__	build/lib/dpdata/system.py	/^    def __len__(self):$/;"	m	class:MultiSystems	file:
+__len__	dpdata/system.py	/^    def __len__(self) :$/;"	m	class:System	file:
+__len__	dpdata/system.py	/^    def __len__(self):$/;"	m	class:MultiSystems	file:
+__next__	build/lib/dpdata/cp2k/output.py	/^    def __next__(self):$/;"	m	class:Cp2kSystems	file:
+__next__	build/lib/dpdata/xyz/quip_gap_xyz.py	/^    def __next__(self):$/;"	m	class:QuipGapxyzSystems	file:
+__next__	dpdata/cp2k/output.py	/^    def __next__(self):$/;"	m	class:Cp2kSystems	file:
+__next__	dpdata/xyz/quip_gap_xyz.py	/^    def __next__(self):$/;"	m	class:QuipGapxyzSystems	file:
+__repr__	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    def __repr__(self):$/;"	m	class:ScmVersion	file:
+__repr__	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	def __repr__(self):$/;"	m	class:WindowsError	file:
+__repr__	build/lib/dpdata/periodic_table.py	/^    def __repr__(self):$/;"	m	class:Element	file:
+__repr__	build/lib/dpdata/system.py	/^    def __repr__(self):$/;"	m	class:LabeledSystem	file:
+__repr__	build/lib/dpdata/system.py	/^    def __repr__(self):$/;"	m	class:MultiSystems	file:
+__repr__	build/lib/dpdata/system.py	/^    def __repr__(self):$/;"	m	class:System	file:
+__repr__	dpdata/periodic_table.py	/^    def __repr__(self):$/;"	m	class:Element	file:
+__repr__	dpdata/system.py	/^    def __repr__(self):$/;"	m	class:LabeledSystem	file:
+__repr__	dpdata/system.py	/^    def __repr__(self):$/;"	m	class:MultiSystems	file:
+__repr__	dpdata/system.py	/^    def __repr__(self):$/;"	m	class:System	file:
+__str__	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	def __str__(self):$/;"	m	class:WindowsError	file:
+__str__	build/lib/dpdata/periodic_table.py	/^    def __str__(self):$/;"	m	class:Element	file:
+__str__	build/lib/dpdata/system.py	/^    def __str__(self):$/;"	m	class:LabeledSystem	file:
+__str__	build/lib/dpdata/system.py	/^    def __str__(self):$/;"	m	class:MultiSystems	file:
+__str__	build/lib/dpdata/system.py	/^    def __str__(self):$/;"	m	class:System	file:
+__str__	dpdata/periodic_table.py	/^    def __str__(self):$/;"	m	class:Element	file:
+__str__	dpdata/system.py	/^    def __str__(self):$/;"	m	class:LabeledSystem	file:
+__str__	dpdata/system.py	/^    def __str__(self):$/;"	m	class:MultiSystems	file:
+__str__	dpdata/system.py	/^    def __str__(self):$/;"	m	class:System	file:
+__version__	build/lib/dpdata/__about__.py	/^__version__ = 'unknown'$/;"	v
+__version__	build/lib/dpdata/__init__.py	/^    from .__about__ import __version__$/;"	i
+__version__	build/lib/dpdata/__init__.py	/^    from ._version import version as __version__$/;"	i
+__version__	dpdata/__about__.py	/^__version__ = 'unknown'$/;"	v
+__version__	dpdata/__init__.py	/^    from .__about__ import __version__$/;"	i
+__version__	dpdata/__init__.py	/^    from ._version import version as __version__$/;"	i
+_always_strings	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def _always_strings(env_dict):$/;"	f
+_args_from_toml	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^def _args_from_toml(name="pyproject.toml"):$/;"	f
+_atom_info_atom	build/lib/dpdata/lammps/lmp.py	/^def _atom_info_atom(line) :$/;"	f
+_atom_info_atom	dpdata/lammps/lmp.py	/^def _atom_info_atom(line) :$/;"	f
+_atom_info_mol	build/lib/dpdata/lammps/lmp.py	/^def _atom_info_mol(line) :$/;"	f
+_atom_info_mol	dpdata/lammps/lmp.py	/^def _atom_info_mol(line) :$/;"	f
+_bump_dev	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _bump_dev(version):$/;"	f
+_bump_regex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _bump_regex(version):$/;"	f
+_call_entrypoint_fn	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^def _call_entrypoint_fn(root, config, fn):$/;"	f
+_check_absolute_root	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^def _check_absolute_root(root, relative_to):$/;"	f
+_check_tag_regex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^def _check_tag_regex(value):$/;"	f
+_compute_rdf_1frame	build/lib/dpdata/md/rdf.py	/^def _compute_rdf_1frame(box, $/;"	f
+_compute_rdf_1frame	dpdata/md/rdf.py	/^def _compute_rdf_1frame(box, $/;"	f
+_cond_load_data	build/lib/dpdata/deepmd/comp.py	/^def _cond_load_data(fname) :$/;"	f
+_cond_load_data	dpdata/deepmd/comp.py	/^def _cond_load_data(fname) :$/;"	f
+_do_parse	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^def _do_parse(config):$/;"	f
+_fields_	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	_fields_ = ($/;"	v	class:SECURITY_ATTRIBUTES
+_fields_	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	_fields_ = [$/;"	v	class:BY_HANDLE_FILE_INFORMATION
+_format_local_with_time	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _format_local_with_time(version, time_format):$/;"	f
+_get_block	build/lib/dpdata/lammps/dump.py	/^def _get_block (lines, key) :$/;"	f
+_get_block	build/lib/dpdata/lammps/lmp.py	/^def _get_block (lines, keys) :$/;"	f
+_get_block	dpdata/lammps/dump.py	/^def _get_block (lines, key) :$/;"	f
+_get_block	dpdata/lammps/lmp.py	/^def _get_block (lines, keys) :$/;"	f
+_get_cell	build/lib/dpdata/gromacs/gro.py	/^def _get_cell(line):$/;"	f
+_get_cell	dpdata/gromacs/gro.py	/^def _get_cell(line):$/;"	f
+_get_line	build/lib/dpdata/gromacs/gro.py	/^def _get_line(line):$/;"	f
+_get_line	dpdata/gromacs/gro.py	/^def _get_line(line):$/;"	f
+_get_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^def _get_version(config):$/;"	f
+_get_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^from . import _get_version, Configuration$/;"	i
+_get_version_class	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _get_version_class():$/;"	f
+_git_interpret_archive	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^def _git_interpret_archive(fd, toplevel):$/;"	f
+_git_ls_files_and_dirs	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^def _git_ls_files_and_dirs(toplevel):$/;"	f
+_git_parse_describe	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^def _git_parse_describe(describe_output):$/;"	f
+_git_toplevel	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^def _git_toplevel(path):$/;"	f
+_hg_ls_files_and_dirs	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_hg.py	/^def _hg_ls_files_and_dirs(toplevel):$/;"	f
+_hg_tagdist_normalize_tagcommit	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^def _hg_tagdist_normalize_tagcommit(config, tag, dist, node, branch):$/;"	f
+_hg_toplevel	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_hg.py	/^def _hg_toplevel(path):$/;"	f
+_link_not_in_scm	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder.py	/^        def _link_not_in_scm(n):$/;"	f	function:scm_find_files
+_load_pos_block	build/lib/dpdata/qe/traj.py	/^def _load_pos_block(fp, natoms) :$/;"	f
+_load_pos_block	dpdata/qe/traj.py	/^def _load_pos_block(fp, natoms) :$/;"	f
+_load_set	build/lib/dpdata/deepmd/comp.py	/^def _load_set(folder) :$/;"	f
+_load_set	dpdata/deepmd/comp.py	/^def _load_set(folder) :$/;"	f
+_msd	build/lib/dpdata/md/msd.py	/^def _msd(coords, cells, pbc_shift, begin):$/;"	f
+_msd	dpdata/md/msd.py	/^def _msd(coords, cells, pbc_shift, begin):$/;"	f
+_msd_win	build/lib/dpdata/md/msd.py	/^def _msd_win(coords, cells, pbc_shift, begin, window):$/;"	f
+_msd_win	dpdata/md/msd.py	/^def _msd_win(coords, cells, pbc_shift, begin, window):$/;"	f
+_parse_tag	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _parse_tag(tag, preformatted, config):$/;"	f
+_parse_version_tag	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _parse_version_tag(tag, config):$/;"	f
+_pdt	build/lib/dpdata/periodic_table.py	/^_pdt=loadfn(fpdt)$/;"	v
+_pdt	dpdata/periodic_table.py	/^_pdt=loadfn(fpdt)$/;"	v
+_popen_pipes	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def _popen_pipes(cmd, cwd):$/;"	f
+_shift_orig_zero	build/lib/dpdata/system.py	/^    def _shift_orig_zero(self) :$/;"	m	class:System
+_shift_orig_zero	dpdata/system.py	/^    def _shift_orig_zero(self) :$/;"	m	class:System
+_strip_local	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _strip_local(version_string):$/;"	f
+_to_system_data_lower	build/lib/dpdata/pwmat/atomconfig.py	/^def _to_system_data_lower(lines) :$/;"	f
+_to_system_data_lower	build/lib/dpdata/vasp/poscar.py	/^def _to_system_data_lower(lines, cartesian = True) :$/;"	f
+_to_system_data_lower	dpdata/pwmat/atomconfig.py	/^def _to_system_data_lower(lines) :$/;"	f
+_to_system_data_lower	dpdata/vasp/poscar.py	/^def _to_system_data_lower(lines, cartesian = True) :$/;"	f
+_version_from_entrypoints	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^def _version_from_entrypoints(config, fallback=False):$/;"	f
+_warn_if_setuptools_outdated	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__main__.py	/^from setuptools_scm.version import _warn_if_setuptools_outdated$/;"	i
+_warn_if_setuptools_outdated	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^from .version import _warn_if_setuptools_outdated$/;"	i
+_warn_if_setuptools_outdated	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def _warn_if_setuptools_outdated():$/;"	f
+absolute_root	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def absolute_root(self):$/;"	m	class:Configuration
+add_atom_names	build/lib/dpdata/system.py	/^    def add_atom_names(self, atom_names):$/;"	m	class:System
+add_atom_names	dpdata/system.py	/^    def add_atom_names(self, atom_names):$/;"	m	class:System
+affine_map	build/lib/dpdata/system.py	/^    def affine_map(self, trans, f_idx = 0) :$/;"	m	class:System
+affine_map	dpdata/system.py	/^    def affine_map(self, trans, f_idx = 0) :$/;"	m	class:System
+affine_map_fv	build/lib/dpdata/system.py	/^    def affine_map_fv(self, trans, f_idx) :$/;"	m	class:LabeledSystem
+affine_map_fv	dpdata/system.py	/^    def affine_map_fv(self, trans, f_idx) :$/;"	m	class:LabeledSystem
+aiMD_output	build/lib/dpdata/system.py	/^import dpdata.siesta.aiMD_output$/;"	i
+aiMD_output	dpdata/system.py	/^import dpdata.siesta.aiMD_output$/;"	i
+amber	build/lib/dpdata/system.py	/^import dpdata.amber.md$/;"	i
+amber	dpdata/system.py	/^import dpdata.amber.md$/;"	i
+analyze	build/lib/dpdata/vasp/xml.py	/^def analyze (fname, type_idx_zero = False, begin = 0, step = 1) :$/;"	f
+analyze	dpdata/vasp/xml.py	/^def analyze (fname, type_idx_zero = False, begin = 0, step = 1) :$/;"	f
+analyze_atominfo	build/lib/dpdata/vasp/xml.py	/^def analyze_atominfo(atominfo_xml) :$/;"	f
+analyze_atominfo	dpdata/vasp/xml.py	/^def analyze_atominfo(atominfo_xml) :$/;"	f
+analyze_block	build/lib/dpdata/fhi_aims/output.py	/^def analyze_block(lines, first_blk=False, md=True) :$/;"	f
+analyze_block	build/lib/dpdata/pwmat/movement.py	/^def analyze_block(lines, ntot, nelm) :$/;"	f
+analyze_block	build/lib/dpdata/vasp/outcar.py	/^def analyze_block(lines, ntot, nelm) :$/;"	f
+analyze_block	dpdata/fhi_aims/output.py	/^def analyze_block(lines, first_blk=False, md=True) :$/;"	f
+analyze_block	dpdata/pwmat/movement.py	/^def analyze_block(lines, ntot, nelm) :$/;"	f
+analyze_block	dpdata/vasp/outcar.py	/^def analyze_block(lines, ntot, nelm) :$/;"	f
+analyze_calculation	build/lib/dpdata/vasp/xml.py	/^def analyze_calculation(cc) :$/;"	f
+analyze_calculation	dpdata/vasp/xml.py	/^def analyze_calculation(cc) :$/;"	f
+ang2ang	build/lib/dpdata/siesta/aiMD_output.py	/^ang2ang = 1$/;"	v
+ang2ang	build/lib/dpdata/siesta/output.py	/^ang2ang = 1$/;"	v
+ang2ang	dpdata/siesta/aiMD_output.py	/^ang2ang = 1$/;"	v
+ang2ang	dpdata/siesta/output.py	/^ang2ang = 1$/;"	v
+append	build/lib/dpdata/system.py	/^    def append(self, *systems) :$/;"	m	class:MultiSystems
+append	build/lib/dpdata/system.py	/^    def append(self, system) :$/;"	m	class:System
+append	build/lib/dpdata/system.py	/^    def append(self, system):$/;"	m	class:LabeledSystem
+append	dpdata/system.py	/^    def append(self, *systems) :$/;"	m	class:MultiSystems
+append	dpdata/system.py	/^    def append(self, system) :$/;"	m	class:System
+append	dpdata/system.py	/^    def append(self, system):$/;"	m	class:LabeledSystem
+apply_pbc	build/lib/dpdata/md/pbc.py	/^def apply_pbc(system_coords, system_cells) :$/;"	f
+apply_pbc	build/lib/dpdata/system.py	/^    def apply_pbc(self) :$/;"	m	class:System
+apply_pbc	dpdata/md/pbc.py	/^def apply_pbc(system_coords, system_cells) :$/;"	f
+apply_pbc	dpdata/system.py	/^    def apply_pbc(self) :$/;"	m	class:System
+apply_type_map	build/lib/dpdata/system.py	/^    def apply_type_map(self, type_map) :$/;"	m	class:System
+apply_type_map	dpdata/system.py	/^    def apply_type_map(self, type_map) :$/;"	m	class:System
+archival_to_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^def archival_to_version(data, config=None):$/;"	f
+as_dict	build/lib/dpdata/system.py	/^    def as_dict(self):$/;"	m	class:System
+as_dict	dpdata/system.py	/^    def as_dict(self):$/;"	m	class:System
+ase	build/lib/dpdata/md/rdf.py	/^    import ase.neighborlist    $/;"	i
+ase	build/lib/dpdata/md/water.py	/^        import ase$/;"	i
+ase	build/lib/dpdata/md/water.py	/^        import ase.neighborlist    $/;"	i
+ase	build/lib/dpdata/md/water.py	/^    import ase.neighborlist    $/;"	i
+ase	build/lib/dpdata/system.py	/^import dpdata.ase.db$/;"	i
+ase	dpdata/md/rdf.py	/^    import ase.neighborlist    $/;"	i
+ase	dpdata/md/water.py	/^        import ase$/;"	i
+ase	dpdata/md/water.py	/^        import ase.neighborlist    $/;"	i
+ase	dpdata/md/water.py	/^    import ase.neighborlist    $/;"	i
+ase	dpdata/system.py	/^import dpdata.ase.db$/;"	i
+ase	tests/test_water_ions.py	/^    import ase$/;"	i
+ase	tests/test_water_ions.py	/^    import ase.neighborlist    $/;"	i
+atomconfig	build/lib/dpdata/system.py	/^import dpdata.pwmat.atomconfig$/;"	i
+atomconfig	dpdata/system.py	/^import dpdata.pwmat.atomconfig$/;"	i
+author	docs/conf.py	/^author = 'Han Wang'$/;"	v
+author	setup.py	/^    author="Han Wang",$/;"	v
+author_email	setup.py	/^    author_email="wang_han@iapcm.ac.cn",$/;"	v
+avail_patterns	build/lib/dpdata/cp2k/output.py	/^avail_patterns = []$/;"	v
+avail_patterns	dpdata/cp2k/output.py	/^avail_patterns = []$/;"	v
+bohr2ang	build/lib/dpdata/gaussian/log.py	/^bohr2ang = 0.52917721067$/;"	v
+bohr2ang	build/lib/dpdata/qe/scf.py	/^bohr2ang = 0.52917721067$/;"	v
+bohr2ang	build/lib/dpdata/qe/traj.py	/^bohr2ang = 0.52917721067$/;"	v
+bohr2ang	dpdata/gaussian/log.py	/^bohr2ang = 0.52917721067$/;"	v
+bohr2ang	dpdata/qe/scf.py	/^bohr2ang = 0.52917721067$/;"	v
+bohr2ang	dpdata/qe/traj.py	/^bohr2ang = 0.52917721067$/;"	v
+box2dumpbox	build/lib/dpdata/lammps/dump.py	/^def box2dumpbox(orig, box) :$/;"	f
+box2dumpbox	dpdata/lammps/dump.py	/^def box2dumpbox(orig, box) :$/;"	f
+box2lmpbox	build/lib/dpdata/lammps/lmp.py	/^def box2lmpbox(orig, box) :$/;"	f
+box2lmpbox	dpdata/lammps/lmp.py	/^def box2lmpbox(orig, box) :$/;"	f
+builtins	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^import __builtin__ as builtins$/;"	i
+calculated_radius	build/lib/dpdata/periodic_table.py	/^    def calculated_radius(self):$/;"	m	class:Element
+calculated_radius	dpdata/periodic_table.py	/^    def calculated_radius(self):$/;"	m	class:Element
+callable_or_entrypoint	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def callable_or_entrypoint(group, callable_or_name):$/;"	f
+cell_to_low_triangle	build/lib/dpdata/cp2k/cell.py	/^def cell_to_low_triangle(A,B,C,alpha,beta,gamma):$/;"	f
+cell_to_low_triangle	build/lib/dpdata/cp2k/output.py	/^from .cell import cell_to_low_triangle$/;"	i
+cell_to_low_triangle	dpdata/cp2k/cell.py	/^def cell_to_low_triangle(A,B,C,alpha,beta,gamma):$/;"	f
+cell_to_low_triangle	dpdata/cp2k/output.py	/^from .cell import cell_to_low_triangle$/;"	i
+cells	build/lib/dpdata/qe/traj.py	/^    cells = load_data(prefix+'.cel', 3)$/;"	v
+cells	dpdata/qe/traj.py	/^    cells = load_data(prefix+'.cel', 3)$/;"	v
+check_LabeledSystem	build/lib/dpdata/system.py	/^def check_LabeledSystem(data):$/;"	f
+check_LabeledSystem	dpdata/system.py	/^def check_LabeledSystem(data):$/;"	f
+check_System	build/lib/dpdata/system.py	/^def check_System(data):$/;"	f
+check_System	dpdata/system.py	/^def check_System(data):$/;"	f
+check_atom_names	build/lib/dpdata/system.py	/^    def check_atom_names(self, system):$/;"	m	class:MultiSystems
+check_atom_names	dpdata/system.py	/^    def check_atom_names(self, system):$/;"	m	class:MultiSystems
+check_name	build/lib/dpdata/vasp/xml.py	/^def check_name(item, name) :$/;"	f
+check_name	dpdata/vasp/xml.py	/^def check_name(item, name) :$/;"	f
+check_type_map	build/lib/dpdata/system.py	/^    def check_type_map(self, type_map):$/;"	m	class:System
+check_type_map	dpdata/system.py	/^    def check_type_map(self, type_map):$/;"	m	class:System
+classifiers	setup.py	/^    classifiers=[$/;"	v
+code	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	def code(self):$/;"	m	class:WindowsError
+comp	build/lib/dpdata/system.py	/^import dpdata.deepmd.comp$/;"	i
+comp	dpdata/system.py	/^import dpdata.deepmd.comp$/;"	i
+compat_stat	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^def compat_stat(path):$/;"	f
+compute_bonds	build/lib/dpdata/md/water.py	/^def compute_bonds (box, $/;"	f
+compute_bonds	dpdata/md/water.py	/^def compute_bonds (box, $/;"	f
+compute_bonds_ase	build/lib/dpdata/md/water.py	/^def compute_bonds_ase(box, $/;"	f
+compute_bonds_ase	dpdata/md/water.py	/^def compute_bonds_ase(box, $/;"	f
+compute_bonds_naive	build/lib/dpdata/md/water.py	/^def compute_bonds_naive(box,$/;"	f
+compute_bonds_naive	dpdata/md/water.py	/^def compute_bonds_naive(box,$/;"	f
+compute_rdf	build/lib/dpdata/md/rdf.py	/^def compute_rdf(box,$/;"	f
+compute_rdf	dpdata/md/rdf.py	/^def compute_rdf(box,$/;"	f
+config	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^    config = Configuration(**locals())$/;"	v
+connect	build/lib/dpdata/ase/db.py	/^from ase.db import connect$/;"	i
+connect	dpdata/ase/db.py	/^from ase.db import connect$/;"	i
+convert_celldm	build/lib/dpdata/qe/traj.py	/^def convert_celldm(ibrav, celldm) :$/;"	f
+convert_celldm	dpdata/qe/traj.py	/^def convert_celldm(ibrav, celldm) :$/;"	f
+coords	build/lib/dpdata/qe/traj.py	/^    coords = load_data(prefix+'.pos', np.sum(atom_numbs))$/;"	v
+coords	dpdata/qe/traj.py	/^    coords = load_data(prefix+'.pos', np.sum(atom_numbs))$/;"	v
+copy	build/lib/dpdata/system.py	/^    def copy(self):$/;"	m	class:System
+copy	dpdata/system.py	/^    def copy(self):$/;"	m	class:System
+copyright	docs/conf.py	/^copyright = '2019, Han Wang'$/;"	v
+count_all_nodes	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def count_all_nodes(self):$/;"	m	class:GitWorkdir
+covert_dimension	build/lib/dpdata/siesta/aiMD_output.py	/^def covert_dimension(arr, num):$/;"	f
+covert_dimension	dpdata/siesta/aiMD_output.py	/^def covert_dimension(arr, num):$/;"	f
+cp2k	build/lib/dpdata/system.py	/^import dpdata.cp2k.output$/;"	i
+cp2k	dpdata/system.py	/^import dpdata.cp2k.output$/;"	i
+cp2k_output	tests/cp2k/test.py	/^cp2k_output = dpdata.LabeledSystem('cp2k_output', fmt = 'cp2k\/output')$/;"	v
+ctypes	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^import ctypes.wintypes$/;"	i
+data	tests/test_periodic_table.py	/^data={"name": "Hydrogen",$/;"	v
+data_from_mime	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^from .utils import data_from_mime, trace$/;"	i
+data_from_mime	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^from .utils import do, trace, data_from_mime, has_command$/;"	i
+data_from_mime	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def data_from_mime(path):$/;"	f
+datetime	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import datetime$/;"	i
+datetime	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^import datetime$/;"	i
+db	build/lib/dpdata/system.py	/^import dpdata.ase.db$/;"	i
+db	dpdata/system.py	/^import dpdata.ase.db$/;"	i
+debug	build/lib/dpdata/fhi_aims/output.py	/^debug = False$/;"	v
+debug	dpdata/fhi_aims/output.py	/^debug = False$/;"	v
+decorator	build/lib/dpdata/system.py	/^        def decorator(func):$/;"	f	function:Register.register_funcs
+decorator	dpdata/system.py	/^        def decorator(func):$/;"	f	function:Register.register_funcs
+deepcopy	build/lib/dpdata/system.py	/^from copy import deepcopy$/;"	i
+deepcopy	dpdata/system.py	/^from copy import deepcopy$/;"	i
+deepmd	build/lib/dpdata/system.py	/^        import deepmd.DeepPot as DeepPot$/;"	i
+deepmd	build/lib/dpdata/system.py	/^import dpdata.deepmd.comp$/;"	i
+deepmd	build/lib/dpdata/system.py	/^import dpdata.deepmd.raw$/;"	i
+deepmd	dpdata/system.py	/^        import deepmd.DeepPot as DeepPot$/;"	i
+deepmd	dpdata/system.py	/^import dpdata.deepmd.comp$/;"	i
+deepmd	dpdata/system.py	/^import dpdata.deepmd.raw$/;"	i
+delimiter_p1	build/lib/dpdata/cp2k/output.py	/^delimiter_p1 = re.compile(r'^ \\* GO CP2K GO! \\*+')$/;"	v
+delimiter_p1	dpdata/cp2k/output.py	/^delimiter_p1 = re.compile(r'^ \\* GO CP2K GO! \\*+')$/;"	v
+delimiter_p2	build/lib/dpdata/cp2k/output.py	/^delimiter_p2 = re.compile(r'^ \\*+')$/;"	v
+delimiter_p2	dpdata/cp2k/output.py	/^delimiter_p2 = re.compile(r'^ \\*+')$/;"	v
+delimiter_patterns	build/lib/dpdata/cp2k/output.py	/^delimiter_patterns=[]$/;"	v
+delimiter_patterns	dpdata/cp2k/output.py	/^delimiter_patterns=[]$/;"	v
+description	setup.py	/^    description="Manipulating data formats of DeePMD-kit, VASP, QE, PWmat, and LAMMPS, etc.",$/;"	v
+dir_coord	build/lib/dpdata/md/pbc.py	/^def dir_coord(coord, box) :$/;"	f
+dir_coord	dpdata/md/pbc.py	/^def dir_coord(coord, box) :$/;"	f
+do	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^from .utils import do, trace, data_from_mime, has_command$/;"	i
+do	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^from .utils import do, trace_exception$/;"	i
+do	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def do(cmd, cwd="."):$/;"	f
+do_ex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def do_ex(self, cmd):$/;"	m	class:GitWorkdir
+do_ex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^from .utils import do_ex, trace, has_command$/;"	i
+do_ex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def do_ex(cmd, cwd="."):$/;"	f
+dpdata	build/lib/dpdata/md/rdf.py	/^    import dpdata$/;"	i
+dpdata	build/lib/dpdata/qe/traj.py	/^import dpdata,warnings$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.amber.md$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.ase.db$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.cp2k.output$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.deepmd.comp$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.deepmd.raw$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.fhi_aims.output$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.gaussian.log$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.gromacs.gro$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.lammps.dump$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.lammps.lmp$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.md.pbc$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.pwmat.atomconfig$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.pwmat.movement$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.qe.scf$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.qe.traj$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.siesta.aiMD_output$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.siesta.output$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.vasp.outcar$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.vasp.poscar$/;"	i
+dpdata	build/lib/dpdata/system.py	/^import dpdata.vasp.xml$/;"	i
+dpdata	dpdata/md/rdf.py	/^    import dpdata$/;"	i
+dpdata	dpdata/qe/traj.py	/^import dpdata,warnings$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.amber.md$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.ase.db$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.cp2k.output$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.deepmd.comp$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.deepmd.raw$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.fhi_aims.output$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.gaussian.log$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.gromacs.gro$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.lammps.dump$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.lammps.lmp$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.md.pbc$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.pwmat.atomconfig$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.pwmat.movement$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.qe.scf$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.qe.traj$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.siesta.aiMD_output$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.siesta.output$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.vasp.outcar$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.vasp.poscar$/;"	i
+dpdata	dpdata/system.py	/^import dpdata.vasp.xml$/;"	i
+dpdata	tests/context.py	/^import dpdata$/;"	i
+dpdata	tests/context.py	/^import dpdata.md.msd$/;"	i
+dpdata	tests/context.py	/^import dpdata.md.water$/;"	i
+dpdata	tests/cp2k/test.py	/^import dpdata$/;"	i
+dpdata	tests/test_amber_md.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_cell_to_low_triangle.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_cp2k_aimd_output.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_cp2k_output.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_deepmd_comp.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_deepmd_raw.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_empty.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_fhi_md_multi_elem_output.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_fhi_md_output.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_fhi_output.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_gaussian_log.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_gromacs_gro.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_json.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_lammps_dump_shift_origin.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_lammps_dump_skipload.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_lammps_dump_to_system.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_lammps_lmp_dump.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_lammps_lmp_to_system.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_msd.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_multisystems.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_periodic_table.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_perturb.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_pwmat_config_dump.py	/^import dpdata$/;"	i
+dpdata	tests/test_pwmat_config_to_system.py	/^import dpdata$/;"	i
+dpdata	tests/test_pwmat_mlmd.py	/^import dpdata$/;"	i
+dpdata	tests/test_pwmat_movement.py	/^import dpdata$/;"	i
+dpdata	tests/test_qe_cp_traj.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_qe_cp_traj_skipload.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_qe_pw_scf.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_quip_gap_xyz.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_remove_pbc.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_replicate.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_shuffle.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_siesta_aiMD_output.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_siesta_output.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_system_append.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_system_apply_pbc.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_system_set_type.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_to_ase.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_to_list.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_to_pymatgen.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_to_pymatgen_entry.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_type_map.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_vasp_outcar.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_vasp_poscar_dump.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_vasp_poscar_to_system.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_vasp_unconverged_outcar.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_vasp_xml.py	/^from context import dpdata$/;"	i
+dpdata	tests/test_water_ions.py	/^from context import dpdata$/;"	i
+dst	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^    def dst(self, dt):$/;"	m	class:UTC
+dump	build/lib/dpdata/deepmd/comp.py	/^def dump(folder, $/;"	f
+dump	build/lib/dpdata/deepmd/raw.py	/^def dump (folder, data) :$/;"	f
+dump	build/lib/dpdata/system.py	/^    def dump(self,filename,indent=4):$/;"	m	class:System
+dump	build/lib/dpdata/system.py	/^import dpdata.lammps.dump$/;"	i
+dump	dpdata/deepmd/comp.py	/^def dump(folder, $/;"	f
+dump	dpdata/deepmd/raw.py	/^def dump (folder, data) :$/;"	f
+dump	dpdata/system.py	/^    def dump(self,filename,indent=4):$/;"	m	class:System
+dump	dpdata/system.py	/^import dpdata.lammps.dump$/;"	i
+dump_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^def dump_version(root, version, write_to, template=None):$/;"	f
+dumpbox2box	build/lib/dpdata/lammps/dump.py	/^def dumpbox2box(bounds, tilt) :$/;"	f
+dumpbox2box	dpdata/lammps/dump.py	/^def dumpbox2box(bounds, tilt) :$/;"	f
+dumpfn	build/lib/dpdata/periodic_table.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+dumpfn	build/lib/dpdata/system.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+dumpfn	dpdata/periodic_table.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+dumpfn	dpdata/system.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+elements_index_map	build/lib/dpdata/system.py	/^def elements_index_map(elements,standard=False,inverse=False):$/;"	f
+elements_index_map	dpdata/system.py	/^def elements_index_map(elements,standard=False,inverse=False):$/;"	f
+elements_index_map	tests/test_elements_index.py	/^from dpdata.system import elements_index_map$/;"	i
+energy_convert	build/lib/dpdata/amber/md.py	/^energy_convert = kcalmol2eV$/;"	v
+energy_convert	build/lib/dpdata/gaussian/log.py	/^energy_convert = hartree2ev$/;"	v
+energy_convert	build/lib/dpdata/qe/traj.py	/^energy_convert = hartree2ev$/;"	v
+energy_convert	dpdata/amber/md.py	/^energy_convert = kcalmol2eV$/;"	v
+energy_convert	dpdata/gaussian/log.py	/^energy_convert = hartree2ev$/;"	v
+energy_convert	dpdata/qe/traj.py	/^energy_convert = hartree2ev$/;"	v
+eng_patt	build/lib/dpdata/fhi_aims/output.py	/^eng_patt="Total energy uncorrected.*([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\\s+eV"$/;"	v
+eng_patt	dpdata/fhi_aims/output.py	/^eng_patt="Total energy uncorrected.*([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\\s+eV"$/;"	v
+ensure_stripped_str	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def ensure_stripped_str(str_or_bytes):$/;"	f
+etree	build/lib/dpdata/vasp/xml.py	/^import xml.etree.ElementTree as ET$/;"	i
+etree	dpdata/vasp/xml.py	/^import xml.etree.ElementTree as ET$/;"	i
+ev2ev	build/lib/dpdata/siesta/aiMD_output.py	/^ev2ev = 1$/;"	v
+ev2ev	build/lib/dpdata/siesta/output.py	/^ev2ev = 1$/;"	v
+ev2ev	dpdata/siesta/aiMD_output.py	/^ev2ev = 1$/;"	v
+ev2ev	dpdata/siesta/output.py	/^ev2ev = 1$/;"	v
+exact	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    def exact(self):$/;"	m	class:ScmVersion
+exclude_patterns	docs/conf.py	/^exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']$/;"	v
+exist_ase	tests/test_water_ions.py	/^    exist_ase=False$/;"	v
+exist_ase	tests/test_water_ions.py	/^    exist_ase=True$/;"	v
+exist_module	tests/test_to_ase.py	/^   exist_module=False$/;"	v
+exist_module	tests/test_to_ase.py	/^   exist_module=True$/;"	v
+exist_module	tests/test_to_pymatgen.py	/^   exist_module=False$/;"	v
+exist_module	tests/test_to_pymatgen.py	/^   exist_module=True$/;"	v
+exist_module	tests/test_to_pymatgen_entry.py	/^   exist_module=False$/;"	v
+exist_module	tests/test_to_pymatgen_entry.py	/^   exist_module=True$/;"	v
+extend	build/lib/dpdata/system.py	/^    def extend(self, systems):$/;"	m	class:System
+extend	dpdata/system.py	/^    def extend(self, systems):$/;"	m	class:System
+extensions	docs/conf.py	/^extensions = [$/;"	v
+extra	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    def extra(self):$/;"	m	class:ScmVersion
+extract_keyword	build/lib/dpdata/siesta/aiMD_output.py	/^def extract_keyword(fout, keyword, down_line_num, begin_column, read_column_num, is_repeated_read, column_num):$/;"	f
+extract_keyword	build/lib/dpdata/siesta/output.py	/^def extract_keyword(fout, keyword, down_line_num, begin_column, column_num):$/;"	f
+extract_keyword	dpdata/siesta/aiMD_output.py	/^def extract_keyword(fout, keyword, down_line_num, begin_column, read_column_num, is_repeated_read, column_num):$/;"	f
+extract_keyword	dpdata/siesta/output.py	/^def extract_keyword(fout, keyword, down_line_num, begin_column, column_num):$/;"	f
+fail_on_shallow	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^def fail_on_shallow(wd):$/;"	f
+fallback_root	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def fallback_root(self):$/;"	m	class:Configuration
+fallback_root	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def fallback_root(self, value):$/;"	m	class:Configuration
+fallback_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^def fallback_version(root, config=None):$/;"	f
+fetch_on_shallow	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^def fetch_on_shallow(wd):$/;"	f
+fetch_shallow	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def fetch_shallow(self):$/;"	m	class:GitWorkdir
+fhi_aims	build/lib/dpdata/system.py	/^import dpdata.fhi_aims.output$/;"	i
+fhi_aims	dpdata/system.py	/^import dpdata.fhi_aims.output$/;"	i
+file_index	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	def file_index(self):$/;"	m	class:BY_HANDLE_FILE_INFORMATION
+file_size	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	def file_size(self):$/;"	m	class:BY_HANDLE_FILE_INFORMATION
+file_to_system_data	build/lib/dpdata/gromacs/gro.py	/^def file_to_system_data(fname):$/;"	f
+file_to_system_data	dpdata/gromacs/gro.py	/^def file_to_system_data(fname):$/;"	f
+find_files	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__main__.py	/^from setuptools_scm.integration import find_files$/;"	i
+find_files	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^def find_files(path=""):$/;"	f
+find_ions	build/lib/dpdata/md/water.py	/^def find_ions (atype, $/;"	f
+find_ions	dpdata/md/water.py	/^def find_ions (atype, $/;"	f
+fname	build/lib/dpdata/lammps/lmp.py	/^    fname = 'water-SPCE.data'$/;"	v
+fname	dpdata/lammps/lmp.py	/^    fname = 'water-SPCE.data'$/;"	v
+force_convert	build/lib/dpdata/amber/md.py	/^force_convert = energy_convert$/;"	v
+force_convert	build/lib/dpdata/gaussian/log.py	/^force_convert = energy_convert \/ length_convert$/;"	v
+force_convert	build/lib/dpdata/qe/traj.py	/^force_convert = energy_convert \/ length_convert$/;"	v
+force_convert	dpdata/amber/md.py	/^force_convert = energy_convert$/;"	v
+force_convert	dpdata/gaussian/log.py	/^force_convert = energy_convert \/ length_convert$/;"	v
+force_convert	dpdata/qe/traj.py	/^force_convert = energy_convert \/ length_convert$/;"	v
+force_patt	build/lib/dpdata/fhi_aims/output.py	/^force_patt="\\|\\s+[0-9]{1,}\\s+([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\\s+([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\\s+([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})"$/;"	v
+force_patt	dpdata/fhi_aims/output.py	/^force_patt="\\|\\s+[0-9]{1,}\\s+([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\\s+([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})\\s+([-]?[0-9]{1,}[.][0-9]*[E][+-][0-9]{1,})"$/;"	v
+format_choice	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    def format_choice(self, clean_format, dirty_format, **kw):$/;"	m	class:ScmVersion
+format_next_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    def format_next_version(self, guess_next, fmt="{guessed}.dev{distance}", **kw):$/;"	m	class:ScmVersion
+format_system_message	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^def format_system_message(errno):$/;"	f
+format_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^from .version import format_version, meta$/;"	i
+format_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def format_version(version, **config):$/;"	f
+format_with	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    def format_with(self, fmt, **kw):$/;"	m	class:ScmVersion
+formula	build/lib/dpdata/system.py	/^    def formula(self):$/;"	m	class:System
+formula	dpdata/system.py	/^    def formula(self):$/;"	m	class:System
+formulate_config	build/lib/dpdata/vasp/xml.py	/^def formulate_config(eles, types, posi, cell, ener, forc, strs_) :$/;"	f
+formulate_config	dpdata/vasp/xml.py	/^def formulate_config(eles, types, posi, cell, ener, forc, strs_) :$/;"	f
+fpdt	build/lib/dpdata/periodic_table.py	/^fpdt=str(Path(__file__).absolute().parent \/ "periodic_table.json")$/;"	v
+fpdt	dpdata/periodic_table.py	/^fpdt=str(Path(__file__).absolute().parent \/ "periodic_table.json")$/;"	v
+from_Z	build/lib/dpdata/periodic_table.py	/^    def from_Z(cls,Z):$/;"	m	class:Element
+from_Z	dpdata/periodic_table.py	/^    def from_Z(cls,Z):$/;"	m	class:Element
+from_amber_md	build/lib/dpdata/system.py	/^    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None):$/;"	m	class:LabeledSystem
+from_amber_md	dpdata/system.py	/^    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None):$/;"	m	class:LabeledSystem
+from_ase_db	build/lib/dpdata/system.py	/^    def from_ase_db(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_ase_db	dpdata/system.py	/^    def from_ase_db(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_cp2k_aimd_output	build/lib/dpdata/system.py	/^    def from_cp2k_aimd_output(self, file_dir):$/;"	m	class:LabeledSystem
+from_cp2k_aimd_output	dpdata/system.py	/^    def from_cp2k_aimd_output(self, file_dir):$/;"	m	class:LabeledSystem
+from_cp2k_output	build/lib/dpdata/system.py	/^    def from_cp2k_output(self, file_name) :$/;"	m	class:LabeledSystem
+from_cp2k_output	dpdata/system.py	/^    def from_cp2k_output(self, file_name) :$/;"	m	class:LabeledSystem
+from_deepmd_comp	build/lib/dpdata/system.py	/^    def from_deepmd_comp(self, folder, type_map = None) :$/;"	m	class:LabeledSystem
+from_deepmd_comp	build/lib/dpdata/system.py	/^    def from_deepmd_comp(self, folder, type_map = None) :$/;"	m	class:System
+from_deepmd_comp	dpdata/system.py	/^    def from_deepmd_comp(self, folder, type_map = None) :$/;"	m	class:LabeledSystem
+from_deepmd_comp	dpdata/system.py	/^    def from_deepmd_comp(self, folder, type_map = None) :$/;"	m	class:System
+from_deepmd_npy	build/lib/dpdata/system.py	/^    def from_deepmd_npy(self, folder):$/;"	m	class:MultiSystems
+from_deepmd_npy	dpdata/system.py	/^    def from_deepmd_npy(self, folder):$/;"	m	class:MultiSystems
+from_deepmd_raw	build/lib/dpdata/system.py	/^    def from_deepmd_raw(self, folder):$/;"	m	class:MultiSystems
+from_deepmd_raw	build/lib/dpdata/system.py	/^    def from_deepmd_raw(self, folder, type_map = None) :$/;"	m	class:LabeledSystem
+from_deepmd_raw	build/lib/dpdata/system.py	/^    def from_deepmd_raw(self, folder, type_map = None) :$/;"	m	class:System
+from_deepmd_raw	dpdata/system.py	/^    def from_deepmd_raw(self, folder):$/;"	m	class:MultiSystems
+from_deepmd_raw	dpdata/system.py	/^    def from_deepmd_raw(self, folder, type_map = None) :$/;"	m	class:LabeledSystem
+from_deepmd_raw	dpdata/system.py	/^    def from_deepmd_raw(self, folder, type_map = None) :$/;"	m	class:System
+from_dir	build/lib/dpdata/system.py	/^    def from_dir(cls,dir_name, file_name, fmt='auto', type_map=None):$/;"	m	class:MultiSystems
+from_dir	dpdata/system.py	/^    def from_dir(cls,dir_name, file_name, fmt='auto', type_map=None):$/;"	m	class:MultiSystems
+from_fhi_aims_output	build/lib/dpdata/system.py	/^    def from_fhi_aims_output(self, file_name ):$/;"	m	class:LabeledSystem
+from_fhi_aims_output	build/lib/dpdata/system.py	/^    def from_fhi_aims_output(self, file_name, md=True, begin=0, step =1):$/;"	m	class:LabeledSystem
+from_fhi_aims_output	dpdata/system.py	/^    def from_fhi_aims_output(self, file_name ):$/;"	m	class:LabeledSystem
+from_fhi_aims_output	dpdata/system.py	/^    def from_fhi_aims_output(self, file_name, md=True, begin=0, step =1):$/;"	m	class:LabeledSystem
+from_file	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def from_file(cls, name="pyproject.toml"):$/;"	m	class:Configuration
+from_file	build/lib/dpdata/system.py	/^    def from_file(cls,file_name,fmt):$/;"	m	class:MultiSystems
+from_file	dpdata/system.py	/^    def from_file(cls,file_name,fmt):$/;"	m	class:MultiSystems
+from_fmt	build/lib/dpdata/system.py	/^    def from_fmt(self, file_name, fmt='auto', **kwargs):$/;"	m	class:System
+from_fmt	dpdata/system.py	/^    def from_fmt(self, file_name, fmt='auto', **kwargs):$/;"	m	class:System
+from_gaussian_log	build/lib/dpdata/system.py	/^    def from_gaussian_log(self, file_name, md=False):$/;"	m	class:LabeledSystem
+from_gaussian_log	dpdata/system.py	/^    def from_gaussian_log(self, file_name, md=False):$/;"	m	class:LabeledSystem
+from_gaussian_md	build/lib/dpdata/system.py	/^    def from_gaussian_md(self, file_name):$/;"	m	class:LabeledSystem
+from_gaussian_md	dpdata/system.py	/^    def from_gaussian_md(self, file_name):$/;"	m	class:LabeledSystem
+from_gromacs_gro	build/lib/dpdata/system.py	/^    def from_gromacs_gro(self, file_name) :$/;"	m	class:System
+from_gromacs_gro	dpdata/system.py	/^    def from_gromacs_gro(self, file_name) :$/;"	m	class:System
+from_lammps_dump	build/lib/dpdata/system.py	/^    def from_lammps_dump (self,$/;"	m	class:System
+from_lammps_dump	dpdata/system.py	/^    def from_lammps_dump (self,$/;"	m	class:System
+from_lammps_lmp	build/lib/dpdata/system.py	/^    def from_lammps_lmp (self, file_name, type_map = None) :$/;"	m	class:System
+from_lammps_lmp	dpdata/system.py	/^    def from_lammps_lmp (self, file_name, type_map = None) :$/;"	m	class:System
+from_potential_worktree	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def from_potential_worktree(cls, wd):$/;"	m	class:GitWorkdir
+from_pwmat_atomconfig	build/lib/dpdata/system.py	/^    def from_pwmat_atomconfig(self, file_name) :$/;"	m	class:System
+from_pwmat_atomconfig	dpdata/system.py	/^    def from_pwmat_atomconfig(self, file_name) :$/;"	m	class:System
+from_pwmat_output	build/lib/dpdata/system.py	/^    def from_pwmat_output(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_pwmat_output	dpdata/system.py	/^    def from_pwmat_output(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_qe_cp_traj	build/lib/dpdata/system.py	/^    def from_qe_cp_traj(self, prefix, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_qe_cp_traj	build/lib/dpdata/system.py	/^    def from_qe_cp_traj(self,$/;"	m	class:System
+from_qe_cp_traj	dpdata/system.py	/^    def from_qe_cp_traj(self, prefix, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_qe_cp_traj	dpdata/system.py	/^    def from_qe_cp_traj(self,$/;"	m	class:System
+from_qe_pw_scf	build/lib/dpdata/system.py	/^    def from_qe_pw_scf(self, file_name) :$/;"	m	class:LabeledSystem
+from_qe_pw_scf	dpdata/system.py	/^    def from_qe_pw_scf(self, file_name) :$/;"	m	class:LabeledSystem
+from_quip_gap_xyz_file	build/lib/dpdata/system.py	/^    def from_quip_gap_xyz_file(self,file_name):$/;"	m	class:MultiSystems
+from_quip_gap_xyz_file	dpdata/system.py	/^    def from_quip_gap_xyz_file(self,file_name):$/;"	m	class:MultiSystems
+from_siesta_aiMD_output	build/lib/dpdata/system.py	/^    def from_siesta_aiMD_output(self, file_name):$/;"	m	class:LabeledSystem
+from_siesta_aiMD_output	build/lib/dpdata/system.py	/^    def from_siesta_aiMD_output(self, fname):$/;"	m	class:System
+from_siesta_aiMD_output	dpdata/system.py	/^    def from_siesta_aiMD_output(self, file_name):$/;"	m	class:LabeledSystem
+from_siesta_aiMD_output	dpdata/system.py	/^    def from_siesta_aiMD_output(self, fname):$/;"	m	class:System
+from_siesta_output	build/lib/dpdata/system.py	/^    def from_siesta_output(self, file_name) :$/;"	m	class:LabeledSystem
+from_siesta_output	build/lib/dpdata/system.py	/^    def from_siesta_output(self, fname):$/;"	m	class:System
+from_siesta_output	dpdata/system.py	/^    def from_siesta_output(self, file_name) :$/;"	m	class:LabeledSystem
+from_siesta_output	dpdata/system.py	/^    def from_siesta_output(self, fname):$/;"	m	class:System
+from_system_data	build/lib/dpdata/lammps/lmp.py	/^def from_system_data(system, f_idx = 0) :$/;"	f
+from_system_data	build/lib/dpdata/pwmat/atomconfig.py	/^def from_system_data(system, f_idx = 0, skip_zeros = True) :$/;"	f
+from_system_data	build/lib/dpdata/vasp/poscar.py	/^def from_system_data(system, f_idx = 0, skip_zeros = True) :$/;"	f
+from_system_data	dpdata/lammps/lmp.py	/^def from_system_data(system, f_idx = 0) :$/;"	f
+from_system_data	dpdata/pwmat/atomconfig.py	/^def from_system_data(system, f_idx = 0, skip_zeros = True) :$/;"	f
+from_system_data	dpdata/vasp/poscar.py	/^def from_system_data(system, f_idx = 0, skip_zeros = True) :$/;"	f
+from_vasp_outcar	build/lib/dpdata/system.py	/^    def from_vasp_outcar(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_vasp_outcar	dpdata/system.py	/^    def from_vasp_outcar(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_vasp_poscar	build/lib/dpdata/system.py	/^    def from_vasp_poscar(self, file_name) :$/;"	m	class:System
+from_vasp_poscar	dpdata/system.py	/^    def from_vasp_poscar(self, file_name) :$/;"	m	class:System
+from_vasp_xml	build/lib/dpdata/system.py	/^    def from_vasp_xml(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+from_vasp_xml	dpdata/system.py	/^    def from_vasp_xml(self, file_name, begin = 0, step = 1) :$/;"	m	class:LabeledSystem
+function_has_arg	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^from .utils import function_has_arg, string_types$/;"	i
+function_has_arg	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def function_has_arg(fn, argname):$/;"	f
+gaussian	build/lib/dpdata/system.py	/^import dpdata.gaussian.log$/;"	i
+gaussian	dpdata/system.py	/^import dpdata.gaussian.log$/;"	i
+get_aiMD_frame	build/lib/dpdata/siesta/aiMD_output.py	/^def get_aiMD_frame(fname):$/;"	f
+get_aiMD_frame	dpdata/siesta/aiMD_output.py	/^def get_aiMD_frame(fname):$/;"	f
+get_atom_name	build/lib/dpdata/siesta/aiMD_output.py	/^def get_atom_name(fout):$/;"	f
+get_atom_name	build/lib/dpdata/siesta/output.py	/^def get_atom_name(fout):$/;"	f
+get_atom_name	dpdata/siesta/aiMD_output.py	/^def get_atom_name(fout):$/;"	f
+get_atom_name	dpdata/siesta/output.py	/^def get_atom_name(fout):$/;"	f
+get_atom_names	build/lib/dpdata/system.py	/^    def get_atom_names(self):$/;"	m	class:System
+get_atom_names	dpdata/system.py	/^    def get_atom_names(self):$/;"	m	class:System
+get_atom_numbs	build/lib/dpdata/siesta/aiMD_output.py	/^def get_atom_numbs(atomtypes):$/;"	f
+get_atom_numbs	build/lib/dpdata/siesta/output.py	/^def get_atom_numbs(atomtypes):$/;"	f
+get_atom_numbs	build/lib/dpdata/system.py	/^    def get_atom_numbs(self):$/;"	m	class:System
+get_atom_numbs	dpdata/siesta/aiMD_output.py	/^def get_atom_numbs(atomtypes):$/;"	f
+get_atom_numbs	dpdata/siesta/output.py	/^def get_atom_numbs(atomtypes):$/;"	f
+get_atom_numbs	dpdata/system.py	/^    def get_atom_numbs(self):$/;"	m	class:System
+get_atom_perturb_vector	build/lib/dpdata/system.py	/^def get_atom_perturb_vector(atom_pert_distance, atom_pert_style='normal'):$/;"	f
+get_atom_perturb_vector	dpdata/system.py	/^def get_atom_perturb_vector(atom_pert_distance, atom_pert_style='normal'):$/;"	f
+get_atom_types	build/lib/dpdata/siesta/aiMD_output.py	/^def get_atom_types(fout, atomnums):$/;"	f
+get_atom_types	build/lib/dpdata/siesta/output.py	/^def get_atom_types(fout, atomnums):$/;"	f
+get_atom_types	build/lib/dpdata/system.py	/^    def get_atom_types(self):$/;"	m	class:System
+get_atom_types	dpdata/siesta/aiMD_output.py	/^def get_atom_types(fout, atomnums):$/;"	f
+get_atom_types	dpdata/siesta/output.py	/^def get_atom_types(fout, atomnums):$/;"	f
+get_atom_types	dpdata/system.py	/^    def get_atom_types(self):$/;"	m	class:System
+get_atoms	build/lib/dpdata/lammps/lmp.py	/^def get_atoms(lines) :$/;"	f
+get_atoms	dpdata/lammps/lmp.py	/^def get_atoms(lines) :$/;"	f
+get_atype	build/lib/dpdata/lammps/dump.py	/^def get_atype(lines, type_idx_zero = False) :$/;"	f
+get_atype	build/lib/dpdata/lammps/lmp.py	/^def get_atype(lines, type_idx_zero = False) :$/;"	f
+get_atype	dpdata/lammps/dump.py	/^def get_atype(lines, type_idx_zero = False) :$/;"	f
+get_atype	dpdata/lammps/lmp.py	/^def get_atype(lines, type_idx_zero = False) :$/;"	f
+get_block	build/lib/dpdata/qe/scf.py	/^def get_block (lines, keyword, skip = 0) :$/;"	f
+get_block	dpdata/qe/scf.py	/^def get_block (lines, keyword, skip = 0) :$/;"	f
+get_block_generator	build/lib/dpdata/xyz/quip_gap_xyz.py	/^    def get_block_generator(self):$/;"	m	class:QuipGapxyzSystems
+get_block_generator	dpdata/xyz/quip_gap_xyz.py	/^    def get_block_generator(self):$/;"	m	class:QuipGapxyzSystems
+get_branch	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def get_branch(self):$/;"	m	class:GitWorkdir
+get_cell	build/lib/dpdata/qe/scf.py	/^def get_cell (lines) :$/;"	f
+get_cell	dpdata/qe/scf.py	/^def get_cell (lines) :$/;"	f
+get_cell_perturb_matrix	build/lib/dpdata/system.py	/^def get_cell_perturb_matrix(cell_pert_fraction):$/;"	f
+get_cell_perturb_matrix	dpdata/system.py	/^def get_cell_perturb_matrix(cell_pert_fraction):$/;"	f
+get_coords	build/lib/dpdata/qe/scf.py	/^def get_coords (lines) :$/;"	f
+get_coords	dpdata/qe/scf.py	/^def get_coords (lines) :$/;"	f
+get_dumpbox	build/lib/dpdata/lammps/dump.py	/^def get_dumpbox(lines) :$/;"	f
+get_dumpbox	dpdata/lammps/dump.py	/^def get_dumpbox(lines) :$/;"	f
+get_energy	build/lib/dpdata/qe/scf.py	/^def get_energy (lines) :$/;"	f
+get_energy	dpdata/qe/scf.py	/^def get_energy (lines) :$/;"	f
+get_fhi_aims_block	build/lib/dpdata/fhi_aims/output.py	/^def get_fhi_aims_block(fp) :$/;"	f
+get_fhi_aims_block	dpdata/fhi_aims/output.py	/^def get_fhi_aims_block(fp) :$/;"	f
+get_file_info	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^def get_file_info(path):$/;"	f
+get_force	build/lib/dpdata/qe/scf.py	/^def get_force (lines) :$/;"	f
+get_force	dpdata/qe/scf.py	/^def get_force (lines) :$/;"	f
+get_frame	build/lib/dpdata/qe/scf.py	/^def get_frame (fname):$/;"	f
+get_frame	dpdata/qe/scf.py	/^def get_frame (fname):$/;"	f
+get_frames	build/lib/dpdata/ase/db.py	/^def get_frames(fname, begin=0, step=1):$/;"	f
+get_frames	build/lib/dpdata/cp2k/output.py	/^def get_frames (fname) :$/;"	f
+get_frames	build/lib/dpdata/fhi_aims/output.py	/^def get_frames (fname, md=True, begin = 0, step = 1) :$/;"	f
+get_frames	build/lib/dpdata/pwmat/movement.py	/^def get_frames (fname, begin = 0, step = 1) :$/;"	f
+get_frames	build/lib/dpdata/vasp/outcar.py	/^def get_frames (fname, begin = 0, step = 1) :$/;"	f
+get_frames	dpdata/ase/db.py	/^def get_frames(fname, begin=0, step=1):$/;"	f
+get_frames	dpdata/cp2k/output.py	/^def get_frames (fname) :$/;"	f
+get_frames	dpdata/fhi_aims/output.py	/^def get_frames (fname, md=True, begin = 0, step = 1) :$/;"	f
+get_frames	dpdata/pwmat/movement.py	/^def get_frames (fname, begin = 0, step = 1) :$/;"	f
+get_frames	dpdata/vasp/outcar.py	/^def get_frames (fname, begin = 0, step = 1) :$/;"	f
+get_graph_distance	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^def get_graph_distance(root, rev1, rev2="."):$/;"	f
+get_info	build/lib/dpdata/fhi_aims/output.py	/^def get_info (lines, type_idx_zero = False) :$/;"	f
+get_info	dpdata/fhi_aims/output.py	/^def get_info (lines, type_idx_zero = False) :$/;"	f
+get_latest_normalizable_tag	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^def get_latest_normalizable_tag(root):$/;"	f
+get_lmpbox	build/lib/dpdata/lammps/lmp.py	/^def get_lmpbox(lines) :$/;"	f
+get_lmpbox	dpdata/lammps/lmp.py	/^def get_lmpbox(lines) :$/;"	f
+get_local_dirty_tag	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def get_local_dirty_tag(version):$/;"	f
+get_local_node_and_date	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def get_local_node_and_date(version):$/;"	f
+get_local_node_and_timestamp	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def get_local_node_and_timestamp(version, fmt="%Y%m%d%H%M%S"):$/;"	f
+get_log_block_generator	build/lib/dpdata/cp2k/output.py	/^    def get_log_block_generator(self):$/;"	m	class:Cp2kSystems
+get_log_block_generator	dpdata/cp2k/output.py	/^    def get_log_block_generator(self):$/;"	m	class:Cp2kSystems
+get_movement_block	build/lib/dpdata/pwmat/movement.py	/^def get_movement_block(fp) :$/;"	f
+get_movement_block	dpdata/pwmat/movement.py	/^def get_movement_block(fp) :$/;"	f
+get_natoms	build/lib/dpdata/lammps/dump.py	/^def get_natoms(lines) :$/;"	f
+get_natoms	build/lib/dpdata/lammps/lmp.py	/^def get_natoms(lines) :$/;"	f
+get_natoms	build/lib/dpdata/system.py	/^    def get_natoms(self) :$/;"	m	class:System
+get_natoms	dpdata/lammps/dump.py	/^def get_natoms(lines) :$/;"	f
+get_natoms	dpdata/lammps/lmp.py	/^def get_natoms(lines) :$/;"	f
+get_natoms	dpdata/system.py	/^    def get_natoms(self) :$/;"	m	class:System
+get_natoms_vec	build/lib/dpdata/lammps/dump.py	/^def get_natoms_vec(lines) :$/;"	f
+get_natoms_vec	build/lib/dpdata/lammps/lmp.py	/^def get_natoms_vec(lines) :$/;"	f
+get_natoms_vec	dpdata/lammps/dump.py	/^def get_natoms_vec(lines) :$/;"	f
+get_natoms_vec	dpdata/lammps/lmp.py	/^def get_natoms_vec(lines) :$/;"	f
+get_natomtypes	build/lib/dpdata/lammps/dump.py	/^def get_natomtypes(lines) :$/;"	f
+get_natomtypes	build/lib/dpdata/lammps/lmp.py	/^def get_natomtypes(lines) :$/;"	f
+get_natomtypes	dpdata/lammps/dump.py	/^def get_natomtypes(lines) :$/;"	f
+get_natomtypes	dpdata/lammps/lmp.py	/^def get_natomtypes(lines) :$/;"	f
+get_nframes	build/lib/dpdata/system.py	/^    def get_nframes(self) :$/;"	m	class:MultiSystems
+get_nframes	build/lib/dpdata/system.py	/^    def get_nframes(self) :$/;"	m	class:System
+get_nframes	dpdata/system.py	/^    def get_nframes(self) :$/;"	m	class:MultiSystems
+get_nframes	dpdata/system.py	/^    def get_nframes(self) :$/;"	m	class:System
+get_no_local_node	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def get_no_local_node(_):$/;"	f
+get_outcar_block	build/lib/dpdata/vasp/outcar.py	/^def get_outcar_block(fp) :$/;"	f
+get_outcar_block	dpdata/vasp/outcar.py	/^def get_outcar_block(fp) :$/;"	f
+get_posi	build/lib/dpdata/lammps/dump.py	/^def get_posi(lines) :$/;"	f
+get_posi	build/lib/dpdata/lammps/lmp.py	/^def get_posi(lines) :$/;"	f
+get_posi	dpdata/lammps/dump.py	/^def get_posi(lines) :$/;"	f
+get_posi	dpdata/lammps/lmp.py	/^def get_posi(lines) :$/;"	f
+get_posi_frac	build/lib/dpdata/lammps/dump.py	/^def get_posi_frac(lines) :$/;"	f
+get_posi_frac	dpdata/lammps/dump.py	/^def get_posi_frac(lines) :$/;"	f
+get_rand_generator	tests/test_perturb.py	/^    def get_rand_generator():        $/;"	m	class:ConstGenerator
+get_rand_generator	tests/test_perturb.py	/^    def get_rand_generator():$/;"	m	class:NormalGenerator
+get_rand_generator	tests/test_perturb.py	/^    def get_rand_generator():$/;"	m	class:UniformGenerator
+get_randn_generator	tests/test_perturb.py	/^    def get_randn_generator():$/;"	m	class:ConstGenerator
+get_randn_generator	tests/test_perturb.py	/^    def get_randn_generator():$/;"	m	class:NormalGenerator
+get_randn_generator	tests/test_perturb.py	/^    def get_randn_generator():$/;"	m	class:UniformGenerator
+get_single_line_tail	build/lib/dpdata/siesta/aiMD_output.py	/^def get_single_line_tail(fin, keyword, num=1):$/;"	f
+get_single_line_tail	build/lib/dpdata/siesta/output.py	/^def get_single_line_tail(fin, keyword, num=1):$/;"	f
+get_single_line_tail	dpdata/siesta/aiMD_output.py	/^def get_single_line_tail(fin, keyword, num=1):$/;"	f
+get_single_line_tail	dpdata/siesta/output.py	/^def get_single_line_tail(fin, keyword, num=1):$/;"	f
+get_stress	build/lib/dpdata/qe/scf.py	/^def get_stress (lines) :$/;"	f
+get_stress	dpdata/qe/scf.py	/^def get_stress (lines) :$/;"	f
+get_varray	build/lib/dpdata/vasp/xml.py	/^def get_varray(varray) :$/;"	f
+get_varray	dpdata/vasp/xml.py	/^def get_varray(varray) :$/;"	f
+get_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^def get_version($/;"	f
+get_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__main__.py	/^from setuptools_scm import get_version$/;"	i
+get_virial	build/lib/dpdata/siesta/aiMD_output.py	/^def get_virial(fout, cell):$/;"	f
+get_virial	build/lib/dpdata/siesta/output.py	/^def get_virial(fout, cells):$/;"	f
+get_virial	dpdata/siesta/aiMD_output.py	/^def get_virial(fout, cell):$/;"	f
+get_virial	dpdata/siesta/output.py	/^def get_virial(fout, cells):$/;"	f
+get_xyz_block_generator	build/lib/dpdata/cp2k/output.py	/^    def get_xyz_block_generator(self):$/;"	m	class:Cp2kSystems
+get_xyz_block_generator	dpdata/cp2k/output.py	/^    def get_xyz_block_generator(self):$/;"	m	class:Cp2kSystems
+git_find_files	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^def git_find_files(path=""):$/;"	f
+glob	build/lib/dpdata/deepmd/comp.py	/^import os,glob,shutil$/;"	i
+glob	build/lib/dpdata/system.py	/^import glob$/;"	i
+glob	dpdata/deepmd/comp.py	/^import os,glob,shutil$/;"	i
+glob	dpdata/system.py	/^import glob$/;"	i
+gro	build/lib/dpdata/system.py	/^import dpdata.gromacs.gro$/;"	i
+gro	dpdata/system.py	/^import dpdata.gromacs.gro$/;"	i
+gromacs	build/lib/dpdata/system.py	/^import dpdata.gromacs.gro$/;"	i
+gromacs	dpdata/system.py	/^import dpdata.gromacs.gro$/;"	i
+guess_next_dev_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def guess_next_dev_version(version):$/;"	f
+guess_next_simple_semver	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def guess_next_simple_semver(version, retain, increment=True):$/;"	f
+guess_next_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def guess_next_version(tag_version):$/;"	f
+handle_nonzero_success	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^def handle_nonzero_success(result):$/;"	f
+handle_single_log_frame	build/lib/dpdata/cp2k/output.py	/^    def handle_single_log_frame(self, lines):$/;"	m	class:Cp2kSystems
+handle_single_log_frame	dpdata/cp2k/output.py	/^    def handle_single_log_frame(self, lines):$/;"	m	class:Cp2kSystems
+handle_single_xyz_frame	build/lib/dpdata/cp2k/output.py	/^    def handle_single_xyz_frame(self, lines):$/;"	m	class:Cp2kSystems
+handle_single_xyz_frame	build/lib/dpdata/xyz/quip_gap_xyz.py	/^    def handle_single_xyz_frame(lines):$/;"	m	class:QuipGapxyzSystems
+handle_single_xyz_frame	dpdata/cp2k/output.py	/^    def handle_single_xyz_frame(self, lines):$/;"	m	class:Cp2kSystems
+handle_single_xyz_frame	dpdata/xyz/quip_gap_xyz.py	/^    def handle_single_xyz_frame(lines):$/;"	m	class:QuipGapxyzSystems
+hartree2ev	build/lib/dpdata/gaussian/log.py	/^hartree2ev = 27.211386018$/;"	v
+hartree2ev	build/lib/dpdata/qe/traj.py	/^hartree2ev = 27.211386018$/;"	v
+hartree2ev	dpdata/gaussian/log.py	/^hartree2ev = 27.211386018$/;"	v
+hartree2ev	dpdata/qe/traj.py	/^hartree2ev = 27.211386018$/;"	v
+has_command	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^from .utils import do_ex, trace, has_command$/;"	i
+has_command	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^from .utils import do, trace, data_from_mime, has_command$/;"	i
+has_command	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def has_command(name):$/;"	f
+has_virial	build/lib/dpdata/system.py	/^    def has_virial(self) :$/;"	m	class:LabeledSystem
+has_virial	dpdata/system.py	/^    def has_virial(self) :$/;"	m	class:LabeledSystem
+hg_find_files	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_hg.py	/^def hg_find_files(path=""):$/;"	f
+html_static_path	docs/conf.py	/^html_static_path = ['_static']$/;"	v
+html_theme	docs/conf.py	/^html_theme = 'alabaster'$/;"	v
+htmlhelp_basename	docs/conf.py	/^htmlhelp_basename = 'dpdatadoc'$/;"	v
+infer_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^def infer_version(dist):$/;"	f
+inspect	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import inspect$/;"	i
+inspect	build/lib/dpdata/system.py	/^import inspect$/;"	i
+inspect	dpdata/system.py	/^import inspect$/;"	i
+install_requires	setup.py	/^    install_requires=install_requires,$/;"	v
+io	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import io$/;"	i
+is_dirty	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def is_dirty(self):$/;"	m	class:GitWorkdir
+is_shallow	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def is_shallow(self):$/;"	m	class:GitWorkdir
+isfile	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^from os.path import isfile, join$/;"	i
+iter_entry_points	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/discover.py	/^from pkg_resources import iter_entry_points$/;"	i
+iter_entry_points	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^from pkg_resources import iter_entry_points$/;"	i
+iter_entry_points	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^from pkg_resources import iter_entry_points$/;"	i
+iter_matching_entrypoints	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^from .discover import iter_matching_entrypoints$/;"	i
+iter_matching_entrypoints	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/discover.py	/^def iter_matching_entrypoints(path, entrypoint):$/;"	f
+join	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^from os.path import isfile, join$/;"	i
+kbar2evperang3	build/lib/dpdata/qe/scf.py	/^kbar2evperang3 = 1e3 \/ 1.602176621e6$/;"	v
+kbar2evperang3	build/lib/dpdata/qe/traj.py	/^kbar2evperang3 = 1e3 \/ 1.602176621e6$/;"	v
+kbar2evperang3	dpdata/qe/scf.py	/^kbar2evperang3 = 1e3 \/ 1.602176621e6$/;"	v
+kbar2evperang3	dpdata/qe/traj.py	/^kbar2evperang3 = 1e3 \/ 1.602176621e6$/;"	v
+kcalmol2eV	build/lib/dpdata/amber/md.py	/^kcalmol2eV= 0.04336410390059322$/;"	v
+kcalmol2eV	dpdata/amber/md.py	/^kcalmol2eV= 0.04336410390059322$/;"	v
+keywords	setup.py	/^    keywords='lammps vasp deepmd-kit',$/;"	v
+lammps	build/lib/dpdata/__init__.py	/^from . import lammps$/;"	i
+lammps	build/lib/dpdata/system.py	/^import dpdata.lammps.dump$/;"	i
+lammps	build/lib/dpdata/system.py	/^import dpdata.lammps.lmp$/;"	i
+lammps	dpdata/__init__.py	/^from . import lammps$/;"	i
+lammps	dpdata/system.py	/^import dpdata.lammps.dump$/;"	i
+lammps	dpdata/system.py	/^import dpdata.lammps.lmp$/;"	i
+language	docs/conf.py	/^language = None$/;"	v
+latex_documents	docs/conf.py	/^latex_documents = [$/;"	v
+latex_elements	docs/conf.py	/^latex_elements = {$/;"	v
+latt_patt	build/lib/dpdata/fhi_aims/output.py	/^latt_patt="\\|\\s+([0-9]{1,}[.][0-9]*)\\s+([0-9]{1,}[.][0-9]*)\\s+([0-9]{1,}[.][0-9]*)"$/;"	v
+latt_patt	dpdata/fhi_aims/output.py	/^latt_patt="\\|\\s+([0-9]{1,}[.][0-9]*)\\s+([0-9]{1,}[.][0-9]*)\\s+([0-9]{1,}[.][0-9]*)"$/;"	v
+length_convert	build/lib/dpdata/gaussian/log.py	/^length_convert = bohr2ang$/;"	v
+length_convert	build/lib/dpdata/qe/traj.py	/^length_convert = bohr2ang$/;"	v
+length_convert	dpdata/gaussian/log.py	/^length_convert = bohr2ang$/;"	v
+length_convert	dpdata/qe/traj.py	/^length_convert = bohr2ang$/;"	v
+lib_path	build/lib/dpdata/lammps/dump.py	/^lib_path = os.path.dirname(os.path.realpath(__file__))$/;"	v
+lib_path	dpdata/lammps/dump.py	/^lib_path = os.path.dirname(os.path.realpath(__file__))$/;"	v
+lines	build/lib/dpdata/lammps/dump.py	/^    lines = load_file('conf.5.dump', begin = 0, step = 2)$/;"	v
+lines	build/lib/dpdata/lammps/lmp.py	/^    lines = open(fname).read().split('\\n')$/;"	v
+lines	dpdata/lammps/dump.py	/^    lines = load_file('conf.5.dump', begin = 0, step = 2)$/;"	v
+lines	dpdata/lammps/lmp.py	/^    lines = open(fname).read().split('\\n')$/;"	v
+lmp	build/lib/dpdata/lammps/dump.py	/^import lmp$/;"	i
+lmp	build/lib/dpdata/system.py	/^import dpdata.lammps.lmp$/;"	i
+lmp	dpdata/lammps/dump.py	/^import lmp$/;"	i
+lmp	dpdata/system.py	/^import dpdata.lammps.lmp$/;"	i
+lmpbox2box	build/lib/dpdata/lammps/lmp.py	/^def lmpbox2box(lohi, tilt) :$/;"	f
+lmpbox2box	dpdata/lammps/lmp.py	/^def lmpbox2box(lohi, tilt) :$/;"	f
+load	build/lib/dpdata/system.py	/^    def load(filename):$/;"	m	class:System
+load	dpdata/system.py	/^    def load(filename):$/;"	m	class:System
+load_atom_names	build/lib/dpdata/qe/traj.py	/^def load_atom_names(lines, ntypes) :$/;"	f
+load_atom_names	dpdata/qe/traj.py	/^def load_atom_names(lines, ntypes) :$/;"	f
+load_atom_types	build/lib/dpdata/qe/traj.py	/^def load_atom_types(lines, natoms, atom_names) :$/;"	f
+load_atom_types	dpdata/qe/traj.py	/^def load_atom_types(lines, natoms, atom_names) :$/;"	f
+load_block	build/lib/dpdata/qe/traj.py	/^def load_block(lines, key, nlines) :$/;"	f
+load_block	dpdata/qe/traj.py	/^def load_block(lines, key, nlines) :$/;"	f
+load_cell_parameters	build/lib/dpdata/qe/traj.py	/^def load_cell_parameters(lines) :$/;"	f
+load_cell_parameters	dpdata/qe/traj.py	/^def load_cell_parameters(lines) :$/;"	f
+load_celldm	build/lib/dpdata/qe/traj.py	/^def load_celldm(lines) :$/;"	f
+load_celldm	dpdata/qe/traj.py	/^def load_celldm(lines) :$/;"	f
+load_data	build/lib/dpdata/qe/traj.py	/^def load_data(fname, $/;"	f
+load_data	dpdata/qe/traj.py	/^def load_data(fname, $/;"	f
+load_energy	build/lib/dpdata/qe/traj.py	/^def load_energy(fname, begin = 0, step = 1) :$/;"	f
+load_energy	dpdata/qe/traj.py	/^def load_energy(fname, begin = 0, step = 1) :$/;"	f
+load_file	build/lib/dpdata/lammps/dump.py	/^def load_file(fname, begin = 0, step = 1) :$/;"	f
+load_file	dpdata/lammps/dump.py	/^def load_file(fname, begin = 0, step = 1) :$/;"	f
+load_key	build/lib/dpdata/qe/traj.py	/^def load_key (lines, key) :$/;"	f
+load_key	dpdata/qe/traj.py	/^def load_key (lines, key) :$/;"	f
+load_param_file	build/lib/dpdata/qe/traj.py	/^def load_param_file(fname) :$/;"	f
+load_param_file	dpdata/qe/traj.py	/^def load_param_file(fname) :$/;"	f
+load_systems_from_file	build/lib/dpdata/system.py	/^    def load_systems_from_file(self, file_name=None, fmt=None):$/;"	m	class:MultiSystems
+load_systems_from_file	dpdata/system.py	/^    def load_systems_from_file(self, file_name=None, fmt=None):$/;"	m	class:MultiSystems
+load_type	build/lib/dpdata/deepmd/comp.py	/^from .raw import load_type$/;"	i
+load_type	build/lib/dpdata/deepmd/raw.py	/^def load_type(folder, type_map = None) :$/;"	f
+load_type	dpdata/deepmd/comp.py	/^from .raw import load_type$/;"	i
+load_type	dpdata/deepmd/raw.py	/^def load_type(folder, type_map = None) :$/;"	f
+loadfn	build/lib/dpdata/periodic_table.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+loadfn	build/lib/dpdata/system.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+loadfn	dpdata/periodic_table.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+loadfn	dpdata/system.py	/^from monty.serialization import loadfn,dumpfn$/;"	i
+loadfn	tests/test_to_pymatgen_entry.py	/^from monty.serialization import  loadfn$/;"	i
+log	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^log = logging.getLogger(__name__)$/;"	v
+log	build/lib/dpdata/system.py	/^import dpdata.gaussian.log$/;"	i
+log	dpdata/system.py	/^import dpdata.gaussian.log$/;"	i
+logging	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^import logging$/;"	i
+long_description	setup.py	/^    long_description=readme,$/;"	v
+long_description_content_type	setup.py	/^    long_description_content_type="text\/markdown",$/;"	v
+main	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__main__.py	/^def main():$/;"	f
+man_pages	docs/conf.py	/^man_pages = [$/;"	v
+map_atom_types	build/lib/dpdata/system.py	/^    def map_atom_types(self,type_map=None):$/;"	m	class:System
+map_atom_types	dpdata/system.py	/^    def map_atom_types(self,type_map=None):$/;"	m	class:System
+mass	build/lib/dpdata/periodic_table.py	/^    def mass(self):$/;"	m	class:Element
+mass	dpdata/periodic_table.py	/^    def mass(self):$/;"	m	class:Element
+master_doc	docs/conf.py	/^master_doc = 'index'$/;"	v
+md	build/lib/dpdata/__init__.py	/^from . import md$/;"	i
+md	build/lib/dpdata/system.py	/^import dpdata.amber.md$/;"	i
+md	build/lib/dpdata/system.py	/^import dpdata.md.pbc$/;"	i
+md	dpdata/__init__.py	/^from . import md$/;"	i
+md	dpdata/system.py	/^import dpdata.amber.md$/;"	i
+md	dpdata/system.py	/^import dpdata.md.pbc$/;"	i
+md	tests/context.py	/^import dpdata.md.msd$/;"	i
+md	tests/context.py	/^import dpdata.md.water$/;"	i
+message	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^	def message(self):$/;"	m	class:WindowsError
+meta	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^from .version import format_version, meta$/;"	i
+meta	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^from .version import meta$/;"	i
+meta	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^from .version import tag_to_version, meta$/;"	i
+meta	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^from .version import meta, tags_to_versions$/;"	i
+meta	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def meta($/;"	f
+movement	build/lib/dpdata/system.py	/^import dpdata.pwmat.movement$/;"	i
+movement	dpdata/system.py	/^import dpdata.pwmat.movement$/;"	i
+msd	build/lib/dpdata/md/msd.py	/^def msd(system, sel = None, begin = 0, window = 0) :$/;"	f
+msd	dpdata/md/msd.py	/^def msd(system, sel = None, begin = 0, window = 0) :$/;"	f
+msd	tests/context.py	/^import dpdata.md.msd$/;"	i
+myfilecmp	tests/test_pwmat_config_dump.py	/^def myfilecmp(test, f0, f1):$/;"	f
+myfilecmp	tests/test_vasp_poscar_dump.py	/^def myfilecmp(test, f0, f1):$/;"	f
+name	build/lib/dpdata/periodic_table.py	/^    def name(self):$/;"	m	class:Element
+name	dpdata/periodic_table.py	/^    def name(self):$/;"	m	class:Element
+name	setup.py	/^    name="dpdata",$/;"	v
+neighborlist	build/lib/dpdata/md/rdf.py	/^    import ase.neighborlist    $/;"	i
+neighborlist	build/lib/dpdata/md/water.py	/^        import ase.neighborlist    $/;"	i
+neighborlist	build/lib/dpdata/md/water.py	/^    import ase.neighborlist    $/;"	i
+neighborlist	dpdata/md/rdf.py	/^    import ase.neighborlist    $/;"	i
+neighborlist	dpdata/md/water.py	/^        import ase.neighborlist    $/;"	i
+neighborlist	dpdata/md/water.py	/^    import ase.neighborlist    $/;"	i
+neighborlist	tests/test_water_ions.py	/^    import ase.neighborlist    $/;"	i
+netcdf	build/lib/dpdata/amber/md.py	/^from scipy.io import netcdf$/;"	i
+netcdf	dpdata/amber/md.py	/^from scipy.io import netcdf$/;"	i
+nm2ang	build/lib/dpdata/gromacs/gro.py	/^nm2ang = 10.$/;"	v
+nm2ang	dpdata/gromacs/gro.py	/^nm2ang = 10.$/;"	v
+no_git_env	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def no_git_env(env):$/;"	f
+node	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    def node(self):$/;"	m	class:GitWorkdir
+nopbc	build/lib/dpdata/system.py	/^    def nopbc(self):$/;"	m	class:System
+nopbc	dpdata/system.py	/^    def nopbc(self):$/;"	m	class:System
+np	build/lib/dpdata/amber/md.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/ase/db.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/cp2k/cell.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/cp2k/output.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/deepmd/comp.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/deepmd/raw.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/fhi_aims/output.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/gaussian/log.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/gromacs/gro.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/lammps/dump.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/lammps/lmp.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/md/msd.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/md/pbc.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/md/rdf.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/md/water.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/pwmat/atomconfig.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/pwmat/movement.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/qe/scf.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/qe/traj.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/siesta/aiMD_output.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/siesta/output.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/system.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/vasp/outcar.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/vasp/poscar.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/vasp/xml.py	/^import numpy as np$/;"	i
+np	build/lib/dpdata/xyz/quip_gap_xyz.py	/^import numpy as np$/;"	i
+np	dpdata/amber/md.py	/^import numpy as np$/;"	i
+np	dpdata/ase/db.py	/^import numpy as np$/;"	i
+np	dpdata/cp2k/cell.py	/^import numpy as np$/;"	i
+np	dpdata/cp2k/output.py	/^import numpy as np$/;"	i
+np	dpdata/deepmd/comp.py	/^import numpy as np$/;"	i
+np	dpdata/deepmd/raw.py	/^import numpy as np$/;"	i
+np	dpdata/fhi_aims/output.py	/^import numpy as np$/;"	i
+np	dpdata/gaussian/log.py	/^import numpy as np$/;"	i
+np	dpdata/gromacs/gro.py	/^import numpy as np$/;"	i
+np	dpdata/lammps/dump.py	/^import numpy as np$/;"	i
+np	dpdata/lammps/lmp.py	/^import numpy as np$/;"	i
+np	dpdata/md/msd.py	/^import numpy as np$/;"	i
+np	dpdata/md/pbc.py	/^import numpy as np$/;"	i
+np	dpdata/md/rdf.py	/^import numpy as np$/;"	i
+np	dpdata/md/water.py	/^import numpy as np$/;"	i
+np	dpdata/pwmat/atomconfig.py	/^import numpy as np$/;"	i
+np	dpdata/pwmat/movement.py	/^import numpy as np$/;"	i
+np	dpdata/qe/scf.py	/^import numpy as np$/;"	i
+np	dpdata/qe/traj.py	/^import numpy as np$/;"	i
+np	dpdata/siesta/aiMD_output.py	/^import numpy as np$/;"	i
+np	dpdata/siesta/output.py	/^import numpy as np$/;"	i
+np	dpdata/system.py	/^import numpy as np$/;"	i
+np	dpdata/vasp/outcar.py	/^import numpy as np$/;"	i
+np	dpdata/vasp/poscar.py	/^import numpy as np$/;"	i
+np	dpdata/vasp/xml.py	/^import numpy as np$/;"	i
+np	dpdata/xyz/quip_gap_xyz.py	/^import numpy as np$/;"	i
+np	tests/comp_sys.py	/^import numpy as np$/;"	i
+np	tests/poscars/poscar_ref_oh.py	/^import numpy as np$/;"	i
+np	tests/pwmat/config_ref_ch4.py	/^import numpy as np$/;"	i
+np	tests/pwmat/config_ref_oh.py	/^import numpy as np$/;"	i
+np	tests/test_cell_to_low_triangle.py	/^import numpy as np$/;"	i
+np	tests/test_cp2k_aimd_output.py	/^import numpy as np$/;"	i
+np	tests/test_cp2k_output.py	/^import numpy as np$/;"	i
+np	tests/test_deepmd_comp.py	/^import numpy as np$/;"	i
+np	tests/test_deepmd_raw.py	/^import numpy as np$/;"	i
+np	tests/test_elements_index.py	/^import numpy as np$/;"	i
+np	tests/test_empty.py	/^import numpy as np$/;"	i
+np	tests/test_fhi_md_multi_elem_output.py	/^import numpy as np$/;"	i
+np	tests/test_fhi_md_output.py	/^import numpy as np$/;"	i
+np	tests/test_fhi_output.py	/^import numpy as np$/;"	i
+np	tests/test_gaussian_log.py	/^import numpy as np$/;"	i
+np	tests/test_gromacs_gro.py	/^import numpy as np$/;"	i
+np	tests/test_json.py	/^import numpy as np$/;"	i
+np	tests/test_lammps_dump_shift_origin.py	/^import numpy as np$/;"	i
+np	tests/test_lammps_dump_skipload.py	/^import numpy as np$/;"	i
+np	tests/test_lammps_dump_to_system.py	/^import numpy as np$/;"	i
+np	tests/test_lammps_lmp_dump.py	/^import numpy as np$/;"	i
+np	tests/test_lammps_lmp_to_system.py	/^import numpy as np$/;"	i
+np	tests/test_msd.py	/^import numpy as np$/;"	i
+np	tests/test_multisystems.py	/^import numpy as np$/;"	i
+np	tests/test_perturb.py	/^import numpy as np$/;"	i
+np	tests/test_pwmat_config_dump.py	/^import numpy as np$/;"	i
+np	tests/test_pwmat_config_to_system.py	/^import numpy as np$/;"	i
+np	tests/test_pwmat_mlmd.py	/^import numpy as np$/;"	i
+np	tests/test_pwmat_movement.py	/^import numpy as np$/;"	i
+np	tests/test_qe_cp_traj.py	/^import numpy as np$/;"	i
+np	tests/test_qe_cp_traj_skipload.py	/^import numpy as np$/;"	i
+np	tests/test_qe_pw_scf.py	/^import numpy as np$/;"	i
+np	tests/test_quip_gap_xyz.py	/^import numpy as np$/;"	i
+np	tests/test_remove_pbc.py	/^import numpy as np$/;"	i
+np	tests/test_replicate.py	/^import numpy as np$/;"	i
+np	tests/test_siesta_aiMD_output.py	/^import numpy as np$/;"	i
+np	tests/test_siesta_output.py	/^import numpy as np$/;"	i
+np	tests/test_system_append.py	/^import numpy as np$/;"	i
+np	tests/test_system_apply_pbc.py	/^import numpy as np$/;"	i
+np	tests/test_system_set_type.py	/^import numpy as np$/;"	i
+np	tests/test_to_ase.py	/^import numpy as np$/;"	i
+np	tests/test_to_list.py	/^import numpy as np$/;"	i
+np	tests/test_to_pymatgen.py	/^import numpy as np$/;"	i
+np	tests/test_to_pymatgen_entry.py	/^import numpy as np$/;"	i
+np	tests/test_vasp_outcar.py	/^import numpy as np$/;"	i
+np	tests/test_vasp_poscar_dump.py	/^import numpy as np$/;"	i
+np	tests/test_vasp_poscar_to_system.py	/^import numpy as np$/;"	i
+np	tests/test_vasp_unconverged_outcar.py	/^import numpy as np$/;"	i
+np	tests/test_vasp_xml.py	/^import numpy as np$/;"	i
+np	tests/test_water_ions.py	/^import numpy as np$/;"	i
+nt	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^import nt$/;"	i
+obtain_frame	build/lib/dpdata/siesta/output.py	/^def obtain_frame(fname):$/;"	f
+obtain_frame	dpdata/siesta/output.py	/^def obtain_frame(fname):$/;"	f
+obtain_nframe	build/lib/dpdata/siesta/aiMD_output.py	/^def obtain_nframe(fname):$/;"	f
+obtain_nframe	dpdata/siesta/aiMD_output.py	/^def obtain_nframe(fname):$/;"	f
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/discover.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_hg.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import os$/;"	i
+os	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^import os$/;"	i
+os	build/lib/dpdata/deepmd/comp.py	/^import os,glob,shutil$/;"	i
+os	build/lib/dpdata/deepmd/raw.py	/^import os$/;"	i
+os	build/lib/dpdata/lammps/dump.py	/^import os, sys$/;"	i
+os	build/lib/dpdata/qe/scf.py	/^import os,sys$/;"	i
+os	build/lib/dpdata/system.py	/^import os$/;"	i
+os	docs/conf.py	/^import os$/;"	i
+os	dpdata/deepmd/comp.py	/^import os,glob,shutil$/;"	i
+os	dpdata/deepmd/raw.py	/^import os$/;"	i
+os	dpdata/lammps/dump.py	/^import os, sys$/;"	i
+os	dpdata/qe/scf.py	/^import os,sys$/;"	i
+os	dpdata/system.py	/^import os$/;"	i
+os	tests/context.py	/^import sys,os$/;"	i
+os	tests/test_amber_md.py	/^import os$/;"	i
+os	tests/test_cell_to_low_triangle.py	/^import os$/;"	i
+os	tests/test_cp2k_aimd_output.py	/^import os$/;"	i
+os	tests/test_cp2k_output.py	/^import os$/;"	i
+os	tests/test_deepmd_comp.py	/^import os,shutil$/;"	i
+os	tests/test_deepmd_raw.py	/^import os,shutil$/;"	i
+os	tests/test_elements_index.py	/^import os$/;"	i
+os	tests/test_empty.py	/^import os$/;"	i
+os	tests/test_fhi_output.py	/^import os$/;"	i
+os	tests/test_gaussian_log.py	/^import os$/;"	i
+os	tests/test_gromacs_gro.py	/^import os$/;"	i
+os	tests/test_json.py	/^import os$/;"	i
+os	tests/test_lammps_dump_shift_origin.py	/^import os$/;"	i
+os	tests/test_lammps_dump_skipload.py	/^import os$/;"	i
+os	tests/test_lammps_dump_to_system.py	/^import os$/;"	i
+os	tests/test_lammps_lmp_dump.py	/^import os$/;"	i
+os	tests/test_lammps_lmp_to_system.py	/^import os$/;"	i
+os	tests/test_msd.py	/^import os$/;"	i
+os	tests/test_multisystems.py	/^import os$/;"	i
+os	tests/test_perturb.py	/^import os$/;"	i
+os	tests/test_pwmat_config_dump.py	/^import os$/;"	i
+os	tests/test_pwmat_config_to_system.py	/^import os$/;"	i
+os	tests/test_pwmat_mlmd.py	/^import os$/;"	i
+os	tests/test_pwmat_movement.py	/^import os$/;"	i
+os	tests/test_qe_cp_traj.py	/^import os$/;"	i
+os	tests/test_qe_cp_traj_skipload.py	/^import os$/;"	i
+os	tests/test_qe_pw_scf.py	/^import os$/;"	i
+os	tests/test_quip_gap_xyz.py	/^import os$/;"	i
+os	tests/test_remove_pbc.py	/^import os$/;"	i
+os	tests/test_replicate.py	/^import os$/;"	i
+os	tests/test_siesta_aiMD_output.py	/^import os$/;"	i
+os	tests/test_siesta_output.py	/^import os$/;"	i
+os	tests/test_system_append.py	/^import os$/;"	i
+os	tests/test_system_apply_pbc.py	/^import os$/;"	i
+os	tests/test_system_set_type.py	/^import os$/;"	i
+os	tests/test_to_ase.py	/^import os$/;"	i
+os	tests/test_to_list.py	/^import os$/;"	i
+os	tests/test_to_pymatgen.py	/^import os$/;"	i
+os	tests/test_to_pymatgen_entry.py	/^import os$/;"	i
+os	tests/test_vasp_outcar.py	/^import os$/;"	i
+os	tests/test_vasp_poscar_dump.py	/^import os$/;"	i
+os	tests/test_vasp_poscar_to_system.py	/^import os$/;"	i
+os	tests/test_vasp_unconverged_outcar.py	/^import os$/;"	i
+os	tests/test_vasp_xml.py	/^import os$/;"	i
+os	tests/test_water_ions.py	/^import os$/;"	i
+outcar	build/lib/dpdata/system.py	/^import dpdata.vasp.outcar$/;"	i
+outcar	dpdata/system.py	/^import dpdata.vasp.outcar$/;"	i
+output	build/lib/dpdata/system.py	/^import dpdata.cp2k.output$/;"	i
+output	build/lib/dpdata/system.py	/^import dpdata.fhi_aims.output$/;"	i
+output	build/lib/dpdata/system.py	/^import dpdata.siesta.output$/;"	i
+output	dpdata/system.py	/^import dpdata.cp2k.output$/;"	i
+output	dpdata/system.py	/^import dpdata.fhi_aims.output$/;"	i
+output	dpdata/system.py	/^import dpdata.siesta.output$/;"	i
+package_data	setup.py	/^    package_data={'dpdata':['*.json']},$/;"	v
+packages	setup.py	/^    packages=['dpdata',$/;"	v
+parse	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^def parse($/;"	f
+parse	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^def parse(root, config=None):$/;"	f
+parse_archival	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^def parse_archival(root, config=None):$/;"	f
+parse_from_file	setup.py	/^    from m2r import parse_from_file$/;"	i
+parse_pip_egg_info	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^def parse_pip_egg_info(root, config=None):$/;"	f
+parse_pkginfo	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^def parse_pkginfo(root, config=None):$/;"	f
+parsed_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^    parsed_version = _parse_tag(tag, preformatted, config)$/;"	v
+patch	tests/test_perturb.py	/^from unittest.mock import patch, MagicMock $/;"	i
+path	setup.py	/^from os import path$/;"	i
+pbc	build/lib/dpdata/system.py	/^import dpdata.md.pbc$/;"	i
+pbc	dpdata/system.py	/^import dpdata.md.pbc$/;"	i
+permutations	tests/test_multisystems.py	/^from itertools import permutations$/;"	i
+permutations	tests/test_type_map.py	/^from itertools import permutations$/;"	i
+perturb	build/lib/dpdata/system.py	/^    def perturb(self, $/;"	m	class:System
+perturb	dpdata/system.py	/^    def perturb(self, $/;"	m	class:System
+pkg_parse_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^from pkg_resources import parse_version as pkg_parse_version$/;"	i
+platform	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import platform$/;"	i
+pos_patt_first	build/lib/dpdata/fhi_aims/output.py	/^pos_patt_first="\\|\\s+[0-9]{1,}[:]\\s\\w+\\s(\\w+)(\\s.*[-]?[0-9]{1,}[.][0-9]*)(\\s+[-]?[0-9]{1,}[.][0-9]*)(\\s+[-]?[0-9]{1,}[.][0-9]*)"$/;"	v
+pos_patt_first	dpdata/fhi_aims/output.py	/^pos_patt_first="\\|\\s+[0-9]{1,}[:]\\s\\w+\\s(\\w+)(\\s.*[-]?[0-9]{1,}[.][0-9]*)(\\s+[-]?[0-9]{1,}[.][0-9]*)(\\s+[-]?[0-9]{1,}[.][0-9]*)"$/;"	v
+pos_patt_other	build/lib/dpdata/fhi_aims/output.py	/^pos_patt_other="\\s+[a][t][o][m]\\s+([-]?[0-9]{1,}[.][0-9]*)\\s+([-]?[0-9]{1,}[.][0-9]*)\\s+([-]?[0-9]{1,}[.][0-9]*)\\s+(\\w{1,2})"$/;"	v
+pos_patt_other	dpdata/fhi_aims/output.py	/^pos_patt_other="\\s+[a][t][o][m]\\s+([-]?[0-9]{1,}[.][0-9]*)\\s+([-]?[0-9]{1,}[.][0-9]*)\\s+([-]?[0-9]{1,}[.][0-9]*)\\s+(\\w{1,2})"$/;"	v
+poscar	build/lib/dpdata/system.py	/^import dpdata.vasp.poscar$/;"	i
+poscar	dpdata/system.py	/^import dpdata.vasp.poscar$/;"	i
+posi_diff	build/lib/dpdata/md/pbc.py	/^def posi_diff(box, r0, r1) :$/;"	f
+posi_diff	build/lib/dpdata/md/water.py	/^from .pbc import posi_diff$/;"	i
+posi_diff	dpdata/md/pbc.py	/^def posi_diff(box, r0, r1) :$/;"	f
+posi_diff	dpdata/md/water.py	/^from .pbc import posi_diff$/;"	i
+posi_shift	build/lib/dpdata/md/pbc.py	/^def posi_shift(box, r0, r1) :$/;"	f
+posi_shift	dpdata/md/pbc.py	/^def posi_shift(box, r0, r1) :$/;"	f
+posixpath	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^import posixpath$/;"	i
+postrelease_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def postrelease_version(version):$/;"	f
+predict	build/lib/dpdata/system.py	/^    def predict(self, dp):$/;"	m	class:MultiSystems
+predict	build/lib/dpdata/system.py	/^    def predict(self, dp):$/;"	m	class:System
+predict	dpdata/system.py	/^    def predict(self, dp):$/;"	m	class:MultiSystems
+predict	dpdata/system.py	/^    def predict(self, dp):$/;"	m	class:System
+prefix	build/lib/dpdata/qe/traj.py	/^    prefix='nacl'$/;"	v
+prefix	dpdata/qe/traj.py	/^    prefix='nacl'$/;"	v
+print_function	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__main__.py	/^from __future__ import print_function$/;"	i
+print_function	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^from __future__ import print_function, unicode_literals$/;"	i
+print_function	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^from __future__ import print_function, unicode_literals$/;"	i
+print_function	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^from __future__ import print_function$/;"	i
+project	docs/conf.py	/^project = 'dpdata'$/;"	v
+ptr_float_fmt	build/lib/dpdata/lammps/lmp.py	/^ptr_float_fmt = '%15.10f'$/;"	v
+ptr_float_fmt	dpdata/lammps/lmp.py	/^ptr_float_fmt = '%15.10f'$/;"	v
+ptr_int_fmt	build/lib/dpdata/lammps/lmp.py	/^ptr_int_fmt = '%6d'$/;"	v
+ptr_int_fmt	dpdata/lammps/lmp.py	/^ptr_int_fmt = '%6d'$/;"	v
+ptr_key_fmt	build/lib/dpdata/lammps/lmp.py	/^ptr_key_fmt = '%15s'$/;"	v
+ptr_key_fmt	dpdata/lammps/lmp.py	/^ptr_key_fmt = '%15s'$/;"	v
+pwmat	build/lib/dpdata/system.py	/^import dpdata.pwmat.atomconfig$/;"	i
+pwmat	build/lib/dpdata/system.py	/^import dpdata.pwmat.movement$/;"	i
+pwmat	dpdata/system.py	/^import dpdata.pwmat.atomconfig$/;"	i
+pwmat	dpdata/system.py	/^import dpdata.pwmat.movement$/;"	i
+pygments_style	docs/conf.py	/^pygments_style = 'sphinx'$/;"	v
+qe	build/lib/dpdata/system.py	/^import dpdata.qe.scf$/;"	i
+qe	build/lib/dpdata/system.py	/^import dpdata.qe.traj$/;"	i
+qe	dpdata/system.py	/^import dpdata.qe.scf$/;"	i
+qe	dpdata/system.py	/^import dpdata.qe.traj$/;"	i
+radius	build/lib/dpdata/periodic_table.py	/^    def radius(self):$/;"	m	class:Element
+radius	dpdata/periodic_table.py	/^    def radius(self):$/;"	m	class:Element
+rand	tests/test_perturb.py	/^    def rand(self,number):$/;"	m	class:ConstGenerator
+rand	tests/test_perturb.py	/^    def rand(self,number):$/;"	m	class:NormalGenerator
+rand	tests/test_perturb.py	/^    def rand(self,number):$/;"	m	class:UniformGenerator
+randn	tests/test_perturb.py	/^    def randn(self,number):$/;"	m	class:ConstGenerator
+randn	tests/test_perturb.py	/^    def randn(self,number):$/;"	m	class:NormalGenerator
+randn	tests/test_perturb.py	/^    def randn(self,number):$/;"	m	class:UniformGenerator
+raw	build/lib/dpdata/system.py	/^import dpdata.deepmd.raw$/;"	i
+raw	dpdata/system.py	/^import dpdata.deepmd.raw$/;"	i
+rdf	build/lib/dpdata/md/rdf.py	/^def rdf(sys,$/;"	f
+rdf	dpdata/md/rdf.py	/^def rdf(sys,$/;"	f
+re	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^import re$/;"	i
+re	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^import re$/;"	i
+re	build/lib/dpdata/amber/md.py	/^import re$/;"	i
+re	build/lib/dpdata/cp2k/cell.py	/^import re$/;"	i
+re	build/lib/dpdata/cp2k/output.py	/^import re$/;"	i
+re	build/lib/dpdata/fhi_aims/output.py	/^import re$/;"	i
+re	build/lib/dpdata/xyz/quip_gap_xyz.py	/^import re $/;"	i
+re	dpdata/amber/md.py	/^import re$/;"	i
+re	dpdata/cp2k/cell.py	/^import re$/;"	i
+re	dpdata/cp2k/output.py	/^import re$/;"	i
+re	dpdata/fhi_aims/output.py	/^import re$/;"	i
+re	dpdata/xyz/quip_gap_xyz.py	/^import re $/;"	i
+read_amber_traj	build/lib/dpdata/amber/md.py	/^def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file):$/;"	f
+read_amber_traj	dpdata/amber/md.py	/^def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file):$/;"	f
+readme	setup.py	/^        readme = f.read()$/;"	v
+readme	setup.py	/^    readme = parse_from_file(readme_file)$/;"	v
+readme_file	setup.py	/^readme_file = path.join(path.dirname(path.abspath(__file__)), 'README.md')$/;"	v
+register_from_funcs	build/lib/dpdata/system.py	/^    register_from_funcs = Register()$/;"	v	class:LabeledSystem
+register_from_funcs	build/lib/dpdata/system.py	/^    register_from_funcs = Register()$/;"	v	class:System
+register_from_funcs	dpdata/system.py	/^    register_from_funcs = Register()$/;"	v	class:LabeledSystem
+register_from_funcs	dpdata/system.py	/^    register_from_funcs = Register()$/;"	v	class:System
+register_funcs	build/lib/dpdata/system.py	/^    def register_funcs(self, fmt):$/;"	m	class:Register
+register_funcs	dpdata/system.py	/^    def register_funcs(self, fmt):$/;"	m	class:Register
+register_to_funcs	build/lib/dpdata/system.py	/^    register_to_funcs = Register()$/;"	v	class:System
+register_to_funcs	dpdata/system.py	/^    register_to_funcs = Register()$/;"	v	class:System
+relative_to	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def relative_to(self):$/;"	m	class:Configuration
+relative_to	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def relative_to(self, value):$/;"	m	class:Configuration
+release	docs/conf.py	/^release = '0.0.0-rc'$/;"	v
+release_branch_semver	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def release_branch_semver(version):$/;"	f
+release_branch_semver_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def release_branch_semver_version(version):$/;"	f
+remove_pbc	build/lib/dpdata/system.py	/^    def remove_pbc(self, protect_layer = 9):$/;"	m	class:System
+remove_pbc	dpdata/system.py	/^    def remove_pbc(self, protect_layer = 9):$/;"	m	class:System
+replicate	build/lib/dpdata/system.py	/^    def replicate(self, ncopy):$/;"	m	class:System
+replicate	dpdata/system.py	/^    def replicate(self, ncopy):$/;"	m	class:System
+res	build/lib/dpdata/md/rdf.py	/^    res = np.concatenate([xx, stat]).reshape([2, -1])$/;"	v
+res	dpdata/md/rdf.py	/^    res = np.concatenate([xx, stat]).reshape([2, -1])$/;"	v
+ret	build/lib/dpdata/fhi_aims/output.py	/^  ret=get_frames (sys.argv[1], begin = 0, step = 1)$/;"	v
+ret	dpdata/fhi_aims/output.py	/^  ret=get_frames (sys.argv[1], begin = 0, step = 1)$/;"	v
+root	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def root(self):$/;"	m	class:Configuration
+root	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def root(self, value):$/;"	m	class:Configuration
+rot_frame_lower_triangular	build/lib/dpdata/system.py	/^    def rot_frame_lower_triangular(self, f_idx = 0) :$/;"	m	class:LabeledSystem
+rot_frame_lower_triangular	build/lib/dpdata/system.py	/^    def rot_frame_lower_triangular(self, f_idx = 0) :$/;"	m	class:System
+rot_frame_lower_triangular	dpdata/system.py	/^    def rot_frame_lower_triangular(self, f_idx = 0) :$/;"	m	class:LabeledSystem
+rot_frame_lower_triangular	dpdata/system.py	/^    def rot_frame_lower_triangular(self, f_idx = 0) :$/;"	m	class:System
+rot_lower_triangular	build/lib/dpdata/system.py	/^    def rot_lower_triangular(self) :$/;"	m	class:LabeledSystem
+rot_lower_triangular	build/lib/dpdata/system.py	/^    def rot_lower_triangular(self) :$/;"	m	class:System
+rot_lower_triangular	dpdata/system.py	/^    def rot_lower_triangular(self) :$/;"	m	class:LabeledSystem
+rot_lower_triangular	dpdata/system.py	/^    def rot_lower_triangular(self) :$/;"	m	class:System
+ry2ev	build/lib/dpdata/qe/scf.py	/^ry2ev = 13.605693009$/;"	v
+ry2ev	build/lib/dpdata/qe/traj.py	/^ry2ev = 13.605693009$/;"	v
+ry2ev	dpdata/qe/scf.py	/^ry2ev = 13.605693009$/;"	v
+ry2ev	dpdata/qe/traj.py	/^ry2ev = 13.605693009$/;"	v
+safe_get_posi	build/lib/dpdata/lammps/dump.py	/^def safe_get_posi(lines, cell, orig = np.zeros(3)):$/;"	f
+safe_get_posi	dpdata/lammps/dump.py	/^def safe_get_posi(lines, cell, orig = np.zeros(3)):$/;"	f
+samefile	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    from .win_py31_compat import samefile$/;"	i
+samefile	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^    from os.path import samefile$/;"	i
+samefile	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^def samefile(f1, f2):$/;"	f
+scf	build/lib/dpdata/system.py	/^import dpdata.qe.scf$/;"	i
+scf	dpdata/system.py	/^import dpdata.qe.scf$/;"	i
+scm_find_files	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder.py	/^def scm_find_files(path, scm_files, scm_dirs):$/;"	f
+scm_find_files	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^from .file_finder import scm_find_files$/;"	i
+scm_find_files	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_hg.py	/^from .file_finder import scm_find_files$/;"	i
+setUp	tests/test_amber_md.py	/^    def setUp (self) :$/;"	m	class:TestAmberMD
+setUp	tests/test_cp2k_aimd_output.py	/^    def setUp (self) :$/;"	m	class:TestCp2kAimdOutput
+setUp	tests/test_cp2k_output.py	/^    def setUp(self):$/;"	m	class:TestCP2KLabeledOutput
+setUp	tests/test_deepmd_comp.py	/^    def setUp (self) :$/;"	m	class:TestDeepmdCompNoLabels
+setUp	tests/test_deepmd_comp.py	/^    def setUp (self) :$/;"	m	class:TestDeepmdLoadDumpComp
+setUp	tests/test_deepmd_comp.py	/^    def setUp(self) :$/;"	m	class:TestDeepmdCompNoLabels
+setUp	tests/test_deepmd_raw.py	/^    def setUp (self) :$/;"	m	class:TestDeepmdDumpRaw
+setUp	tests/test_deepmd_raw.py	/^    def setUp (self) :$/;"	m	class:TestDeepmdLoadRaw
+setUp	tests/test_deepmd_raw.py	/^    def setUp (self) :$/;"	m	class:TestDeepmdRawNoLabels
+setUp	tests/test_deepmd_raw.py	/^    def setUp(self) :$/;"	m	class:TestDeepmdCompNoLabels
+setUp	tests/test_fhi_md_multi_elem_output.py	/^    def setUp(self):$/;"	m	class:TestFhi_aims_Output
+setUp	tests/test_fhi_md_output.py	/^    def setUp(self):$/;"	m	class:TestFhi_aims_Output
+setUp	tests/test_fhi_output.py	/^    def setUp(self):$/;"	m	class:TestFhiOutput
+setUp	tests/test_gaussian_log.py	/^    def setUp (self) :$/;"	m	class:TestGaussianLoadLog
+setUp	tests/test_gaussian_log.py	/^    def setUp (self) :$/;"	m	class:TestGaussianLoadMD
+setUp	tests/test_gaussian_log.py	/^    def setUp (self) :$/;"	m	class:TestNonCoveragedGaussianLoadLog
+setUp	tests/test_json.py	/^    def setUp (self) :$/;"	m	class:TestAsDict
+setUp	tests/test_json.py	/^    def setUp (self) :$/;"	m	class:TestJsonLoad
+setUp	tests/test_lammps_dump_shift_origin.py	/^    def setUp (self):$/;"	m	class:TestLammpsDumpShiftOrigin
+setUp	tests/test_lammps_dump_skipload.py	/^    def setUp(self): $/;"	m	class:TestLmpDumpSkip
+setUp	tests/test_lammps_dump_to_system.py	/^    def setUp(self): $/;"	m	class:TestDump
+setUp	tests/test_lammps_dump_to_system.py	/^    def setUp(self): $/;"	m	class:TestDump2
+setUp	tests/test_lammps_lmp_dump.py	/^    def setUp(self): $/;"	m	class:TestLmpDump
+setUp	tests/test_lammps_lmp_dump.py	/^    def setUp(self): $/;"	m	class:TestToFunc
+setUp	tests/test_lammps_lmp_to_system.py	/^    def setUp(self): $/;"	m	class:TestLmp
+setUp	tests/test_msd.py	/^    def setUp(self) :$/;"	m	class:TestMSD
+setUp	tests/test_multisystems.py	/^    def setUp (self) :$/;"	m	class:TestMultiDeepmdDumpComp
+setUp	tests/test_multisystems.py	/^    def setUp (self) :$/;"	m	class:TestMultiDeepmdDumpRaw
+setUp	tests/test_multisystems.py	/^    def setUp (self) :$/;"	m	class:TestTypeMap
+setUp	tests/test_multisystems.py	/^    def setUp(self):$/;"	m	class:TestMultiSystems
+setUp	tests/test_multisystems.py	/^    def setUp(self):$/;"	m	class:TestMultiSystemsAdd
+setUp	tests/test_multisystems.py	/^    def setUp(self):$/;"	m	class:TestMultiSystemsSorted
+setUp	tests/test_periodic_table.py	/^    def setUp (self) :$/;"	m	class:TestPeriodicTable
+setUp	tests/test_perturb.py	/^    def setUp (self, random_mock) :$/;"	m	class:TestPerturbConst
+setUp	tests/test_perturb.py	/^    def setUp (self, random_mock) :$/;"	m	class:TestPerturbUniform
+setUp	tests/test_perturb.py	/^    def setUp (self, random_mock):$/;"	m	class:TestPerturbNormal
+setUp	tests/test_pwmat_config_dump.py	/^    def setUp(self): $/;"	m	class:TestatomconfigDump1
+setUp	tests/test_pwmat_config_dump.py	/^    def setUp(self):$/;"	m	class:TestatomconfigDump
+setUp	tests/test_pwmat_config_to_system.py	/^    def setUp(self): $/;"	m	class:Testconfig
+setUp	tests/test_pwmat_config_to_system.py	/^    def setUp(self):$/;"	m	class:TestpwmatconfigTypeMap
+setUp	tests/test_pwmat_mlmd.py	/^    def setUp(self):$/;"	m	class:TestSingleStep
+setUp	tests/test_pwmat_movement.py	/^    def setUp(self):$/;"	m	class:TestpwmatLabeledOutput
+setUp	tests/test_qe_cp_traj.py	/^    def setUp(self): $/;"	m	class:TestCPTRAJLabeledTraj
+setUp	tests/test_qe_cp_traj.py	/^    def setUp(self): $/;"	m	class:TestCPTRAJTraj
+setUp	tests/test_qe_cp_traj_skipload.py	/^    def setUp(self): $/;"	m	class:TestPWSCFLabeledTrajSkip
+setUp	tests/test_qe_cp_traj_skipload.py	/^    def setUp(self): $/;"	m	class:TestPWSCFTrajSkip
+setUp	tests/test_qe_pw_scf.py	/^    def setUp(self):$/;"	m	class:TestPWSCFLabeledOutput
+setUp	tests/test_qe_pw_scf.py	/^    def setUp(self):$/;"	m	class:TestPWSCFLabeledOutputListInput
+setUp	tests/test_quip_gap_xyz.py	/^    def setUp (self) :$/;"	m	class:TestQuipGapxyz1
+setUp	tests/test_quip_gap_xyz.py	/^    def setUp (self) :$/;"	m	class:TestQuipGapxyz2
+setUp	tests/test_quip_gap_xyz.py	/^    def setUp (self) :$/;"	m	class:TestQuipGapxyzfield
+setUp	tests/test_quip_gap_xyz.py	/^    def setUp (self) :$/;"	m	class:TestQuipGapxyzfield2
+setUp	tests/test_quip_gap_xyz.py	/^    def setUp (self) :$/;"	m	class:TestQuipGapxyzsort1
+setUp	tests/test_quip_gap_xyz.py	/^    def setUp (self) :$/;"	m	class:TestQuipGapxyzsort2
+setUp	tests/test_quip_gap_xyz.py	/^    def setUp(self):$/;"	m	class:TestQuipGapxyzNoVirials
+setUp	tests/test_replicate.py	/^    def setUp (self) :$/;"	m	class:TestReplicate123
+setUp	tests/test_replicate.py	/^    def setUp (self) :$/;"	m	class:TestReplicate123_not_change_origin
+setUp	tests/test_shuffle.py	/^    def setUp (self) :$/;"	m	class:TestDeepmdLoadRaw
+setUp	tests/test_siesta_aiMD_output.py	/^    def setUp(self):$/;"	m	class:TestAimdSIESTALabeledOutput
+setUp	tests/test_siesta_output.py	/^    def setUp(self):$/;"	m	class:TestSIESTALabeledOutput
+setUp	tests/test_system_append.py	/^    def setUp (self) :$/;"	m	class:TestDifferentOrderAppend
+setUp	tests/test_system_append.py	/^    def setUp (self) :$/;"	m	class:TestVaspXmlAppend
+setUp	tests/test_system_set_type.py	/^    def setUp (self) :$/;"	m	class:TestSetAtomTypes
+setUp	tests/test_to_ase.py	/^    def setUp(self): $/;"	m	class:TestASE
+setUp	tests/test_to_list.py	/^    def setUp (self) :$/;"	m	class:TestToList
+setUp	tests/test_to_pymatgen.py	/^    def setUp(self): $/;"	m	class:TestPymatgen
+setUp	tests/test_type_map.py	/^    def setUp(self):$/;"	m	class:TestTypeMap1
+setUp	tests/test_type_map.py	/^    def setUp(self):$/;"	m	class:TestTypeMap2
+setUp	tests/test_vasp_outcar.py	/^    def setUp (self) :$/;"	m	class:TestVaspOUTCAR
+setUp	tests/test_vasp_outcar.py	/^    def setUp (self) :$/;"	m	class:TestVaspOUTCARSkip
+setUp	tests/test_vasp_outcar.py	/^    def setUp(self):$/;"	m	class:TestVaspOUTCARTypeMap
+setUp	tests/test_vasp_poscar_dump.py	/^    def setUp(self): $/;"	m	class:TestPOSCARDump
+setUp	tests/test_vasp_poscar_dump.py	/^    def setUp(self): $/;"	m	class:TestPOSCARDump1
+setUp	tests/test_vasp_poscar_to_system.py	/^    def setUp(self): $/;"	m	class:TestPOSCARCart
+setUp	tests/test_vasp_poscar_to_system.py	/^    def setUp(self): $/;"	m	class:TestPOSCARDirect
+setUp	tests/test_vasp_poscar_to_system.py	/^    def setUp(self):$/;"	m	class:TestVaspPOSCARTypeMap
+setUp	tests/test_vasp_unconverged_outcar.py	/^    def setUp(self):$/;"	m	class:TestSingleStep
+setUp	tests/test_vasp_xml.py	/^    def setUp (self) :$/;"	m	class:TestVaspXml
+setUp	tests/test_vasp_xml.py	/^    def setUp (self) :$/;"	m	class:TestVaspXmlRotSys
+setUp	tests/test_vasp_xml.py	/^    def setUp (self) :$/;"	m	class:TestVaspXmlSkip
+setUp	tests/test_water_ions.py	/^    def setUp(self): $/;"	m	class:TestIons
+setUp	tests/test_water_ions.py	/^    def setUp(self):$/;"	m	class:TestAseComputeBond
+setup_requires	setup.py	/^    setup_requires=['setuptools_scm'],$/;"	v
+setuptools	setup.py	/^import setuptools$/;"	i
+shlex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import shlex$/;"	i
+shuffle	build/lib/dpdata/system.py	/^    def shuffle(self):$/;"	m	class:LabeledSystem
+shuffle	build/lib/dpdata/system.py	/^    def shuffle(self):$/;"	m	class:System
+shuffle	dpdata/system.py	/^    def shuffle(self):$/;"	m	class:LabeledSystem
+shuffle	dpdata/system.py	/^    def shuffle(self):$/;"	m	class:System
+shutil	build/lib/dpdata/deepmd/comp.py	/^import os,glob,shutil$/;"	i
+shutil	dpdata/deepmd/comp.py	/^import os,glob,shutil$/;"	i
+shutil	tests/test_amber_md.py	/^import shutil$/;"	i
+shutil	tests/test_deepmd_comp.py	/^import os,shutil$/;"	i
+shutil	tests/test_deepmd_raw.py	/^import os,shutil$/;"	i
+siesta	build/lib/dpdata/system.py	/^import dpdata.siesta.aiMD_output$/;"	i
+siesta	build/lib/dpdata/system.py	/^import dpdata.siesta.output$/;"	i
+siesta	dpdata/system.py	/^import dpdata.siesta.aiMD_output$/;"	i
+siesta	dpdata/system.py	/^import dpdata.siesta.output$/;"	i
+simplified_semver_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def simplified_semver_version(version):$/;"	f
+sort_atom_names	build/lib/dpdata/system.py	/^    def sort_atom_names(self, type_map=None):$/;"	m	class:System
+sort_atom_names	dpdata/system.py	/^    def sort_atom_names(self, type_map=None):$/;"	m	class:System
+sort_atom_types	build/lib/dpdata/system.py	/^    def sort_atom_types(self):$/;"	m	class:LabeledSystem
+sort_atom_types	build/lib/dpdata/system.py	/^    def sort_atom_types(self):$/;"	m	class:System
+sort_atom_types	dpdata/system.py	/^    def sort_atom_types(self):$/;"	m	class:LabeledSystem
+sort_atom_types	dpdata/system.py	/^    def sort_atom_types(self):$/;"	m	class:System
+source_suffix	docs/conf.py	/^source_suffix = ['.rst', '.md']$/;"	v
+split_traj	build/lib/dpdata/lammps/dump.py	/^def split_traj(dump_lines) :$/;"	f
+split_traj	dpdata/lammps/dump.py	/^def split_traj(dump_lines) :$/;"	f
+string_types	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^from .utils import function_has_arg, string_types$/;"	i
+string_types	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^string_types = (str,) if PY3 else (str, unicode)  # noqa$/;"	v
+string_types	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^from .utils import trace, string_types, utc$/;"	i
+sub_system	build/lib/dpdata/system.py	/^    def sub_system(self, f_idx) :$/;"	m	class:LabeledSystem
+sub_system	build/lib/dpdata/system.py	/^    def sub_system(self, f_idx) :$/;"	m	class:System
+sub_system	dpdata/system.py	/^    def sub_system(self, f_idx) :$/;"	m	class:LabeledSystem
+sub_system	dpdata/system.py	/^    def sub_system(self, f_idx) :$/;"	m	class:System
+subprocess	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^import subprocess$/;"	i
+subprocess	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_hg.py	/^import subprocess$/;"	i
+subprocess	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import subprocess$/;"	i
+symbols	build/lib/dpdata/gaussian/log.py	/^symbols = ['X', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og']$/;"	v
+symbols	dpdata/gaussian/log.py	/^symbols = ['X', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og']$/;"	v
+sys	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__main__.py	/^import sys$/;"	i
+sys	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import sys$/;"	i
+sys	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^import sys$/;"	i
+sys	build/lib/dpdata/fhi_aims/output.py	/^  import sys$/;"	i
+sys	build/lib/dpdata/lammps/dump.py	/^import os, sys$/;"	i
+sys	build/lib/dpdata/md/rdf.py	/^    sys = dpdata.System('out.lmp')$/;"	v
+sys	build/lib/dpdata/qe/scf.py	/^import os,sys$/;"	i
+sys	docs/conf.py	/^import sys$/;"	i
+sys	dpdata/fhi_aims/output.py	/^  import sys$/;"	i
+sys	dpdata/lammps/dump.py	/^import os, sys$/;"	i
+sys	dpdata/md/rdf.py	/^    sys = dpdata.System('out.lmp')$/;"	v
+sys	dpdata/qe/scf.py	/^import os,sys$/;"	i
+sys	tests/context.py	/^import sys,os$/;"	i
+system_data	build/lib/dpdata/lammps/dump.py	/^def system_data(lines, type_map = None, type_idx_zero = True) :$/;"	f
+system_data	build/lib/dpdata/lammps/lmp.py	/^def system_data(lines, type_map = None, type_idx_zero = True) :$/;"	f
+system_data	dpdata/lammps/dump.py	/^def system_data(lines, type_map = None, type_idx_zero = True) :$/;"	f
+system_data	dpdata/lammps/lmp.py	/^def system_data(lines, type_map = None, type_idx_zero = True) :$/;"	f
+system_info	build/lib/dpdata/pwmat/movement.py	/^def system_info (lines, type_idx_zero = False) :$/;"	f
+system_info	build/lib/dpdata/vasp/outcar.py	/^def system_info (lines, type_idx_zero = False) :$/;"	f
+system_info	dpdata/pwmat/movement.py	/^def system_info (lines, type_idx_zero = False) :$/;"	f
+system_info	dpdata/vasp/outcar.py	/^def system_info (lines, type_idx_zero = False) :$/;"	f
+system_pbc_shift	build/lib/dpdata/md/msd.py	/^from .pbc import system_pbc_shift$/;"	i
+system_pbc_shift	build/lib/dpdata/md/pbc.py	/^def system_pbc_shift(system) :$/;"	f
+system_pbc_shift	dpdata/md/msd.py	/^from .pbc import system_pbc_shift$/;"	i
+system_pbc_shift	dpdata/md/pbc.py	/^def system_pbc_shift(system) :$/;"	f
+tag_regex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def tag_regex(self):$/;"	m	class:Configuration
+tag_regex	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^    def tag_regex(self, value):$/;"	m	class:Configuration
+tag_to_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^from .version import tag_to_version, meta$/;"	i
+tag_to_version	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def tag_to_version(tag, config=None):$/;"	f
+tags_to_versions	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^from .version import meta, tags_to_versions$/;"	i
+tags_to_versions	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^def tags_to_versions(tags, config=None):$/;"	f
+tarfile	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^import tarfile$/;"	i
+tearDown	tests/test_amber_md.py	/^    def tearDown(self) :$/;"	m	class:TestAmberMD
+tearDown	tests/test_deepmd_comp.py	/^    def tearDown(self) :$/;"	m	class:TestDeepmdCompNoLabels
+tearDown	tests/test_deepmd_comp.py	/^    def tearDown(self) :$/;"	m	class:TestDeepmdLoadDumpComp
+tearDown	tests/test_deepmd_raw.py	/^    def tearDown(self) :$/;"	m	class:TestDeepmdCompNoLabels
+tearDown	tests/test_deepmd_raw.py	/^    def tearDown(self) :$/;"	m	class:TestDeepmdDumpRaw
+tearDown	tests/test_deepmd_raw.py	/^    def tearDown(self) :$/;"	m	class:TestDeepmdRawNoLabels
+tearDown	tests/test_deepmd_raw.py	/^    def tearDown(self) :$/;"	m	class:TestDeepmdTypeMap
+tearDown	tests/test_pwmat_config_dump.py	/^    def tearDown(self):$/;"	m	class:TestatomconfigSkipZeroAtomNumb
+tearDown	tests/test_vasp_poscar_dump.py	/^    def tearDown(self):$/;"	m	class:TestPOSCARSkipZeroAtomNumb
+templates_path	docs/conf.py	/^templates_path = ['_templates']$/;"	v
+test	tests/test_to_pymatgen_entry.py	/^    def test(self): $/;"	m	class:TestPymatgen
+test_H	tests/test_periodic_table.py	/^    def test_H(self):$/;"	m	class:TestPeriodicTable
+test_add_func	tests/comp_sys.py	/^    def test_add_func(self):$/;"	m	class:CompSys
+test_atom_names	tests/comp_sys.py	/^    def test_atom_names(self):$/;"	m	class:CompSys
+test_atom_names	tests/poscars/poscar_ref_oh.py	/^    def test_atom_names(self):$/;"	m	class:TestPOSCARoh
+test_atom_names	tests/pwmat/config_ref_ch4.py	/^    def test_atom_names(self):$/;"	m	class:Testconfigch4
+test_atom_names	tests/pwmat/config_ref_oh.py	/^    def test_atom_names(self):$/;"	m	class:Testconfigoh
+test_atom_names	tests/test_cp2k_output.py	/^    def test_atom_names(self) :$/;"	m	class:TestCP2KSinglePointEnergy
+test_atom_names	tests/test_fhi_md_multi_elem_output.py	/^    def test_atom_names(self):$/;"	m	class:TestFhi_aims_MD
+test_atom_names	tests/test_fhi_md_output.py	/^    def test_atom_names(self):$/;"	m	class:TestFhi_aims_MD
+test_atom_names	tests/test_fhi_output.py	/^    def test_atom_names(self) :$/;"	m	class:TestFhi_aims
+test_atom_names	tests/test_gaussian_log.py	/^    def test_atom_names(self) :$/;"	m	class:TestGaussianLog
+test_atom_names	tests/test_multisystems.py	/^    def test_atom_names(self):$/;"	m	class:MultiSystems
+test_atom_names	tests/test_pwmat_movement.py	/^    def test_atom_names(self) :$/;"	m	class:TestpwmatSinglePointEnergy
+test_atom_names	tests/test_qe_cp_traj.py	/^    def test_atom_names(self) :$/;"	m	class:TestCPTRAJProps
+test_atom_names	tests/test_qe_pw_scf.py	/^    def test_atom_names(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_atom_names	tests/test_siesta_aiMD_output.py	/^    def test_atom_names(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_atom_names	tests/test_siesta_output.py	/^    def test_atom_names(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_atom_numbs	tests/comp_sys.py	/^    def test_atom_numbs(self):$/;"	m	class:CompSys
+test_atom_numbs	tests/poscars/poscar_ref_oh.py	/^    def test_atom_numbs(self):$/;"	m	class:TestPOSCARoh
+test_atom_numbs	tests/pwmat/config_ref_ch4.py	/^    def test_atom_numbs(self):$/;"	m	class:Testconfigch4
+test_atom_numbs	tests/pwmat/config_ref_oh.py	/^    def test_atom_numbs(self):$/;"	m	class:Testconfigoh
+test_atom_numbs	tests/test_cp2k_output.py	/^    def test_atom_numbs(self) :$/;"	m	class:TestCP2KSinglePointEnergy
+test_atom_numbs	tests/test_fhi_md_multi_elem_output.py	/^    def test_atom_numbs(self):$/;"	m	class:TestFhi_aims_MD
+test_atom_numbs	tests/test_fhi_md_output.py	/^    def test_atom_numbs(self):$/;"	m	class:TestFhi_aims_MD
+test_atom_numbs	tests/test_fhi_output.py	/^    def test_atom_numbs(self) :$/;"	m	class:TestFhi_aims
+test_atom_numbs	tests/test_gaussian_log.py	/^    def test_atom_numbs(self) :$/;"	m	class:TestGaussianLog
+test_atom_numbs	tests/test_pwmat_movement.py	/^    def test_atom_numbs(self) :$/;"	m	class:TestpwmatSinglePointEnergy
+test_atom_numbs	tests/test_qe_cp_traj.py	/^    def test_atom_numbs(self) :$/;"	m	class:TestCPTRAJProps
+test_atom_numbs	tests/test_qe_pw_scf.py	/^    def test_atom_numbs(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_atom_numbs	tests/test_siesta_aiMD_output.py	/^    def test_atom_numbs(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_atom_numbs	tests/test_siesta_output.py	/^    def test_atom_numbs(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_atom_types	tests/comp_sys.py	/^    def test_atom_types(self):$/;"	m	class:CompSys
+test_atom_types	tests/poscars/poscar_ref_oh.py	/^    def test_atom_types(self):$/;"	m	class:TestPOSCARoh
+test_atom_types	tests/pwmat/config_ref_ch4.py	/^    def test_atom_types(self):$/;"	m	class:Testconfigch4
+test_atom_types	tests/pwmat/config_ref_oh.py	/^    def test_atom_types(self):$/;"	m	class:Testconfigoh
+test_atom_types	tests/test_cp2k_output.py	/^    def test_atom_types(self) :$/;"	m	class:TestCP2KSinglePointEnergy
+test_atom_types	tests/test_fhi_md_multi_elem_output.py	/^    def test_atom_types(self):$/;"	m	class:TestFhi_aims_MD
+test_atom_types	tests/test_fhi_md_output.py	/^    def test_atom_types(self):$/;"	m	class:TestFhi_aims_MD
+test_atom_types	tests/test_fhi_output.py	/^    def test_atom_types(self) :$/;"	m	class:TestFhi_aims
+test_atom_types	tests/test_gaussian_log.py	/^    def test_atom_types(self) :$/;"	m	class:TestGaussianLog
+test_atom_types	tests/test_gaussian_log.py	/^    def test_atom_types(self) :$/;"	m	class:TestNonCoveragedGaussianLoadLog
+test_atom_types	tests/test_pwmat_movement.py	/^    def test_atom_types(self) :$/;"	m	class:TestpwmatSinglePointEnergy
+test_atom_types	tests/test_qe_cp_traj.py	/^    def test_atom_types(self) :$/;"	m	class:TestCPTRAJProps
+test_atom_types	tests/test_qe_pw_scf.py	/^    def test_atom_types(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_atom_types	tests/test_siesta_aiMD_output.py	/^    def test_atom_types(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_atom_types	tests/test_siesta_output.py	/^    def test_atom_types(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_bond_identity	tests/test_water_ions.py	/^    def test_bond_identity(self):$/;"	m	class:TestAseComputeBond
+test_case_null	tests/test_qe_cp_traj.py	/^    def test_case_null(self):$/;"	m	class:TestConverCellDim
+test_cell	tests/comp_sys.py	/^    def test_cell(self):$/;"	m	class:CompSys
+test_cell	tests/poscars/poscar_ref_oh.py	/^    def test_cell(self):$/;"	m	class:TestPOSCARoh
+test_cell	tests/pwmat/config_ref_ch4.py	/^    def test_cell(self):$/;"	m	class:Testconfigch4
+test_cell	tests/pwmat/config_ref_oh.py	/^    def test_cell(self):$/;"	m	class:Testconfigoh
+test_cell	tests/test_cp2k_output.py	/^    def test_cell(self) :$/;"	m	class:TestCP2KSinglePointEnergy
+test_cell	tests/test_fhi_md_multi_elem_output.py	/^    def test_cell(self):$/;"	m	class:TestFhi_aims_MD
+test_cell	tests/test_fhi_md_output.py	/^    def test_cell(self):$/;"	m	class:TestFhi_aims_MD
+test_cell	tests/test_fhi_output.py	/^    def test_cell(self) :$/;"	m	class:TestFhi_aims
+test_cell	tests/test_pwmat_mlmd.py	/^    def test_cell(self) :$/;"	m	class:TestSingleStep
+test_cell	tests/test_pwmat_movement.py	/^    def test_cell(self) :$/;"	m	class:TestpwmatSinglePointEnergy
+test_cell	tests/test_qe_cp_traj.py	/^    def test_cell(self) :$/;"	m	class:TestCPTRAJProps
+test_cell	tests/test_qe_cp_traj_skipload.py	/^    def test_cell(self):$/;"	m	class:TestPWSCFLabeledTrajSkip
+test_cell	tests/test_qe_pw_scf.py	/^    def test_cell(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_cell	tests/test_siesta_aiMD_output.py	/^    def test_cell(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_cell	tests/test_siesta_output.py	/^    def test_cell(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_cells	tests/test_gaussian_log.py	/^    def test_cells(self) :$/;"	m	class:TestNonCoveragedGaussianLoadLog
+test_check_type_map	tests/test_type_map.py	/^    def test_check_type_map(self):$/;"	m	class:TestTypeMap
+test_coord	tests/comp_sys.py	/^    def test_coord(self): $/;"	m	class:CompSys
+test_coord	tests/test_cp2k_output.py	/^    def test_coord(self) :$/;"	m	class:TestCP2KSinglePointEnergy
+test_coord	tests/test_fhi_md_multi_elem_output.py	/^    def test_coord(self):$/;"	m	class:TestFhi_aims_MD
+test_coord	tests/test_fhi_md_output.py	/^    def test_coord(self):$/;"	m	class:TestFhi_aims_MD
+test_coord	tests/test_fhi_output.py	/^    def test_coord(self) :$/;"	m	class:TestFhi_aims
+test_coord	tests/test_pwmat_mlmd.py	/^    def test_coord(self) :$/;"	m	class:TestSingleStep
+test_coord	tests/test_pwmat_movement.py	/^    def test_coord(self) :$/;"	m	class:TestpwmatSinglePointEnergy
+test_coord	tests/test_qe_cp_traj.py	/^    def test_coord(self) :        $/;"	m	class:TestCPTRAJProps
+test_coord	tests/test_qe_pw_scf.py	/^    def test_coord(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_coord	tests/test_siesta_aiMD_output.py	/^    def test_coord(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_coord	tests/test_siesta_output.py	/^    def test_coord(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_coords	tests/test_gaussian_log.py	/^    def test_coords(self) :$/;"	m	class:TestNonCoveragedGaussianLoadLog
+test_data_empty	tests/test_empty.py	/^    def test_data_empty(self):$/;"	m	class:TestEmptySystem
+test_dump_pwmat_type_map	tests/test_pwmat_config_dump.py	/^    def test_dump_pwmat_type_map(self):$/;"	m	class:TestatomconfigSkipZeroAtomNumb
+test_dump_vasp_type_map	tests/test_vasp_poscar_dump.py	/^    def test_dump_vasp_type_map(self):$/;"	m	class:TestPOSCARSkipZeroAtomNumb
+test_empty	tests/test_empty.py	/^    def test_empty(self):$/;"	m	class:TestEmptySystem
+test_energies	tests/test_gaussian_log.py	/^    def test_energies(self) :$/;"	m	class:TestNonCoveragedGaussianLoadLog
+test_energy	tests/comp_sys.py	/^    def test_energy(self) :$/;"	m	class:CompLabeledSys
+test_energy	tests/test_cp2k_output.py	/^    def test_energy(self) :$/;"	m	class:TestCP2KSinglePointEnergy
+test_energy	tests/test_fhi_md_multi_elem_output.py	/^    def test_energy(self):$/;"	m	class:TestFhi_aims_MD
+test_energy	tests/test_fhi_md_output.py	/^    def test_energy(self):$/;"	m	class:TestFhi_aims_MD
+test_energy	tests/test_fhi_output.py	/^    def test_energy(self) :$/;"	m	class:TestFhi_aims
+test_energy	tests/test_pwmat_movement.py	/^    def test_energy(self) :$/;"	m	class:TestpwmatSinglePointEnergy
+test_energy	tests/test_qe_pw_scf.py	/^    def test_energy(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_energy	tests/test_siesta_aiMD_output.py	/^    def test_energy(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_energy	tests/test_siesta_output.py	/^    def test_energy(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_failed_append	tests/test_system_append.py	/^    def test_failed_append(self):$/;"	m	class:TestFailedAppend
+test_force	tests/comp_sys.py	/^    def test_force(self) :$/;"	m	class:CompLabeledSys
+test_force	tests/test_cp2k_output.py	/^    def test_force(self) :$/;"	m	class:TestCP2KSinglePointEnergy
+test_force	tests/test_fhi_md_multi_elem_output.py	/^    def test_force(self):$/;"	m	class:TestFhi_aims_MD
+test_force	tests/test_fhi_md_output.py	/^    def test_force(self):$/;"	m	class:TestFhi_aims_MD
+test_force	tests/test_fhi_output.py	/^    def test_force(self) :$/;"	m	class:TestFhi_aims
+test_force	tests/test_pwmat_mlmd.py	/^    def test_force(self) :$/;"	m	class:TestSingleStep
+test_force	tests/test_pwmat_movement.py	/^    def test_force(self) :$/;"	m	class:TestpwmatSinglePointEnergy
+test_force	tests/test_qe_pw_scf.py	/^    def test_force(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_force	tests/test_siesta_aiMD_output.py	/^    def test_force(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_force	tests/test_siesta_output.py	/^    def test_force(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_forces	tests/test_gaussian_log.py	/^    def test_forces(self) :$/;"	m	class:TestNonCoveragedGaussianLoadLog
+test_frame	tests/poscars/poscar_ref_oh.py	/^    def test_frame(self): $/;"	m	class:TestPOSCARoh
+test_frame	tests/pwmat/config_ref_ch4.py	/^    def test_frame(self): $/;"	m	class:Testconfigch4
+test_frame	tests/pwmat/config_ref_oh.py	/^    def test_frame(self): $/;"	m	class:Testconfigoh
+test_func1	tests/test_cell_to_low_triangle.py	/^    def test_func1(self):$/;"	m	class:TestCellToLowTriangle
+test_func1	tests/test_elements_index.py	/^  def test_func1(self):$/;"	m	class:ElementIndexMap
+test_func2	tests/test_cell_to_low_triangle.py	/^    def test_func2(self):$/;"	m	class:TestCellToLowTriangle
+test_func2	tests/test_elements_index.py	/^  def test_func2(self):$/;"	m	class:ElementIndexMap
+test_func3	tests/test_cell_to_low_triangle.py	/^    def test_func3(self):$/;"	m	class:TestCellToLowTriangle
+test_func3	tests/test_elements_index.py	/^  def test_func3(self):$/;"	m	class:ElementIndexMap
+test_func4	tests/test_cell_to_low_triangle.py	/^    def test_func4(self):$/;"	m	class:TestCellToLowTriangle
+test_func4	tests/test_elements_index.py	/^  def test_func4(self):$/;"	m	class:ElementIndexMap
+test_func5	tests/test_cell_to_low_triangle.py	/^    def test_func5(self):$/;"	m	class:TestCellToLowTriangle
+test_func6	tests/test_cell_to_low_triangle.py	/^    def test_func6(self):$/;"	m	class:TestCellToLowTriangle
+test_ions_count	tests/test_water_ions.py	/^    def test_ions_count(self) :$/;"	m	class:TestIons
+test_is_nopbc	tests/comp_sys.py	/^    def test_is_nopbc(self):$/;"	m	class:IsNoPBC
+test_is_pbc	tests/comp_sys.py	/^    def test_is_pbc(self):$/;"	m	class:IsPBC
+test_len_func	tests/comp_sys.py	/^    def test_len_func(self):$/;"	m	class:CompSys
+test_mlmd	tests/test_pwmat_mlmd.py	/^    def test_mlmd(self) :$/;"	m	class:TestSingleStep
+test_msd	tests/test_msd.py	/^    def test_msd(self) :$/;"	m	class:TestMSD
+test_nframes	tests/test_gaussian_log.py	/^    def test_nframes(self):$/;"	m	class:TestGaussianLog
+test_nframes	tests/test_lammps_dump_to_system.py	/^    def test_nframes (self) :$/;"	m	class:TestDump2
+test_nframs	tests/comp_sys.py	/^    def test_nframs(self):$/;"	m	class:CompSys
+test_nopbc	tests/comp_sys.py	/^    def test_nopbc(self):$/;"	m	class:CompSys
+test_nopbc	tests/test_gaussian_log.py	/^    def test_nopbc(self):$/;"	m	class:TestGaussianLog
+test_npy_type_map	tests/test_deepmd_raw.py	/^    def test_npy_type_map (self) :$/;"	m	class:TestDeepmdTypeMap
+test_npy_type_map_enforce	tests/test_deepmd_raw.py	/^    def test_npy_type_map_enforce (self) :$/;"	m	class:TestDeepmdTypeMap
+test_npy_type_map_load	tests/test_deepmd_raw.py	/^    def test_npy_type_map_load (self) :$/;"	m	class:TestDeepmdTypeMap
+test_orig	tests/comp_sys.py	/^    def test_orig(self):$/;"	m	class:CompSys
+test_orig	tests/poscars/poscar_ref_oh.py	/^    def test_orig(self):$/;"	m	class:TestPOSCARoh
+test_orig	tests/pwmat/config_ref_ch4.py	/^    def test_orig(self):$/;"	m	class:Testconfigch4
+test_orig	tests/pwmat/config_ref_oh.py	/^    def test_orig(self):$/;"	m	class:Testconfigoh
+test_pbc	tests/test_system_apply_pbc.py	/^    def test_pbc(self) :$/;"	m	class:TestPBC
+test_read_file	tests/test_gromacs_gro.py	/^    def test_read_file(self):$/;"	m	class:TestGromacsGro
+test_read_file_tri	tests/test_gromacs_gro.py	/^    def test_read_file_tri(self):$/;"	m	class:TestGromacsGro
+test_remove	tests/test_remove_pbc.py	/^    def test_remove(self):$/;"	m	class:TestRemovePBC
+test_single_step	tests/test_vasp_unconverged_outcar.py	/^    def test_single_step(self) :$/;"	m	class:TestSingleStep
+test_systems_name	tests/test_multisystems.py	/^    def test_systems_name(self):$/;"	m	class:MultiSystems
+test_systems_size	tests/test_multisystems.py	/^    def test_systems_size(self):$/;"	m	class:MultiSystems
+test_type_map	tests/test_deepmd_raw.py	/^    def test_type_map (self) :$/;"	m	class:TestDeepmdTypeMap
+test_type_map	tests/test_multisystems.py	/^    def test_type_map(self):$/;"	m	class:TestTypeMap
+test_type_map_enforce	tests/test_deepmd_raw.py	/^    def test_type_map_enforce (self) :$/;"	m	class:TestDeepmdTypeMap
+test_type_map_is_superset	tests/test_type_map.py	/^    def test_type_map_is_superset(self):$/;"	m	class:TestTypeMap
+test_type_map_load	tests/test_deepmd_raw.py	/^    def test_type_map_load (self) :$/;"	m	class:TestDeepmdTypeMap
+test_types_func_1	tests/test_system_set_type.py	/^    def test_types_func_1(self):$/;"	m	class:TestSetAtomTypes
+test_types_func_2	tests/test_system_set_type.py	/^    def test_types_func_2(self):$/;"	m	class:TestSetAtomTypes
+test_unconverged	tests/test_vasp_unconverged_outcar.py	/^    def test_unconverged(self) :$/;"	m	class:TestSingleStep
+test_virial	tests/comp_sys.py	/^    def test_virial(self) :$/;"	m	class:CompLabeledSys
+test_virial	tests/test_qe_pw_scf.py	/^    def test_virial(self) :$/;"	m	class:TestPWSCFSinglePointEnergy
+test_viriale	tests/test_siesta_aiMD_output.py	/^    def test_viriale(self):$/;"	m	class:TestSIESTASinglePointEnergy
+test_viriale	tests/test_siesta_output.py	/^    def test_viriale(self) :$/;"	m	class:TestSIESTASinglePointEnergy
+test_virials	tests/test_gaussian_log.py	/^    def test_virials(self) :$/;"	m	class:TestNonCoveragedGaussianLoadLog
+texinfo_documents	docs/conf.py	/^texinfo_documents = [$/;"	v
+to	build/lib/dpdata/system.py	/^    def to(self, fmt, *args, **kwargs):$/;"	m	class:System
+to	dpdata/system.py	/^    def to(self, fmt, *args, **kwargs):$/;"	m	class:System
+to_ase_structure	build/lib/dpdata/system.py	/^    def to_ase_structure(self):$/;"	m	class:System
+to_ase_structure	dpdata/system.py	/^    def to_ase_structure(self):$/;"	m	class:System
+to_deepmd_npy	build/lib/dpdata/system.py	/^    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :$/;"	m	class:MultiSystems
+to_deepmd_npy	build/lib/dpdata/system.py	/^    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :$/;"	m	class:System
+to_deepmd_npy	dpdata/system.py	/^    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :$/;"	m	class:MultiSystems
+to_deepmd_npy	dpdata/system.py	/^    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :$/;"	m	class:System
+to_deepmd_raw	build/lib/dpdata/system.py	/^    def to_deepmd_raw(self, folder) :$/;"	m	class:MultiSystems
+to_deepmd_raw	build/lib/dpdata/system.py	/^    def to_deepmd_raw(self, folder) :$/;"	m	class:System
+to_deepmd_raw	dpdata/system.py	/^    def to_deepmd_raw(self, folder) :$/;"	m	class:MultiSystems
+to_deepmd_raw	dpdata/system.py	/^    def to_deepmd_raw(self, folder) :$/;"	m	class:System
+to_lammps_lmp	build/lib/dpdata/system.py	/^    def to_lammps_lmp(self, file_name, frame_idx = 0) :$/;"	m	class:System
+to_lammps_lmp	dpdata/system.py	/^    def to_lammps_lmp(self, file_name, frame_idx = 0) :$/;"	m	class:System
+to_list	build/lib/dpdata/system.py	/^    def to_list(self):$/;"	m	class:System
+to_list	dpdata/system.py	/^    def to_list(self):$/;"	m	class:System
+to_pwmat_atomconfig	build/lib/dpdata/system.py	/^    def to_pwmat_atomconfig(self, file_name, frame_idx = 0) :$/;"	m	class:System
+to_pwmat_atomconfig	dpdata/system.py	/^    def to_pwmat_atomconfig(self, file_name, frame_idx = 0) :$/;"	m	class:System
+to_pymatgen_ComputedStructureEntry	build/lib/dpdata/system.py	/^    def to_pymatgen_ComputedStructureEntry(self):$/;"	m	class:LabeledSystem
+to_pymatgen_ComputedStructureEntry	dpdata/system.py	/^    def to_pymatgen_ComputedStructureEntry(self):$/;"	m	class:LabeledSystem
+to_pymatgen_structure	build/lib/dpdata/system.py	/^    def to_pymatgen_structure(self):$/;"	m	class:System
+to_pymatgen_structure	dpdata/system.py	/^    def to_pymatgen_structure(self):$/;"	m	class:System
+to_system_data	build/lib/dpdata/deepmd/comp.py	/^def to_system_data(folder, $/;"	f
+to_system_data	build/lib/dpdata/deepmd/raw.py	/^def to_system_data(folder, type_map = None, labels = True) :$/;"	f
+to_system_data	build/lib/dpdata/gaussian/log.py	/^def to_system_data(file_name, md=False):$/;"	f
+to_system_data	build/lib/dpdata/lammps/lmp.py	/^def to_system_data(lines, type_map = None, type_idx_zero = True) :$/;"	f
+to_system_data	build/lib/dpdata/pwmat/atomconfig.py	/^def to_system_data(lines) :$/;"	f
+to_system_data	build/lib/dpdata/qe/traj.py	/^def to_system_data(input_name, prefix, begin = 0, step = 1) :$/;"	f
+to_system_data	build/lib/dpdata/vasp/poscar.py	/^def to_system_data(lines) :$/;"	f
+to_system_data	dpdata/deepmd/comp.py	/^def to_system_data(folder, $/;"	f
+to_system_data	dpdata/deepmd/raw.py	/^def to_system_data(folder, type_map = None, labels = True) :$/;"	f
+to_system_data	dpdata/gaussian/log.py	/^def to_system_data(file_name, md=False):$/;"	f
+to_system_data	dpdata/lammps/lmp.py	/^def to_system_data(lines, type_map = None, type_idx_zero = True) :$/;"	f
+to_system_data	dpdata/pwmat/atomconfig.py	/^def to_system_data(lines) :$/;"	f
+to_system_data	dpdata/qe/traj.py	/^def to_system_data(input_name, prefix, begin = 0, step = 1) :$/;"	f
+to_system_data	dpdata/vasp/poscar.py	/^def to_system_data(lines) :$/;"	f
+to_system_label	build/lib/dpdata/qe/traj.py	/^def to_system_label(input_name, prefix, begin = 0, step = 1) :$/;"	f
+to_system_label	dpdata/qe/traj.py	/^def to_system_label(input_name, prefix, begin = 0, step = 1) :$/;"	f
+to_vasp_poscar	build/lib/dpdata/system.py	/^    def to_vasp_poscar(self, file_name, frame_idx = 0) :$/;"	m	class:System
+to_vasp_poscar	dpdata/system.py	/^    def to_vasp_poscar(self, file_name, frame_idx = 0) :$/;"	m	class:System
+to_vasp_string	build/lib/dpdata/system.py	/^    def to_vasp_string(self, frame_idx=0):$/;"	m	class:System
+to_vasp_string	dpdata/system.py	/^    def to_vasp_string(self, frame_idx=0):$/;"	m	class:System
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^from .utils import trace$/;"	i
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/discover.py	/^from .utils import trace$/;"	i
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/file_finder_git.py	/^from .utils import trace$/;"	i
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^from .utils import do_ex, trace, has_command$/;"	i
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hacks.py	/^from .utils import data_from_mime, trace$/;"	i
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/hg.py	/^from .utils import do, trace, data_from_mime, has_command$/;"	i
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def trace(*k):$/;"	f
+trace	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^from .utils import trace, string_types, utc$/;"	i
+trace_exception	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^from .utils import do, trace_exception$/;"	i
+trace_exception	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^def trace_exception():$/;"	f
+traceback	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import traceback$/;"	i
+traj	build/lib/dpdata/system.py	/^import dpdata.qe.traj$/;"	i
+traj	dpdata/system.py	/^import dpdata.qe.traj$/;"	i
+tzname	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^    def tzname(self, dt):$/;"	m	class:UTC
+unicode_literals	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^from __future__ import print_function, unicode_literals$/;"	i
+unicode_literals	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^from __future__ import print_function, unicode_literals$/;"	i
+uniq_formula	build/lib/dpdata/system.py	/^    def uniq_formula(self):$/;"	m	class:System
+uniq_formula	dpdata/system.py	/^    def uniq_formula(self):$/;"	m	class:System
+unittest	tests/test_amber_md.py	/^import unittest$/;"	i
+unittest	tests/test_cell_to_low_triangle.py	/^import unittest$/;"	i
+unittest	tests/test_cp2k_aimd_output.py	/^import unittest$/;"	i
+unittest	tests/test_cp2k_output.py	/^import unittest$/;"	i
+unittest	tests/test_deepmd_comp.py	/^import unittest$/;"	i
+unittest	tests/test_deepmd_raw.py	/^import unittest$/;"	i
+unittest	tests/test_elements_index.py	/^import unittest$/;"	i
+unittest	tests/test_empty.py	/^import unittest$/;"	i
+unittest	tests/test_fhi_md_multi_elem_output.py	/^import unittest$/;"	i
+unittest	tests/test_fhi_md_output.py	/^import unittest$/;"	i
+unittest	tests/test_fhi_output.py	/^import unittest$/;"	i
+unittest	tests/test_gaussian_log.py	/^import unittest$/;"	i
+unittest	tests/test_gromacs_gro.py	/^import unittest$/;"	i
+unittest	tests/test_json.py	/^import unittest$/;"	i
+unittest	tests/test_lammps_dump_shift_origin.py	/^import unittest$/;"	i
+unittest	tests/test_lammps_dump_skipload.py	/^import unittest$/;"	i
+unittest	tests/test_lammps_dump_to_system.py	/^import unittest$/;"	i
+unittest	tests/test_lammps_lmp_dump.py	/^import unittest$/;"	i
+unittest	tests/test_lammps_lmp_to_system.py	/^import unittest$/;"	i
+unittest	tests/test_msd.py	/^import unittest$/;"	i
+unittest	tests/test_multisystems.py	/^import unittest$/;"	i
+unittest	tests/test_periodic_table.py	/^import unittest$/;"	i
+unittest	tests/test_perturb.py	/^import unittest$/;"	i
+unittest	tests/test_pwmat_config_dump.py	/^import unittest$/;"	i
+unittest	tests/test_pwmat_config_to_system.py	/^import unittest$/;"	i
+unittest	tests/test_pwmat_mlmd.py	/^import unittest$/;"	i
+unittest	tests/test_pwmat_movement.py	/^import unittest$/;"	i
+unittest	tests/test_qe_cp_traj.py	/^import unittest$/;"	i
+unittest	tests/test_qe_cp_traj_skipload.py	/^import unittest$/;"	i
+unittest	tests/test_qe_pw_scf.py	/^import unittest$/;"	i
+unittest	tests/test_quip_gap_xyz.py	/^import unittest$/;"	i
+unittest	tests/test_remove_pbc.py	/^import unittest$/;"	i
+unittest	tests/test_replicate.py	/^import unittest$/;"	i
+unittest	tests/test_shuffle.py	/^import unittest$/;"	i
+unittest	tests/test_siesta_aiMD_output.py	/^import unittest$/;"	i
+unittest	tests/test_siesta_output.py	/^import unittest$/;"	i
+unittest	tests/test_system_append.py	/^import unittest$/;"	i
+unittest	tests/test_system_apply_pbc.py	/^import unittest$/;"	i
+unittest	tests/test_system_set_type.py	/^import unittest$/;"	i
+unittest	tests/test_to_ase.py	/^import unittest$/;"	i
+unittest	tests/test_to_list.py	/^import unittest$/;"	i
+unittest	tests/test_to_pymatgen.py	/^import unittest$/;"	i
+unittest	tests/test_to_pymatgen_entry.py	/^import unittest$/;"	i
+unittest	tests/test_type_map.py	/^import unittest$/;"	i
+unittest	tests/test_vasp_outcar.py	/^import unittest$/;"	i
+unittest	tests/test_vasp_poscar_dump.py	/^import unittest$/;"	i
+unittest	tests/test_vasp_poscar_to_system.py	/^import unittest$/;"	i
+unittest	tests/test_vasp_unconverged_outcar.py	/^import unittest$/;"	i
+unittest	tests/test_vasp_xml.py	/^import unittest$/;"	i
+unittest	tests/test_water_ions.py	/^import unittest$/;"	i
+url	setup.py	/^    url="https:\/\/github.com\/deepmodeling\/dpdata",$/;"	v
+use_scm_version	setup.py	/^    use_scm_version={'write_to': 'dpdata\/_version.py'},$/;"	v
+utc	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^utc = UTC()$/;"	v
+utc	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^from .utils import trace, string_types, utc$/;"	i
+utcoffset	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^    def utcoffset(self, dt):$/;"	m	class:UTC
+vasp	build/lib/dpdata/__init__.py	/^from . import vasp$/;"	i
+vasp	build/lib/dpdata/system.py	/^import dpdata.vasp.outcar$/;"	i
+vasp	build/lib/dpdata/system.py	/^import dpdata.vasp.poscar$/;"	i
+vasp	build/lib/dpdata/system.py	/^import dpdata.vasp.xml$/;"	i
+vasp	dpdata/__init__.py	/^from . import vasp$/;"	i
+vasp	dpdata/system.py	/^import dpdata.vasp.outcar$/;"	i
+vasp	dpdata/system.py	/^import dpdata.vasp.poscar$/;"	i
+vasp	dpdata/system.py	/^import dpdata.vasp.xml$/;"	i
+version	build/lib/dpdata/_version.py	/^version = '0.1.20.dev0+gf150dd1.d20200909'$/;"	v
+version	docs/conf.py	/^version = '0.0'$/;"	v
+version	dpdata/_version.py	/^version = '0.1.20.dev0+gf150dd1.d20200909'$/;"	v
+version_from_scm	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^def version_from_scm(root):$/;"	f
+version_keyword	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/integration.py	/^def version_keyword(dist, keyword, value):$/;"	f
+warn_on_shallow	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^def warn_on_shallow(wd):$/;"	f
+warnings	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/__init__.py	/^import warnings$/;"	i
+warnings	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/config.py	/^import warnings$/;"	i
+warnings	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/git.py	/^import warnings$/;"	i
+warnings	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/utils.py	/^import warnings$/;"	i
+warnings	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/version.py	/^import warnings$/;"	i
+warnings	build/lib/dpdata/qe/traj.py	/^import dpdata,warnings$/;"	i
+warnings	dpdata/qe/traj.py	/^import dpdata,warnings$/;"	i
+water	tests/context.py	/^import dpdata.md.water$/;"	i
+wintypes	.eggs/setuptools_scm-4.1.2-py3.7.egg/setuptools_scm/win_py31_compat.py	/^import ctypes.wintypes$/;"	i
+write	tests/test_to_ase.py	/^   from ase.io import write$/;"	i
+xml	build/lib/dpdata/system.py	/^import dpdata.vasp.xml$/;"	i
+xml	build/lib/dpdata/vasp/xml.py	/^import xml.etree.ElementTree as ET$/;"	i
+xml	dpdata/system.py	/^import dpdata.vasp.xml$/;"	i
+xml	dpdata/vasp/xml.py	/^import xml.etree.ElementTree as ET$/;"	i

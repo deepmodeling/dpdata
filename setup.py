@@ -38,7 +38,8 @@ setuptools.setup(
               'dpdata/pwmat', 
               'dpdata/amber',
               'dpdata/fhi_aims',
-              'dpdata/gromacs'
+              'dpdata/gromacs',
+              'dpdata/ase'
     ],
     package_data={'dpdata':['*.json']},
     classifiers=[

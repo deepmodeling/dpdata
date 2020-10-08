@@ -17,7 +17,6 @@ def get_frames(fname, begin=0, step=1):
     atom_numbs = [chemical_symbols.count(i) for i in atom_names]
     atom_types = np.array([atom_names.index(i) for i in chemical_symbols])
 
-
     all_coords = []
     all_cells = []
     all_energies = []
