@@ -27,7 +27,7 @@ def to_system_data(file_name, md=False):
             elif line.startswith(" Center     Atomic                   Forces (Hartrees/Bohr)"):
                 flag = 1
                 forces = []
-            elif line.startswith("                          Input orientation:") or line.startswith("                         Z-Matrix orientation:"):
+            elif line.startswith("                          Input orientation:") or line.startswith("                         Z-Matrix orientation:") or line.startswith("                         Standard orientation:"):
                 flag = 5
                 coords = []
                 atom_symbols = []
