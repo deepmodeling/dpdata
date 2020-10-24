@@ -220,10 +220,12 @@ def get_frames (fname) :
     coord = []
     force = []
     stress = []
+    cell_count = 0
     coord_count = 0
     for idx, ii in enumerate(fp) :
-        if 'CELL| Vector' in ii :
+        if ('CELL| Vector' in ii) and (cell_count < 3) :
             cell.append(ii.split()[4:7])
+            cell_count += 1
         if 'Atom  Kind  Element' in ii :
             coord_flag = True
             coord_idx = idx
@@ -263,7 +265,6 @@ def get_frames (fname) :
     assert(coord), "cannot find coords"
     assert(energy), "cannot find energies"
     assert(force), "cannot find forces"
-    assert(stress), "cannot find stress"
 
     #conver to float array and add extra dimension for nframes
     cell = np.array(cell)
@@ -276,18 +277,24 @@ def get_frames (fname) :
     force = np.array(force)
     force = force.astype(np.float)
     force = force[np.newaxis, :, :]
-    stress = np.array(stress)
-    stress = stress.astype(np.float)
-    stress = stress[np.newaxis, :, :]
+
+    # virial is not necessary
+    if stress:
+        stress = np.array(stress)
+        stress = stress.astype(np.float)
+        stress = stress[np.newaxis, :, :]
+        # stress to virial conversion, default unit in cp2k is GPa
+        # note the stress is virial = stress * volume
+        virial = stress * np.linalg.det(cell[0])/GPa
+    else:
+        virial = None
+
     # force unit conversion, default unit in cp2k is hartree/bohr
     force = force * eV / angstrom
     # energy unit conversion, default unit in cp2k is hartree
     energy = float(energy) * eV
     energy = np.array(energy)
     energy = energy[np.newaxis]
-    # stress to virial conversion, default unit in cp2k is GPa
-    # note the stress is virial = stress * volume
-    virial = stress * np.linalg.det(cell[0])/GPa
 
 
 
