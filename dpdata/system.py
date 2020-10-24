@@ -1248,8 +1248,10 @@ class LabeledSystem (System):
             self.data['coords'], \
             self.data['energies'], \
             self.data['forces'], \
-            self.data['virials'] \
+            tmp_virial \
             = dpdata.cp2k.output.get_frames(file_name)
+        if tmp_virial is not None:
+            self.data['virials'] = tmp_virial
     @register_from_funcs.register_funcs('movement')
     @register_from_funcs.register_funcs('MOVEMENT')
     @register_from_funcs.register_funcs('mlmd')
