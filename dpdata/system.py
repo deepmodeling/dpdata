@@ -799,6 +799,40 @@ class System (MSONable) :
         tmp.data['coords'] = np.reshape(np.transpose(tmp.data['coords'], [3,4,0,1,2,5]), (nframes, -1 , 3))
         return tmp
 
+    def replace(self, initial_atom_type, end_atom_type, replace_num):
+        if type(self) is not dpdata.System:
+            raise RuntimeError('Must use method replace() of the instance of class dpdata.System')
+        if type(replace_num) is not int:
+            raise ValueError("replace_num must be a integer. Now is {replace_num}".format(replace_num=replace_num))
+        if replace_num <= 0:
+            raise ValueError("replace_num must be larger than 0.Now is {replace_num}".format(replace_num=replace_num))
+
+        try:
+            initial_atom_index = self.data['atom_names'].index(initial_atom_type)
+        except ValueError as e:
+            raise ValueError("atom_type  {initial_atom_type}   not in {atom_names}"
+                    .format(initial_atom_type=initial_atom_type, atom_names=self.data['atom_names']))
+        max_replace_num = self.data['atom_numbs'][initial_atom_index]
+
+        if replace_num > max_replace_num:
+            raise RuntimeError("not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check."
+                    .format(initial_atom_type=initial_atom_type,max_replace_num=max_replace_num, replace_num=replace_num))
+
+        may_replace_indices = [i for i, x in enumerate(self.data['atom_types']) if x == initial_atom_index]
+        to_replace_indices = np.random.choice(may_replace_indices, size=replace_num, replace=False)
+
+        if  end_atom_type not in self.data['atom_names']: 
+            self.data['atom_names'].append(end_atom_type)
+            self.data['atom_numbs'].append(0)
+
+        end_atom_index = self.data['atom_names'].index(end_atom_type)
+        for ii in to_replace_indices:
+            self.data['atom_types'][ii] = end_atom_index
+        self.data['atom_numbs'][initial_atom_index] -= replace_num
+        self.data['atom_numbs'][end_atom_index] += replace_num 
+        self.sort_atom_types()
+        
+
     def perturb(self,
         pert_num,
         cell_pert_fraction,

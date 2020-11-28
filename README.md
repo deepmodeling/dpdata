@@ -197,3 +197,13 @@ perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3,
     atom_pert_style='normal')
 print(perturbed_system.data)
 ```
+
+## replace
+By the following example, Random 8 Hf atoms in the system will be replaced by Zr atoms with the atom postion unchanged.
+```python
+s=dpdata.System('tests/poscars/POSCAR.P42nmc',fmt='vasp/poscar')
+s.replace('Hf', 'Zr', 8)
+s.to_vasp_poscar('POSCAR.P42nmc.replace')
+```
+
+
