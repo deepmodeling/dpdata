@@ -521,12 +521,10 @@ class System (MSONable) :
         convert System to ASE Atom obj
 
         '''
+        from ase import Atoms
+        from ase.calculators.singlepoint import SinglePointCalculator
+        
         structures=[]
-        try:
-           from ase import Atoms
-           from ase.calculators.singlepoint import SinglePointCalculator
-        except ImportError:
-           raise ImportError('No module ase')
 
         for system in self.to_list():
             species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
