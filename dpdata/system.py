@@ -529,11 +529,14 @@ class System (MSONable) :
         for system in self.to_list():
             species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
             structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
+            # convert to GPa as this is ase convention
+            v_pref = 1 * 1e4 / 1.602176621e6
+            vol = structure.get_volume()
             calc = SinglePointCalculator(
                 structure,
                 energy=system.data["energies"][0],
                 forces=system.data['forces'][0],
-                stresses=system.data['virials'][0]
+                stresses=system.data['virials'][0] / (v_pref * vol)
             )
             structure.calc = calc
             structures.append(structure)
