@@ -309,9 +309,14 @@ class System (MSONable) :
         tmp = System()
         for ii in ['atom_numbs', 'atom_names', 'atom_types', 'orig'] :
             tmp.data[ii] = self.data[ii]
+        
         tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
+        tmp.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
         tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
+        tmp.data['forces'] = self.data['forces'][f_idx].reshape(-1, self.data['forces'].shape[1], 3)
+        tmp.data['energies'] = self.data['energies'][f_idx]
         tmp.data['nopbc'] = self.nopbc
+        
         return tmp
 
 
@@ -519,12 +524,20 @@ class System (MSONable) :
         structures=[]
         try:
            from ase import Atoms
-        except:
-           raise ImportError('No module ase.Atoms')
+           from ase.calculators.singlepoint import SinglePointCalculator
+        except ImportError:
+           raise ImportError('No module ase')
 
         for system in self.to_list():
             species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
             structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
+            calc = SinglePointCalculator(
+                structure,
+                energy=system.data["energies"][0],
+                forces=system.data['forces'][0],
+                stresses=system.data['virials'][0]
+            )
+            structure.calc = calc
             structures.append(structure)
         return structures
 
