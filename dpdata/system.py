@@ -311,11 +311,15 @@ class System (MSONable) :
             tmp.data[ii] = self.data[ii]
         
         tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
-        tmp.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
         tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
-        tmp.data['forces'] = self.data['forces'][f_idx].reshape(-1, self.data['forces'].shape[1], 3)
-        tmp.data['energies'] = self.data['energies'][f_idx]
         tmp.data['nopbc'] = self.nopbc
+
+        if 'forces' in self.data:
+            tmp.data['forces'] = self.data['forces'][f_idx].reshape(-1, self.data['forces'].shape[1], 3)
+        if 'virials' in self.data:
+            tmp.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
+        if 'energies' in self.data:
+            tmp.data['energies'] = self.data['energies'][f_idx]
         
         return tmp
 
@@ -532,14 +536,19 @@ class System (MSONable) :
             # convert to GPa as this is ase convention
             v_pref = 1 * 1e4 / 1.602176621e6
             vol = structure.get_volume()
-            calc = SinglePointCalculator(
-                structure,
-                energy=system.data["energies"][0],
-                forces=system.data['forces'][0],
-                stresses=system.data['virials'][0] / (v_pref * vol)
-            )
+
+            results = {}
+            if "energies" in system.data:
+                results['energy'] = system.data["energies"][0]
+            if "forces" in system.data:
+                results['forces'] = system.data["forces"][0]
+            if "virials" in system.data:
+                results['stress'] = system.data["virials"][0] / (v_pref * vol)
+
+            calc = SinglePointCalculator(structure, **results)
             structure.calc = calc
             structures.append(structure)
+
         return structures
 
     @register_to_funcs.register_funcs("lammps/lmp")
