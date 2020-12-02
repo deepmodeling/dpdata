@@ -313,13 +313,6 @@ class System (MSONable) :
         tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
         tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
         tmp.data['nopbc'] = self.nopbc
-
-        if 'forces' in self.data:
-            tmp.data['forces'] = self.data['forces'][f_idx].reshape(-1, self.data['forces'].shape[1], 3)
-        if 'virials' in self.data:
-            tmp.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
-        if 'energies' in self.data:
-            tmp.data['energies'] = self.data['energies'][f_idx]
         
         return tmp
 
@@ -526,27 +519,12 @@ class System (MSONable) :
 
         '''
         from ase import Atoms
-        from ase.calculators.singlepoint import SinglePointCalculator
         
         structures=[]
 
         for system in self.to_list():
             species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
             structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
-            # convert to GPa as this is ase convention
-            v_pref = 1 * 1e4 / 1.602176621e6
-            vol = structure.get_volume()
-
-            results = {}
-            if "energies" in system.data:
-                results['energy'] = system.data["energies"][0]
-            if "forces" in system.data:
-                results['forces'] = system.data["forces"][0]
-            if "virials" in system.data:
-                results['stress'] = system.data["virials"][0] / (v_pref * vol)
-
-            calc = SinglePointCalculator(structure, **results)
-            structure.calc = calc
             structures.append(structure)
 
         return structures
@@ -1361,6 +1339,37 @@ class LabeledSystem (System):
             tmp_sys.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
         return tmp_sys
 
+    @register_to_funcs.register_funcs("ase/structure")
+    def to_ase_structure(self):
+        '''Convert System to ASE Atoms object.'''
+        from ase import Atoms
+        from ase.calculators.singlepoint import SinglePointCalculator
+        
+        structures = []
+
+        for system in self.to_list():
+            species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
+            structure=Atoms(
+                symbols=species,
+                positions=system.data['coords'][0],
+                pbc=True,
+                cell=system.data['cells'][0]
+            )
+
+            results = {
+                'energy': system.data["energies"][0],
+                'forces': system.data["forces"][0]
+            }
+            if "virials" in system.data:
+                # convert to GPa as this is ase convention
+                v_pref = 1 * 1e4 / 1.602176621e6
+                vol = structure.get_volume()
+                results['stress'] = system.data["virials"][0] / (v_pref * vol)
+
+            structure.calc = SinglePointCalculator(structure, **results)
+            structures.append(structure)
+
+        return structures
 
     def append(self, system):
         """
