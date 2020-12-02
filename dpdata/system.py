@@ -40,6 +40,10 @@ class Register:
             return func
         return decorator
 
+    def __add__(self, other):
+        self.funcs.update(other.funcs)
+        return self
+
 
 class System (MSONable) :
     '''
@@ -1046,6 +1050,7 @@ class LabeledSystem (System):
             self.apply_type_map(type_map)
 
     register_from_funcs = Register()
+    register_to_funcs = System.register_to_funcs + Register()
 
     def __repr__(self):
         return self.__str__()
