@@ -40,6 +40,10 @@ class Register:
             return func
         return decorator
 
+    def __add__(self, other):
+        self.funcs.update(other.funcs)
+        return self
+
 
 class System (MSONable) :
     '''
@@ -309,9 +313,11 @@ class System (MSONable) :
         tmp = System()
         for ii in ['atom_numbs', 'atom_names', 'atom_types', 'orig'] :
             tmp.data[ii] = self.data[ii]
+        
         tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
         tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
         tmp.data['nopbc'] = self.nopbc
+        
         return tmp
 
 
@@ -516,16 +522,15 @@ class System (MSONable) :
         convert System to ASE Atom obj
 
         '''
+        from ase import Atoms
+        
         structures=[]
-        try:
-           from ase import Atoms
-        except:
-           raise ImportError('No module ase.Atoms')
 
         for system in self.to_list():
             species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
             structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
             structures.append(structure)
+
         return structures
 
     @register_to_funcs.register_funcs("lammps/lmp")
@@ -1045,6 +1050,7 @@ class LabeledSystem (System):
             self.apply_type_map(type_map)
 
     register_from_funcs = Register()
+    register_to_funcs = System.register_to_funcs + Register()
 
     def __repr__(self):
         return self.__str__()
@@ -1338,6 +1344,37 @@ class LabeledSystem (System):
             tmp_sys.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
         return tmp_sys
 
+    @register_to_funcs.register_funcs("ase/structure")
+    def to_ase_structure(self):
+        '''Convert System to ASE Atoms object.'''
+        from ase import Atoms
+        from ase.calculators.singlepoint import SinglePointCalculator
+        
+        structures = []
+
+        for system in self.to_list():
+            species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
+            structure=Atoms(
+                symbols=species,
+                positions=system.data['coords'][0],
+                pbc=True,
+                cell=system.data['cells'][0]
+            )
+
+            results = {
+                'energy': system.data["energies"][0],
+                'forces': system.data["forces"][0]
+            }
+            if "virials" in system.data:
+                # convert to GPa as this is ase convention
+                v_pref = 1 * 1e4 / 1.602176621e6
+                vol = structure.get_volume()
+                results['stress'] = system.data["virials"][0] / (v_pref * vol)
+
+            structure.calc = SinglePointCalculator(structure, **results)
+            structures.append(structure)
+
+        return structures
 
     def append(self, system):
         """
