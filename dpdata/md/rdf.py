@@ -21,6 +21,15 @@ def rdf(sys,
         Maximal range of rdf calculation
     nbins: int
         Number of bins for rdf calculation
+
+    Returns
+    -------
+    xx: np.array
+        The lattice of r
+    rdf: np.array
+        The value of rdf at r
+    coord: np.array
+        The coordination number up to r
     """
     return compute_rdf(sys['cells'], sys['coords'], sys['atom_types'], 
                        sel_type = sel_type, 
@@ -36,12 +45,16 @@ def compute_rdf(box,
     nframes = box.shape[0]
     xx = None
     all_rdf = []
+    all_cod = []
     for ii in range(nframes):
-        xx, rdf = _compute_rdf_1frame(box[ii], posis[ii], atype, sel_type, max_r, nbins)
+        xx, rdf, cod = _compute_rdf_1frame(box[ii], posis[ii], atype, sel_type, max_r, nbins)
         all_rdf.append(rdf)
+        all_cod.append(cod)
     all_rdf = np.array(all_rdf).reshape([nframes, -1])
+    all_cod = np.array(all_cod).reshape([nframes, -1])
     all_rdf = np.average(all_rdf, axis = 0)
-    return xx, all_rdf
+    all_cod = np.average(all_cod, axis = 0)
+    return xx, all_rdf, all_cod
 
 def _compute_rdf_1frame(box, 
                         posis, 
@@ -65,6 +78,7 @@ def _compute_rdf_1frame(box,
     nlist = ase.neighborlist.NeighborList(max_r, self_interaction=False, bothways=True, primitive=ase.neighborlist.NewPrimitiveNeighborList)
     nlist.update(atoms)
     stat = np.zeros(nbins)
+    stat_acc = np.zeros(nbins)
     hh = max_r / float(nbins)
     for ii in range(natoms) :
         # atom "0"
@@ -90,13 +104,17 @@ def _compute_rdf_1frame(box,
     for ii in sel_type[1]:
         c1 += np.sum(atype == ii)
     rho1 = c1 / np.linalg.det(box)
+    # compute coordination number
+    for ii in range(1, nbins):
+        stat_acc[ii] = stat_acc[ii-1] + stat[ii-1]
+    stat_acc = stat_acc / c0
     # compute rdf
     for ii in range(nbins):
         vol = 4./3. * np.pi * ( ((ii+1)*hh) ** 3 - ((ii)*hh) ** 3 )
         rho = stat[ii] / vol
         stat[ii] = rho / rho1 / c0
     xx = np.arange(0, max_r-1e-12, hh)
-    return xx, stat
+    return xx, stat, stat_acc
 
 if __name__ == '__main__':
     import dpdata
