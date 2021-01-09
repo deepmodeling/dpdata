@@ -160,6 +160,10 @@ Warning: card / ignored
      Harris-Foulkes estimate   =     -16.42151922 Ry
      estimated scf accuracy    <       0.72535764 Ry
 
+!    total energy              =   -2521.75903765 Ry
+     Harris-Foulkes estimate   =   -2521.75903766 Ry
+     estimated scf accuracy    <          7.3E-09 Ry
+
      iteration #  2     ecut=   110.00 Ry     beta=0.50
      Davidson diagonalization with overlap
      ethr =  9.07E-03,  avg # of iterations =  2.0
@@ -171,6 +175,10 @@ Warning: card / ignored
      total energy              =     -16.15068779 Ry
      Harris-Foulkes estimate   =     -16.16925560 Ry
      estimated scf accuracy    <       0.04881001 Ry
+
+!    total energy              =   -2521.70014874 Ry
+     Harris-Foulkes estimate   =   -2521.70014874 Ry
+     estimated scf accuracy    <          4.5E-09 Ry
 
      iteration #  3     ecut=   110.00 Ry     beta=0.50
      Davidson diagonalization with overlap
