@@ -67,12 +67,8 @@ def get_energy (lines) :
     energy = None
     for ii in lines :
         if '!    total energy' in ii :
-#####################
             energy = ry2ev * float(ii.split('=')[1].split()[0])
     return energy
-# by chentao 20201222
-#            return ry2ev * float(ii.split('=')[1].split()[0])
-#    return None
 
 def get_force (lines) :
     blk = get_block(lines, 'Forces acting on atoms', skip = 1)
