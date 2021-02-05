@@ -76,7 +76,8 @@ class System (MSONable) :
                   type_map = None,
                   begin = 0,
                   step = 1,
-                  data = None) :
+                  data = None,
+                  **kwargs) :
         """
         Constructor
 
@@ -120,7 +121,7 @@ class System (MSONable) :
             return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
 
         if type_map is not None:
             self.apply_type_map(type_map)
@@ -1002,7 +1003,8 @@ class LabeledSystem (System):
                   type_map = None,
                   begin = 0,
                   step = 1,
-                  data=None) :
+                  data=None,
+                  **kwargs) :
         """
         Constructor
 
@@ -1045,7 +1047,7 @@ class LabeledSystem (System):
            return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
         if type_map is not None:
             self.apply_type_map(type_map)
 

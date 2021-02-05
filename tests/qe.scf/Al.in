@@ -1,0 +1,43 @@
+&CONTROL
+  calculation      = "scf",
+  pseudo_dir       = "../",
+  prefix           = "Aluminium",
+  wf_collect       = .True.,
+  tstress          = .True.,
+  tprnfor          = .True.,
+  outdir           = "./",
+  iprint           = 1,
+/
+&SYSTEM
+  ibrav            = 0,
+  nat              = 4,
+  ntyp             = 1,
+  occupations      ='smearing',
+  smearing         ='fermi-dirac',
+  degauss          = 0.001d0,
+  nosym            = .true.,
+  ecutwfc          = 50,
+  nbnd             = 12,
+/
+&ELECTRONS
+  electron_maxstep = 200,
+  mixing_mode      = 'plain',
+  conv_thr         = 1.0D-8,
+  mixing_beta      = 0.7D0,
+/
+CELL_PARAMETERS (angstrom)
+4.04 0 0
+0 4.04 0
+0 0 4.04
+
+ATOMIC_SPECIES
+Al  26.98 Al.pbe-n-nc.UPF
+
+ATOMIC_POSITIONS (crystal)
+Al 0 0 0
+Al 0 0.5 0.5
+Al 0.5 0 0.5
+Al 0.5 0.5 0
+
+K_POINTS (automatic)
+2 2 2 0 0 0

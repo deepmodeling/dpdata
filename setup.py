@@ -37,7 +37,8 @@ setuptools.setup(
               'dpdata/pwmat', 
               'dpdata/amber',
               'dpdata/fhi_aims',
-              'dpdata/gromacs'],
+              'dpdata/gromacs'
+    ],
     package_data={'dpdata':['*.json']},
     classifiers=[
         "Programming Language :: Python :: 3.6",
