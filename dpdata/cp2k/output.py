@@ -190,9 +190,12 @@ class Cp2kSystems(object):
                 element_index +=1
                 element_dict[line_list[0]]=[element_index,1]
             atom_types_list.append(element_dict[line_list[0]][0])
-            coords_list.append([float(line_list[1])*AU_TO_ANG,
-                float(line_list[2])*AU_TO_ANG,
-                float(line_list[3])*AU_TO_ANG])
+            # coords_list.append([float(line_list[1])*AU_TO_ANG,
+            #     float(line_list[2])*AU_TO_ANG,
+            #     float(line_list[3])*AU_TO_ANG])
+            coords_list.append([float(line_list[1]),
+                float(line_list[2]),
+                float(line_list[3])])
         atom_names=list(element_dict.keys())
         atom_numbs=[]
         for ii in atom_names:
