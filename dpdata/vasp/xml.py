@@ -75,6 +75,16 @@ def analyze (fname, type_idx_zero = False, begin = 0, step = 1) :
     """
     can deal with broken xml file
     """
+
+    import os, bz2, gzip
+    fh = fname
+    if(isinstance(fname, str)):
+        fext = os.path.splitext(fname)[1]
+        if(fext == ".bz2"):
+            fh = bz2.open(fname, "r")
+        elif(fext == ".gz"):
+            fh = gzip.open(fname, "r")
+
     all_posi = []
     all_cell = []
     all_ener = []
@@ -82,7 +92,7 @@ def analyze (fname, type_idx_zero = False, begin = 0, step = 1) :
     all_strs = []
     cc = 0
     try:
-        for event, elem in ET.iterparse(fname):
+        for event, elem in ET.iterparse(fh):
             if elem.tag == 'atominfo' :
                 eles, types = analyze_atominfo(elem)
                 types = np.array(types, dtype = int)
