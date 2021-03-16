@@ -128,5 +128,5 @@ def analyze_block(lines, ntot, nelm) :
                 tmp_l = lines[jj]
                 info = [float(ss) for ss in tmp_l.split()]
                 coord.append(info[:3])
-                force.append(info[3:])
+                force.append(info[3:6])
     return coord, cell, energy, force, virial, is_converge
