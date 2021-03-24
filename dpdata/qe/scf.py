@@ -64,10 +64,11 @@ def get_coords (lines) :
     return list(atom_names), atom_numbs, atom_types, coord
 
 def get_energy (lines) :
+    energy = None
     for ii in lines :
         if '!    total energy' in ii :
-            return ry2ev * float(ii.split('=')[1].split()[0])
-    return None
+            energy = ry2ev * float(ii.split('=')[1].split()[0])
+    return energy
 
 def get_force (lines) :
     blk = get_block(lines, 'Forces acting on atoms', skip = 1)

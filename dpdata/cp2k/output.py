@@ -190,9 +190,12 @@ class Cp2kSystems(object):
                 element_index +=1
                 element_dict[line_list[0]]=[element_index,1]
             atom_types_list.append(element_dict[line_list[0]][0])
-            coords_list.append([float(line_list[1])*AU_TO_ANG,
-                float(line_list[2])*AU_TO_ANG,
-                float(line_list[3])*AU_TO_ANG])
+            # coords_list.append([float(line_list[1])*AU_TO_ANG,
+            #     float(line_list[2])*AU_TO_ANG,
+            #     float(line_list[3])*AU_TO_ANG])
+            coords_list.append([float(line_list[1]),
+                float(line_list[2]),
+                float(line_list[3])])
         atom_names=list(element_dict.keys())
         atom_numbs=[]
         for ii in atom_names:
@@ -210,17 +213,22 @@ class Cp2kSystems(object):
 def get_frames (fname) :
     coord_flag = False
     force_flag = False
+    stress_flag = False
     eV = 2.72113838565563E+01 # hatree to eV
-    angstrom = 5.29177208590000E-01 # Bohrto Angstrom
+    angstrom = 5.29177208590000E-01 # Bohr to Angstrom
+    GPa = 160.21766208 # 1 eV/(Angstrom^3) = 160.21 GPa
     fp = open(fname)
     atom_symbol_list = []
     cell = []
     coord = []
     force = []
+    stress = []
+    cell_count = 0
     coord_count = 0
     for idx, ii in enumerate(fp) :
-        if 'CELL| Vector' in ii :
+        if ('CELL| Vector' in ii) and (cell_count < 3) :
             cell.append(ii.split()[4:7])
+            cell_count += 1
         if 'Atom  Kind  Element' in ii :
             coord_flag = True
             coord_idx = idx
@@ -244,6 +252,18 @@ def get_frames (fname) :
                     force_flag = False
                 else :
                     force.append(ii.split()[3:6])
+        # add reading stress tensor
+        if 'STRESS TENSOR [GPa' in ii :
+            stress_flag = True
+            stress_idx = idx
+        if stress_flag :
+            if (idx > stress_idx + 2):
+                if (ii == '\n') :
+                    stress_flag = False
+                else :
+                    stress.append(ii.split()[1:4])
+
+
     fp.close()
     assert(coord), "cannot find coords"
     assert(energy), "cannot find energies"
@@ -260,10 +280,27 @@ def get_frames (fname) :
     force = np.array(force)
     force = force.astype(np.float)
     force = force[np.newaxis, :, :]
+
+    # virial is not necessary
+    if stress:
+        stress = np.array(stress)
+        stress = stress.astype(np.float)
+        stress = stress[np.newaxis, :, :]
+        # stress to virial conversion, default unit in cp2k is GPa
+        # note the stress is virial = stress * volume
+        virial = stress * np.linalg.det(cell[0])/GPa
+    else:
+        virial = None
+
+    # force unit conversion, default unit in cp2k is hartree/bohr
     force = force * eV / angstrom
+    # energy unit conversion, default unit in cp2k is hartree
     energy = float(energy) * eV
     energy = np.array(energy)
     energy = energy[np.newaxis]
+
+
+
     tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)
     atom_types = []
     atom_numbs = []
@@ -278,7 +315,7 @@ def get_frames (fname) :
 
     atom_types = np.array(atom_types)
 
-    return list(atom_names), atom_numbs, atom_types, cell, coord, energy, force
+    return list(atom_names), atom_numbs, atom_types, cell, coord, energy, force, virial
 
 
 
