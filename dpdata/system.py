@@ -1682,6 +1682,24 @@ class MultiSystems:
         for ss in self:
             new_multisystems.append(ss.predict(dp))
         return new_multisystems
+    
+    def pick_atom_idx(self, idx):
+        """Pick atom index
+        
+        Parameters
+        ----------
+        idx: int or list or slice
+            atom index
+
+        Returns
+        -------
+        new_sys: MultiSystems
+            new system
+        """
+        new_sys = MultiSystems()
+        for ss in self:
+            new_sys.append(ss.pick_atom_idx(idx))
+        return new_sys
 
 
 def check_System(data):
