@@ -965,10 +965,9 @@ class System (MSONable) :
         """
         new_sys = self.copy()
         new_sys.data['coords'] = self.data['coords'][:, idx, :]
-        atom_types = np.array(self.data['atom_types'])[idx]
-        new_sys.data['atom_types'] = list(atom_types)
+        new_sys.data['atom_types'] = self.data['atom_types'][idx]
         # recalculate atom_numbs according to atom_types
-        atom_numbs = np.bincount(atom_types, minlength=len(self.get_atom_names()))
+        atom_numbs = np.bincount(new_sys.data['atom_types'], minlength=len(self.get_atom_names()))
         new_sys.data['atom_numbs'] = list(atom_numbs)
         return new_sys
 
@@ -979,19 +978,21 @@ class System (MSONable) :
         """
         if isinstance(atom_names, str):
             atom_names = [atom_names]
-        removed_idx = []
         removed_atom_idx = []
         for an in atom_names:
             # get atom name idx
             idx = self.data['atom_names'].index(an)
-            atom_idx = np.array(self.data['atom_types']) == idx
-            removed_idx.append(idx)
+            atom_idx = self.data['atom_types'] == idx
             removed_atom_idx.append(atom_idx)
         picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
         new_sys = self.pick_atom_idx(picked_atom_idx)
+        # let's remove atom_names
+        # firstly, rearrange atom_names and put these atom_names in the end
+        new_atom_names = list([xx for xx in new_sys.data['atom_names'] if xx not in atom_names])
+        new_sys.sort_atom_names(type_map=new_atom_names + atom_names)
         # remove atom_names and atom_numbs
-        new_sys.data['atom_names'] = [xx for ii, xx in enumerate(new_sys.data['atom_names']) if ii not in removed_idx]
-        new_sys.data['atom_numbs'] = [xx for ii, xx in enumerate(new_sys.data['atom_numbs']) if ii not in removed_idx]
+        new_sys.data['atom_names'] = new_atom_names
+        new_sys.data['atom_numbs'] = new_sys.data['atom_numbs'][:len(new_atom_names)]
         return new_sys
 
     def pick_by_amber_mask(self, param, maskstr, pass_coords=False):
