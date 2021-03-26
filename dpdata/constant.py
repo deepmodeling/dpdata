@@ -5,12 +5,12 @@ symbols = ['X', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg'
 
 # energy unit
 kcalmol2eV= 0.04336410390059322
-hartree2ev = 27.211386018
-ry2ev = 13.605693009
+hartree2ev = 27.211386024367243
+ry2ev = 13.605693012183622
 ev2ev = 1
 
 # length unit
-bohr2ang = 0.52917721067
+bohr2ang = 0.5291772105638411
 nm2ang = 10.
 ang2ang = 1
 
