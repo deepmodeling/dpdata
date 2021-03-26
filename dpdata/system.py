@@ -963,10 +963,31 @@ class System (MSONable) :
         atom_types = np.array(self.data['atom_types'])[idx]
         new_sys.data['atom_types'] = list(atom_types)
         # recalculate atom_numbs according to atom_types
-        atom_numbs = np.bincount(atom_types, minlength=len(self.get_atom_types()))
+        atom_numbs = np.bincount(atom_types, minlength=len(self.get_atom_names()))
         new_sys.data['atom_numbs'] = list(atom_numbs)
         return new_sys
-        
+
+    def remove_atom_names(self, atom_names):
+        """Remove atom names and all such atoms.
+        For example, you may not remove EP atoms in TIP4P/Ew water, which
+        is not a real atom. 
+        """
+        if isinstance(atom_names, str):
+            atom_names = [atom_names]
+        removed_idx = []
+        removed_atom_idx = []
+        for an in atom_names:
+            # get atom name idx
+            idx = self.data['atom_names'].index(an)
+            atom_idx = np.array(self.data['atom_types']) == idx
+            removed_idx.append(idx)
+            removed_atom_idx.append(atom_idx)
+        picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
+        new_sys = self.pick_atom_idx(picked_atom_idx)
+        # remove atom_names and atom_numbs
+        new_sys.data['atom_names'] = [xx for ii, xx in enumerate(new_sys.data['atom_names']) if ii not in removed_idx]
+        new_sys.data['atom_numbs'] = [xx for ii, xx in enumerate(new_sys.data['atom_numbs']) if ii not in removed_idx]
+        return new_sys
 
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
@@ -1481,13 +1502,13 @@ class LabeledSystem (System):
         corrected_sys: LabeledSystem
             Corrected LabeledSystem
         """
-        if not isinstance(high_sys, LabeledSystem):
+        if not isinstance(hl_sys, LabeledSystem):
             raise RuntimeError("high_sys should be LabeledSystem")
         corrected_sys = self.copy()
-        corrected_sys.data['energies'] = high_sys.data['energies'] - self.data['energies']
-        corrected_sys.data['forces'] = high_sys.data['forces'] - self.data['forces']
+        corrected_sys.data['energies'] = hl_sys.data['energies'] - self.data['energies']
+        corrected_sys.data['forces'] = hl_sys.data['forces'] - self.data['forces']
         if 'virials' in self.data and 'virials' in hl_sys.data:
-            corrected_sys.data['virials'] = high_sys.data['virials'] - self.data['virials']
+            corrected_sys.data['virials'] = hl_sys.data['virials'] - self.data['virials']
         return corrected_sys
 
     def pick_atom_idx(self, idx):
