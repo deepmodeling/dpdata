@@ -1461,8 +1461,8 @@ class LabeledSystem (System):
             entry=ComputedStructureEntry(structure,energy,data=data)
             entries.append(entry)
         return entries
-    
-    def correction(self, hl_sys: LabeledSystem)->LabeledSystem:
+
+    def correction(self, hl_sys):
         """Get energy and force correction between self and a high-level LabeledSystem.
         The self's coordinates will be kept, but energy and forces will be replaced by
         the correction between these two systems.
