@@ -3,6 +3,7 @@ import os
 from scipy.io import netcdf
 import numpy as np
 from dpdata.constant import kcalmol2eV, symbols
+from dpdata.amber.mask import pick_by_amber_mask
 
 energy_convert = kcalmol2eV
 force_convert = energy_convert
@@ -22,10 +23,11 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_fil
     ----------
     parm7_file, nc_file, mdfrc_file, mden_file, mdout_file:
       filenames
-    use_element_symbols: None or list
+    use_element_symbols: None or list or str
       If use_element_symbols is a list of atom indexes, these atoms will use element symbols
       instead of amber types. For example, a ligand will use C, H, O, N, and so on
       instead of h1, hc, o, os, and so on.
+      IF use_element_symbols is str, it will be considered as Amber mask.
     """
 
     flag_atom_type = False
@@ -54,6 +56,8 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_fil
                         elif flag_atom_numb:
                             atomic_number.append(int(content))    
     if use_element_symbols is not None:
+        if isinstance(use_element_symbols, str):
+            use_element_symbols = pick_by_amber_mask(parm7_file, use_element_symbols)
         for ii in use_element_symbols:
             amber_types[ii] = symbols[atomic_number[ii]]
 

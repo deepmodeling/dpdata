@@ -28,6 +28,7 @@ from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
 from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
+from dpdata.amber.mask import pick_by_amber_mask, load_param_file
 
 
 class Register:
@@ -992,6 +993,33 @@ class System (MSONable) :
         new_sys.data['atom_names'] = [xx for ii, xx in enumerate(new_sys.data['atom_names']) if ii not in removed_idx]
         new_sys.data['atom_numbs'] = [xx for ii, xx in enumerate(new_sys.data['atom_numbs']) if ii not in removed_idx]
         return new_sys
+
+    def pick_by_amber_mask(self, param, maskstr, pass_coords=False):
+        """Pick atoms by amber mask
+        
+        Parameters
+        ----------
+        param: str or parmed.Structure
+          filename of Amber param file or parmed.Structure
+        maskstr: str
+          Amber masks
+        pass_coords: Boolen (default: False)
+            If pass_coords is true, the function will pass coordinates and 
+            return a MultiSystem. Otherwise, the result is
+            coordinate-independent, and the function will return System or
+            LabeledSystem.
+        """
+        parm = load_param_file(param)
+        if pass_coords:
+            ms = MultiSystems()
+            for sub_s in self:
+                # TODO: this can computed in pararrel
+                idx = pick_by_amber_mask(parm, maskstr, sub_s['coords'][0])
+                ms.append(self.pick_atom_idx(idx))
+            return ms
+        else:
+            idx = pick_by_amber_mask(parm, maskstr)
+            return self.pick_atom_idx(idx)
 
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
