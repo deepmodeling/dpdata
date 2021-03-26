@@ -945,6 +945,29 @@ class System (MSONable) :
             labeled_sys.append(this_sys)
         return labeled_sys
 
+    def pick_atom_idx(self, idx):
+        """Pick atom index
+        
+        Parameters
+        ----------
+        idx: int or list or slice
+            atom index
+
+        Returns
+        -------
+        new_sys: System
+            new system
+        """
+        new_sys = self.copy()
+        new_sys.data['coords'] = self.data['coords'][:, idx, :]
+        atom_types = np.array(self.data['atom_types'])[idx]
+        new_sys.data['atom_types'] = list(atom_types)
+        # recalculate atom_numbs according to atom_types
+        atom_numbs = np.bincount(atom_types, minlength=len(self.get_atom_types()))
+        new_sys.data['atom_numbs'] = list(atom_numbs)
+        return new_sys
+        
+
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
         raise RuntimeError('cell_pert_fraction can not be negative')
@@ -1438,6 +1461,51 @@ class LabeledSystem (System):
             entry=ComputedStructureEntry(structure,energy,data=data)
             entries.append(entry)
         return entries
+    
+    def correction(self, hl_sys: LabeledSystem)->LabeledSystem:
+        """Get energy and force correction between self and a high-level LabeledSystem.
+        The self's coordinates will be kept, but energy and forces will be replaced by
+        the correction between these two systems.
+
+        Note: The function will not check whether coordinates and elements of two systems
+        are the same. The user should make sure by itself.
+
+        Parameters
+        ----------
+        hl_sys: LabeledSystem
+            high-level LabeledSystem
+        Returns
+        ----------
+        corrected_sys: LabeledSystem
+            Corrected LabeledSystem
+        """
+        if not isinstance(high_sys, LabeledSystem):
+            raise RuntimeError("high_sys should be LabeledSystem")
+        corrected_sys = self.copy()
+        corrected_sys.data['energies'] = high_sys.data['energies'] - self.data['energies']
+        corrected_sys.data['forces'] = high_sys.data['forces'] - self.data['forces']
+        if 'virials' in self.data and 'virials' in hl_sys.data:
+            corrected_sys.data['virials'] = high_sys.data['virials'] - self.data['virials']
+        return corrected_sys
+
+    def pick_atom_idx(self, idx):
+        """Pick atom index
+        
+        Parameters
+        ----------
+        idx: int or list or slice
+            atom index
+
+        Returns
+        -------
+        new_sys: LabeledSystem
+            new system
+        """
+        new_sys = System.pick_atom_idx(self, idx)
+        # forces
+        new_sys.data['forces'] = self.data['forces'][:, idx, :]
+        return new_sys
+
 
 class MultiSystems:
     '''A set containing several systems.'''
