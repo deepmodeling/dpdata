@@ -2,13 +2,15 @@ import re
 import os
 from scipy.io import netcdf
 import numpy as np
-from dpdata.constant import kcalmol2eV
+from dpdata.constant import kcalmol2eV, symbols
 
 energy_convert = kcalmol2eV
 force_convert = energy_convert
 
 
-def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_file = None):
+def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_file = None,
+        use_element_symbols=None,
+    ):
     """The amber trajectory includes:
     * nc, NetCDF format, stores coordinates
     * mdfrc, NetCDF format, stores forces
@@ -18,18 +20,24 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_fil
 
     Parameters
     ----------
-    parm7_file, nc_file, mdfrc_file, mden_file, mdout_file
+    parm7_file, nc_file, mdfrc_file, mden_file, mdout_file:
       filenames
-    
+    use_element_symbols: None or list
+      If use_element_symbols is a list of atom indexes, these atoms will use element symbols
+      instead of amber types. For example, a ligand will use C, H, O, N, and so on
+      instead of h1, hc, o, os, and so on.
     """
 
-    flag=False
+    flag_atom_type = False
+    flag_atom_numb = False
     amber_types = []
+    atomic_number = []
     with open(parm7_file) as f:
         for line in f:
             if line.startswith("%FLAG"):
-                flag = line.startswith("%FLAG AMBER_ATOM_TYPE")
-            elif flag:
+                flag_atom_type = line.startswith("%FLAG AMBER_ATOM_TYPE")
+                flag_atom_numb = (use_element_symbols is not None) and line.startswith("%FLAG ATOMIC_NUMBER")
+            elif flag_atom_type or flag_atom_numb:
                 if line.startswith("%FORMAT"):
                     fmt = re.findall(r'\d+', line)
                     fmt0 = int(fmt[0])
@@ -40,7 +48,14 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_fil
                         end_index = (ii + 1) * fmt1
                         if end_index >= len(line):
                             continue
-                        amber_types.append(line[start_index:end_index].strip())
+                        content = line[start_index:end_index].strip()
+                        if flag_atom_type:
+                            amber_types.append(content)
+                        elif flag_atom_numb:
+                            atomic_number.append(int(content))    
+    if use_element_symbols is not None:
+        for ii in use_element_symbols:
+            amber_types[ii] = symbols[atomic_number[ii]]
 
     with netcdf.netcdf_file(nc_file, 'r') as f:
         coords = np.array(f.variables["coordinates"][:])
