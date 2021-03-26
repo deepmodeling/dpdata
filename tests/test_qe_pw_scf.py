@@ -106,9 +106,9 @@ class TestPWSCFSinglePointEnergy:
 
     def test_energy(self) :
         ref_energy = -219.74425946528794
-        self.assertAlmostEqual(self.system_ch4.data['energies'][0], ref_energy)
+        self.assertAlmostEqual(self.system_ch4.data['energies'][0], ref_energy, places=5)
         ref_energy = -30007.651851226798
-        self.assertAlmostEqual(self.system_h2o.data['energies'][0], ref_energy)
+        self.assertAlmostEqual(self.system_h2o.data['energies'][0], ref_energy, places=4)
 
 
 
