@@ -2,8 +2,7 @@
 
 import numpy as np
 
-ev2ev = 1
-ang2ang = 1
+
 
 #############################read output#####################################
 def get_single_line_tail(fin, keyword, num=1):

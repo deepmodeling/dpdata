@@ -1,8 +1,7 @@
 import re
 from scipy.io import netcdf
 import numpy as np
-
-kcalmol2eV= 0.04336410390059322
+from dpdata.constant import kcalmol2eV
 
 energy_convert = kcalmol2eV
 force_convert = energy_convert

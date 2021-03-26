@@ -1,9 +1,7 @@
 #!/usr/bin/python3 
 
 import numpy as np
-
-ev2ev = 1
-ang2ang = 1
+from dpdata.constant import ev2ev, ang2ang
 
 
 #############################read output#####################################

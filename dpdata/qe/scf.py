@@ -2,10 +2,8 @@
 
 import os,sys
 import numpy as np
+from dpdata.constant import ry2ev, bohr2ang, kbar2evperang3
 
-ry2ev = 13.605693009
-bohr2ang = 0.52917721067
-kbar2evperang3 = 1e3 / 1.602176621e6
 
 def get_block (lines, keyword, skip = 0) :
     ret = []

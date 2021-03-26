@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-
-nm2ang = 10.
+from dpdata.constant import nm2ang
 
 def _get_line(line):
     atom_name = line[10:15].split()[0]
