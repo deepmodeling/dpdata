@@ -1292,7 +1292,7 @@ class LabeledSystem (System):
         self.from_gaussian_log(file_name, md=True)
 
     @register_from_funcs.register_funcs('amber/md')
-    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None):
+    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None, mdout_file=None, **kwargs):
         # assume the prefix is the same if the spefic name is not given
         if parm7_file is None:
             parm7_file = file_name + ".parm7"
@@ -1302,7 +1302,9 @@ class LabeledSystem (System):
             mdfrc_file = file_name + ".mdfrc"
         if mden_file is None:
             mden_file = file_name + ".mden"
-        self.data = dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file)
+        if mdout_file is None:
+            mdout_file = file_name + ".mdout"
+        self.data = dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file, mdout_file, **kwargs)
 
     @register_from_funcs.register_funcs('cp2k/output')
     def from_cp2k_output(self, file_name) :

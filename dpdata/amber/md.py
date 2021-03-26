@@ -1,4 +1,5 @@
 import re
+import os
 from scipy.io import netcdf
 import numpy as np
 from dpdata.constant import kcalmol2eV
@@ -7,12 +8,19 @@ energy_convert = kcalmol2eV
 force_convert = energy_convert
 
 
-def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file):
+def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_file = None):
     """The amber trajectory includes:
     * nc, NetCDF format, stores coordinates
     * mdfrc, NetCDF format, stores forces
-    * mden, text format, stores energies
+    * mden (optional), text format, stores energies
+    * mdout (optional), text format, may store energies if there is no mden_file
     * parm7, text format, stores types
+
+    Parameters
+    ----------
+    parm7_file, nc_file, mdfrc_file, mden_file, mdout_file
+      filenames
+    
     """
 
     flag=False
@@ -51,14 +59,23 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file):
     with netcdf.netcdf_file(mdfrc_file, 'r') as f:
         forces = np.array(f.variables["forces"][:])
 
-    # energy
+    # load energy from mden_file or mdout_file
     energies = []
-    with open(mden_file) as f:
-        for line in f:
-            if line.startswith("L6"):
-                s = line.split()
-                if s[2] != "E_pot":
-                    energies.append(float(s[2]))
+    if mden_file is not None and os.path.isfile(mden_file):
+        with open(mden_file) as f:
+            for line in f:
+                if line.startswith("L6"):
+                    s = line.split()
+                    if s[2] != "E_pot":
+                        energies.append(float(s[2]))
+    elif mdout_file is not None and os.path.isfile(mdout_file):
+        with open(mdout_file) as f:
+            for line in f:
+                if "EPtot" in line:
+                    s = line.split()
+                    energies.append(float(s[-1]))
+    else:
+        raise RuntimeError("Please provide one of mden_file and mdout_file")
 
     atom_names, atom_types, atom_numbs = np.unique(amber_types, return_inverse=True, return_counts=True)
 
