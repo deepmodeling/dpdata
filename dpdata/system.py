@@ -899,6 +899,10 @@ class System (MSONable) :
             return True
         return False
 
+    @nopbc.setter
+    def nopbc(self, value):
+        self.data['nopbc'] = value
+
     def shuffle(self):
         """Shuffle frames randomly."""
         idx = np.random.permutation(self.get_nframes())
