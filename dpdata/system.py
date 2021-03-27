@@ -1016,7 +1016,7 @@ class System (MSONable) :
             for sub_s in self:
                 # TODO: this can computed in pararrel
                 idx = pick_by_amber_mask(parm, maskstr, sub_s['coords'][0])
-                ms.append(self.pick_atom_idx(idx))
+                ms.append(sub_s.pick_atom_idx(idx))
             return ms
         else:
             idx = pick_by_amber_mask(parm, maskstr)
