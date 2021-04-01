@@ -1022,6 +1022,15 @@ class System (MSONable) :
             idx = pick_by_amber_mask(parm, maskstr)
             return self.pick_atom_idx(idx)
 
+    @register_from_funcs.register_funcs('amber/md')
+    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None):
+        # assume the prefix is the same if the spefic name is not given
+        if parm7_file is None:
+            parm7_file = file_name + ".parm7"
+        if nc_file is None:
+            nc_file = file_name + ".nc"
+        self.data = dpdata.amber.md.read_amber_traj(parm7_file=parm7_file, nc_file=nc_file, use_element_symbols=use_element_symbols, labeled=False)
+
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
         raise RuntimeError('cell_pert_fraction can not be negative')

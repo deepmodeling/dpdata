@@ -9,8 +9,8 @@ energy_convert = kcalmol2eV
 force_convert = energy_convert
 
 
-def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_file = None,
-        use_element_symbols=None,
+def read_amber_traj(parm7_file, nc_file, mdfrc_file=None, mden_file = None, mdout_file = None,
+        use_element_symbols=None, labeled=True,
     ):
     """The amber trajectory includes:
     * nc, NetCDF format, stores coordinates
@@ -75,26 +75,27 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_fil
         else:
             raise RuntimeError("Unsupported cells")
 
-    with netcdf.netcdf_file(mdfrc_file, 'r') as f:
-        forces = np.array(f.variables["forces"][:])
+    if labeled:
+        with netcdf.netcdf_file(mdfrc_file, 'r') as f:
+            forces = np.array(f.variables["forces"][:])
 
-    # load energy from mden_file or mdout_file
-    energies = []
-    if mden_file is not None and os.path.isfile(mden_file):
-        with open(mden_file) as f:
-            for line in f:
-                if line.startswith("L6"):
-                    s = line.split()
-                    if s[2] != "E_pot":
-                        energies.append(float(s[2]))
-    elif mdout_file is not None and os.path.isfile(mdout_file):
-        with open(mdout_file) as f:
-            for line in f:
-                if "EPtot" in line:
-                    s = line.split()
-                    energies.append(float(s[-1]))
-    else:
-        raise RuntimeError("Please provide one of mden_file and mdout_file")
+        # load energy from mden_file or mdout_file
+        energies = []
+        if mden_file is not None and os.path.isfile(mden_file):
+            with open(mden_file) as f:
+                for line in f:
+                    if line.startswith("L6"):
+                        s = line.split()
+                        if s[2] != "E_pot":
+                            energies.append(float(s[2]))
+        elif mdout_file is not None and os.path.isfile(mdout_file):
+            with open(mdout_file) as f:
+                for line in f:
+                    if "EPtot" in line:
+                        s = line.split()
+                        energies.append(float(s[-1]))
+        else:
+            raise RuntimeError("Please provide one of mden_file and mdout_file")
 
     atom_names, atom_types, atom_numbs = np.unique(amber_types, return_inverse=True, return_counts=True)
 
@@ -102,8 +103,9 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file = None, mdout_fil
     data['atom_names'] = list(atom_names)
     data['atom_numbs'] = list(atom_numbs)
     data['atom_types'] = atom_types
-    data['forces'] = forces * force_convert
-    data['energies'] = np.array(energies) * energy_convert
+    if labeled:
+        data['forces'] = forces * force_convert
+        data['energies'] = np.array(energies) * energy_convert
     data['coords'] = coords
     data['cells'] = cells
     data['orig'] = np.array([0, 0, 0])
