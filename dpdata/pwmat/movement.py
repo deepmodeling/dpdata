@@ -107,7 +107,7 @@ def analyze_block(lines, ntot, nelm) :
             sc_index = int(ii.split('SCF =')[1])
             if sc_index >= nelm:
                 is_converge = False
-            energy = float(ii.split('Etot,Ep,Ek (eV)')[1].split()[1])
+            energy = float(ii.split('Etot,Ep,Ek (eV)')[1].split()[2]) # use Ep, not Etot=Ep+Ek
         elif '----------' in ii:
             assert((force is not None) and len(coord) > 0 and len(cell) > 0)
             # all_coords.append(coord)
@@ -170,7 +170,7 @@ def analyze_block(lines, ntot, nelm) :
                         min = jj
                         lines[min], lines[kk] = lines[kk],lines[min]
             for gg in range(idx+1,idx+1+ntot):
-                info = [float(ss) for ss in lines[gg].split()]
+                info = [-float(ss) for ss in lines[gg].split()] # forces in MOVEMENT file are dE/dR, lacking a minus sign
                 force.append(info[1:4])
 #        elif 'Atomic-Energy' in ii:
 #            for jj in range(idx+1, idx+1+ntot) :
