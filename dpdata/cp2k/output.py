@@ -14,7 +14,6 @@ delimiter_p2 = re.compile(r'^ \*+')
 delimiter_patterns.append(delimiter_p1)
 delimiter_patterns.append(delimiter_p2)
 avail_patterns = []
-
 avail_patterns.append(re.compile(r'^ INITIAL POTENTIAL ENERGY'))
 avail_patterns.append(re.compile(r'^ ENSEMBLE TYPE'))
 
@@ -27,6 +26,8 @@ class Cp2kSystems(object):
         self.xyz_file_object = open(xyz_file_name, 'r')
         self.log_block_generator = self.get_log_block_generator()
         self.xyz_block_generator = self.get_xyz_block_generator()
+        self.restart_flag = False
+        self.restart_flag_count = 0
         self.cell=None
     def __del__(self):
         self.log_file_object.close()
@@ -34,6 +35,13 @@ class Cp2kSystems(object):
     def __iter__(self):
         return self
     def __next__(self):
+
+        if self.restart_flag_count == 0:
+            if self.check_restart():
+                info_dict = {}
+                self.restart_flag_count += 1
+                log_info_dict = self.handle_single_log_frame(next(self.log_block_generator))
+
         info_dict = {}
         log_info_dict = self.handle_single_log_frame(next(self.log_block_generator))
         xyz_info_dict = self.handle_single_xyz_frame(next(self.xyz_block_generator))
@@ -43,10 +51,21 @@ class Cp2kSystems(object):
         assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file')
         assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file')
         assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file')
-        assert log_info_dict['energies']==xyz_info_dict['energies'], (log_info_dict['energies'],xyz_info_dict['energies'],'There may be errors in the file')
+        assert log_info_dict['energies']-xyz_info_dict['energies'] < 1E-4, (log_info_dict['energies'],xyz_info_dict['energies'],'There may be errors in the file')
         info_dict.update(log_info_dict)
         info_dict.update(xyz_info_dict)
         return info_dict
+
+    def check_restart(self):
+        restart_patterns = re.compile(r'^ \*\s+ RESTART INFORMATION')
+        restart_flag = False
+        for i in range(0, 10):
+            line = self.log_file_object.readline()
+            if restart_patterns.match(line):
+                restart_flag = True
+                break
+
+        return restart_flag
 
     def get_log_block_generator(self):
         lines = []
@@ -111,6 +130,8 @@ class Cp2kSystems(object):
                     force_lines.append(line)
             if energy_pattern_1.match(line):
                 energy = float(energy_pattern_1.match(line).groupdict()['number']) * AU_TO_EV
+                #print('1',float(energy_pattern_1.match(line).groupdict()['number']))
+                #print('1to', energy)
             if energy_pattern_2.match(line):
                 energy = float(energy_pattern_2.match(line).groupdict()['number']) * AU_TO_EV
             if cell_length_pattern.match(line):
@@ -159,9 +180,9 @@ class Cp2kSystems(object):
         info_dict['atom_names'] = atom_names
         info_dict['atom_numbs'] = atom_numbs
         info_dict['atom_types'] = np.asarray(atom_types_list)
-        info_dict['cells'] = np.asarray([self.cell]).astype('float32')
-        info_dict['energies'] = np.asarray([energy]).astype('float32')
-        info_dict['forces'] = np.asarray([forces_list]).astype('float32')
+        info_dict['cells'] = np.asarray([self.cell]).astype('float64')
+        info_dict['energies'] = np.asarray([energy]).astype('float64')
+        info_dict['forces'] = np.asarray([forces_list]).astype('float64')
         return info_dict
 
     def handle_single_xyz_frame(self, lines):
@@ -203,8 +224,8 @@ class Cp2kSystems(object):
         info_dict['atom_names'] = atom_names
         info_dict['atom_numbs'] = atom_numbs
         info_dict['atom_types'] = np.asarray(atom_types_list)
-        info_dict['coords'] = np.asarray([coords_list]).astype('float32')
-        info_dict['energies'] = np.array([energy]).astype('float32')
+        info_dict['coords'] = np.asarray([coords_list]).astype('float64')
+        info_dict['energies'] = np.array([energy]).astype('float64')
         info_dict['orig']=[0,0,0]
         return info_dict
 
