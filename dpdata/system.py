@@ -1027,6 +1027,7 @@ class LabeledSystem (System):
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
                 - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file)
+                - ``cp2k/restart_aimd_output``: cp2k restart aimd output  dir(contains *pos*.xyz and *.log file)
                 - ``pwmat/movement``: pwmat md output file
                 - ``pwmat/out.mlmd``: pwmat scf output file
 
@@ -1091,10 +1092,18 @@ class LabeledSystem (System):
         return ('virials' in self.data)
 
     @register_from_funcs.register_funcs('cp2k/aimd_output')
-    def from_cp2k_aimd_output(self, file_dir):
+    def from_cp2k_aimd_output(self, file_dir, restart=False):
         xyz_file=sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
         log_file=sorted(glob.glob("{}/*.log".format(file_dir)))[0]
-        for info_dict in Cp2kSystems(log_file, xyz_file):
+        for info_dict in Cp2kSystems(log_file, xyz_file, restart):
+            l = LabeledSystem(data=info_dict)
+            self.append(l)
+
+    @register_from_funcs.register_funcs('cp2k/restart_aimd_output')
+    def from_cp2k_aimd_output(self, file_dir, restart=True):
+        xyz_file = sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
+        log_file = sorted(glob.glob("{}/*.log".format(file_dir)))[0]
+        for info_dict in Cp2kSystems(log_file, xyz_file, restart):
             l = LabeledSystem(data=info_dict)
             self.append(l)
 
