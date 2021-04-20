@@ -20,4 +20,5 @@ dist
 dpdata.egg-info
 _version.py
 !tests/cp2k/aimd/cp2k.log
+!tests/cp2k/restart_aimd/ch4.log
 __pycache__
