@@ -49,7 +49,7 @@ class Cp2kSystems(object):
         assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file')
         assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file')
         assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file')
-        assert abs(log_info_dict['energies']-xyz_info_dict['energies'])<1E-4, (log_info_dict['energies'],xyz_info_dict['energies'],'There may be errors in the file')
+        assert log_info_dict['energies']==xyz_info_dict['energies'], (log_info_dict['energies'], xyz_info_dict['energies'],'There may be errors in the file')
         info_dict.update(log_info_dict)
         info_dict.update(xyz_info_dict)
         return info_dict
@@ -166,9 +166,9 @@ class Cp2kSystems(object):
         info_dict['atom_names'] = atom_names
         info_dict['atom_numbs'] = atom_numbs
         info_dict['atom_types'] = np.asarray(atom_types_list)
-        info_dict['cells'] = np.asarray([self.cell]).astype('float64')
-        info_dict['energies'] = np.asarray([energy]).astype('float64')
-        info_dict['forces'] = np.asarray([forces_list]).astype('float64')
+        info_dict['cells'] = np.asarray([self.cell]).astype('float32')
+        info_dict['energies'] = np.asarray([energy]).astype('float32')
+        info_dict['forces'] = np.asarray([forces_list]).astype('float32')
         return info_dict
 
     def handle_single_xyz_frame(self, lines):
@@ -210,8 +210,8 @@ class Cp2kSystems(object):
         info_dict['atom_names'] = atom_names
         info_dict['atom_numbs'] = atom_numbs
         info_dict['atom_types'] = np.asarray(atom_types_list)
-        info_dict['coords'] = np.asarray([coords_list]).astype('float64')
-        info_dict['energies'] = np.array([energy]).astype('float64')
+        info_dict['coords'] = np.asarray([coords_list]).astype('float32')
+        info_dict['energies'] = np.array([energy]).astype('float32')
         info_dict['orig']=[0,0,0]
         return info_dict
 
