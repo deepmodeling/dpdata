@@ -32,23 +32,23 @@ class Cp2kSystems(object):
         if self.restart_flag:
             self.handle_single_log_frame(next(self.log_block_generator))
 
-
     def __del__(self):
         self.log_file_object.close()
         self.xyz_file_object.close()
+
     def __iter__(self):
         return self
-    def __next__(self):
 
+    def __next__(self):
         info_dict = {}
         log_info_dict = self.handle_single_log_frame(next(self.log_block_generator))
         xyz_info_dict = self.handle_single_xyz_frame(next(self.xyz_block_generator))
         eq1 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_numbs'], xyz_info_dict['atom_numbs'])]
         eq2 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_names'], xyz_info_dict['atom_names'])]
         eq3 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_types'], xyz_info_dict['atom_types'])]
-        assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file')
-        assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file')
-        assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file')
+        assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
+        assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
+        assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         assert log_info_dict['energies']==xyz_info_dict['energies'], (log_info_dict['energies'], xyz_info_dict['energies'],'There may be errors in the file')
         info_dict.update(log_info_dict)
         info_dict.update(xyz_info_dict)
