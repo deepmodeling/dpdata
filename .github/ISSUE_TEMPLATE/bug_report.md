@@ -1,7 +1,7 @@
 ---
 name: Bug report
-about: Create a bug report to help us eliminate issues and improve deepmd-kit. If
-  this doesn’t look right, [choose a different type](https://github.com/deepmodeling/dpdata/issues/new/choose).
+about: Create a bug report to help us eliminate issues and improve dpdata. If this
+  doesn’t look right, [choose a different type](https://github.com/deepmodeling/dpdata/issues/new/choose).
 title: "[BUG] _Replace With Suitable Title_"
 labels: bug
 assignees: ''
