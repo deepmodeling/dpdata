@@ -1,6 +1,7 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Suggest an idea for this project. If this doesn’t work right, [choose a different
+  type]( https://github.com/deepmodeling/dpdata/issues/new/choose).
 title: "[Feature Request] _Replace with Title_"
 labels: enhancement
 assignees: ''

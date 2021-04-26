@@ -11,11 +11,11 @@ assignees: ''
 Before asking questions, you can
 
 search the previous issues or discussions
-check the [document](https://deepmd.readthedocs.io/en/stable), especially [training parameters](https://deepmd.readthedocs.io/en/stable/train-input.html).
+check the [README](https://github.com/deepmodeling/dpdata/#readme).
 
-Please **do not** post requests for help (e.g. with installing or using deepmd-kit) here. 
-Instead go to [discussions](https://github.com/deepmodeling/deepmd-kit/discussions).
+Please **do not** post requests for help (e.g. with installing or using dpdata) here. 
+Instead go to [discussions](https://github.com/deepmodeling/dpdata/discussions).
 
-This issue tracker is for tracking deepmd-kit development related issues only.
+This issue tracker is for tracking dpdata development related issues only.
 
 Thanks for your cooperation.
