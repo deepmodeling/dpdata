@@ -15,6 +15,7 @@ import dpdata.qe.scf
 import dpdata.siesta.output
 import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
+import dpdata.gaussian.gjf
 import dpdata.gaussian.log
 import dpdata.amber.md
 import dpdata.cp2k.output
@@ -622,7 +623,7 @@ class System (MSONable) :
 
     @register_from_funcs.register_funcs("gro")
     @register_from_funcs.register_funcs("gromacs/gro")
-    def from_gromacs_gro(self, file_name) :
+    def from_gromacs_gro(self, file_name, format_atom_name=True) :
         """
         Load gromacs .gro file
 
@@ -631,7 +632,44 @@ class System (MSONable) :
         file_name : str
             The input file name
         """
-        self.data = dpdata.gromacs.gro.file_to_system_data(file_name)
+        self.data = dpdata.gromacs.gro.file_to_system_data(file_name, format_atom_name=format_atom_name)
+
+    @register_to_funcs.register_funcs("gromacs/string")
+    def to_gromacs_string(self, frame_idx=-1):
+        """
+        Dump the system in gromacs .gro format string
+        
+        Parameters
+        ----------
+        frame_idx : int
+            The index of the frame to dump
+        """
+        assert(frame_idx < len(self.data['coords']))
+        if frame_idx == -1:
+            strs = []
+            for idx in range(self.get_nframes()):
+                gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=idx)
+                strs.append(gro_str)
+            return "\n".join(strs)
+        else:
+            gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=frame_idx)
+            return gro_str
+
+    @register_to_funcs.register_funcs("gromacs/gro")
+    def to_gromacs_gro(self, file_name, frame_idx=-1):
+        """
+        Dump the system in gromacs .gro format
+
+        Parameters
+        ----------
+        file_name : str
+            The output file name
+        frame_idx : int
+            The index of the frame to dump
+        """
+        gro_str=self.to_gromacs_string(frame_idx=frame_idx)
+        with open(file_name, 'w') as fp:
+            fp.write(gro_str)
 
     @register_to_funcs.register_funcs("deepmd/npy")
     def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
@@ -709,7 +747,56 @@ class System (MSONable) :
         w_str = dpdata.pwmat.atomconfig.from_system_data(self.data, frame_idx)
         with open(file_name, 'w') as fp:
             fp.write(w_str)
+    
+    @register_to_funcs.register_funcs("gaussian/str")
+    def to_gaussian_str(self, frame_idx=0, header="", title="", foot="", charge=0, mult=1):
+        """
+        Write input file for gaussian
 
+        Parameters
+        ----------
+        frame_idx: int
+            The index of the frame to specify molecule geometry
+        header: str
+            The gaussian input file headers, include link0 and route section
+        title: str
+            The title section of gaussian input file
+        foot: str
+            Additional section for 'Opt=ModRedundant' keyword
+        charge: int
+            The charge of molecule
+        mult: int
+            The multiplicity of molecule
+        """ 
+        assert frame_idx < self.get_nframes()
+        ret = dpdata.gaussian.gjf.to_gjf_string(self, frame_idx, header, title, foot, charge, mult)
+        
+        return ret
+    
+    @register_to_funcs.register_funcs("gaussian/gjf")
+    def to_gaussian_gjf(self, gjf_file, frame_idx=0, header="", title="", foot="", charge=0, mult=1):
+        """
+        Write input file for gaussian
+
+        Parameters
+        ----------
+        gjf_file: str
+            The path of .gjf file to write
+        frame_idx: int
+            The index of the frame to specify molecule geometry
+        header: str
+            The gaussian input file headers, include link0 and route section
+        title: str
+            The title section of gaussian input file
+        foot: str
+            Additional section for 'Opt=ModRedundant' keyword
+        charge: int
+            The charge of molecule
+        mult: int
+            The multiplicity of molecule
+        """ 
+        with open(gjf_file, 'w+') as f:
+            f.write(self.to_gaussian_str(frame_idx, header, title, foot, charge, mult))
 
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
