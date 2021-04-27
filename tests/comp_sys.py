@@ -99,7 +99,20 @@ class CompLabeledSys (CompSys) :
                                            self.system_2['virials'][ff][ii][jj], 
                                            places = self.v_places,
                                            msg = 'virials[%d][%d][%d] failed' % (ff,ii,jj))
-            
+
+
+class MultiSystems:
+    def test_systems_name(self):
+        self.assertEqual(set(self.systems.systems), set(self.system_names))
+    
+    def test_systems_size(self):
+        for name, size in self.system_sizes.items():
+            self.assertEqual(self.systems[name].get_nframes(), size)
+    
+    def test_atom_names(self):
+        self.assertEqual(self.atom_names, self.systems.atom_names)
+
+
 class IsPBC:                    
     def test_is_pbc(self):
         self.assertFalse(self.system_1.nopbc)

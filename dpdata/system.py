@@ -950,13 +950,15 @@ class System (MSONable) :
             labeled_sys.append(this_sys)
         return labeled_sys
 
-    def pick_atom_idx(self, idx):
+    def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
         
         Parameters
         ----------
         idx: int or list or slice
             atom index
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
 
         Returns
         -------
@@ -969,6 +971,8 @@ class System (MSONable) :
         # recalculate atom_numbs according to atom_types
         atom_numbs = np.bincount(new_sys.data['atom_types'], minlength=len(self.get_atom_names()))
         new_sys.data['atom_numbs'] = list(atom_numbs)
+        if nopbc is True or nopbc is False:
+            new_sys.nopbc = nopbc
         return new_sys
 
     def remove_atom_names(self, atom_names):
@@ -995,7 +999,7 @@ class System (MSONable) :
         new_sys.data['atom_numbs'] = new_sys.data['atom_numbs'][:len(new_atom_names)]
         return new_sys
 
-    def pick_by_amber_mask(self, param, maskstr, pass_coords=False):
+    def pick_by_amber_mask(self, param, maskstr, pass_coords=False, nopbc=None):
         """Pick atoms by amber mask
         
         Parameters
@@ -1009,6 +1013,8 @@ class System (MSONable) :
             return a MultiSystem. Otherwise, the result is
             coordinate-independent, and the function will return System or
             LabeledSystem.
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
         """
         parm = load_param_file(param)
         if pass_coords:
@@ -1016,11 +1022,11 @@ class System (MSONable) :
             for sub_s in self:
                 # TODO: this can computed in pararrel
                 idx = pick_by_amber_mask(parm, maskstr, sub_s['coords'][0])
-                ms.append(sub_s.pick_atom_idx(idx))
+                ms.append(sub_s.pick_atom_idx(idx, nopbc=nopbc))
             return ms
         else:
             idx = pick_by_amber_mask(parm, maskstr)
-            return self.pick_atom_idx(idx)
+            return self.pick_atom_idx(idx, nopbc=nopbc)
 
     @register_from_funcs.register_funcs('amber/md')
     def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None):
@@ -1553,20 +1559,22 @@ class LabeledSystem (System):
             corrected_sys.data['virials'] = hl_sys.data['virials'] - self.data['virials']
         return corrected_sys
 
-    def pick_atom_idx(self, idx):
+    def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
         
         Parameters
         ----------
         idx: int or list or slice
             atom index
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
 
         Returns
         -------
         new_sys: LabeledSystem
             new system
         """
-        new_sys = System.pick_atom_idx(self, idx)
+        new_sys = System.pick_atom_idx(self, idx, nopbc=nopbc)
         # forces
         new_sys.data['forces'] = self.data['forces'][:, idx, :]
         return new_sys
@@ -1748,13 +1756,15 @@ class MultiSystems:
             new_multisystems.append(ss.predict(dp))
         return new_multisystems
     
-    def pick_atom_idx(self, idx):
+    def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
         
         Parameters
         ----------
         idx: int or list or slice
             atom index
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
 
         Returns
         -------
@@ -1763,7 +1773,7 @@ class MultiSystems:
         """
         new_sys = MultiSystems()
         for ss in self:
-            new_sys.append(ss.pick_atom_idx(idx))
+            new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
         return new_sys
 
 
