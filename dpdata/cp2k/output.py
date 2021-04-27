@@ -3,9 +3,10 @@ import numpy as np
 import re
 from collections import OrderedDict
 from .cell import cell_to_low_triangle
-from dpdata.constant import hartree2ev as AU_TO_EV
-from dpdata.constant import bohr2ang as AU_TO_ANG
+
 #%%
+AU_TO_ANG = 5.29177208590000E-01
+AU_TO_EV = 2.72113838565563E+01
 AU_TO_EV_EVERY_ANG = AU_TO_EV/AU_TO_ANG
 delimiter_patterns=[]
 delimiter_p1 = re.compile(r'^ \* GO CP2K GO! \*+')
