@@ -18,7 +18,7 @@ class TestCPTRAJProps :
             self.assertEqual(self.system.data['atom_types'][ii], 1)
 
     def test_cell(self) :
-        ref = dpdata.constant.bohr2ang * 23.5170 * np.eye(3)
+        ref = 0.52917721067 * 23.5170 * np.eye(3)
         self.assertEqual(self.system.get_nframes(), 2)
         for ff in range(self.system.get_nframes()) :
             for ii in range(3) :
@@ -32,7 +32,7 @@ class TestCPTRAJProps :
         coords = []
         for ii in lines :
             coords.append([float(jj) for jj in ii.split()])
-        bohr2ang = dpdata.constant.bohr2ang
+        bohr2ang = 0.52917721067
         coords = bohr2ang * np.array(coords)
         celll = bohr2ang * 23.5170 
         for ii in range(coords.shape[0]) :

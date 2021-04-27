@@ -42,7 +42,7 @@ class TestPWSCFLabeledTrajSkip(unittest.TestCase, CompLabeledSys, IsPBC):
         ref_cell = [5.359985500701728967e+00, 0, 0,
                     3.585941820098031974e-01, 5.317218997480877896e+00, 0,
                     7.606780476053129902e-01, 7.811107228901693622e-01, 5.715864930517207121e+00 ]
-        ref_cell = dpdata.constant.bohr2ang * np.array(ref_cell).reshape(3,3)
+        ref_cell = 0.52917721067 * np.array(ref_cell).reshape(3,3)
         
         for ii in range(3) :
             for jj in range(3) :
@@ -51,7 +51,7 @@ class TestPWSCFLabeledTrajSkip(unittest.TestCase, CompLabeledSys, IsPBC):
         ref_cell = [5.308510801020571712e+00, 0, 0,
                     3.076052782312116429e-01, 5.279388982187173340e+00, 0,
                     4.321921336152507731e-01, 8.121110815096156399e-01, 5.301664983741235737e+00]
-        ref_cell = dpdata.constant.bohr2ang * np.array(ref_cell).reshape(3,3)
+        ref_cell = 0.52917721067 * np.array(ref_cell).reshape(3,3)
         
         for ii in range(3) :
             for jj in range(3) :

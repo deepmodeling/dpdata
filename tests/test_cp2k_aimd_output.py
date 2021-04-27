@@ -9,7 +9,7 @@ class TestCp2kAimdOutput(unittest.TestCase, CompLabeledSys):
         self.system_1 = dpdata.LabeledSystem('cp2k/aimd',fmt='cp2k/aimd_output')
         self.system_2 = dpdata.LabeledSystem('cp2k/aimd/deepmd', fmt='deepmd/raw')
         self.places = 6
-        self.e_places = 1
+        self.e_places = 6
         self.f_places = 6
         self.v_places = 4
 
