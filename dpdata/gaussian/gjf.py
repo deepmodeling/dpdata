@@ -1,4 +1,24 @@
 def to_gjf_string(system, frame_idx=0, header="", title="", foot="", charge=0, mult=1):
+    '''
+    Generate a string that can be written to a Gaussian input file, please refer to https://gaussian.com/input/?tabid=2 for more information on syntax of Gaussian input files.
+
+    Parameters
+    --------
+    system : dpdata.System
+        The system to write a gaussian input file
+    frame_idx : int
+        The index of frame to specify molecule geometry
+    header : str
+        The route section (# lines) and link-0 commands (% commands)
+    title : str
+        The title section of .gjf files
+    foot : str
+        The modifications to coordinates, used when Opt=ModRedundant
+    charge : int
+        The charge of the system
+    mult : int
+        The multiplicity of the system
+    '''
     if not title:
         title = system.formula
     if not header:
