@@ -5,7 +5,7 @@ import json
 import os
 
 nm2ang = 10.
-ang2nm = 0.1
+ang2nm = 1. / nm2ang
 cell_idx_gmx2dp = [0, 4, 8, 1, 2, 3, 5, 6, 7]
 
 def _format_atom_name(atom_name):
