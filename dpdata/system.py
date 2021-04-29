@@ -1684,6 +1684,7 @@ class BondOrderSystem(System):
                  begin = 0,
                  step = 1,
                  data = None,
+                 rdkit_mol = None,
                  **kwargs):
         """
         Constructor
@@ -1704,16 +1705,26 @@ class BondOrderSystem(System):
             The beginning frame when loading MD trajectory.
         step : int
             The number of skipped frames when loading MD trajectory.
+        data : dict
+            System data dict.
+        rdkit_mol : rdkit.Chem.rdchem.Mol
+            If use `data` to init a BondOrderSystem, a Mol type object consistent to `data` must be given.
+            So it is suggested to init directly with a rdkit Mol type.
         """
 
         System.__init__(self)
-        self.rdkit_mol = None
 
         if data:
             check_BondOrderSystem(data)
             self.data = data
+            assert (isinstance(rdkit_mol, rdkit.Chem.rdchem.Mol))
+            self.rdkit_mol = rdkit_mol
             if 'formal_charges' not in data.keys():
                 self.assign_formal_charges()
+            return
+        if rdkit_mol:
+            assert (isinstance(rdkit_mol, rdkit.Chem.rdchem.Mol))
+            self.from_rdkit_mol(rdkit_mol)
             return
         if file_name is None:
             return
@@ -1729,7 +1740,7 @@ class BondOrderSystem(System):
         return self.__str__()
 
     def __str__(self):
-        ret += "Data Summary"
+        ret = "Data Summary"
         ret += "\nBondOrder System"
         ret += "\n-------------------"
         ret += f"\nFrame Numbers      : {self.get_nframes()}"
@@ -1739,6 +1750,7 @@ class BondOrderSystem(System):
         ret += "\n-------------------"
         ret += "\n"+"  ".join(map(str,self.get_atom_names()))
         ret += "\n"+"  ".join(map(str,self.get_atom_numbs()))
+        return ret
 
     def get_nbonds(self):
         return len(self.data['bonds'])
@@ -1749,28 +1761,40 @@ class BondOrderSystem(System):
     def assign_formal_charges(self):
         self.data['formal_charges'] = [0 for _ in self.get_natoms()] # this function is to be improved
 
+    def from_rdkit_mol(self, rdkit_mol):
+        self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
+        self.rdkit_mol = rdkit_mol
+
     @register_from_funcs.register_funcs('mol')
     def from_mol_file(self, file_name):
         mol = rdkit.Chem.MolFromMolFile(file_name, sanitize=False, removeHs=False)
-        try:
-            print(f"Try to reading {file_name}...")
-            rdkit.Chem.SanitizeMol(mol)
-        except:
-            print("Regularizing mol because an error occured as shown above...")
-            mol = dpdata.rdkit.utils.regularize_formal_charges(mol)
-            print(f'Read {file_name} successfully.')
-        else:
-            print(f"Read {file_name} successfully.")
-        self.data = dpdata.rdkit.utils.mol_to_system_data(mol)
-        self.rdkit_mol = mol
+        self.from_rdkit_mol(mol)
 
     @register_to_funcs.register_funcs("mol")
-    def to_mol_file(self, file_name):
-        if isinstance(self.rdkit_mol, rdkit.Chem.rdchem.Mol):
-            rdkit.Chem.MolToMolFile(self.rdkit_mol, file_name)
-        else:
-            raise TypeError(f"rdkit.Chem.rdChem.Mol type required, not {type(self.rdkit_mol)}")
-
-    @register_from_funcs.register_funcs('sdf')
+    def to_mol_file(self, file_name, frame_idx=0):
+        assert (frame_idx < self.get_nframes())
+        rdkit.Chem.MolToMolFile(self.rdkit_mol, file_name, confId=frame_idx)
+    
+    @register_from_funcs.register_funcs("sdf")
     def from_sdf_file(self, file_name):
-        pass
+        '''
+        Note that it requires all molecules in .sdf file must be of the same topology
+        '''
+        mols = [m for m in rdkit.Chem.SDMolSupplier(file_name, sanitize=False, removeHs=False)]
+        if len(mols) > 1:
+            mol = dpdata.rdkit.utils.combine_molecules(mols)
+        else:
+            mol = mols[0]
+        self.from_rdkit_mol(mol)
+    
+    @register_to_funcs.register_funcs("sdf")
+    def to_sdf_file(self, file_name, frame_idx=-1):
+        sdf_writer = rdkit.Chem.SDWriter(file_name)
+        if frame_idx == -1:
+            for ii in self.get_nframes():
+                sdf_writer.write(self.rdkit_mol, confId=ii)
+        else:
+            assert (frame_idx < self.get_nframes())
+            sdf_writer.write(self.rdkit_mol, confId=frame_idx)
+        sdf_writer.close()
+# %%
