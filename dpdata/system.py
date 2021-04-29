@@ -1652,5 +1652,125 @@ def elements_index_map(elements,standard=False,inverse=False):
         return dict(zip(elements,range(len(elements))))
 
 
+#%%
+# Bond Order System
+import rdkit.Chem
+import dpdata.rdkit.utils
 
-# %%
+def check_BondOrderSystem(data):
+    check_System(data)
+    assert ('bonds' in data.keys())
+    if 'formal_charges' not in data.keys():
+        raise Warning("no formal_charges are given, formal_charges will be assigned automatically.")
+    else:
+        assert (len(data['formal_charges']) == len(data['atom_types']))
+    
+class BondOrderSystem(System):
+    '''
+    The system with chemical bond and formal charges information
+
+    For example, a labeled methane system named `d_example` has one molecule (5 atoms, 4 bonds) and `n_frames` frames. The bond order and formal charge information can be accessed by
+        - `d_example['bonds']` : a numpy array of size 4 x 3, and
+                                    the first column represents the index of begin atom,
+                                    the second column represents the index of end atom, 
+                                    the third columen represents the bond order:
+                                        1 - single bond, 2 - double bond, 3 - triple bond, 1.5 - aromatic bond
+        - `d_example['formal_charges']` : a numpy array of size 5 x 1
+    '''
+    def __init__(self,
+                 file_name = None,
+                 fmt = 'auto',
+                 type_map = None,
+                 begin = 0,
+                 step = 1,
+                 data = None,
+                 **kwargs):
+        """
+        Constructor
+
+        Parameters
+        ----------
+        file_name : str
+            The file to load the system
+        fmt : str
+            Format of the file, supported formats are
+                - ``auto`` : inferred from `file_name`'s extention
+                - ``mol`` : .mol file
+                - ``sdf`` : .sdf file
+        type_map : list of str
+            Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
+            If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
+        begin : int
+            The beginning frame when loading MD trajectory.
+        step : int
+            The number of skipped frames when loading MD trajectory.
+        """
+
+        System.__init__(self)
+        self.rdkit_mol = None
+
+        if data:
+            check_BondOrderSystem(data)
+            self.data = data
+            if 'formal_charges' not in data.keys():
+                self.assign_formal_charges()
+            return
+        if file_name is None:
+            return
+        self.from_fmt(file_name, fmt, type_map=type_map, begin=begin, step=step, **kwargs)
+
+        if type_map is not None:
+            self.apply_type_map(type_map)
+
+    register_from_funcs = Register()
+    register_to_funcs = Register()
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        ret += "Data Summary"
+        ret += "\nBondOrder System"
+        ret += "\n-------------------"
+        ret += f"\nFrame Numbers      : {self.get_nframes()}"
+        ret += f"\nAtom Numbers       : {self.get_natoms()}"
+        ret += f"\nBond Numbers       : {self.get_nbonds()}"
+        ret += "\nElement List       :"
+        ret += "\n-------------------"
+        ret += "\n"+"  ".join(map(str,self.get_atom_names()))
+        ret += "\n"+"  ".join(map(str,self.get_atom_numbs()))
+
+    def get_nbonds(self):
+        return len(self.data['bonds'])
+    
+    def __add__(self, other):
+        raise RuntimeError("Not supported yet.")
+    
+    def assign_formal_charges(self):
+        self.data['formal_charges'] = [0 for _ in self.get_natoms()] # this function is to be improved
+
+    @register_from_funcs.register_funcs('mol')
+    def from_mol_file(self, file_name):
+        mol = rdkit.Chem.MolFromMolFile(file_name, sanitize=False, removeHs=False)
+        try:
+            print(f"Try to reading {file_name}...")
+            rdkit.Chem.SanitizeMol(mol)
+        except:
+            print("Regularizing mol because an error occured as shown above...")
+            mol = dpdata.rdkit.utils.regularize_formal_charges(mol)
+            print(f'Read {file_name} successfully.')
+        else:
+            print(f"Read {file_name} successfully.")
+        self.data = dpdata.rdkit.utils.mol_to_system_data(mol)
+        self.rdkit_mol = mol
+
+    @register_to_funcs.register_funcs("mol")
+    def to_mol_file(self, file_name):
+        if isinstance(self.rdkit_mol, rdkit.Chem.rdchem.Mol):
+            rdkit.Chem.MolToMolFile(self.rdkit_mol, file_name)
+        else:
+            raise TypeError(f"rdkit.Chem.rdChem.Mol type required, not {type(self.rdkit_mol)}")
+
+    @register_from_funcs.register_funcs('sdf')
+    def from_sdf_file(self, file_name):
+        pass
