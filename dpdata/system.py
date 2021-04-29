@@ -1660,10 +1660,6 @@ import dpdata.rdkit.utils
 def check_BondOrderSystem(data):
     check_System(data)
     assert ('bonds' in data.keys())
-    if 'formal_charges' not in data.keys():
-        raise Warning("no formal_charges are given, formal_charges will be assigned automatically.")
-    else:
-        assert (len(data['formal_charges']) == len(data['atom_types']))
     
 class BondOrderSystem(System):
     '''
@@ -1708,33 +1704,23 @@ class BondOrderSystem(System):
         data : dict
             System data dict.
         rdkit_mol : rdkit.Chem.rdchem.Mol
-            If use `data` to init a BondOrderSystem, a Mol type object consistent to `data` must be given.
-            So it is suggested to init directly with a rdkit Mol type.
+            If `file_name` is None, you must init with a rdkit Mol type.
         """
 
         System.__init__(self)
 
-        if data:
-            check_BondOrderSystem(data)
-            self.data = data
-            assert (isinstance(rdkit_mol, rdkit.Chem.rdchem.Mol))
-            self.rdkit_mol = rdkit_mol
-            if 'formal_charges' not in data.keys():
-                self.assign_formal_charges()
-            return
-        if rdkit_mol:
-            assert (isinstance(rdkit_mol, rdkit.Chem.rdchem.Mol))
+        if file_name:
+            self.from_fmt(file_name, fmt, type_map=type_map, begin=begin, step=step, **kwargs)
+        elif rdkit_mol:
             self.from_rdkit_mol(rdkit_mol)
-            return
-        if file_name is None:
-            return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin=begin, step=step, **kwargs)
+        else:
+            raise ValueError("Please specify a mol/sdf file or a rdkit Mol object")
 
-        if type_map is not None:
+        if type_map:
             self.apply_type_map(type_map)
 
     register_from_funcs = Register()
-    register_to_funcs = Register()
+    register_to_funcs = System.register_to_funcs + Register()
 
     def __repr__(self):
         return self.__str__()
@@ -1755,6 +1741,15 @@ class BondOrderSystem(System):
     def get_nbonds(self):
         return len(self.data['bonds'])
     
+    def get_charge(self):
+        return sum(self.data['formal_charges'])
+    
+    def get_bond_order(self, begin_atom_idx, end_atom_idx):
+        return self.data['bond_dict'][f'{int(begin_atom_idx)}-{int(end_atom_idx)}']
+    
+    def get_formal_charges(self):
+        return self.data['formal_charges']
+    
     def copy(self):
         new_mol = deepcopy(self.rdkit_mol)
         self.__class__(data=deepcopy(self.data),
@@ -1771,12 +1766,10 @@ class BondOrderSystem(System):
     #             raise RuntimeError("The two systems are not of the same topology.")
     #     else:
     #         raise RuntimeError(f"Unsupported data structure: {type(other)}")
-    
-    def assign_formal_charges(self):
-        self.data['formal_charges'] = [0 for _ in self.get_natoms()] # this function is to be improved
 
     def from_rdkit_mol(self, rdkit_mol):
         self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
+        self.data['bond_dict'] = dict([(f'{int(bond[0])}-{int(bond[1])}', bond[2]) for bond in self.data['bonds']])
         self.rdkit_mol = rdkit_mol
 
     @register_from_funcs.register_funcs('mol')

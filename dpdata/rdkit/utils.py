@@ -6,6 +6,9 @@ def mol_to_system_data(mol):
         rdkit.Chem.SanitizeMol(mol)
     except:
         mol = regularize_formal_charges(mol)
+    
+    if not mol:
+        raise RuntimeError("Sanitize Failed, please check your input file")
 
     num_confs = mol.GetNumConformers()
     if num_confs:
@@ -34,23 +37,35 @@ def mol_to_system_data(mol):
 
 def regularize_formal_charges(mol):
     """
-    Regularize formal charges of N, O
+    Regularize formal charges of atoms
     """
     for atom in mol.GetAtoms():
-        if atom.GetSymbol() == "N" and atom.GetExplicitValence() == 4:
-            atom.SetFormalCharge(1)
-        elif atom.GetSymbol() == "N" and atom.GetExplicitValence() == 2:
-            atom.SetFormalCharge(-1)
-        elif atom.GetSymbol() == "O" and atom.GetExplicitValence() == 3:
-            atom.SetFormalCharge(1)
-        elif atom.GetSymbol() == "O" and atom.GetExplicitValence() == 1:
-            atom.SetFormalCharge(-1)
-        elif atom.GetSymbol() == "S" and atom.GetExplicitValence() == 3:
-            atom.SetFormalCharge(1)
-        elif atom.GetSymbol() == "S" and atom.GetExplicitValence() == 1:
-            atom.SetFormalCharge(-1)
+        assign_formal_charge_for_atom(atom)
     Chem.SanitizeMol(mol)
     return mol
+
+
+def assign_formal_charge_for_atom(atom):
+    if atom.GetSymbol() == "B":
+        atom.SetFormalCharge(3 - atom.GetExplicitValence())
+    elif atom.GetSymbol() == "C" or atom.GetSymbol() == "Si":
+        atom.SetFormalCharge(atom.GetExplicitValence() - 4)
+    elif atom.GetSymbol() == "N":
+        atom.SetFormalCharge(atom.GetExplicitValence() - 3)
+    elif atom.GetSymbol() == "O":
+        atom.SetFormalCharge(atom.GetExplicitValence() - 2)
+    elif atom.GetSymbol() == "S":
+        if atom.GetExplicitValence() == 1:
+            atom.SetFormalCharge(-1)
+        elif atom.GetExplicitValence() == 3:
+            atom.SetFormalCharge(1)
+        else:
+            atom.SetFormalCharge(0)
+    elif atom.GetSymbol() == "P" or atom.GetSymbol() == "As":
+        if atom.GetExplicitValence() == 5:
+            atom.SetFormalCharge(0)
+        else:
+            atom.SetFormalCharge(atom.GetExplicitValence() - 3)
 
 
 def check_same_atom(atom_1, atom_2):
