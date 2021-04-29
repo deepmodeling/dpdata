@@ -3,6 +3,7 @@ from . import lammps
 from . import md
 from .system import System
 from .system import LabeledSystem
+from .system import BondOrderSystem
 from .system import MultiSystems
 
 try:
