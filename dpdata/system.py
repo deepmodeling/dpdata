@@ -15,7 +15,6 @@ import dpdata.qe.scf
 import dpdata.siesta.output
 import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
-import dpdata.gaussian.gjf
 import dpdata.gaussian.log
 import dpdata.amber.md
 import dpdata.cp2k.output
@@ -738,37 +737,7 @@ class System (MSONable) :
         w_str = dpdata.pwmat.atomconfig.from_system_data(self.data, frame_idx)
         with open(file_name, 'w') as fp:
             fp.write(w_str)
-    
-    @register_to_funcs.register_funcs("gaussian/gjf")
-    def to_gaussian_gjf(self, gjf_file=None, frame_idx=0, header="", title="", foot="", charge=0, mult=1):
-        """
-        Write input file for Gaussian. Please refer to https://gaussian.com/input/?tabid=2 for more information on syntax of Gaussian input files.
 
-        Parameters
-        ----------
-        gjf_file : str or None
-            The file to write. If None, return the file's content as a string
-        frame_idx : int
-            The index of frame to specify molecule geometry
-        header : str
-            The route section (# lines) and link-0 commands (% commands)
-        title : str
-            The title section of .gjf files
-        foot : str
-            The modifications to coordinates, used when Opt=ModRedundant
-        charge : int
-            The charge of the system
-        mult : int
-            The multiplicity of the system
-        """ 
-        assert frame_idx < self.get_nframes()
-        ret = dpdata.gaussian.gjf.to_gjf_string(self, frame_idx, header, title, foot, charge, mult)
-        
-        if gjf_file is None:
-            return ret
-        else:
-            with open(gjf_file, 'w+') as f:
-                f.write(ret)
 
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
