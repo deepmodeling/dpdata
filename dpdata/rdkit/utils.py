@@ -12,10 +12,10 @@ def mol_to_system_data(mol):
         atom_symbols = [at.GetSymbol() for at in mol.GetAtoms()]
         atom_names, atom_types, atom_numbs = np.unique(atom_symbols, return_inverse=True, return_counts=True)
         coords = np.array([conf.GetPositions() for conf in mol.GetConformers()])
-        bonds = [[bond.GetBeginAtomIdx(),
-                  bond.GetEndAtomIdx(),
-                  bond.GetBondTypeAsDouble()] for bond in mol.GetBonds()]
-        formal_charges = [at.GetFormalCharge() for at in mol.GetAtoms()]
+        bonds = np.array([[bond.GetBeginAtomIdx(),
+                           bond.GetEndAtomIdx(),
+                           bond.GetBondTypeAsDouble()] for bond in mol.GetBonds()])
+        formal_charges = np.array([at.GetFormalCharge() for at in mol.GetAtoms()], dtype=np.int32)
         data = {}
         data['atom_numbs'] = list(atom_numbs)
         data['atom_names'] = list(atom_names)

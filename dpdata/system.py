@@ -1755,8 +1755,22 @@ class BondOrderSystem(System):
     def get_nbonds(self):
         return len(self.data['bonds'])
     
-    def __add__(self, other):
-        raise RuntimeError("Not supported yet.")
+    def copy(self):
+        new_mol = deepcopy(self.rdkit_mol)
+        self.__class__(data=deepcopy(self.data),
+                       rdkit_mol=new_mol)
+    
+    # def __add__(self, other):
+    #     '''
+    #         magic method "+" operation
+    #     '''
+    #     if isinstance(other, BondOrderSystem):
+    #         if dpdata.rdkit.utils.check_same_molecule(self.rdkit_mol, other.rdkit_mol):
+    #             self.__class__(self, data=other.data)
+    #         else:
+    #             raise RuntimeError("The two systems are not of the same topology.")
+    #     else:
+    #         raise RuntimeError(f"Unsupported data structure: {type(other)}")
     
     def assign_formal_charges(self):
         self.data['formal_charges'] = [0 for _ in self.get_natoms()] # this function is to be improved

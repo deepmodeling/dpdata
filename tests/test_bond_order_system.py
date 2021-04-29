@@ -2,6 +2,8 @@ import os
 import unittest
 from context import dpdata
 from rdkit import Chem
+import shutil
+import numpy as np
 
 class TestBondOrderSystem(unittest.TestCase):
 
@@ -23,8 +25,26 @@ class TestBondOrderSystem(unittest.TestCase):
         self.assertRaises(RuntimeError, dpdata.BondOrderSystem, "gromacs/1h.gro")
     
     def test_dump_to_deepmd_raw(self):
-        syst = dpdata.BondOrderSystem("bond_order/formal_charge.mol", fmt="mol")
-        syst.to_deepmd_raw("bond_order/deepmd_raw_test")
+        syst = dpdata.BondOrderSystem("bond_order/methane.sdf", fmt="sdf")
+        syst.to_deepmd_raw("bond_order/methane")
+        formal_charges = list(np.loadtxt("bond_order/methane/formal_charges.raw"))
+        self.assertTrue(formal_charges, [0 for _ in range(5)])
+        bonds = np.loadtxt("bond_order/methane/bonds.raw")
+        for bond_idx in range(4):
+            for ii in range(3):
+                self.assertEqual(syst['bonds'][bond_idx][ii], bonds[bond_idx][ii])
+        shutil.rmtree("bond_order/methane")
+    
+    def test_dump_to_deepmd_npy(self):
+        syst = dpdata.BondOrderSystem("bond_order/methane.sdf", fmt="sdf")
+        syst.to_deepmd_npy("bond_order/methane")
+        formal_charges = list(np.loadtxt("bond_order/methane/formal_charges.raw"))
+        self.assertTrue(formal_charges, [0 for _ in range(5)])
+        bonds = np.loadtxt("bond_order/methane/bonds.raw")
+        for bond_idx in range(4):
+            for ii in range(3):
+                self.assertEqual(syst['bonds'][bond_idx][ii], bonds[bond_idx][ii])
+        shutil.rmtree("bond_order/methane")
     
     def test_from_sdf_file(self):
         syst = dpdata.BondOrderSystem("bond_order/methane.sdf", type_map=['C','H'])
@@ -39,3 +59,6 @@ class TestBondOrderSystem(unittest.TestCase):
     
     def test_from_sdf_file_err(self):
         self.assertRaises(ValueError, dpdata.BondOrderSystem, "bond_order/methane_ethane.sdf")
+
+    def test_magic_add(self):
+        pass
