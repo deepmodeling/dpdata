@@ -78,7 +78,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | PWmat   | movement    | True         | True    | LabeledSystem | 'pwmat/movement'     |
 | PWmat   | OUT.MLMD    | True         | True    | LabeledSystem | 'pwmat/out.mlmd'     |
 | Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
-| Gromacs | gro         | False        | False   | System        | 'gromacs/gro'        |
+| Gromacs | gro         | True         | False   | System        | 'gromacs/gro'        |
 
 
 The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
