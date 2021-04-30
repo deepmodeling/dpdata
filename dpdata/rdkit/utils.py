@@ -2,11 +2,7 @@ from rdkit import Chem
 import numpy as np
 
 def mol_to_system_data(mol):
-    try:
-        rdkit.Chem.SanitizeMol(mol)
-    except:
-        mol = regularize_formal_charges(mol)
-    
+    mol = regularize_formal_charges(mol)
     if not mol:
         raise RuntimeError("Sanitize Failed, please check your input file")
 
@@ -41,15 +37,23 @@ def regularize_formal_charges(mol):
     """
     for atom in mol.GetAtoms():
         assign_formal_charge_for_atom(atom)
-    Chem.SanitizeMol(mol)
-    return mol
+    try:
+        Chem.SanitizeMol(mol)
+        return mol
+    except:
+        return None
 
 
 def assign_formal_charge_for_atom(atom):
+    """
+        assigen formal charge according to 8-electron rule for element B,C,N,O,S,P,As
+    """
     if atom.GetSymbol() == "B":
         atom.SetFormalCharge(3 - atom.GetExplicitValence())
-    elif atom.GetSymbol() == "C" or atom.GetSymbol() == "Si":
+    elif atom.GetSymbol() == "C":
         atom.SetFormalCharge(atom.GetExplicitValence() - 4)
+        if atom.GetExplicitValence() == 3:
+            print(f"Detect a valence of 3 on carbon #{atom.GetIdx()}, the formal charge of this atom will be assigned to -1")
     elif atom.GetSymbol() == "N":
         atom.SetFormalCharge(atom.GetExplicitValence() - 3)
     elif atom.GetSymbol() == "O":
