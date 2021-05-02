@@ -48,7 +48,7 @@ class TestpwmatSinglePointEnergy:
         fp.close()
 
     def test_energy(self) :
-        ref_energy = -0.2193369388E+03
+        ref_energy = -0.2196929065E+03
         self.assertEqual(self.system.data['energies'][0], ref_energy)
 
 

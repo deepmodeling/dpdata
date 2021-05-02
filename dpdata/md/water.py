@@ -1,5 +1,6 @@
 import numpy as np
 from .pbc import posi_diff
+from .pbc import posi_shift
 
 def compute_bonds (box, 
                    posis,
@@ -179,3 +180,26 @@ def find_ions (atype,
             else :
                 raise RuntimeError("unknow case: numb of O bonded to H > 1")
     return no, noh, noh2, noh3, nh
+
+
+
+def pbc_coords(cells, 
+               coords, 
+               atom_types, 
+               oh_sel = [0, 1],
+               max_roh = 1.3):
+    bonds = compute_bonds(cells, coords, atom_types, oh_sel = oh_sel, max_roh = max_roh, uniq_hbond = True)
+
+    new_coords = np.copy(coords)
+    natoms = len(atom_types)
+    o_type = oh_sel[0]
+    h_type = oh_sel[1]
+    for ii in range(natoms):
+        if atom_types[ii] == o_type:
+            assert(len(bonds[ii]) == 2), 'O has more than 2 bonded Hs, stop'
+            for jj in bonds[ii]:
+                assert(atom_types[jj] == h_type), 'The atom bonded to O is not H, stop'
+                shift = posi_shift(cells, coords[jj], coords[ii])
+                new_coords[jj] = coords[jj] + np.matmul(shift, cells)
+    return new_coords
+

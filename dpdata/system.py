@@ -76,7 +76,8 @@ class System (MSONable) :
                   type_map = None,
                   begin = 0,
                   step = 1,
-                  data = None) :
+                  data = None,
+                  **kwargs) :
         """
         Constructor
 
@@ -120,7 +121,7 @@ class System (MSONable) :
             return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
 
         if type_map is not None:
             self.apply_type_map(type_map)
@@ -626,7 +627,7 @@ class System (MSONable) :
 
     @register_from_funcs.register_funcs("gro")
     @register_from_funcs.register_funcs("gromacs/gro")
-    def from_gromacs_gro(self, file_name) :
+    def from_gromacs_gro(self, file_name, format_atom_name=True) :
         """
         Load gromacs .gro file
 
@@ -635,7 +636,35 @@ class System (MSONable) :
         file_name : str
             The input file name
         """
-        self.data = dpdata.gromacs.gro.file_to_system_data(file_name)
+        self.data = dpdata.gromacs.gro.file_to_system_data(file_name, format_atom_name=format_atom_name)
+
+    @register_to_funcs.register_funcs("gromacs/gro")
+    def to_gromacs_gro(self, file_name=None, frame_idx=-1):
+        """
+        Dump the system in gromacs .gro format
+
+        Parameters
+        ----------
+        file_name : str or None
+            The output file name. If None, return the file content as a string
+        frame_idx : int
+            The index of the frame to dump
+        """
+        assert(frame_idx < len(self.data['coords']))
+        if frame_idx == -1:
+            strs = []
+            for idx in range(self.get_nframes()):
+                gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=idx)
+                strs.append(gro_str)
+            gro_str = "\n".join(strs)
+        else:
+            gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=frame_idx)
+        
+        if file_name is None:
+            return gro_str
+        else:
+            with open(file_name, 'w+') as fp:
+                fp.write(gro_str)
 
     @register_to_funcs.register_funcs("deepmd/npy")
     def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
@@ -1002,7 +1031,8 @@ class LabeledSystem (System):
                   type_map = None,
                   begin = 0,
                   step = 1,
-                  data=None) :
+                  data=None,
+                  **kwargs) :
         """
         Constructor
 
@@ -1024,7 +1054,7 @@ class LabeledSystem (System):
                 - ``gaussian/log``: gaussian logs
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
-                - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file)
+                - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file); optional `restart=True` if it is a cp2k restarted task.
                 - ``pwmat/movement``: pwmat md output file
                 - ``pwmat/out.mlmd``: pwmat scf output file
 
@@ -1045,7 +1075,7 @@ class LabeledSystem (System):
            return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
         if type_map is not None:
             self.apply_type_map(type_map)
 
@@ -1089,12 +1119,20 @@ class LabeledSystem (System):
         return ('virials' in self.data)
 
     @register_from_funcs.register_funcs('cp2k/aimd_output')
-    def from_cp2k_aimd_output(self, file_dir):
+    def from_cp2k_aimd_output(self, file_dir, restart=False):
         xyz_file=sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
         log_file=sorted(glob.glob("{}/*.log".format(file_dir)))[0]
-        for info_dict in Cp2kSystems(log_file, xyz_file):
+        for info_dict in Cp2kSystems(log_file, xyz_file, restart):
             l = LabeledSystem(data=info_dict)
             self.append(l)
+
+    # @register_from_funcs.register_funcs('cp2k/restart_aimd_output')
+    # def from_cp2k_aimd_output(self, file_dir, restart=True):
+    #     xyz_file = sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
+    #     log_file = sorted(glob.glob("{}/*.log".format(file_dir)))[0]
+    #     for info_dict in Cp2kSystems(log_file, xyz_file, restart):
+    #         l = LabeledSystem(data=info_dict)
+    #         self.append(l)
 
     @register_from_funcs.register_funcs('fhi_aims/md')
     def from_fhi_aims_output(self, file_name, md=True, begin=0, step =1):

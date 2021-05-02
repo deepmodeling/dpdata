@@ -42,5 +42,16 @@ class TestVaspOUTCARSkip(unittest.TestCase, CompLabeledSys, IsPBC):
         self.v_places = 6
 
 
+class TestVaspOUTCARVdw(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp (self) :
+        self.system_1 = dpdata.LabeledSystem('poscars/OUTCAR.Ge.vdw', fmt = 'vasp/outcar')
+        self.system_2 = dpdata.LabeledSystem()
+        self.system_2.from_vasp_xml('poscars/vasprun.Ge.vdw.xml')
+        self.places = 5
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+
 if __name__ == '__main__':
     unittest.main()
