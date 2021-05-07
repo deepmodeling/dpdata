@@ -5,7 +5,7 @@ def system_info (lines, type_idx_zero = False) :
     atom_numbs = None
     nelm = None
     for ii in lines: 
-        if 'TITEL  =' in ii : 
+        if 'TITEL' in ii : 
             # get atom names from POTCAR info, tested only for PAW_PBE ...
             _ii=ii.split()[3]
             if '_' in _ii:
@@ -13,9 +13,9 @@ def system_info (lines, type_idx_zero = False) :
                 atom_names.append(_ii.split('_')[0])
             else:
                 atom_names.append(_ii)
-        elif 'NELM' in ii :
+        elif 'NELM' in ii and nelm == None:
+            # will read only first nelm
             nelm = int(ii.split()[2][:-1])
-            break;
         elif 'ions per type' in ii :
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None :                
