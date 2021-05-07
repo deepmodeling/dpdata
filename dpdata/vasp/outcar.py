@@ -15,7 +15,7 @@ def system_info (lines, type_idx_zero = False) :
                 atom_names.append(_ii)
         elif 'NELM' in ii and nelm == None:
             # will read only first nelm
-            nelm = int(ii.split()[2][:-1])
+            nelm = int(ii.split()[2].rstrip(";"))
         elif 'ions per type' in ii :
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None :                
