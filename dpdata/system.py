@@ -12,6 +12,7 @@ import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.qe.traj
 import dpdata.qe.scf
+import dpdata.abacus.scf
 import dpdata.siesta.output
 import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
@@ -1021,6 +1022,7 @@ class LabeledSystem (System):
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
+                - ``abacus/scf``: ABACUS plane wave scf. The directory containing INPUT file is required.
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``gaussian/log``: gaussian logs
@@ -1229,6 +1231,11 @@ class LabeledSystem (System):
             self.data['forces'], \
             self.data['virials'], \
             = dpdata.qe.scf.get_frame(file_name)
+        self.rot_lower_triangular()
+
+    @register_from_funcs.register_funcs('abacus/scf')
+    def from_qe_pw_scf(self, file_name) :
+        self.data = dpdata.abacus.scf.get_frame(file_name)
         self.rot_lower_triangular()
 
     @register_from_funcs.register_funcs('siesta/output')

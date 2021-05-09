@@ -28,12 +28,24 @@ def get_cell (lines) :
     blk = lines[idx:idx+2]
     ibrav = int(blk[0].replace(',','').split('=')[-1])
     if ibrav == 0:
+        for iline in lines:
+            if 'CELL_PARAMETERS' in iline and 'angstrom' not in iline.lower():
+                raise RuntimeError("CELL_PARAMETERS must be written in Angstrom. Other units are not supported yet.")
         blk = get_block(lines, 'CELL_PARAMETERS')
         for ii in blk:
             ret.append([float(jj) for jj in ii.split()[0:3]])
         ret = np.array(ret)
     elif ibrav == 1:
-        a = float(blk[1].split('=')[-1])
+        a = None
+        for iline in lines:
+            line = iline.replace("=", " ").replace(",", "").split()
+            if len(line) >= 2 and "a" == line[0].lower():
+                #print("line = ", line)
+                a = float(line[1])
+            if len(line) >= 2 and "celldm(1)" == line[0].lower():
+                a = float(line[1])*bohr2ang
+        if not a:
+            raise RuntimeError("parameter 'a' or 'celldm(1)' cannot be found.")
         ret = np.array([[a,0.,0.],[0.,a,0.],[0.,0.,a]])
     else:
         sys.exit('ibrav > 1 not supported yet.')
@@ -42,6 +54,9 @@ def get_cell (lines) :
 def get_coords (lines) :
     coord = []
     atom_symbol_list = []
+    for iline in lines:
+        if 'ATOMIC_POSITIONS' in iline and 'angstrom' not in iline.lower():
+            raise RuntimeError("ATOMIC_POSITIONS must be written in Angstrom. Other units are not supported yet.")
     blk = get_block(lines, 'ATOMIC_POSITIONS')
     for ii in blk:
         coord.append([float(jj) for jj in ii.split()[1:4]])
