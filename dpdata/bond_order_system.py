@@ -73,6 +73,9 @@ class BondOrderSystem(System):
         return self.__str__()
 
     def __str__(self):
+        '''
+            A brief summary of the system
+        '''
         ret = "Data Summary"
         ret += "\nBondOrder System"
         ret += "\n-------------------"
@@ -86,15 +89,27 @@ class BondOrderSystem(System):
         return ret
 
     def get_nbonds(self):
+        '''
+            Return the number of bonds
+        '''
         return len(self.data['bonds'])
     
     def get_charge(self):
+        '''
+            Return the total formal charge of the moleclue
+        '''
         return sum(self.data['formal_charges'])
     
     def get_bond_order(self, begin_atom_idx, end_atom_idx):
+        '''
+            Return the bond order between given atoms
+        '''
         return self.data['bond_dict'][f'{int(begin_atom_idx)}-{int(end_atom_idx)}']
     
     def get_formal_charges(self):
+        '''
+            Return the formal charges on each atom
+        '''
         return self.data['formal_charges']
     
     def copy(self):
@@ -115,6 +130,9 @@ class BondOrderSystem(System):
     #         raise RuntimeError(f"Unsupported data structure: {type(other)}")
 
     def from_rdkit_mol(self, rdkit_mol):
+        '''
+            Initialize from a rdkit.Chem.rdchem.Mol object
+        '''
         self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
         self.data['bond_dict'] = dict([(f'{int(bond[0])}-{int(bond[1])}', bond[2]) for bond in self.data['bonds']])
         self.rdkit_mol = rdkit_mol
