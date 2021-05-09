@@ -46,7 +46,7 @@ def regularize_formal_charges(mol):
 
 def assign_formal_charge_for_atom(atom):
     """
-        assigen formal charge according to 8-electron rule for element B,C,N,O,S,P,As
+        assign formal charge according to 8-electron rule for element B,C,N,O,S,P,As
     """
     if atom.GetSymbol() == "B":
         atom.SetFormalCharge(3 - atom.GetExplicitValence())
