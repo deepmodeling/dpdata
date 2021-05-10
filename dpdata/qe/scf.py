@@ -51,17 +51,25 @@ def get_cell (lines) :
         sys.exit('ibrav > 1 not supported yet.')
     return ret
 
-def get_coords (lines) :
+def get_coords (lines, cell) :
     coord = []
     atom_symbol_list = []
     for iline in lines:
-        if 'ATOMIC_POSITIONS' in iline and 'angstrom' not in iline.lower():
+        if 'ATOMIC_POSITIONS' in iline and 'angstrom' not in iline.lower() and 'crystal' not in iline.lower():
             raise RuntimeError("ATOMIC_POSITIONS must be written in Angstrom. Other units are not supported yet.")
-    blk = get_block(lines, 'ATOMIC_POSITIONS')
-    for ii in blk:
-        coord.append([float(jj) for jj in ii.split()[1:4]])
-        atom_symbol_list.append(ii.split()[0])
-    coord = np.array(coord)
+        if 'ATOMIC_POSITIONS' in iline and 'angstrom' in iline.lower():
+            blk = get_block(lines, 'ATOMIC_POSITIONS')
+            for ii in blk:
+                coord.append([float(jj) for jj in ii.split()[1:4]])
+                atom_symbol_list.append(ii.split()[0])
+            coord = np.array(coord)
+        elif 'ATOMIC_POSITIONS' in iline and 'crystal' in iline.lower():
+            blk = get_block(lines, 'ATOMIC_POSITIONS')
+            for ii in blk:
+                coord.append([float(jj) for jj in ii.split()[1:4]])
+                atom_symbol_list.append(ii.split()[0])
+            coord = np.array(coord)
+            coord = np.matmul(coord, cell.T)
     atom_symbol_list = np.array(atom_symbol_list)
     tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)
     atom_types = []
@@ -119,8 +127,8 @@ def get_frame (fname):
         outlines = fp.read().split('\n')
     with open(path_in, 'r') as fp:
         inlines = fp.read().split('\n')
-    atom_names, natoms, types, coords      = get_coords(inlines)
     cell        = get_cell  (inlines)
+    atom_names, natoms, types, coords      = get_coords(inlines, cell)
     energy      = get_energy(outlines)
     force       = get_force (outlines)
     stress      = get_stress(outlines) * np.linalg.det(cell)
