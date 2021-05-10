@@ -47,7 +47,8 @@ setuptools.setup(
     keywords='lammps vasp deepmd-kit',
     install_requires=install_requires,
     extras_require={
-        'amber': ['parmed']
+        'ase': ['ase'],
+        'amber': ['parmed'],
     }
 )
 
