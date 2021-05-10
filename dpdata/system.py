@@ -12,6 +12,7 @@ import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.qe.traj
 import dpdata.qe.scf
+import dpdata.abacus.scf
 import dpdata.siesta.output
 import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
@@ -627,7 +628,7 @@ class System (MSONable) :
 
     @register_from_funcs.register_funcs("gro")
     @register_from_funcs.register_funcs("gromacs/gro")
-    def from_gromacs_gro(self, file_name, format_atom_name=True) :
+    def from_gromacs_gro(self, file_name) :
         """
         Load gromacs .gro file
 
@@ -636,35 +637,7 @@ class System (MSONable) :
         file_name : str
             The input file name
         """
-        self.data = dpdata.gromacs.gro.file_to_system_data(file_name, format_atom_name=format_atom_name)
-
-    @register_to_funcs.register_funcs("gromacs/gro")
-    def to_gromacs_gro(self, file_name=None, frame_idx=-1):
-        """
-        Dump the system in gromacs .gro format
-
-        Parameters
-        ----------
-        file_name : str or None
-            The output file name. If None, return the file content as a string
-        frame_idx : int
-            The index of the frame to dump
-        """
-        assert(frame_idx < len(self.data['coords']))
-        if frame_idx == -1:
-            strs = []
-            for idx in range(self.get_nframes()):
-                gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=idx)
-                strs.append(gro_str)
-            gro_str = "\n".join(strs)
-        else:
-            gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=frame_idx)
-        
-        if file_name is None:
-            return gro_str
-        else:
-            with open(file_name, 'w+') as fp:
-                fp.write(gro_str)
+        self.data = dpdata.gromacs.gro.file_to_system_data(file_name)
 
     @register_to_funcs.register_funcs("deepmd/npy")
     def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
@@ -1049,12 +1022,13 @@ class LabeledSystem (System):
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
+                - ``abacus/scf``: ABACUS plane wave scf. The directory containing INPUT file is required.
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``gaussian/log``: gaussian logs
                 - ``gaussian/md``: gaussian ab initio molecular dynamics
                 - ``cp2k/output``: cp2k output file
-                - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file); optional `restart=True` if it is a cp2k restarted task.
+                - ``cp2k/aimd_output``: cp2k aimd output  dir(contains *pos*.xyz and *.log file)
                 - ``pwmat/movement``: pwmat md output file
                 - ``pwmat/out.mlmd``: pwmat scf output file
 
@@ -1119,20 +1093,12 @@ class LabeledSystem (System):
         return ('virials' in self.data)
 
     @register_from_funcs.register_funcs('cp2k/aimd_output')
-    def from_cp2k_aimd_output(self, file_dir, restart=False):
+    def from_cp2k_aimd_output(self, file_dir):
         xyz_file=sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
         log_file=sorted(glob.glob("{}/*.log".format(file_dir)))[0]
-        for info_dict in Cp2kSystems(log_file, xyz_file, restart):
+        for info_dict in Cp2kSystems(log_file, xyz_file):
             l = LabeledSystem(data=info_dict)
             self.append(l)
-
-    # @register_from_funcs.register_funcs('cp2k/restart_aimd_output')
-    # def from_cp2k_aimd_output(self, file_dir, restart=True):
-    #     xyz_file = sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
-    #     log_file = sorted(glob.glob("{}/*.log".format(file_dir)))[0]
-    #     for info_dict in Cp2kSystems(log_file, xyz_file, restart):
-    #         l = LabeledSystem(data=info_dict)
-    #         self.append(l)
 
     @register_from_funcs.register_funcs('fhi_aims/md')
     def from_fhi_aims_output(self, file_name, md=True, begin=0, step =1):
@@ -1265,6 +1231,11 @@ class LabeledSystem (System):
             self.data['forces'], \
             self.data['virials'], \
             = dpdata.qe.scf.get_frame(file_name)
+        self.rot_lower_triangular()
+    
+    @register_from_funcs.register_funcs('abacus/scf')
+    def from_abacus_pw_scf(self, file_name) :
+        self.data = dpdata.abacus.scf.get_frame(file_name)
         self.rot_lower_triangular()
 
     @register_from_funcs.register_funcs('siesta/output')
