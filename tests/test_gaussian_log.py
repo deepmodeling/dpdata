@@ -28,6 +28,15 @@ class TestGaussianLoadLog(unittest.TestCase, TestGaussianLog):
         self.atom_numbs = [1, 4]
         self.nframes = 1
         self.atom_types = [0, 1, 1, 1, 1]
+
+class TestGaussianLoadLargeForceLog(unittest.TestCase, TestGaussianLog):
+    def setUp (self) :
+        self.system = dpdata.LabeledSystem('gaussian/largeforce.gaussianlog', 
+                                           fmt = 'gaussian/log')
+        self.atom_names = ['C','H','O','S']
+        self.atom_numbs = [33 , 65, 22, 6]
+        self.nframes = 1
+        self.atom_types = [0] * 33 + [2] * 22 + [1] * 65 + [3] * 6
     
 class TestGaussianLoadMD(unittest.TestCase, TestGaussianLog):
     def setUp (self) :
