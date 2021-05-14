@@ -1,10 +1,10 @@
 from rdkit import Chem
+from rdkit.Chem import AllChem
 import numpy as np
 
 def mol_to_system_data(mol):
-    mol = regularize_formal_charges(mol)
-    if not mol:
-        raise RuntimeError("Sanitize Failed, please check your input file")
+    if not isinstance(mol, Chem.rdchem.Mol):
+        raise TypeError(f"rdkit.Chem.Mol required, not {type(mol)}")
 
     num_confs = mol.GetNumConformers()
     if num_confs:
@@ -26,10 +26,18 @@ def mol_to_system_data(mol):
         data['bonds'] = bonds
         data['formal_charges'] = formal_charges
         data['orig'] = np.array([0., 0., 0.])
+        # Gasteiger charges
+        AllChem.ComputeGasteigerCharges(mol)
+        g_charges = [float(atom.GetProp('_GasteigerCharge')) for atom in mol.GetAtoms()]
+        data['charges'] = np.array([g_charges for _ in range(num_confs)])
+        # other properties
+        if mol.HasProp("_Name"):
+            data['_name'] = mol.GetProp('_Name')
         return data
     else:
         raise ValueError("The moleclue does not contain 3-D conformers")
 
+<<<<<<< Updated upstream
 
 def regularize_formal_charges(mol):
     """
@@ -70,6 +78,45 @@ def assign_formal_charge_for_atom(atom):
             atom.SetFormalCharge(0)
         else:
             atom.SetFormalCharge(atom.GetExplicitValence() - 3)
+=======
+def system_data_to_mol(data):
+    mol_ed = Chem.RWMol()
+    atom_symbols = [data['atom_names'][i] for i in data['atom_types']]
+    # add atoms
+    for atom_type in data['atom_types']:
+        symbol = data['atom_names'][atom_type]
+        atom = Chem.Atom(symbol)
+        mol_ed.AddAtom(atom)
+    # add bonds
+    for bond_info in data['bonds']:
+        if bond_info[2] == 1:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.SINGLE)
+        elif bond_info[2] == 2:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.DOUBLE)
+        elif bond_info[2] == 3:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.TRIPLE)
+        elif bond_info[2] == 1.5:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.AROMATIC)
+    # set conformers
+    for frame_idx in range(data['coords'].shape[0]):
+        conf = Chem.rdchem.Conformer(len(data['atom_types']))
+        for atom_idx in range(len(data['atom_types'])):
+            conf.SetAtomPosition(atom_idx, data['coords'][frame_idx][atom_idx])
+        mol_ed.AddConformer(conf, assignId=True)
+    mol = mol_ed.GetMol()
+    # set formal charges
+    if 'formal_charges' in list(data.keys()):
+        for idx, atom in enumerate(mol.GetAtoms()):
+            atom.SetFormalCharge(data['formal_charges'][idx])
+    else:
+        mol = regularize_formal_charges(mol)
+    # set mol name
+    if '_name' in list(data.keys()):
+        mol.SetProp("_Name", data['_name'])
+    # sanitize
+    Chem.SanitizeMol(mol_ed)
+    return mol        
+>>>>>>> Stashed changes
 
 
 def check_same_atom(atom_1, atom_2):
@@ -109,3 +156,16 @@ def combine_molecules(mols):
         return mols[0]
     else:
         raise ValueError("molecules are not of the same topology.")
+<<<<<<< Updated upstream
+=======
+
+def print_bonds(mol):
+    for bond in mol.GetBonds():
+        begin_atom = bond.GetBeginAtom()
+        end_atom = bond.GetEndAtom()
+        print(f'{begin_atom.GetSymbol()}{begin_atom.GetIdx()+1} {end_atom.GetSymbol()}{end_atom.GetIdx()+1} {bond.GetBondType()}')
+
+def print_atoms(mol):
+    for atom in mol.GetAtoms():
+        print(f'{atom.GetSymbol()}{atom.GetIdx()+1} {atom.GetFormalCharge()} {get_explicit_valence(atom)}')
+>>>>>>> Stashed changes

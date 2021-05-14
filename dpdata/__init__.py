@@ -1,3 +1,4 @@
+import os
 from . import vasp
 from . import lammps
 from . import md

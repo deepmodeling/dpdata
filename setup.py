@@ -36,6 +36,7 @@ setuptools.setup(
               'dpdata/xyz',
               'dpdata/pwmat', 
               'dpdata/amber',
+              'dpdata/rdkit'
               'dpdata/fhi_aims',
               'dpdata/gromacs',
               'dpdata/rdkit'

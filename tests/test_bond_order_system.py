@@ -1,6 +1,7 @@
 import os
 import unittest
 from context import dpdata
+import glob
 from rdkit import Chem
 from rdkit.Chem import AllChem
 import shutil
@@ -76,3 +77,11 @@ class TestBondOrderSystem(unittest.TestCase):
             for ii in range(3):
                 self.assertEqual(syst['bonds'][bond_idx][ii], bonds[bond_idx][ii])
         shutil.rmtree("bond_order/methane")
+    
+    def test_sanitize_mol(self):
+        cnt = 0
+        for sdf_file in glob.glob("bond_order/refined-set-ligands/obabel/*sdf"):
+            syst = dpdata.BondOrderSystem(sdf_file, sanitize_level='high', verbose=False)
+            if syst.rdkit_mol is None:
+                cnt += 1
+        self.assertEqual(cnt, 0)
