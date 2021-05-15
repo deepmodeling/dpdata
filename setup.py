@@ -33,11 +33,13 @@ setuptools.setup(
               'dpdata/siesta', 
               'dpdata/gaussian', 
               'dpdata/cp2k',
+              'dpdata/ase',
               'dpdata/xyz',
               'dpdata/pwmat', 
               'dpdata/amber',
               'dpdata/fhi_aims',
-              'dpdata/gromacs'
+              'dpdata/gromacs',
+              'dpdata/ase'
     ],
     package_data={'dpdata':['*.json']},
     classifiers=[
