@@ -75,6 +75,17 @@ def assign_formal_charge_for_atom(atom, verbose=False):
         else:
             atom.SetFormalCharge(valence - 3)
 
+# print bond and atom information (for debugger)
+def print_bonds(mol):
+    for bond in mol.GetBonds():
+        begin_atom = bond.GetBeginAtom()
+        end_atom = bond.GetEndAtom()
+        print(f'{begin_atom.GetSymbol()}{begin_atom.GetIdx()+1} {end_atom.GetSymbol()}{end_atom.GetIdx()+1} {bond.GetBondType()}')
+
+def print_atoms(mol):
+    for atom in mol.GetAtoms():
+        print(f'{atom.GetSymbol()}{atom.GetIdx()+1} {atom.GetFormalCharge()} {get_explicit_valence(atom)}')
+
 
 def is_terminal_oxygen(O_atom):
     if len(O_atom.GetNeighbors()) == 1:
@@ -541,6 +552,7 @@ class Sanitizer(object):
                 return None
         elif self.level == "high":
             mol = super_sanitize_mol(mol, verbose=self.verbose)
+            error_info = "Sanitization Failed. Please check your molecule file."
             if mol is None:
                 self._handle_exception(error_info)
             return mol

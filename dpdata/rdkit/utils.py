@@ -37,48 +37,6 @@ def mol_to_system_data(mol):
     else:
         raise ValueError("The moleclue does not contain 3-D conformers")
 
-<<<<<<< Updated upstream
-
-def regularize_formal_charges(mol):
-    """
-    Regularize formal charges of atoms
-    """
-    for atom in mol.GetAtoms():
-        assign_formal_charge_for_atom(atom)
-    try:
-        Chem.SanitizeMol(mol)
-        return mol
-    except:
-        return None
-
-
-def assign_formal_charge_for_atom(atom):
-    """
-        assign formal charge according to 8-electron rule for element B,C,N,O,S,P,As
-    """
-    if atom.GetSymbol() == "B":
-        atom.SetFormalCharge(3 - atom.GetExplicitValence())
-    elif atom.GetSymbol() == "C":
-        atom.SetFormalCharge(atom.GetExplicitValence() - 4)
-        if atom.GetExplicitValence() == 3:
-            print(f"Detect a valence of 3 on carbon #{atom.GetIdx()}, the formal charge of this atom will be assigned to -1")
-    elif atom.GetSymbol() == "N":
-        atom.SetFormalCharge(atom.GetExplicitValence() - 3)
-    elif atom.GetSymbol() == "O":
-        atom.SetFormalCharge(atom.GetExplicitValence() - 2)
-    elif atom.GetSymbol() == "S":
-        if atom.GetExplicitValence() == 1:
-            atom.SetFormalCharge(-1)
-        elif atom.GetExplicitValence() == 3:
-            atom.SetFormalCharge(1)
-        else:
-            atom.SetFormalCharge(0)
-    elif atom.GetSymbol() == "P" or atom.GetSymbol() == "As":
-        if atom.GetExplicitValence() == 5:
-            atom.SetFormalCharge(0)
-        else:
-            atom.SetFormalCharge(atom.GetExplicitValence() - 3)
-=======
 def system_data_to_mol(data):
     mol_ed = Chem.RWMol()
     atom_symbols = [data['atom_names'][i] for i in data['atom_types']]
@@ -105,18 +63,14 @@ def system_data_to_mol(data):
         mol_ed.AddConformer(conf, assignId=True)
     mol = mol_ed.GetMol()
     # set formal charges
-    if 'formal_charges' in list(data.keys()):
-        for idx, atom in enumerate(mol.GetAtoms()):
-            atom.SetFormalCharge(data['formal_charges'][idx])
-    else:
-        mol = regularize_formal_charges(mol)
+    for idx, atom in enumerate(mol.GetAtoms()):
+        atom.SetFormalCharge(data['formal_charges'][idx])
     # set mol name
     if '_name' in list(data.keys()):
         mol.SetProp("_Name", data['_name'])
     # sanitize
     Chem.SanitizeMol(mol_ed)
     return mol        
->>>>>>> Stashed changes
 
 
 def check_same_atom(atom_1, atom_2):
@@ -156,16 +110,3 @@ def combine_molecules(mols):
         return mols[0]
     else:
         raise ValueError("molecules are not of the same topology.")
-<<<<<<< Updated upstream
-=======
-
-def print_bonds(mol):
-    for bond in mol.GetBonds():
-        begin_atom = bond.GetBeginAtom()
-        end_atom = bond.GetEndAtom()
-        print(f'{begin_atom.GetSymbol()}{begin_atom.GetIdx()+1} {end_atom.GetSymbol()}{end_atom.GetIdx()+1} {bond.GetBondType()}')
-
-def print_atoms(mol):
-    for atom in mol.GetAtoms():
-        print(f'{atom.GetSymbol()}{atom.GetIdx()+1} {atom.GetFormalCharge()} {get_explicit_valence(atom)}')
->>>>>>> Stashed changes
