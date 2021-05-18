@@ -19,7 +19,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 #         activate-environment: test
     - name: a test
-      run: conda env list
+      run: conda list
 #     - name: Set up Python ${{ matrix.python-version }}
 #       uses: actions/setup-python@v2
 #       with:
