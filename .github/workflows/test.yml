@@ -19,13 +19,14 @@ jobs:
         auto-activate-base: true
         activate-environment: ""
     - name: Install rdkit
-      run: export
+    
+#       run: export
 #       run: echo $CONDA_PREFIX $PATH
-#       run: |
-#         export $CONDA_PREFIX
-#         conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit;
-#         source activate my-rdkit-env;
-#         conda env export; 
+      run: |
+        export $CONDA_PREFIX
+        conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit;
+        source $CONDA/bin/activate my-rdkit-env;
+        conda env export; 
 #     - name: Set up Python ${{ matrix.python-version }}
 #       uses: actions/setup-python@v2
 #       with:
