@@ -28,6 +28,7 @@ from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
 from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
+from dpdata.amber.mask import pick_by_amber_mask, load_param_file
 
 
 class Register:
@@ -927,6 +928,10 @@ class System (MSONable) :
             return True
         return False
 
+    @nopbc.setter
+    def nopbc(self, value):
+        self.data['nopbc'] = value
+
     def shuffle(self):
         """Shuffle frames randomly."""
         idx = np.random.permutation(self.get_nframes())
@@ -972,6 +977,93 @@ class System (MSONable) :
             this_sys = LabeledSystem.from_dict({'data': data})
             labeled_sys.append(this_sys)
         return labeled_sys
+
+    def pick_atom_idx(self, idx, nopbc=None):
+        """Pick atom index
+        
+        Parameters
+        ----------
+        idx: int or list or slice
+            atom index
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
+
+        Returns
+        -------
+        new_sys: System
+            new system
+        """
+        new_sys = self.copy()
+        new_sys.data['coords'] = self.data['coords'][:, idx, :]
+        new_sys.data['atom_types'] = self.data['atom_types'][idx]
+        # recalculate atom_numbs according to atom_types
+        atom_numbs = np.bincount(new_sys.data['atom_types'], minlength=len(self.get_atom_names()))
+        new_sys.data['atom_numbs'] = list(atom_numbs)
+        if nopbc is True or nopbc is False:
+            new_sys.nopbc = nopbc
+        return new_sys
+
+    def remove_atom_names(self, atom_names):
+        """Remove atom names and all such atoms.
+        For example, you may not remove EP atoms in TIP4P/Ew water, which
+        is not a real atom. 
+        """
+        if isinstance(atom_names, str):
+            atom_names = [atom_names]
+        removed_atom_idx = []
+        for an in atom_names:
+            # get atom name idx
+            idx = self.data['atom_names'].index(an)
+            atom_idx = self.data['atom_types'] == idx
+            removed_atom_idx.append(atom_idx)
+        picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
+        new_sys = self.pick_atom_idx(picked_atom_idx)
+        # let's remove atom_names
+        # firstly, rearrange atom_names and put these atom_names in the end
+        new_atom_names = list([xx for xx in new_sys.data['atom_names'] if xx not in atom_names])
+        new_sys.sort_atom_names(type_map=new_atom_names + atom_names)
+        # remove atom_names and atom_numbs
+        new_sys.data['atom_names'] = new_atom_names
+        new_sys.data['atom_numbs'] = new_sys.data['atom_numbs'][:len(new_atom_names)]
+        return new_sys
+
+    def pick_by_amber_mask(self, param, maskstr, pass_coords=False, nopbc=None):
+        """Pick atoms by amber mask
+        
+        Parameters
+        ----------
+        param: str or parmed.Structure
+          filename of Amber param file or parmed.Structure
+        maskstr: str
+          Amber masks
+        pass_coords: Boolen (default: False)
+            If pass_coords is true, the function will pass coordinates and 
+            return a MultiSystem. Otherwise, the result is
+            coordinate-independent, and the function will return System or
+            LabeledSystem.
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
+        """
+        parm = load_param_file(param)
+        if pass_coords:
+            ms = MultiSystems()
+            for sub_s in self:
+                # TODO: this can computed in pararrel
+                idx = pick_by_amber_mask(parm, maskstr, sub_s['coords'][0])
+                ms.append(sub_s.pick_atom_idx(idx, nopbc=nopbc))
+            return ms
+        else:
+            idx = pick_by_amber_mask(parm, maskstr)
+            return self.pick_atom_idx(idx, nopbc=nopbc)
+
+    @register_from_funcs.register_funcs('amber/md')
+    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None):
+        # assume the prefix is the same if the spefic name is not given
+        if parm7_file is None:
+            parm7_file = file_name + ".parm7"
+        if nc_file is None:
+            nc_file = file_name + ".nc"
+        self.data = dpdata.amber.md.read_amber_traj(parm7_file=parm7_file, nc_file=nc_file, use_element_symbols=use_element_symbols, labeled=False)
 
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
@@ -1305,7 +1397,7 @@ class LabeledSystem (System):
         self.from_gaussian_log(file_name, md=True)
 
     @register_from_funcs.register_funcs('amber/md')
-    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None):
+    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None, mdout_file=None, use_element_symbols=None):
         # assume the prefix is the same if the spefic name is not given
         if parm7_file is None:
             parm7_file = file_name + ".parm7"
@@ -1315,7 +1407,9 @@ class LabeledSystem (System):
             mdfrc_file = file_name + ".mdfrc"
         if mden_file is None:
             mden_file = file_name + ".mden"
-        self.data = dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file)
+        if mdout_file is None:
+            mdout_file = file_name + ".mdout"
+        self.data = dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file, mdout_file, use_element_symbols)
 
     @register_from_funcs.register_funcs('cp2k/output')
     def from_cp2k_output(self, file_name) :
@@ -1474,6 +1568,53 @@ class LabeledSystem (System):
             entry=ComputedStructureEntry(structure,energy,data=data)
             entries.append(entry)
         return entries
+
+    def correction(self, hl_sys):
+        """Get energy and force correction between self and a high-level LabeledSystem.
+        The self's coordinates will be kept, but energy and forces will be replaced by
+        the correction between these two systems.
+
+        Note: The function will not check whether coordinates and elements of two systems
+        are the same. The user should make sure by itself.
+
+        Parameters
+        ----------
+        hl_sys: LabeledSystem
+            high-level LabeledSystem
+        Returns
+        ----------
+        corrected_sys: LabeledSystem
+            Corrected LabeledSystem
+        """
+        if not isinstance(hl_sys, LabeledSystem):
+            raise RuntimeError("high_sys should be LabeledSystem")
+        corrected_sys = self.copy()
+        corrected_sys.data['energies'] = hl_sys.data['energies'] - self.data['energies']
+        corrected_sys.data['forces'] = hl_sys.data['forces'] - self.data['forces']
+        if 'virials' in self.data and 'virials' in hl_sys.data:
+            corrected_sys.data['virials'] = hl_sys.data['virials'] - self.data['virials']
+        return corrected_sys
+
+    def pick_atom_idx(self, idx, nopbc=None):
+        """Pick atom index
+        
+        Parameters
+        ----------
+        idx: int or list or slice
+            atom index
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
+
+        Returns
+        -------
+        new_sys: LabeledSystem
+            new system
+        """
+        new_sys = System.pick_atom_idx(self, idx, nopbc=nopbc)
+        # forces
+        new_sys.data['forces'] = self.data['forces'][:, idx, :]
+        return new_sys
+
 
 class MultiSystems:
     '''A set containing several systems.'''
@@ -1650,6 +1791,26 @@ class MultiSystems:
         for ss in self:
             new_multisystems.append(ss.predict(dp))
         return new_multisystems
+    
+    def pick_atom_idx(self, idx, nopbc=None):
+        """Pick atom index
+        
+        Parameters
+        ----------
+        idx: int or list or slice
+            atom index
+        nopbc: Boolen (default: None)
+            If nopbc is True or False, set nopbc
+
+        Returns
+        -------
+        new_sys: MultiSystems
+            new system
+        """
+        new_sys = MultiSystems()
+        for ss in self:
+            new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
+        return new_sys
 
 
 def check_System(data):

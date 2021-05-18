@@ -4,19 +4,10 @@ import unittest
 from context import dpdata
 from comp_sys import CompSys
 from comp_sys import CompLabeledSys
+from comp_sys import MultiSystems
 from comp_sys import IsNoPBC
 from itertools import permutations
 
-class MultiSystems:
-    def test_systems_name(self):
-        self.assertEqual(set(self.systems.systems), set(self.system_names))
-    
-    def test_systems_size(self):
-        for name, size in self.system_sizes.items():
-            self.assertEqual(self.systems[name].get_nframes(), size)
-    
-    def test_atom_names(self):
-        self.assertEqual(self.atom_names, self.systems.atom_names)
 
 class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):
     def setUp(self):

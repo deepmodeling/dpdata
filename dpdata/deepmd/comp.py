@@ -115,5 +115,6 @@ def dump(folder,
     except OSError:
         pass
     if data.get("nopbc", False):
-        os.mknod(os.path.join(folder, "nopbc"))
+        with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
+            pass
         
