@@ -19,7 +19,8 @@ jobs:
         auto-activate-base: true
         activate-environment: ""
     - name: Install rdkit
-      run: echo $CONDA_PREFIX $PATH
+      run: export
+#       run: echo $CONDA_PREFIX $PATH
 #       run: |
 #         export $CONDA_PREFIX
 #         conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit;
