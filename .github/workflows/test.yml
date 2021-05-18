@@ -13,13 +13,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    # set up conda
     - uses: conda-incubator/setup-miniconda@v2
       with:
-#         auto-update-conda: true
-        python-version: ${{ matrix.python-version }}
-#         activate-environment: test
-    - name: a test
-      run: conda list
+        auto-activate-base: true
+        activate-environment: ""
+    - name: Install rdkit
+      run: |
+        conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit;
+        source activate my-rdkit-env;
+        conda env export; 
 #     - name: Set up Python ${{ matrix.python-version }}
 #       uses: actions/setup-python@v2
 #       with:
