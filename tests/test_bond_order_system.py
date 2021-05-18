@@ -78,9 +78,17 @@ class TestBondOrderSystem(unittest.TestCase):
                 self.assertEqual(syst['bonds'][bond_idx][ii], bonds[bond_idx][ii])
         shutil.rmtree("bond_order/methane")
     
-    def test_sanitize_mol(self):
+    def test_sanitize_mol_obabel(self):
         cnt = 0
         for sdf_file in glob.glob("bond_order/refined-set-ligands/obabel/*sdf"):
+            syst = dpdata.BondOrderSystem(sdf_file, sanitize_level='high', verbose=False)
+            if syst.rdkit_mol is None:
+                cnt += 1
+        self.assertEqual(cnt, 0)
+    
+    def test_sanitize_mol_origin(self):
+        cnt = 0
+        for sdf_file in glob.glob("bond_order/refined-set-ligands/origin/*sdf"):
             syst = dpdata.BondOrderSystem(sdf_file, sanitize_level='high', verbose=False)
             if syst.rdkit_mol is None:
                 cnt += 1
