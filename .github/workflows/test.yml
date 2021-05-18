@@ -26,4 +26,5 @@ jobs:
       run: source $CONDA/bin/activate my-rdkit-env && pip install .[amber] coverage codecov
     - name: Test
       run: source $CONDA/bin/activate my-rdkit-env && cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
-    - run: source $CONDA/bin/activate my-rdkit-env && codecov
+    - name: Run codecov
+      run: source $CONDA/bin/activate my-rdkit-env && codecov
