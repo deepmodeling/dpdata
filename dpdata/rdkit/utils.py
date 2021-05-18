@@ -1,10 +1,10 @@
 from rdkit import Chem
+from rdkit.Chem import AllChem
 import numpy as np
 
 def mol_to_system_data(mol):
-    mol = regularize_formal_charges(mol)
-    if not mol:
-        raise RuntimeError("Sanitize Failed, please check your input file")
+    if not isinstance(mol, Chem.rdchem.Mol):
+        raise TypeError(f"rdkit.Chem.Mol required, not {type(mol)}")
 
     num_confs = mol.GetNumConformers()
     if num_confs:
@@ -26,50 +26,47 @@ def mol_to_system_data(mol):
         data['bonds'] = bonds
         data['formal_charges'] = formal_charges
         data['orig'] = np.array([0., 0., 0.])
+        # other properties
+        if mol.HasProp("_Name"):
+            data['_name'] = mol.GetProp('_Name')
         return data
     else:
         raise ValueError("The moleclue does not contain 3-D conformers")
 
-
-def regularize_formal_charges(mol):
-    """
-    Regularize formal charges of atoms
-    """
-    for atom in mol.GetAtoms():
-        assign_formal_charge_for_atom(atom)
-    try:
-        Chem.SanitizeMol(mol)
-        return mol
-    except:
-        return None
-
-
-def assign_formal_charge_for_atom(atom):
-    """
-        assign formal charge according to 8-electron rule for element B,C,N,O,S,P,As
-    """
-    if atom.GetSymbol() == "B":
-        atom.SetFormalCharge(3 - atom.GetExplicitValence())
-    elif atom.GetSymbol() == "C":
-        atom.SetFormalCharge(atom.GetExplicitValence() - 4)
-        if atom.GetExplicitValence() == 3:
-            print(f"Detect a valence of 3 on carbon #{atom.GetIdx()}, the formal charge of this atom will be assigned to -1")
-    elif atom.GetSymbol() == "N":
-        atom.SetFormalCharge(atom.GetExplicitValence() - 3)
-    elif atom.GetSymbol() == "O":
-        atom.SetFormalCharge(atom.GetExplicitValence() - 2)
-    elif atom.GetSymbol() == "S":
-        if atom.GetExplicitValence() == 1:
-            atom.SetFormalCharge(-1)
-        elif atom.GetExplicitValence() == 3:
-            atom.SetFormalCharge(1)
-        else:
-            atom.SetFormalCharge(0)
-    elif atom.GetSymbol() == "P" or atom.GetSymbol() == "As":
-        if atom.GetExplicitValence() == 5:
-            atom.SetFormalCharge(0)
-        else:
-            atom.SetFormalCharge(atom.GetExplicitValence() - 3)
+def system_data_to_mol(data):
+    mol_ed = Chem.RWMol()
+    atom_symbols = [data['atom_names'][i] for i in data['atom_types']]
+    # add atoms
+    for atom_type in data['atom_types']:
+        symbol = data['atom_names'][atom_type]
+        atom = Chem.Atom(symbol)
+        mol_ed.AddAtom(atom)
+    # add bonds
+    for bond_info in data['bonds']:
+        if bond_info[2] == 1:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.SINGLE)
+        elif bond_info[2] == 2:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.DOUBLE)
+        elif bond_info[2] == 3:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.TRIPLE)
+        elif bond_info[2] == 1.5:
+            mol_ed.AddBond(int(bond_info[0]), int(bond_info[1]), Chem.BondType.AROMATIC)
+    # set conformers
+    for frame_idx in range(data['coords'].shape[0]):
+        conf = Chem.rdchem.Conformer(len(data['atom_types']))
+        for atom_idx in range(len(data['atom_types'])):
+            conf.SetAtomPosition(atom_idx, data['coords'][frame_idx][atom_idx])
+        mol_ed.AddConformer(conf, assignId=True)
+    mol = mol_ed.GetMol()
+    # set formal charges
+    for idx, atom in enumerate(mol.GetAtoms()):
+        atom.SetFormalCharge(data['formal_charges'][idx])
+    # set mol name
+    if '_name' in list(data.keys()):
+        mol.SetProp("_Name", data['_name'])
+    # sanitize
+    Chem.SanitizeMol(mol_ed)
+    return mol        
 
 
 def check_same_atom(atom_1, atom_2):
