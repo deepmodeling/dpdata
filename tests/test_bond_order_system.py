@@ -93,3 +93,7 @@ class TestBondOrderSystem(unittest.TestCase):
             if syst.rdkit_mol is None:
                 cnt += 1
         self.assertEqual(cnt, 0)
+    
+    def tearDown(self):
+        if os.path.exists("tests/.cache"):
+            shutil.rmtree("tests/.cache")
