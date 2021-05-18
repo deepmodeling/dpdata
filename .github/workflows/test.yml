@@ -13,18 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    # set up conda
     - name: Set up Python ${{ matrix.python-version }}
-      uses: conda-incubator/setup-miniconda@v2
+      uses: actions/setup-python@v2
       with:
-        auto-activate-base: true
-        activate-environment: ""
-    # install rdkit and openbabel
-    - name: Install rdkit
-      run: conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit openbabel;
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: pip install .[amber] coverage codecov
-#       run: source $CONDA/bin/activate my-rdkit-env && pip install . coverage codecov
     - name: Test
-      run: source $CONDA/bin/activate my-rdkit-env && cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
-    - run: source $CONDA/bin/activate my-rdkit-env && codecov
+      run: cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
+    - run: codecov
