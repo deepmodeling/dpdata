@@ -18,7 +18,7 @@ jobs:
         auto-update-conda: true
         python-version: ${{ matrix.python-version }}
     - name: a test
-      run: conda list
+      run: conda env list
 #     - name: Set up Python ${{ matrix.python-version }}
 #       uses: actions/setup-python@v2
 #       with:
