@@ -250,7 +250,6 @@ syst = dpdata.BondOrderSystem("tests/bond_order/CH3NH3+.mol", fmt='mol')
 print(syst.get_formal_charges()) # return the formal charge on each atom
 print(syst.get_charge()) # return the total charge of the system
 ```
-
 If a valence of 3 is detected on carbon, the formal charge will be assigned to -1. Because for most cases (in alkynyl anion, isonitrile, cyclopentadienyl anion), the formal charge on 3-valence carbon is -1, and this is also consisent with the 8-electron rule.
 
 
