@@ -21,7 +21,7 @@ jobs:
     - name: Install rdkit
       run: |
         conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit;
-        source activate my-rdkit-env;
+        conda activate my-rdkit-env;
         conda env export; 
 #     - name: Set up Python ${{ matrix.python-version }}
 #       uses: actions/setup-python@v2
