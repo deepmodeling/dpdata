@@ -4,6 +4,7 @@ from dpdata.system import Register, System, LabeledSystem, check_System
 import rdkit.Chem
 import dpdata.rdkit.utils
 from dpdata.rdkit.sanitize import Sanitizer, SanitizeError
+from copy import deepcopy
 # import dpdata.rdkit.mol2
 
 def check_BondOrderSystem(data):
@@ -150,13 +151,9 @@ class BondOrderSystem(System):
     #         raise RuntimeError(f"Unsupported data structure: {type(other)}")
 
     def from_rdkit_mol(self, rdkit_mol):
-<<<<<<< Updated upstream
         '''
             Initialize from a rdkit.Chem.rdchem.Mol object
         '''
-=======
-        rdkit_mol = self.sanitizer.sanitize(rdkit_mol)
->>>>>>> Stashed changes
         self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
         self.data['bond_dict'] = dict([(f'{int(bond[0])}-{int(bond[1])}', bond[2]) for bond in self.data['bonds']])
         self.rdkit_mol = rdkit_mol
@@ -193,21 +190,3 @@ class BondOrderSystem(System):
             assert (frame_idx < self.get_nframes())
             sdf_writer.write(self.rdkit_mol, confId=frame_idx)
         sdf_writer.close()
-<<<<<<< Updated upstream
-=======
-    
-    # @register_from_funcs.register_funcs("mol2")
-    # def from_mol2_file(self, file_name):
-    #     '''
-    #     Note that it requires all molecules in .mol2 file must be of the same topology
-    #     '''
-    #     mol2_blocks = dpdata.rdkit.mol2.sep_mol2_file(file_name)
-    #     # mols = [rdkit.Chem.MolFromMol2Block(block, removeHs=False, sanitize=False) for block in mol2_blocks]
-    #     datas = [dpdata.rdkit.mol2.mol2_block_to_data(block) for block in mol2_blocks]
-    #     mols = [dpdata.rdkit.utils.system_data_to_mol(data) for data in datas]
-    #     if len(mols) > 1:
-    #         mol = dpdata.rdkit.utils.combine_molecules(mols)
-    #     else:
-    #         mol = mols[0]
-    #     self.from_rdkit_mol(mol)
->>>>>>> Stashed changes
