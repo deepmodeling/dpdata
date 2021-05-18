@@ -121,6 +121,12 @@ class BondOrderSystem(System):
         '''
         return sum(self.data['formal_charges'])
     
+    def get_mol(self):
+        '''
+            Return the rdkit.Mol object
+        '''
+        return self.rdkit_mol
+    
     def get_bond_order(self, begin_atom_idx, end_atom_idx):
         '''
             Return the bond order between given atoms
@@ -154,6 +160,7 @@ class BondOrderSystem(System):
         '''
             Initialize from a rdkit.Chem.rdchem.Mol object
         '''
+        rdkit_mol = self.sanitizer.sanitize(rdkit_mol)
         self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
         self.data['bond_dict'] = dict([(f'{int(bond[0])}-{int(bond[1])}', bond[2]) for bond in self.data['bonds']])
         self.rdkit_mol = rdkit_mol

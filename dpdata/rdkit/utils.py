@@ -26,10 +26,6 @@ def mol_to_system_data(mol):
         data['bonds'] = bonds
         data['formal_charges'] = formal_charges
         data['orig'] = np.array([0., 0., 0.])
-        # Gasteiger charges
-        AllChem.ComputeGasteigerCharges(mol)
-        g_charges = [float(atom.GetProp('_GasteigerCharge')) for atom in mol.GetAtoms()]
-        data['charges'] = np.array([g_charges for _ in range(num_confs)])
         # other properties
         if mol.HasProp("_Name"):
             data['_name'] = mol.GetProp('_Name')
