@@ -17,6 +17,7 @@ jobs:
       with:
         auto-update-conda: true
         python-version: ${{ matrix.python-version }}
+        activate-environment: test
     - name: a test
       run: conda env list
 #     - name: Set up Python ${{ matrix.python-version }}
