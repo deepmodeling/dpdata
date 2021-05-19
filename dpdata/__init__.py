@@ -16,7 +16,6 @@ try:
     USE_RDKIT = True
 except ModuleNotFoundError:
     USE_RDKIT = False
-    print("WARNING: No rdkit is installed, 'BondOrderSystem' cannot be used")
 
 if USE_RDKIT:
     from .bond_order_system import BondOrderSystem
