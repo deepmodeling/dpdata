@@ -3,12 +3,12 @@ from rdkit import Chem
 from rdkit.Chem.rdchem import Atom, Bond, Mol, BondType
 import os
 import time
-
-USE_OBABEL = False
-for path in os.environ['PATH'].split(":"):
-    if os.path.exists(os.path.join(path, "obabel")):
-        USE_OBABEL = True
-        break
+# openbabel
+try:
+    from openbabel import openbabel
+    USE_OBABEL = True
+except ModuleNotFoundError as e:
+    USE_OBABEL = False
 
 def get_explicit_valence(atom, verbose=False):
     exp_val_calculated_from_bonds = int(sum([bond.GetBondTypeAsDouble() for bond in atom.GetBonds()]))
@@ -456,7 +456,6 @@ def convert_by_obabel(mol, cache_dir=os.path.join(os.getcwd(), '.cache'), obabel
     mol_file_in = os.path.join(cache_dir, f'{name}.mol')
     mol_file_out = os.path.join(cache_dir, f'{name}_obabel.mol')
     Chem.MolToMolFile(mol, mol_file_in, kekulize=False)
-    from openbabel import openbabel
     obConversion = openbabel.OBConversion()
     obConversion.SetInAndOutFormats("mol", "mol")
     mol = openbabel.OBMol()
@@ -526,7 +525,7 @@ class Sanitizer(object):
             raise ValueError(f"Invalid level '{level}', please set to 'low', 'medium' or 'high'")
         else:
             if level == 'high' and not USE_OBABEL:
-                raise OSError("obabel not installed, high level sanitizer cannot work")
+                raise ModuleNotFoundError("obabel not installed, high level sanitizer cannot work")
     
     def _handle_exception(self, error_info):
         if self.raise_errors:
