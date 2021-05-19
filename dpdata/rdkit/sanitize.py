@@ -456,7 +456,12 @@ def convert_by_obabel(mol, cache_dir=os.path.join(os.getcwd(), '.cache'), obabel
     mol_file_in = os.path.join(cache_dir, f'{name}.mol')
     mol_file_out = os.path.join(cache_dir, f'{name}_obabel.mol')
     Chem.MolToMolFile(mol, mol_file_in, kekulize=False)
-    out = os.popen(f"obabel {mol_file_in} -O {mol_file_out}").read()
+    from openbabel import openbabel
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("mol", "mol")
+    mol = openbabel.OBMol()
+    obConversion.ReadFile(mol, mol_file_in)
+    obConversion.WriteFile(mol, mol_file_out)
     mol_obabel = Chem.MolFromMolFile(mol_file_out, removeHs=False, sanitize=False)
     return mol_obabel
 
