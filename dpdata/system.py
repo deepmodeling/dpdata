@@ -17,6 +17,7 @@ import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
 import dpdata.gaussian.log
 import dpdata.amber.md
+import dpdata.amber.sqm
 import dpdata.cp2k.output
 from dpdata.cp2k.output import Cp2kSystems
 import dpdata.pwmat.movement
@@ -696,6 +697,13 @@ class System (MSONable) :
         Dump the system in deepmd raw format to `folder`
         """
         dpdata.deepmd.raw.dump(folder, self.data)
+    
+    @register_from_funcs.register_funcs('sqm/out')
+    def from_sqm_out(self, fname):
+        '''
+        Read from ambertools sqm.out
+        '''
+        self.data = dpdata.amber.sqm.to_system_data(fname)
 
     @register_from_funcs.register_funcs('siesta/output')
     def from_siesta_output(self, fname):
@@ -1849,7 +1857,4 @@ def elements_index_map(elements,standard=False,inverse=False):
         return dict(zip(range(len(elements)),elements))
     else:
         return dict(zip(elements,range(len(elements))))
-
-
-
 # %%
