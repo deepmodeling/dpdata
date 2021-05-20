@@ -164,7 +164,7 @@ def get_frame (fname):
     data['energies'] = np.array(energy)[np.newaxis]
     data['forces'] = force[np.newaxis, :, :]
     data['virials'] = stress[np.newaxis, :, :]
-
+    data['orig'] = np.zeros(3)
     # print("atom_names = ", data['atom_names'])
     # print("natoms = ", data['atom_numbs'])
     # print("types = ", data['atom_types'])
