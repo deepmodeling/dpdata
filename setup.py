@@ -38,7 +38,8 @@ setuptools.setup(
               'dpdata/amber',
               'dpdata/fhi_aims',
               'dpdata/gromacs',
-              'dpdata/abacus'
+              'dpdata/abacus',
+              'dpdata/rdkit'
     ],
     package_data={'dpdata':['*.json']},
     classifiers=[
