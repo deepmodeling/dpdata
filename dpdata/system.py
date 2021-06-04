@@ -964,7 +964,12 @@ class System (MSONable) :
         labeled_sys LabeledSystem
             The labeled system.
         """
-        import deepmd.DeepPot as DeepPot
+        try:
+            # DP 1.x
+            import deepmd.DeepPot as DeepPot
+        except ModuleNotFoundError:
+            # DP 2.x
+            from deepmd.infer import DeepPot
         if not isinstance(dp, DeepPot):
             dp = DeepPot(dp)
         type_map = dp.get_type_map()
