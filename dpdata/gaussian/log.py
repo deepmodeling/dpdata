@@ -43,7 +43,7 @@ def to_system_data(file_name, md=False):
                     flag = 0
                 else:
                     s = line.split()
-                    forces.append([float(x) for x in s[2:5]])
+                    forces.append([float(line[23:38]), float(line[38:53]), float(line[53:68])])
             elif flag == 10:
                 # atom_symbols and coords
                 if line.startswith(" -------"):

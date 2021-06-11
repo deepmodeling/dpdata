@@ -71,6 +71,11 @@ def dump(folder,
     # dump raw 
     np.savetxt(os.path.join(folder, 'type.raw'), data['atom_types'], fmt = '%d')    
     np.savetxt(os.path.join(folder, 'type_map.raw'),    data['atom_names'], fmt = '%s')
+    # BondOrder System
+    if "bonds" in data:
+        np.savetxt(os.path.join(folder, "bonds.raw"), data['bonds'], header="begin_atom, end_atom, bond_order")
+    if "formal_charges" in data:
+        np.savetxt(os.path.join(folder, "formal_charges.raw"), data['formal_charges'])
     # reshape frame properties and convert prec
     nframes = data['cells'].shape[0]
     cells  = np.reshape(data['cells'],    [nframes,  9]).astype(comp_prec)
@@ -110,5 +115,6 @@ def dump(folder,
     except OSError:
         pass
     if data.get("nopbc", False):
-        os.mknod(os.path.join(folder, "nopbc"))
+        with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
+            pass
         

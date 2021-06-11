@@ -63,6 +63,12 @@ def dump (folder, data) :
     np.savetxt(os.path.join(folder, 'type_map.raw'),    data['atom_names'], fmt = '%s')
     np.savetxt(os.path.join(folder, 'box.raw'),     np.reshape(data['cells'],    [nframes,  9]))
     np.savetxt(os.path.join(folder, 'coord.raw'),   np.reshape(data['coords'],   [nframes, -1]))
+    # BondOrder System
+    if "bonds" in data:
+        np.savetxt(os.path.join(folder, "bonds.raw"), data['bonds'], header="begin_atom, end_atom, bond_order")
+    if "formal_charges" in data:
+        np.savetxt(os.path.join(folder, "formal_charges.raw"), data['formal_charges'])
+    # Labeled System
     if 'energies' in data :
         np.savetxt(os.path.join(folder, 'energy.raw'),  np.reshape(data['energies'], [nframes,  1]))
     if 'forces' in data :
@@ -74,5 +80,6 @@ def dump (folder, data) :
     except OSError:
         pass
     if data.get("nopbc", False):
-        os.mknod(os.path.join(folder, "nopbc"))
+        with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
+            pass
 
