@@ -1,0 +1,28 @@
+#This is the atom card containing all the information
+#about the lattice structure.
+
+ATOMIC_SPECIES
+C 1.000 C_ONCV_PBE-1.0.upf 	#Element, Mass, Pseudopotential
+H 1.000 H_ONCV_PBE-1.0.upf 
+
+LATTICE_CONSTANT
+10  					#Lattice constant
+
+LATTICE_VECTORS
+1 0.0 0.0 			#Lattice vector 1
+0.0 1 0.0 			#Lattice vector 2
+0.0 0.0 1 			#Lattice vector 3
+
+ATOMIC_POSITIONS
+Cartesian 				#Cartesian(Unit is LATTICE_CONSTANT)
+C 						#Name of element	
+0.0						#Magnetic for this element.
+1				#Number of atoms
+0.981274803    0.861285385    0.838442496 0 0 0
+H
+0.0
+4
+1.023557202    0.758025625    0.66351336 0 0 0
+0.78075702    0.889445935    0.837363468 0 0 0
+1.064091613    1.043438905    0.840995502 0 0 0
+1.039321214    0.756530859    1.009609207 0 0 0
