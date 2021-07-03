@@ -6,8 +6,6 @@ from dpdata.format import Format
 
 @Format.register("deepmd")
 @Format.register("deepmd/raw")
-@Format.register_from("from_deepmd_raw")
-@Format.register_to("to_deepmd_raw")
 class DeePMDRawFormat(Format):
     def from_system(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.raw.to_system_data(file_name, type_map=type_map, labels=False)
@@ -24,10 +22,7 @@ class DeePMDRawFormat(Format):
 
 
 @Format.register("deepmd/npy")
-@Format.register_from("from_deepmd_comp")
-@Format.register_from("from_deepmd_npy")
-@Format.register_to("to_deepmd_comp")
-@Format.register_to("to_deepmd_npy")
+@Format.register("deepmd/comp")
 class DeePMDCompFormat(Format):
     def from_system(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.comp.to_system_data(file_name, type_map=type_map, labels=False)

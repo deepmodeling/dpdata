@@ -2,7 +2,7 @@ import dpdata.fhi_aims.output
 from dpdata.format import Format
 
 @Format.register("fhi_aims/md")
-@Format.register_from("from_fhi_aims_output")
+@Format.register("fhi_aims/output")
 class FhiMDFormat(Format):
     def from_labeled_system(self, file_name, md=True, begin = 0, step = 1, **kwargs):
         data = {}
@@ -20,7 +20,6 @@ class FhiMDFormat(Format):
         return data
 
 @Format.register("fhi_aims/scf")
-@Format.register_from("from_fhi_aims_output")
 class FhiSCFFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = {}

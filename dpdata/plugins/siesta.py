@@ -4,7 +4,6 @@ from dpdata.format import Format
 
 
 @Format.register("siesta/output")
-@Format.register_from("from_siesta_output")
 class SiestaOutputFormat(Format):
     def from_system(self, file_name, **kwargs):
         data = {}

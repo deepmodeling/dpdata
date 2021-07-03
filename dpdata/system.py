@@ -1221,6 +1221,15 @@ def add_format_methods():
     -----
     Ensure all plugins have been loaded before execuating this function!
     """
+    # automatically register from/to functions for formats
+    # for example, deepmd/npy will be registered as from_deepmd_npy and to_deepmd_npy
+    for key, formatcls in Format.get_formats().items():
+        formattedkey = key.replace("/", "_").replace(".", "")
+        from_func_name = "from_" + formattedkey
+        to_func_name = "to_" + formattedkey
+        Format.register_from(from_func_name)(formatcls)
+        Format.register_to(to_func_name)(formatcls)
+
     for method, formatcls in Format.get_from_methods().items():
         def get_func(ff):
             # ff is not initized when defining from_format so cannot be polluted

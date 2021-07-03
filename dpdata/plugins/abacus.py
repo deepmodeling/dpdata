@@ -3,7 +3,7 @@ from dpdata.format import Format
 
 
 @Format.register("abacus/scf")
-@Format.register_from("from_abacus_pw_scf")
+@Format.register("abacus/pw/scf")
 class AbacusSCFFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):

@@ -9,8 +9,6 @@ from dpdata.format import Format
 @Format.register("contcar")
 @Format.register("vasp/poscar")
 @Format.register("vasp/contcar")
-@Format.register_from("from_vasp_poscar")
-@Format.register_to("to_vasp_poscar")
 class VASPPoscarFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_system(self, file_name, **kwargs):
@@ -35,7 +33,6 @@ class VASPPoscarFormat(Format):
 
 
 @Format.register("vasp/string")
-@Format.register_to("to_vasp_string")
 class VASPStringFormat(Format):
     def to_system(self, data, frame_idx=0, **kwargs):
         """
@@ -53,7 +50,6 @@ class VASPStringFormat(Format):
 # rotate the system to lammps convention
 @Format.register("outcar")
 @Format.register("vasp/outcar")
-@Format.register_from("from_vasp_outcar")
 class VASPOutcarFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
@@ -81,7 +77,6 @@ class VASPOutcarFormat(Format):
 # rotate the system to lammps convention
 @Format.register("xml")
 @Format.register("vasp/xml")
-@Format.register_from("from_vasp_xml")
 class VASPXMLFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):

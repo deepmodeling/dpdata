@@ -8,7 +8,7 @@ from dpdata.format import Format
 @Format.register("mlmd")
 @Format.register("pwmat/movement")
 @Format.register("pwmat/mlmd")
-@Format.register_from("from_pwmat_output")
+@Format.register("pwmat/output")
 class PwmatOutputFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
@@ -37,8 +37,6 @@ class PwmatOutputFormat(Format):
 @Format.register("final.config")
 @Format.register("pwmat/atom.config")
 @Format.register("pwmat/final.config")
-@Format.register_from("from_pwmat_atomconfig")
-@Format.register_to("to_pwmat_atomconfig")
 class PwmatAtomconfigFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_system(self, file_name, **kwargs):

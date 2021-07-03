@@ -2,7 +2,6 @@ from dpdata.format import Format
 
 
 @Format.register("ase/structure")
-@Format.register_to("to_ase_structure")
 class ASEStructureFormat(Format):
     def to_system(self, data, **kwargs):
         '''

@@ -7,8 +7,7 @@ import dpdata.rdkit.utils
 
 
 @Format.register("mol")
-@Format.register_from("from_mol_file")
-@Format.register_to("to_mol_file")
+@Format.register("mol_file")
 class MolFormat(Format):
     def from_bond_order_system(self, file_name, **kwargs):
         return rdkit.Chem.MolFromMolFile(file_name, sanitize=False, removeHs=False)
@@ -20,8 +19,7 @@ class MolFormat(Format):
 
 
 @Format.register("sdf")
-@Format.register_from("from_sdf_file")
-@Format.register_to("to_sdf_file")
+@Format.register("sdf_file")
 class SdfFormat(Format):
     def from_bond_order_system(self, file_name, **kwargs):
         '''

@@ -4,7 +4,6 @@ from dpdata.format import Format
 
 
 @Format.register("amber/md")
-@Format.register_from("from_amber_md")
 class AmberMDFormat(Format):
     def from_system(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None):
         # assume the prefix is the same if the spefic name is not given
@@ -30,7 +29,6 @@ class AmberMDFormat(Format):
 
 
 @Format.register("sqm/out")
-@Format.register_from("from_sqm_out")
 class SQMOutFormat(Format):
     def from_system(self, fname, **kwargs):
         '''

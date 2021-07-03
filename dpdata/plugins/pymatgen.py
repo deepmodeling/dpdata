@@ -2,7 +2,6 @@ from dpdata.format import Format
 
 
 @Format.register("pymatgen/structure")
-@Format.register_to("to_pymatgen_structure")
 class PyMatgenStructureFormat(Format):
     def to_system(self, data, **kwargs):
         """convert System to Pymatgen Structure obj

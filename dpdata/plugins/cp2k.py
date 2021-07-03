@@ -5,7 +5,6 @@ from dpdata.format import Format
 
 
 @Format.register("cp2k/aimd_output")
-@Format.register_from("from_cp2k_aimd_output")
 class CP2KAIMDOutputFormat(Format):
     def from_labeled_system(self, file_name, restart=False, **kwargs):
         xyz_file = sorted(glob.glob("{}/*pos*.xyz".format(file_name)))[0]
@@ -14,7 +13,6 @@ class CP2KAIMDOutputFormat(Format):
 
 
 @Format.register("cp2k/output")
-@Format.register_from("from_cp2k_output")
 class CP2KOutputFormat(Format):
     def from_labeled_system(self, file_name, restart=False, **kwargs):
         data = {}

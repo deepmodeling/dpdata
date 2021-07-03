@@ -2,7 +2,6 @@ from dpdata.format import Format
 
 
 @Format.register("list")
-@Format.register_to("to_list")
 class ListFormat(Format):
     def to_system(self, data, **kwargs):
         """

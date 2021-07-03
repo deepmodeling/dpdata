@@ -3,7 +3,7 @@ from dpdata.format import Format
 
 
 @Format.register("quip/gap/xyz")
-@Format.register_from("from_quip_gap_xyz_file")
+@Format.register("quip/gap/xyz_file")
 class DeePMDRawFormat(Format):
     def from_labeled_system(self, data, **kwargs):
         return data

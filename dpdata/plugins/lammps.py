@@ -5,8 +5,6 @@ from dpdata.format import Format
 
 @Format.register("lmp")
 @Format.register("lammps/lmp")
-@Format.register_from("from_lammps_lmp")
-@Format.register_to("to_lammps_lmp")
 class LAMMPSLmpFormat(Format):
     @Format.post("shift_orig_zero")
     def from_system(self, file_name, type_map=None, **kwargs):
@@ -35,8 +33,6 @@ class LAMMPSLmpFormat(Format):
 
 @Format.register("dump")
 @Format.register("lammps/dump")
-@Format.register_from("from_lammps_dump")
-@Format.register_to("to_lammps_dump")
 class LAMMPSDumpFormat(Format):
     @Format.post("shift_orig_zero")
     def from_system(self,

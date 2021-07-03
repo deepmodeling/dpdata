@@ -4,7 +4,6 @@ import dpdata.md.pbc
 from dpdata.format import Format
 
 @Format.register("qe/cp/traj")
-@Format.register_from("from_qe_cp_traj")
 class QECPTrajFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_system(self, file_name, begin = 0, step = 1, **kwargs):
@@ -28,7 +27,6 @@ class QECPTrajFormat(Format):
         return data
 
 @Format.register("qe/pw/scf")
-@Format.register_from("from_qe_pw_scf")
 class QECPTrajFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
