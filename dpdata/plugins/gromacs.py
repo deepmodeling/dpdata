@@ -4,7 +4,7 @@ from dpdata.format import Format
 
 @Format.register("gro")
 @Format.register("gromacs/gro")
-class PwmatOutputFormat(Format):
+class GromacsGroFormat(Format):
     def from_system(self, file_name, format_atom_name=True, **kwargs):
         """
         Load gromacs .gro file

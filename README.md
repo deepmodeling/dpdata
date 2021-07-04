@@ -252,3 +252,14 @@ print(syst.get_charge()) # return the total charge of the system
 ```
 
 If a valence of 3 is detected on carbon, the formal charge will be assigned to -1. Because for most cases (in alkynyl anion, isonitrile, cyclopentadienyl anion), the formal charge on 3-valence carbon is -1, and this is also consisent with the 8-electron rule.
+
+# Plugins
+
+One can follow [a simple example](plugin_example/) to add their own format by creating and installing plugins. It's crirical to add the [Format](dpdata/format.py) class to `entry_points['dpdata.plugins']` in `setup.py`:
+```py
+    entry_points={
+        'dpdata.plugins': [
+            'random=dpdata_random:RandomFormat'
+        ]
+    },
+```
