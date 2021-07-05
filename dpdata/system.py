@@ -3,49 +3,27 @@ import os
 import glob
 import inspect
 import numpy as np
-import dpdata.lammps.lmp
-import dpdata.lammps.dump
-import dpdata.vasp.poscar
-import dpdata.vasp.xml
-import dpdata.vasp.outcar
-import dpdata.deepmd.raw
-import dpdata.deepmd.comp
-import dpdata.qe.traj
-import dpdata.qe.scf
-import dpdata.abacus.scf
-import dpdata.siesta.output
-import dpdata.siesta.aiMD_output
 import dpdata.md.pbc
-import dpdata.gaussian.log
-import dpdata.amber.md
-import dpdata.amber.sqm
-import dpdata.cp2k.output
-from dpdata.cp2k.output import Cp2kSystems
-import dpdata.pwmat.movement
-import dpdata.pwmat.atomconfig
-import dpdata.fhi_aims.output
-import dpdata.gromacs.gro
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
-from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
 from dpdata.amber.mask import pick_by_amber_mask, load_param_file
 
+# ensure all plugins are loaded!
+import dpdata.plugins
+from dpdata.plugin import Plugin
+from dpdata.format import Format
 
-class Register:
-    def __init__(self):
-        self.funcs = {}
-
-    def register_funcs(self, fmt):
-        def decorator(func):
-            self.funcs[fmt] = func
-            return func
-        return decorator
-
-    def __add__(self, other):
-        self.funcs.update(other.funcs)
-        return self
+def load_format(fmt):
+    fmt = fmt.lower()
+    formats = Format.get_formats()
+    if fmt in formats:
+        return formats[fmt]()
+    raise NotImplementedError(
+        "Unsupported data format %s. Supported formats: %s" % (
+            fmt, " ".join(formats)
+        ))
 
 
 class System (MSONable) :
@@ -131,32 +109,32 @@ class System (MSONable) :
         if type_map is not None:
             self.apply_type_map(type_map)
 
-    register_from_funcs = Register()
-    register_to_funcs = Register()
+    post_funcs = Plugin()
 
     def from_fmt(self, file_name, fmt='auto', **kwargs):
         fmt = fmt.lower()
         if fmt == 'auto':
             fmt = os.path.basename(file_name).split('.')[-1].lower()
-        from_funcs = self.register_from_funcs.funcs
-        if fmt in from_funcs:
-            func = from_funcs[fmt]
-            args = inspect.getfullargspec(func).args
-            kwargs = {kk: kwargs[kk] for kk in kwargs if kk in args}
-            func(self, file_name, **kwargs)
-        else :
-            raise RuntimeError('unknow data format ' + fmt)
+        return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
+    
+    def from_fmt_obj(self, fmtobj, file_name, **kwargs):
+        data = fmtobj.from_system(file_name, **kwargs)
+        if data:
+            if isinstance(data, (list, tuple)):
+                for dd in data:
+                    self.append(System(data=dd))
+            else:
+                self.data = {**self.data, **data}
+            if hasattr(fmtobj.from_system, 'post_func'):
+                for post_f in fmtobj.from_system.post_func:
+                    self.post_funcs.get_plugin(post_f)(self)
+        return self
 
     def to(self, fmt, *args, **kwargs):
-        fmt = fmt.lower()
-        to_funcs = self.register_to_funcs.funcs
-        if fmt in to_funcs:
-            func = to_funcs[fmt]
-            func_args = inspect.getfullargspec(func).args
-            kwargs = {kk: kwargs[kk] for kk in kwargs if kk in func_args}
-            func(self, *args, **kwargs)
-        else :
-            raise RuntimeError('unknow data format %s. Accepted format: %s' % (fmt, " ".join(to_funcs)))
+        return self.to_fmt_obj(load_format(fmt), *args, **kwargs)
+    
+    def to_fmt_obj(self, fmtobj, *args, **kwargs):
+        return fmtobj.to_system(self.data, *args, **kwargs)
 
     def __repr__(self):
         return self.__str__()
@@ -242,21 +220,6 @@ class System (MSONable) :
         new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
 
         return new_atom_types
-
-    @register_to_funcs.register_funcs("list")
-    def to_list(self):
-        """
-        convert system to list, usefull for data collection
-        """
-        if len(self)==0:
-           return []
-        if len(self)==1:
-           return [self]
-        else:
-           systems=[]
-           for ii in range(len(self)):
-               systems.append(self.sub_system([ii]))
-           return systems
 
     @staticmethod
     def load(filename):
@@ -492,276 +455,13 @@ class System (MSONable) :
             self.data['coords'][ff] = self.data['coords'][ff] + np.tile(shift, [natoms, 1])
             self.data['cells'][ff] = cell_size * np.eye(3)
 
-
-    @register_from_funcs.register_funcs("lmp")
-    @register_from_funcs.register_funcs("lammps/lmp")
-    def from_lammps_lmp (self, file_name, type_map = None) :
-        with open(file_name) as fp:
-            lines = [line.rstrip('\n') for line in fp]
-            self.data = dpdata.lammps.lmp.to_system_data(lines, type_map)
-        self._shift_orig_zero()
-
-    @register_to_funcs.register_funcs("pymatgen/structure")
-    def to_pymatgen_structure(self):
-        '''
-        convert System to Pymatgen Structure obj
-
-        '''
-        structures=[]
-        try:
-           from pymatgen import Structure
-        except:
-           raise ImportError('No module pymatgen.Structure')
-
-        for system in self.to_list():
-            species=[]
-            for name,numb in zip(system.data['atom_names'],system.data['atom_numbs']):
-                species.extend([name]*numb)
-            structure=Structure(system.data['cells'][0],species,system.data['coords'][0],coords_are_cartesian=True)
-            structures.append(structure)
-        return structures
-
-
-    @register_to_funcs.register_funcs("ase/structure")
-    def to_ase_structure(self):
-        '''
-        convert System to ASE Atom obj
-
-        '''
-        from ase import Atoms
-        
-        structures=[]
-
-        for system in self.to_list():
-            species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
-            structure=Atoms(symbols=species,positions=system.data['coords'][0],pbc=True,cell=system.data['cells'][0])
-            structures.append(structure)
-
-        return structures
-
-    @register_to_funcs.register_funcs("lammps/lmp")
-    def to_lammps_lmp(self, file_name, frame_idx = 0) :
-        """
-        Dump the system in lammps data format
-
-        Parameters
-        ----------
-        file_name : str
-            The output file name
-        frame_idx : int
-            The index of the frame to dump
-        """
-        assert(frame_idx < len(self.data['coords']))
-        w_str = dpdata.lammps.lmp.from_system_data(self.data, frame_idx)
-        with open(file_name, 'w') as fp:
-            fp.write(w_str)
-
-    @register_from_funcs.register_funcs('dump')
-    @register_from_funcs.register_funcs('lammps/dump')
-    def from_lammps_dump (self,
-                          file_name,
-                          type_map = None,
-                          begin = 0,
-                          step = 1) :
-        lines = dpdata.lammps.dump.load_file(file_name, begin = begin, step = step)
-        self.data = dpdata.lammps.dump.system_data(lines, type_map)
-        self._shift_orig_zero()
-
-    @register_from_funcs.register_funcs('poscar')
-    @register_from_funcs.register_funcs('contcar')
-    @register_from_funcs.register_funcs('vasp/poscar')
-    @register_from_funcs.register_funcs('vasp/contcar')
-    def from_vasp_poscar(self, file_name) :
-        with open(file_name) as fp:
-            lines = [line.rstrip('\n') for line in fp]
-            self.data = dpdata.vasp.poscar.to_system_data(lines)
-        self.rot_lower_triangular()
-
-    @register_to_funcs.register_funcs("vasp/string")
-    def to_vasp_string(self, frame_idx=0):
-        """
-        Dump the system in vasp POSCAR format string
-
-        Parameters
-        ----------
-        frame_idx : int
-            The index of the frame to dump
-        """
-        assert(frame_idx < len(self.data['coords']))
-        w_str = dpdata.vasp.poscar.from_system_data(self.data, frame_idx)
-        return w_str
-
-    @register_to_funcs.register_funcs("vasp/poscar")
-    def to_vasp_poscar(self, file_name, frame_idx = 0) :
-        """
-        Dump the system in vasp POSCAR format
-
-        Parameters
-        ----------
-        file_name : str
-            The output file name
-        frame_idx : int
-            The index of the frame to dump
-        """
-        w_str=self.to_vasp_string( frame_idx= frame_idx )
-        with open(file_name, 'w') as fp:
-            fp.write(w_str)
-
-    @register_from_funcs.register_funcs('qe/cp/traj')
-    def from_qe_cp_traj(self,
-                        prefix,
-                        begin = 0,
-                        step = 1) :
-        self.data, _ = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
-        self.data['coords'] \
-            = dpdata.md.pbc.apply_pbc(self.data['coords'],
-                                      self.data['cells'],
-            )
-        self.rot_lower_triangular()
-
-    @register_from_funcs.register_funcs('deepmd/npy')
-    def from_deepmd_comp(self, folder, type_map = None) :
-        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = False)
-
-    @register_from_funcs.register_funcs('deepmd')
-    @register_from_funcs.register_funcs('deepmd/raw')
-    def from_deepmd_raw(self, folder, type_map = None) :
-        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = False)
-        if tmp_data is not None :
-            self.data = tmp_data
-
-    @register_from_funcs.register_funcs("gro")
-    @register_from_funcs.register_funcs("gromacs/gro")
-    def from_gromacs_gro(self, file_name, format_atom_name=True) :
-        """
-        Load gromacs .gro file
-
-        Parameters
-        ----------
-        file_name : str
-            The input file name
-        """
-        self.data = dpdata.gromacs.gro.file_to_system_data(file_name, format_atom_name=format_atom_name)
-
-    @register_to_funcs.register_funcs("gromacs/gro")
-    def to_gromacs_gro(self, file_name=None, frame_idx=-1):
-        """
-        Dump the system in gromacs .gro format
-
-        Parameters
-        ----------
-        file_name : str or None
-            The output file name. If None, return the file content as a string
-        frame_idx : int
-            The index of the frame to dump
-        """
-        assert(frame_idx < len(self.data['coords']))
-        if frame_idx == -1:
-            strs = []
-            for idx in range(self.get_nframes()):
-                gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=idx)
-                strs.append(gro_str)
-            gro_str = "\n".join(strs)
-        else:
-            gro_str = dpdata.gromacs.gro.from_system_data(self.data, f_idx=frame_idx)
-        
-        if file_name is None:
-            return gro_str
-        else:
-            with open(file_name, 'w+') as fp:
-                fp.write(gro_str)
-
-    @register_to_funcs.register_funcs("deepmd/npy")
-    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
-        """
-        Dump the system in deepmd compressed format (numpy binary) to `folder`.
-
-        The frames are firstly split to sets, then dumped to seperated subfolders named as `folder/set.000`, `folder/set.001`, ....
-
-        Each set contains `set_size` frames.
-        The last set may have less frames than `set_size`.
-
-        Parameters
-        ----------
-        folder : str
-            The output folder
-        set_size : int
-            The size of each set.
-        prec: {numpy.float32, numpy.float64}
-            The floating point precision of the compressed data
-        """
-        dpdata.deepmd.comp.dump(folder, self.data,
-                                set_size = set_size,
-                                comp_prec = prec)
-
-    @register_to_funcs.register_funcs("deepmd/raw")
-    def to_deepmd_raw(self, folder) :
-        """
-        Dump the system in deepmd raw format to `folder`
-        """
-        dpdata.deepmd.raw.dump(folder, self.data)
-    
-    @register_from_funcs.register_funcs('sqm/out')
-    def from_sqm_out(self, fname):
-        '''
-        Read from ambertools sqm.out
-        '''
-        self.data = dpdata.amber.sqm.to_system_data(fname)
-
-    @register_from_funcs.register_funcs('siesta/output')
-    def from_siesta_output(self, fname):
-        self.data['atom_names'], \
-        self.data['atom_numbs'], \
-        self.data['atom_types'], \
-        self.data['cells'], \
-        self.data['coords'], \
-        _e, _f, _v \
-            = dpdata.siesta.output.obtain_frame(fname)
-        # self.rot_lower_triangular()
-
-    @register_from_funcs.register_funcs('siesta/aimd_output')
-    def from_siesta_aiMD_output(self, fname):
-        self.data['atom_names'], \
-        self.data['atom_numbs'], \
-        self.data['atom_types'], \
-        self.data['cells'], \
-        self.data['coords'], \
-        _e, _f, _v \
-            = dpdata.siesta.aiMD_output.get_aiMD_frame(fname)
-    @register_from_funcs.register_funcs('atom.config')
-    @register_from_funcs.register_funcs('final.config')
-    @register_from_funcs.register_funcs('pwmat/atom.config')
-    @register_from_funcs.register_funcs('pwmat/final.config')
-    def from_pwmat_atomconfig(self, file_name) :
-        with open(file_name) as fp:
-            lines = [line.rstrip('\n') for line in fp]
-            self.data = dpdata.pwmat.atomconfig.to_system_data(lines)
-        self.rot_lower_triangular()
-
-    @register_to_funcs.register_funcs("pwmat/atom.config")
-    def to_pwmat_atomconfig(self, file_name, frame_idx = 0) :
-        """
-        Dump the system in pwmat atom.config format
-
-        Parameters
-        ----------
-        file_name : str
-            The output file name
-        frame_idx : int
-            The index of the frame to dump
-        """
-        assert(frame_idx < len(self.data['coords']))
-        w_str = dpdata.pwmat.atomconfig.from_system_data(self.data, frame_idx)
-        with open(file_name, 'w') as fp:
-            fp.write(w_str)
-
-
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
         self.data['cells'][f_idx] = np.matmul(self.data['cells'][f_idx], trans)
         self.data['coords'][f_idx] = np.matmul(self.data['coords'][f_idx], trans)
 
 
+    @post_funcs.register("shift_orig_zero")
     def _shift_orig_zero(self) :
         for ff in self.data['coords'] :
             for ii in ff :
@@ -769,7 +469,7 @@ class System (MSONable) :
         self.data['orig'] = self.data['orig'] - self.data['orig']
         assert((np.zeros([3]) == self.data['orig']).all())
 
-
+    @post_funcs.register("rot_lower_triangular")
     def rot_lower_triangular(self) :
         for ii in range(self.get_nframes()) :
             self.rot_frame_lower_triangular(ii)
@@ -1072,15 +772,6 @@ class System (MSONable) :
             idx = pick_by_amber_mask(parm, maskstr)
             return self.pick_atom_idx(idx, nopbc=nopbc)
 
-    @register_from_funcs.register_funcs('amber/md')
-    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None):
-        # assume the prefix is the same if the spefic name is not given
-        if parm7_file is None:
-            parm7_file = file_name + ".parm7"
-        if nc_file is None:
-            nc_file = file_name + ".nc"
-        self.data = dpdata.amber.md.read_amber_traj(parm7_file=parm7_file, nc_file=nc_file, use_element_symbols=use_element_symbols, labeled=False)
-
 def get_cell_perturb_matrix(cell_pert_fraction):
     if cell_pert_fraction<0:
         raise RuntimeError('cell_pert_fraction can not be negative')
@@ -1167,7 +858,7 @@ class LabeledSystem (System):
                 - ``pwmat/out.mlmd``: pwmat scf output file
 
         type_map : list of str
-            Needed by formats deepmd/raw and deepmd/npy. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
+            Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
         begin : int
             The beginning frame when loading MD trajectory.
@@ -1187,8 +878,23 @@ class LabeledSystem (System):
         if type_map is not None:
             self.apply_type_map(type_map)
 
-    register_from_funcs = Register()
-    register_to_funcs = System.register_to_funcs + Register()
+    post_funcs = Plugin() + System.post_funcs
+
+    def from_fmt_obj(self, fmtobj, file_name, **kwargs):
+        data = fmtobj.from_labeled_system(file_name, **kwargs)
+        if data:
+            if isinstance(data, (list, tuple)):
+                for dd in data:
+                    self.append(LabeledSystem(data=dd))
+            else:
+                self.data = {**self.data, **data}
+            if hasattr(fmtobj.from_labeled_system, 'post_func'):
+                for post_f in fmtobj.from_labeled_system.post_func:
+                    self.post_funcs.get_plugin(post_f)(self)
+        return self
+
+    def to_fmt_obj(self, fmtobj, *args, **kwargs):
+        return fmtobj.to_labeled_system(self.data, *args, **kwargs)
 
     def __repr__(self):
         return self.__str__()
@@ -1226,254 +932,21 @@ class LabeledSystem (System):
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
         return ('virials' in self.data)
 
-    @register_from_funcs.register_funcs('cp2k/aimd_output')
-    def from_cp2k_aimd_output(self, file_dir, restart=False):
-        xyz_file=sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
-        log_file=sorted(glob.glob("{}/*.log".format(file_dir)))[0]
-        for info_dict in Cp2kSystems(log_file, xyz_file, restart):
-            l = LabeledSystem(data=info_dict)
-            self.append(l)
-
-    # @register_from_funcs.register_funcs('cp2k/restart_aimd_output')
-    # def from_cp2k_aimd_output(self, file_dir, restart=True):
-    #     xyz_file = sorted(glob.glob("{}/*pos*.xyz".format(file_dir)))[0]
-    #     log_file = sorted(glob.glob("{}/*.log".format(file_dir)))[0]
-    #     for info_dict in Cp2kSystems(log_file, xyz_file, restart):
-    #         l = LabeledSystem(data=info_dict)
-    #         self.append(l)
-
-    @register_from_funcs.register_funcs('fhi_aims/md')
-    def from_fhi_aims_output(self, file_name, md=True, begin=0, step =1):
-        self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            tmp_virial, \
-            = dpdata.fhi_aims.output.get_frames(file_name, md = md, begin = begin, step = step)
-        if tmp_virial is not None :
-            self.data['virials'] = tmp_virial
-
-    @register_from_funcs.register_funcs('fhi_aims/scf')
-    def from_fhi_aims_output(self, file_name ):
-        self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            tmp_virial, \
-            = dpdata.fhi_aims.output.get_frames(file_name, md = False, begin = 0, step = 1)
-        if tmp_virial is not None :
-            self.data['virials'] = tmp_virial
-
-    @register_from_funcs.register_funcs('xml')
-    @register_from_funcs.register_funcs('vasp/xml')
-    def from_vasp_xml(self, file_name, begin = 0, step = 1) :
-        self.data['atom_names'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            self.data['virials'], \
-            = dpdata.vasp.xml.analyze(file_name, type_idx_zero = True, begin = begin, step = step)
-        self.data['atom_numbs'] = []
-        for ii in range(len(self.data['atom_names'])) :
-            self.data['atom_numbs'].append(sum(self.data['atom_types'] == ii))
-        # the vasp xml assumes the direct coordinates
-        # apply the transform to the cartesan coordinates
-        for ii in range(self.get_nframes()) :
-            self.data['coords'][ii] = np.matmul(self.data['coords'][ii], self.data['cells'][ii])
-        # scale virial to the unit of eV
-        v_pref = 1 * 1e3 / 1.602176621e6
-        for ii in range (self.get_nframes()) :
-            vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
-            self.data['virials'][ii] *= v_pref * vol
-        # rotate the system to lammps convention
-        self.rot_lower_triangular()
-
-    @register_from_funcs.register_funcs('outcar')
-    @register_from_funcs.register_funcs('vasp/outcar')
-    def from_vasp_outcar(self, file_name, begin = 0, step = 1) :
-        # with open(file_name) as fp:
-        #     lines = [line.rstrip('\n') for line in fp]
-        self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            tmp_virial, \
-            = dpdata.vasp.outcar.get_frames(file_name, begin = begin, step = step)
-        if tmp_virial is not None :
-            self.data['virials'] = tmp_virial
-        # scale virial to the unit of eV
-        if 'virials' in self.data :
-            v_pref = 1 * 1e3 / 1.602176621e6
-            for ii in range (self.get_nframes()) :
-                vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
-                self.data['virials'][ii] *= v_pref * vol
-        # rotate the system to lammps convention
-        self.rot_lower_triangular()
-
-
     def affine_map_fv(self, trans, f_idx) :
         assert(np.linalg.det(trans) != 0)
         self.data['forces'][f_idx] = np.matmul(self.data['forces'][f_idx], trans)
         if self.has_virial():
             self.data['virials'][f_idx] = np.matmul(trans.T, np.matmul(self.data['virials'][f_idx], trans))
 
-
+    @post_funcs.register("rot_lower_triangular")
     def rot_lower_triangular(self) :
         for ii in range(self.get_nframes()) :
             self.rot_frame_lower_triangular(ii)
-
 
     def rot_frame_lower_triangular(self, f_idx = 0) :
         trans = System.rot_frame_lower_triangular(self, f_idx = f_idx)
         self.affine_map_fv(trans, f_idx = f_idx)
         return trans
-
-    @register_from_funcs.register_funcs('deepmd/npy')
-    def from_deepmd_comp(self, folder, type_map = None) :
-        self.data = dpdata.deepmd.comp.to_system_data(folder, type_map = type_map, labels = True)
-
-    @register_from_funcs.register_funcs('deepmd')
-    @register_from_funcs.register_funcs('deepmd/raw')
-    def from_deepmd_raw(self, folder, type_map = None) :
-        tmp_data = dpdata.deepmd.raw.to_system_data(folder, type_map = type_map, labels = True)
-        if tmp_data is not None :
-            self.data = tmp_data
-
-    @register_from_funcs.register_funcs('qe/cp/traj')
-    def from_qe_cp_traj(self, prefix, begin = 0, step = 1) :
-        self.data, cs = dpdata.qe.traj.to_system_data(prefix + '.in', prefix, begin = begin, step = step)
-        self.data['coords'] \
-            = dpdata.md.pbc.apply_pbc(self.data['coords'],
-                                      self.data['cells'],
-            )
-        self.data['energies'], self.data['forces'], es \
-            = dpdata.qe.traj.to_system_label(prefix + '.in', prefix, begin = begin, step = step)
-        assert(cs == es), "the step key between files are not consistent"
-        self.rot_lower_triangular()
-
-    @register_from_funcs.register_funcs('qe/pw/scf')
-    def from_qe_pw_scf(self, file_name) :
-        self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            self.data['virials'], \
-            = dpdata.qe.scf.get_frame(file_name)
-        self.rot_lower_triangular()
-    
-    @register_from_funcs.register_funcs('abacus/scf')
-    def from_abacus_pw_scf(self, file_name) :
-        self.data = dpdata.abacus.scf.get_frame(file_name)
-        self.rot_lower_triangular()
-
-    @register_from_funcs.register_funcs('siesta/output')
-    def from_siesta_output(self, file_name) :
-        self.data['atom_names'], \
-        self.data['atom_numbs'], \
-        self.data['atom_types'], \
-        self.data['cells'], \
-        self.data['coords'], \
-        self.data['energies'], \
-        self.data['forces'], \
-        self.data['virials'] \
-            = dpdata.siesta.output.obtain_frame(file_name)
-        # self.rot_lower_triangular()
-
-    @register_from_funcs.register_funcs('siesta/aimd_output')
-    def from_siesta_aiMD_output(self, file_name):
-        self.data['atom_names'], \
-        self.data['atom_numbs'], \
-        self.data['atom_types'], \
-        self.data['cells'], \
-        self.data['coords'], \
-        self.data['energies'], \
-        self.data['forces'], \
-        self.data['virials'] \
-            = dpdata.siesta.aiMD_output.get_aiMD_frame(file_name)
-
-    @register_from_funcs.register_funcs('gaussian/log')
-    def from_gaussian_log(self, file_name, md=False):
-        try:
-            self.data = dpdata.gaussian.log.to_system_data(file_name, md=md)
-        except AssertionError:
-            self.data['energies'], self.data['forces']= [], []
-            self.data['nopbc'] = True
-
-    @register_from_funcs.register_funcs('gaussian/md')
-    def from_gaussian_md(self, file_name):
-        self.from_gaussian_log(file_name, md=True)
-
-    @register_from_funcs.register_funcs('amber/md')
-    def from_amber_md(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None, mdout_file=None, use_element_symbols=None):
-        # assume the prefix is the same if the spefic name is not given
-        if parm7_file is None:
-            parm7_file = file_name + ".parm7"
-        if nc_file is None:
-            nc_file = file_name + ".nc"
-        if mdfrc_file is None:
-            mdfrc_file = file_name + ".mdfrc"
-        if mden_file is None:
-            mden_file = file_name + ".mden"
-        if mdout_file is None:
-            mdout_file = file_name + ".mdout"
-        self.data = dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file, mdout_file, use_element_symbols)
-
-    @register_from_funcs.register_funcs('cp2k/output')
-    def from_cp2k_output(self, file_name) :
-        self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            tmp_virial \
-            = dpdata.cp2k.output.get_frames(file_name)
-        if tmp_virial is not None:
-            self.data['virials'] = tmp_virial
-    @register_from_funcs.register_funcs('movement')
-    @register_from_funcs.register_funcs('MOVEMENT')
-    @register_from_funcs.register_funcs('mlmd')
-    @register_from_funcs.register_funcs('MLMD')
-    @register_from_funcs.register_funcs('pwmat/movement')
-    @register_from_funcs.register_funcs('pwmat/MOVEMENT')
-    @register_from_funcs.register_funcs('pwmat/mlmd')
-    @register_from_funcs.register_funcs('pwmat/MLMD')
-    def from_pwmat_output(self, file_name, begin = 0, step = 1) :
-        self.data['atom_names'], \
-            self.data['atom_numbs'], \
-            self.data['atom_types'], \
-            self.data['cells'], \
-            self.data['coords'], \
-            self.data['energies'], \
-            self.data['forces'], \
-            tmp_virial, \
-            = dpdata.pwmat.movement.get_frames(file_name, begin = begin, step = step)
-        if tmp_virial is not None :
-            self.data['virials'] = tmp_virial
-        # scale virial to the unit of eV
-        if 'virials' in self.data :
-            v_pref = 1 * 1e3 / 1.602176621e6
-            for ii in range (self.get_nframes()) :
-                vol = np.linalg.det(np.reshape(self.data['cells'][ii], [3,3]))
-                self.data['virials'][ii] *= v_pref * vol
-        # rotate the system to lammps convention
-        self.rot_lower_triangular()
-
 
     def sub_system(self, f_idx) :
         """
@@ -1496,38 +969,6 @@ class LabeledSystem (System):
         if 'virials' in self.data:
             tmp_sys.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
         return tmp_sys
-
-    @register_to_funcs.register_funcs("ase/structure")
-    def to_ase_structure(self):
-        '''Convert System to ASE Atoms object.'''
-        from ase import Atoms
-        from ase.calculators.singlepoint import SinglePointCalculator
-        
-        structures = []
-
-        for system in self.to_list():
-            species=[system.data['atom_names'][tt] for tt in system.data['atom_types']]
-            structure=Atoms(
-                symbols=species,
-                positions=system.data['coords'][0],
-                pbc=True,
-                cell=system.data['cells'][0]
-            )
-
-            results = {
-                'energy': system.data["energies"][0],
-                'forces': system.data["forces"][0]
-            }
-            if "virials" in system.data:
-                # convert to GPa as this is ase convention
-                v_pref = 1 * 1e4 / 1.602176621e6
-                vol = structure.get_volume()
-                results['stress'] = system.data["virials"][0] / (v_pref * vol)
-
-            structure.calc = SinglePointCalculator(structure, **results)
-            structures.append(structure)
-
-        return structures
 
     def append(self, system):
         """
@@ -1568,27 +1009,6 @@ class LabeledSystem (System):
             if ii in self.data:
                 self.data[ii] = self.data[ii][idx]
         return idx
-
-    def to_pymatgen_ComputedStructureEntry(self):
-        '''
-        convert System to Pymagen ComputedStructureEntry obj
-
-        '''
-        try:
-           from pymatgen.entries.computed_entries import ComputedStructureEntry
-        except:
-           raise ImportError('No module ComputedStructureEntry in pymatgen.entries.computed_entries')
-
-        entries=[]
-        for system in self.to_list():
-            structure=system.to_pymatgen_structure()[0]
-            energy=system.data['energies'][0]
-            data={'forces':system.data['forces'][0],
-                  'virials':system.data['virials'][0]}
-
-            entry=ComputedStructureEntry(structure,energy,data=data)
-            entries.append(entry)
-        return entries
 
     def correction(self, hl_sys):
         """Get energy and force correction between self and a high-level LabeledSystem.
@@ -1656,6 +1076,21 @@ class MultiSystems:
             self.atom_names = []
         self.append(*systems)
 
+    def from_fmt_obj(self, fmtobj, directory, labeled=True, **kwargs):
+        for dd in fmtobj.from_multi_systems(directory, **kwargs):
+            if labeled:
+                system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
+            else:
+                system = System().from_fmt_obj(fmtobj, dd, **kwargs)
+            system.sort_atom_names()
+            self.append(system)
+        return self
+
+    def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
+        for fn, ss in zip(fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs), self.systems.values()):
+            ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
+        return self
+
     def __getitem__(self, key):
         """Returns proerty stored in System by key or by idx"""
         if isinstance(key, int):
@@ -1681,9 +1116,9 @@ class MultiSystems:
        raise RuntimeError("Unspported data structure")
 
     @classmethod
-    def from_file(cls,file_name,fmt):
+    def from_file(cls,file_name,fmt, **kwargs):
         multi_systems = cls()
-        multi_systems.load_systems_from_file(file_name=file_name,fmt=fmt)
+        multi_systems.load_systems_from_file(file_name=file_name,fmt=fmt, **kwargs)
         return multi_systems
 
     @classmethod
@@ -1695,15 +1130,9 @@ class MultiSystems:
         return multi_systems
 
 
-    def load_systems_from_file(self, file_name=None, fmt=None):
-        if file_name is not None:
-            if fmt is None:
-                raise RuntimeError("must specify file format for file {}".format(file_name))
-            elif fmt == 'quip/gap/xyz' or 'xyz':
-                self.from_quip_gap_xyz_file(file_name)
-            else:
-                raise RuntimeError("unknown file format for file {} format {},now supported 'quip/gap/xyz'".format(file_name, fmt))
-
+    def load_systems_from_file(self, file_name=None, fmt=None, **kwargs):
+        fmt = fmt.lower()
+        return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
 
     def get_nframes(self) :
         """Returns number of frames in all systems"""
@@ -1760,50 +1189,6 @@ class MultiSystems:
             system.add_atom_names(new_in_self)
         system.sort_atom_names(type_map=self.atom_names)
 
-    def from_quip_gap_xyz_file(self,file_name):
-        # quip_gap_xyz_systems = QuipGapxyzSystems(file_name)
-        # print(next(quip_gap_xyz_systems))
-        for info_dict in QuipGapxyzSystems(file_name):
-            system=LabeledSystem(data=info_dict)
-            system.sort_atom_names()
-            self.append(system)
-
-
-    def to_deepmd_raw(self, folder) :
-        """
-        Dump systems in deepmd raw format to `folder` for each system.
-        """
-        for system_name, system in self.systems.items():
-            system.to_deepmd_raw(os.path.join(folder, system_name))
-
-    def to_deepmd_npy(self, folder, set_size = 5000, prec=np.float32) :
-        """
-        Dump the system in deepmd compressed format (numpy binary) to `folder` for each system.
-
-        Parameters
-        ----------
-        folder : str
-            The output folder
-        set_size : int
-            The size of each set.
-        prec: {numpy.float32, numpy.float64}
-            The floating point precision of the compressed data
-        """
-        for system_name, system in self.systems.items():
-            system.to_deepmd_npy(os.path.join(folder, system_name),
-                                 set_size = set_size,
-                                 prec = prec)
-
-    def from_deepmd_raw(self, folder):
-        for dd in os.listdir(folder):
-            self.append(LabeledSystem(os.path.join(folder, dd), fmt='deepmd/raw'))
-        return self
-
-    def from_deepmd_npy(self, folder):
-        for dd in os.listdir(folder):
-            self.append(LabeledSystem(os.path.join(folder, dd), fmt='deepmd/npy'))
-        return self
-
     def predict(self, dp):
         try:
             # DP 1.x
@@ -1838,6 +1223,45 @@ class MultiSystems:
             new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
         return new_sys
 
+
+def add_format_methods():
+    """Add format methods to System, LabeledSystem, and MultiSystems.
+
+    Notes
+    -----
+    Ensure all plugins have been loaded before execuating this function!
+    """
+    # automatically register from/to functions for formats
+    # for example, deepmd/npy will be registered as from_deepmd_npy and to_deepmd_npy
+    for key, formatcls in Format.get_formats().items():
+        formattedkey = key.replace("/", "_").replace(".", "")
+        from_func_name = "from_" + formattedkey
+        to_func_name = "to_" + formattedkey
+        Format.register_from(from_func_name)(formatcls)
+        Format.register_to(to_func_name)(formatcls)
+
+    for method, formatcls in Format.get_from_methods().items():
+        def get_func(ff):
+            # ff is not initized when defining from_format so cannot be polluted
+            def from_format(self, file_name, **kwargs):
+                return self.from_fmt_obj(ff(), file_name, **kwargs)
+            return from_format
+
+        setattr(System, method, get_func(formatcls))
+        setattr(LabeledSystem, method, get_func(formatcls))
+        setattr(MultiSystems, method, get_func(formatcls))
+
+    for method, formatcls in Format.get_to_methods().items():
+        def get_func(ff):
+            def to_format(self, *args, **kwargs):
+                return self.to_fmt_obj(ff(), *args, **kwargs)
+            return to_format
+
+        setattr(System, method, get_func(formatcls))
+        setattr(LabeledSystem, method, get_func(formatcls))
+        setattr(MultiSystems, method, get_func(formatcls))
+
+add_format_methods()
 
 def check_System(data):
     keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}

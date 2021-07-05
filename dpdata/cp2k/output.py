@@ -278,20 +278,20 @@ def get_frames (fname) :
 
     #conver to float array and add extra dimension for nframes
     cell = np.array(cell)
-    cell = cell.astype(np.float)
+    cell = cell.astype(float)
     cell = cell[np.newaxis, :, :]
     coord = np.array(coord)
-    coord = coord.astype(np.float)
+    coord = coord.astype(float)
     coord = coord[np.newaxis, :, :]
     atom_symbol_list = np.array(atom_symbol_list)
     force = np.array(force)
-    force = force.astype(np.float)
+    force = force.astype(float)
     force = force[np.newaxis, :, :]
 
     # virial is not necessary
     if stress:
         stress = np.array(stress)
-        stress = stress.astype(np.float)
+        stress = stress.astype(float)
         stress = stress[np.newaxis, :, :]
         # stress to virial conversion, default unit in cp2k is GPa
         # note the stress is virial = stress * volume
