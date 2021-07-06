@@ -97,3 +97,6 @@ class TestBondOrderSystem(unittest.TestCase):
     def tearDown(self):
         if os.path.exists("tests/.cache"):
             shutil.rmtree("tests/.cache")
+
+if __name__ == '__main__':
+    unittest.main()

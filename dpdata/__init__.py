@@ -12,7 +12,8 @@ except ImportError:
 
 # BondOrder System has dependency on rdkit
 try:
-    import rdkit
+    # prevent conflict with dpdata.rdkit
+    import rdkit as _
     USE_RDKIT = True
 except ModuleNotFoundError:
     USE_RDKIT = False
