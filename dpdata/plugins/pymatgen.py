@@ -8,7 +8,7 @@ class PyMatgenStructureFormat(Format):
         """
         structures = []
         try:
-            from pymatgen import Structure
+            from pymatgen.core import Structure
         except ModuleNotFoundError as e:
             raise ImportError('No module pymatgen.Structure') from e
 
