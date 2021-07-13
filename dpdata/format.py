@@ -106,7 +106,7 @@ class Format(ABC):
             list of filenames
         """
         if self.MultiMode == self.MultiModes.Directory:
-            return [name for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
+            return [os.path.join(directory, name) for name in os.listdir(directory) if os.path.isdir(os.path.join(directory, name))]
         raise NotImplementedError("%s doesn't support MultiSystems.from" %(self.__class__.__name__))
 
     def to_multi_systems(self, formulas, directory, **kwargs):
