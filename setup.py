@@ -52,6 +52,7 @@ setuptools.setup(
     extras_require={
         'ase': ['ase'],
         'amber': ['parmed'],
+        'pymatgen': ['pymatgen'],
     }
 )
 

@@ -23,7 +23,7 @@ jobs:
     - name: Install rdkit
       run: conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit openbabel;
     - name: Install dependencies
-      run: source $CONDA/bin/activate my-rdkit-env && pip install .[amber] coverage codecov
+      run: source $CONDA/bin/activate my-rdkit-env && pip install .[amber,ase,pymatgen] coverage codecov
     - name: Test
       run: source $CONDA/bin/activate my-rdkit-env && cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
     - name: Run codecov
