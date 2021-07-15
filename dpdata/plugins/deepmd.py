@@ -15,7 +15,7 @@ class DeePMDRawFormat(Format):
         """
         dpdata.deepmd.raw.dump(file_name, data)
 
-    def from_labeled_system(self, file_name, type_map, **kwargs):
+    def from_labeled_system(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.raw.to_system_data(file_name, type_map=type_map, labels=True)
 
     MultiMode = Format.MultiModes.Directory
@@ -50,7 +50,7 @@ class DeePMDCompFormat(Format):
         dpdata.deepmd.comp.dump(
             file_name, data, set_size=set_size, comp_prec=prec)
 
-    def from_labeled_system(self, file_name, type_map, **kwargs):
+    def from_labeled_system(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.comp.to_system_data(file_name, type_map=type_map, labels=True)
 
     MultiMode = Format.MultiModes.Directory
