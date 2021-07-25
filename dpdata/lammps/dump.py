@@ -57,37 +57,33 @@ def get_coordtype_and_scalefactor(keys):
     key_uc=['xu','yu','zu'] # unwraped cartesian, sf = 1
     key_s=['xs','ys','zs'] # scaled by lattice parameter, sf = lattice parameter
     key_su = ['xsu','ysu','zsu'] #scaled and unfolded,sf = lattice parameter
-    lmp_coor_type = [key_pc,key_uc,key_su,key_sf]
+    lmp_coor_type = [key_pc,key_uc,key_s,key_su]
     sf = [0,0,1,1]
     for k in range(4):
-        if all(i in keys for i in lmp_coor_type(k)):
-            return lmp_coor_type(k),sf[k]
+        if all(i in keys for i in lmp_coor_type[k]):
+            return lmp_coor_type[k],sf[k]
             break
 
-def get_posi(lines,coordtype) :
+def safe_get_posi(lines,cell,orig=np.zeros(3)) :
     blk, head = _get_block(lines, 'ATOMS')
     keys = head.split()
+    coord_tp_and_sf = get_coordtype_and_scalefactor(keys)
+    assert coord_tp_and_sf is not None, 'Dump file does not contain atomic coordinates!'
+    coordtype, sf = coord_tp_and_sf
     id_idx = keys.index('id') - 2
     xidx = keys.index(coordtype[0])-2
     yidx = keys.index(coordtype[1])-2
-    zidx = keys.index(coordtype(2))-2
+    zidx = keys.index(coordtype[2])-2
     sel = (xidx, yidx, zidx)
     posis = []
     for ii in blk :
         words = ii.split()
         posis.append([float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
     posis.sort()
-    posis = np.array(posis)     
-    return posis[:,1:4]
-
-def safe_get_posi(lines, cell, orig = np.zeros(3)):
-    coord_tp_and_sf = get_coordtype_and_scalefactor(keys)
-    assert coord_tp_and_sf is not None, 'Dump file does not contain atomic coordinates!'
-    coordtype, sf = coord_tp_and_sf
-    posis = get_posi(lines,coordtype)
+    posis = np.array(posis)[:,1:4]
     if sf:
         posis = posis@cell
-    return posis - orig
+    return posis
 
 def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
@@ -209,8 +205,6 @@ if __name__ == '__main__' :
     # # print(get_natomtypes(lines))
     # # print(get_natoms_vec(lines))
     # posi = get_posi(lines)
-    # dbox, tilt = get_dumpbox(lines)
-    # orig, box = dumpbox2box(dbox, tilt)
     # dbox1, tilt1 = box2dumpbox(orig, box)
     # print(dbox - dbox1)
     # print(tilt - tilt1)
@@ -218,7 +212,10 @@ if __name__ == '__main__' :
     # print(box)
     # np.savetxt('tmp.out', posi - orig, fmt='%.6f')
     # print(system_data(lines))
-    
-    lines = load_file('conf.5.dump', begin = 0, step = 2)
-    with open('tmp.out', 'w') as fp:
-        fp.write('\n'.join(lines))
+    #lines = load_file('su.dump', begin = 0, step = 2)
+    lines = load_file('s.dump', begin = 0, step = 2)
+    dbox, tilt = get_dumpbox(lines)
+    orig, cell = dumpbox2box(dbox, tilt)
+    p = safe_get_posi(lines,cell,orig)
+    #with open('tmp.out', 'w') as fp:
+    #    fp.write('\n'.join(lines))
