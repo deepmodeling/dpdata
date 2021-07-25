@@ -51,26 +51,23 @@ def get_natoms_vec(lines) :
     assert (sum(natoms_vec) == get_natoms(lines))
     return natoms_vec
 
-def get_coord_type(keys):
-    # Check the coordinate type in dump file
-    # 4 types in total
-    # Each coordinate type corresponds to different scale factor, to be accomplished
-    key_pc=['x','y','z'] # Plain cartesian, sf = 1
+def get_coordtype_and_scalefactor(keys):
+    # 4 types in total,with different scaling factor
+    key_pc=['x','y','z'] # plain cartesian, sf = 1
     key_uc=['xu','yu','zu'] # unwraped cartesian, sf = 1
-    key_s=['xs','ys','zs'] # scaled by lattice parameter, sf = box size
-    key_su = ['xsu','ysu','zsu'] #scaled and unfolded,sf = box size
+    key_s=['xs','ys','zs'] # scaled by lattice parameter, sf = lattice parameter
+    key_su = ['xsu','ysu','zsu'] #scaled and unfolded,sf = lattice parameter
     lmp_coor_type = [key_pc,key_uc,key_su,key_sf]
-    for k in lmp_coor_type:
-        if all(i in keys for i in k):
-            return k
+    sf = [0,0,1,1]
+    for k in range(4):
+        if all(i in keys for i in lmp_coor_type(k)):
+            return lmp_coor_type(k),sf[k]
             break
 
-def get_posi(lines) :
+def get_posi(lines,coordtype) :
     blk, head = _get_block(lines, 'ATOMS')
     keys = head.split()
     id_idx = keys.index('id') - 2
-    coordtype = get_coord_type(keys)
-    assert coordtype is not None, 'Dump file does not contain atomic coordinates!'
     xidx = keys.index(coordtype[0])-2
     yidx = keys.index(coordtype[1])-2
     zidx = keys.index(coordtype(2))-2
@@ -83,29 +80,14 @@ def get_posi(lines) :
     posis = np.array(posis)     
     return posis[:,1:4]
 
-def get_posi_frac(lines) :
-    blk, head = _get_block(lines, 'ATOMS')
-    keys = head.split()
-    id_idx = keys.index('id') - 2
-    xidx = keys.index('xs') - 2
-    yidx = keys.index('ys') - 2
-    zidx = keys.index('zs') - 2
-    sel = (xidx, yidx, zidx)
-    posis = []
-    for ii in blk :
-        words = ii.split()
-        posis.append([float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
-    posis.sort()
-    posis = np.array(posis)     
-    return posis[:,1:4]
-
 def safe_get_posi(lines, cell, orig = np.zeros(3)):
-    try:
-        posis = get_posi(lines) - orig
-    except ValueError:
-        fposis = get_posi_frac(lines)
-        posis = fposis @ cell
-    return posis
+    coord_tp_and_sf = get_coordtype_and_scalefactor(keys)
+    assert coord_tp_and_sf is not None, 'Dump file does not contain atomic coordinates!'
+    coordtype, sf = coord_tp_and_sf
+    posis = get_posi(lines,coordtype)
+    if sf:
+        posis = posis@cell
+    return posis - orig
 
 def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
