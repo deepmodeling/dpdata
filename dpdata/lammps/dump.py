@@ -51,13 +51,29 @@ def get_natoms_vec(lines) :
     assert (sum(natoms_vec) == get_natoms(lines))
     return natoms_vec
 
+def get_coord_type(keys):
+    # Check the coordinate type in dump file
+    # 4 types in total
+    # Each coordinate type corresponds to different scale factor, to be accomplished
+    key_pc=['x','y','z'] # Plain cartesian, sf = 1
+    key_uc=['xu','yu','zu'] # unwraped cartesian, sf = 1
+    key_s=['xs','ys','zs'] # scaled by lattice parameter, sf = box size
+    key_su = ['xsu','ysu','zsu'] #scaled and unfolded,sf = box size
+    lmp_coor_type = [key_pc,key_uc,key_su,key_sf]
+    for k in lmp_coor_type:
+        if all(i in keys for i in k):
+            return k
+            break
+
 def get_posi(lines) :
     blk, head = _get_block(lines, 'ATOMS')
     keys = head.split()
     id_idx = keys.index('id') - 2
-    xidx = keys.index('x') - 2
-    yidx = keys.index('y') - 2
-    zidx = keys.index('z') - 2
+    coordtype = get_coord_type(keys)
+    assert coordtype is not None, 'Dump file does not contain atomic coordinates!'
+    xidx = keys.index(coordtype[0])-2
+    yidx = keys.index(coordtype[1])-2
+    zidx = keys.index(coordtype(2))-2
     sel = (xidx, yidx, zidx)
     posis = []
     for ii in blk :
