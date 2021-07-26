@@ -62,7 +62,6 @@ def get_coordtype_and_scalefactor(keys):
     for k in range(4):
         if all(i in keys for i in lmp_coor_type[k]):
             return lmp_coor_type[k],sf[k]
-            break
 
 def safe_get_posi(lines,cell,orig=np.zeros(3)) :
     blk, head = _get_block(lines, 'ATOMS')
