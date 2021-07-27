@@ -75,17 +75,16 @@ def safe_get_posi(lines,cell,orig=np.zeros(3)) :
     zidx = keys.index(coordtype[2])-2
     sel = (xidx, yidx, zidx)
     posis = []
-    lp = np.linalg.norm(cell,axis=1)
     for ii in blk :
         words = ii.split()
         posis.append([float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
     posis.sort()
     posis = np.array(posis)[:,1:4]
     if sf:
-        posis = posis@cell
+        posis = (posis%1.)@cell # convert xsu to xs first
     else:
-        posis = posis - orig
-    return posis%lp
+        posis = (posis - orig)%np.linalg.norm(cell,axis=1)
+    return posis
 
 def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
