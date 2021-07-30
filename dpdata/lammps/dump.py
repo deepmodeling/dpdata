@@ -83,7 +83,7 @@ def safe_get_posi(lines,cell,orig=np.zeros(3)) :
     if sf:
         posis = (posis%1.)@cell # convert xsu to xs first
     else:
-        posis = (posis - orig)%np.linalg.norm(cell,axis=1)
+        posis = (posis - orig)%cell.sum(axis=0)
     return posis
 
 def get_dumpbox(lines) :
