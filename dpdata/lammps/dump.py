@@ -80,11 +80,9 @@ def safe_get_posi(lines,cell,orig=np.zeros(3)) :
         posis.append([float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
     posis.sort()
     posis = np.array(posis)[:,1:4]
-    if sf:
-        posis = (posis%1.)@cell # convert xsu to xs first
-    else:
-        posis = (posis - orig)%cell.sum(axis=0)
-    return posis
+    if not sf:
+        posis = (posis-orig)@np.linalg.inv(cell)# Convert to scaled coordinates for unscaled coordinates
+    return (posis%1)@cell # Convert scaled coordinates back to Cartesien coordinates 
 
 def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
