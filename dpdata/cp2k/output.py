@@ -224,13 +224,15 @@ def get_frames (fname) :
     stress = []
     cell_count = 0
     coord_count = 0
-    with open(fname) as fp:
-        content = fp.read()
-        count = content.count('SCF run converged')
-        if count == 0:
-            return [], [], [], [], [], [], [], []
 
     fp = open(fname)
+    # check if output is converged, if not, return sys = 0
+    content = fp.read()
+    count = content.count('SCF run converged')
+    if count == 0:
+        return [], [], [], [], [], [], [], []
+
+    fp.seek(0)
     for idx, ii in enumerate(fp) :
         if ('CELL| Vector' in ii) and (cell_count < 3) :
             cell.append(ii.split()[4:7])
