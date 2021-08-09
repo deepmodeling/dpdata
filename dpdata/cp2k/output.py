@@ -224,7 +224,6 @@ def get_frames (fname) :
     eV = 2.72113838565563E+01 # hatree to eV
     angstrom = 5.29177208590000E-01 # Bohr to Angstrom
     GPa = 160.21766208 # 1 eV/(Angstrom^3) = 160.21 GPa
-    fp = open(fname)
     atom_symbol_list = []
     cell = []
     coord = []
@@ -232,6 +231,15 @@ def get_frames (fname) :
     stress = []
     cell_count = 0
     coord_count = 0
+
+    fp = open(fname)
+    # check if output is converged, if not, return sys = 0
+    content = fp.read()
+    count = content.count('SCF run converged')
+    if count == 0:
+        return [], [], [], [], [], [], [], []
+
+    fp.seek(0)
     for idx, ii in enumerate(fp) :
         if ('CELL| Vector' in ii) and (cell_count < 3) :
             cell.append(ii.split()[4:7])

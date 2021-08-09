@@ -1197,7 +1197,7 @@
 
   Total energy:                                             -1761.41773472839827
 
- *** WARNING in qs_scf.F:542 :: SCF run NOT converged ***
+ *** SCF run converged in    47 steps ***
 
 
   Integrated absolute spin density  :                              58.8663280160
