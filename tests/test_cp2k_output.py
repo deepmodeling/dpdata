@@ -52,6 +52,30 @@ class TestCP2KLabeledOutput(unittest.TestCase, TestCP2KSinglePointEnergy):
     def setUp(self):
         self.system = dpdata.LabeledSystem('cp2k/cp2k_output', fmt = 'cp2k/output')
 
+class TestNonCoveragedGaussianLoadLog:
+    def setUp (self) :
+        self.system = dpdata.LabeledSystem('cp2k/cp2k_nocon_output',
+                                           fmt = 'cp2k/output')
+
+    def test_atom_types(self) :
+        self.assertEqual(self.system.data['atom_types'], [])
+
+    def test_cells(self) :
+        self.assertEqual(self.system.data['cells'], [])
+
+    def test_coords(self) :
+        self.assertEqual(self.system.data['coords'], [])
+
+    def test_energies(self) :
+        self.assertEqual(self.system.data['energies'], [])
+
+    def test_forces(self) :
+        self.assertEqual(self.system.data['forces'], [])
+
+    def test_virials(self) :
+        self.assertFalse('virials' in self.system.data)
+
+
 if __name__ == '__main__':
     unittest.main()
 
