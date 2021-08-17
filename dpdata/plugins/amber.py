@@ -5,7 +5,7 @@ from dpdata.format import Format
 
 @Format.register("amber/md")
 class AmberMDFormat(Format):
-    def from_system(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None):
+    def from_system(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None, **kwargs):
         # assume the prefix is the same if the spefic name is not given
         if parm7_file is None:
             parm7_file = file_name + ".parm7"
