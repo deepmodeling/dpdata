@@ -1,5 +1,8 @@
-from rdkit import Chem
-from rdkit.Chem import AllChem
+try:
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+except ModuleNotFoundError:
+    pass
 import numpy as np
 
 def mol_to_system_data(mol):

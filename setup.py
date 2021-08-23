@@ -39,7 +39,8 @@ setuptools.setup(
               'dpdata/fhi_aims',
               'dpdata/gromacs',
               'dpdata/abacus',
-              'dpdata/rdkit'
+              'dpdata/rdkit',
+              'dpdata/plugins',
     ],
     package_data={'dpdata':['*.json']},
     classifiers=[
@@ -51,6 +52,7 @@ setuptools.setup(
     extras_require={
         'ase': ['ase'],
         'amber': ['parmed'],
+        'pymatgen': ['pymatgen'],
     }
 )
 

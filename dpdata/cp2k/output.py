@@ -224,7 +224,6 @@ def get_frames (fname) :
     eV = 2.72113838565563E+01 # hatree to eV
     angstrom = 5.29177208590000E-01 # Bohr to Angstrom
     GPa = 160.21766208 # 1 eV/(Angstrom^3) = 160.21 GPa
-    fp = open(fname)
     atom_symbol_list = []
     cell = []
     coord = []
@@ -232,6 +231,15 @@ def get_frames (fname) :
     stress = []
     cell_count = 0
     coord_count = 0
+
+    fp = open(fname)
+    # check if output is converged, if not, return sys = 0
+    content = fp.read()
+    count = content.count('SCF run converged')
+    if count == 0:
+        return [], [], [], [], [], [], [], []
+
+    fp.seek(0)
     for idx, ii in enumerate(fp) :
         if ('CELL| Vector' in ii) and (cell_count < 3) :
             cell.append(ii.split()[4:7])
@@ -278,20 +286,20 @@ def get_frames (fname) :
 
     #conver to float array and add extra dimension for nframes
     cell = np.array(cell)
-    cell = cell.astype(np.float)
+    cell = cell.astype(float)
     cell = cell[np.newaxis, :, :]
     coord = np.array(coord)
-    coord = coord.astype(np.float)
+    coord = coord.astype(float)
     coord = coord[np.newaxis, :, :]
     atom_symbol_list = np.array(atom_symbol_list)
     force = np.array(force)
-    force = force.astype(np.float)
+    force = force.astype(float)
     force = force[np.newaxis, :, :]
 
     # virial is not necessary
     if stress:
         stress = np.array(stress)
-        stress = stress.astype(np.float)
+        stress = stress.astype(float)
         stress = stress[np.newaxis, :, :]
         # stress to virial conversion, default unit in cp2k is GPa
         # note the stress is virial = stress * volume

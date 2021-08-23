@@ -1,7 +1,6 @@
 #%%
 # Bond Order System
-from dpdata.system import Register, System, LabeledSystem, check_System
-import rdkit.Chem
+from dpdata.system import System, LabeledSystem, check_System, load_format
 import dpdata.rdkit.utils
 from dpdata.rdkit.sanitize import Sanitizer, SanitizeError
 from copy import deepcopy
@@ -87,8 +86,16 @@ class BondOrderSystem(System):
         if type_map:
             self.apply_type_map(type_map)
 
-    register_from_funcs = Register()
-    register_to_funcs = System.register_to_funcs + Register()
+    def from_fmt_obj(self, fmtobj, file_name, **kwargs):
+        mol = fmtobj.from_bond_order_system(file_name, **kwargs)
+        self.from_rdkit_mol(mol)
+        if hasattr(fmtobj.from_bond_order_system, 'post_func'):
+            for post_f in fmtobj.from_bond_order_system.post_func:
+                self.post_funcs.get_plugin(post_f)(self)
+        return self
+
+    def to_fmt_obj(self, fmtobj, *args, **kwargs):
+        return fmtobj.to_bond_order_system(self.data, self.rdkit_mol, *args, **kwargs)
 
     def __repr__(self):
         return self.__str__()
@@ -164,36 +171,3 @@ class BondOrderSystem(System):
         self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
         self.data['bond_dict'] = dict([(f'{int(bond[0])}-{int(bond[1])}', bond[2]) for bond in self.data['bonds']])
         self.rdkit_mol = rdkit_mol
-
-    @register_from_funcs.register_funcs('mol')
-    def from_mol_file(self, file_name):
-        mol = rdkit.Chem.MolFromMolFile(file_name, sanitize=False, removeHs=False)
-        self.from_rdkit_mol(mol)
-
-    @register_to_funcs.register_funcs("mol")
-    def to_mol_file(self, file_name, frame_idx=0):
-        assert (frame_idx < self.get_nframes())
-        rdkit.Chem.MolToMolFile(self.rdkit_mol, file_name, confId=frame_idx)
-    
-    @register_from_funcs.register_funcs("sdf")
-    def from_sdf_file(self, file_name):
-        '''
-        Note that it requires all molecules in .sdf file must be of the same topology
-        '''
-        mols = [m for m in rdkit.Chem.SDMolSupplier(file_name, sanitize=False, removeHs=False)]
-        if len(mols) > 1:
-            mol = dpdata.rdkit.utils.combine_molecules(mols)
-        else:
-            mol = mols[0]
-        self.from_rdkit_mol(mol)
-    
-    @register_to_funcs.register_funcs("sdf")
-    def to_sdf_file(self, file_name, frame_idx=-1):
-        sdf_writer = rdkit.Chem.SDWriter(file_name)
-        if frame_idx == -1:
-            for ii in self.get_nframes():
-                sdf_writer.write(self.rdkit_mol, confId=ii)
-        else:
-            assert (frame_idx < self.get_nframes())
-            sdf_writer.write(self.rdkit_mol, confId=frame_idx)
-        sdf_writer.close()
