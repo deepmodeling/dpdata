@@ -102,7 +102,7 @@ class BondOrderSystem(System):
             for idx in range(self.get_natoms()):
                 conf.SetAtomPosition(idx, self.data["coords"][ii][idx])
             self.rdkit_mol.AddConformer(conf, assignId=True)
-        return fmtobj.to_bond_order_system(self.rdkit_mol, *args, **kwargs)
+        return fmtobj.to_bond_order_system(self.data, self.rdkit_mol, *args, **kwargs)
 
     def __repr__(self):
         return self.__str__()
@@ -158,7 +158,8 @@ class BondOrderSystem(System):
         self.__class__(data=deepcopy(self.data),
                        rdkit_mol=new_mol)
     
-    # def __add__(self, other):
+    def __add__(self, other):
+        raise NotImplementedError("magic method '+' has not been implemented on BondOrderSystem")
     #     '''
     #         magic method "+" operation
     #     '''

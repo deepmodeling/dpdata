@@ -13,7 +13,7 @@ class MolFormat(Format):
         return rdkit.Chem.MolFromMolFile(file_name, sanitize=False, removeHs=False)
        
 
-    def to_bond_order_system(self, mol, file_name, frame_idx=0, **kwargs):
+    def to_bond_order_system(self, data, mol, file_name, frame_idx=0, **kwargs):
         assert (frame_idx < mol.GetNumConformers())
         rdkit.Chem.MolToMolFile(mol, file_name, confId=frame_idx)
 
@@ -32,7 +32,7 @@ class SdfFormat(Format):
             mol = mols[0]
         return mol
        
-    def to_bond_order_system(self, mol, file_name, frame_idx=-1, **kwargs):
+    def to_bond_order_system(self, data, mol, file_name, frame_idx=-1, **kwargs):
         sdf_writer = rdkit.Chem.SDWriter(file_name)
         if frame_idx == -1:
             for ii in range(mol.GetNumConformers()):
