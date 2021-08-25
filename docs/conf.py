@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'dpdata'
-copyright = '2019-%d, Han Wang' % date.today().year
+copyright = '2019-%d, Deep Modeling ' % date.today().year
 author = 'Han Wang'
 
 # The short X.Y version
