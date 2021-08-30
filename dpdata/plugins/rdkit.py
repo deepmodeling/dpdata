@@ -1,9 +1,9 @@
 from dpdata.format import Format
 try:
     import rdkit.Chem
+    import dpdata.rdkit.utils
 except ModuleNotFoundError:
     pass
-import dpdata.rdkit.utils
 
 
 @Format.register("mol")

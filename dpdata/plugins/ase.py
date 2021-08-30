@@ -2,8 +2,9 @@ from dpdata.format import Format
 import numpy as np
 try:
     import ase.io
-except:
-    raise Exception('ASE module not installed')
+    from ase.calculators.calculator import PropertyNotImplementedError
+except ImportError:
+    pass
 
 
 @Format.register("ase/structure")
@@ -19,26 +20,29 @@ class ASEStructureFormat(Format):
             atom_numbs = [symbols.count(symbol) for symbol in atom_names]
             atom_types = np.array([atom_names.index(symbol) for symbol in symbols]).astype(int)
     
-            cells = np.array([atoms.cell[:]]).astype('float32')
-            coords = np.array([atoms.get_positions()]).astype('float32')
-            energies = np.array([atoms.get_potential_energy(force_consistent=True)]).astype('float32')
-            forces = np.array([atoms.get_forces()]).astype('float32')
+            cells = atoms.cell[:]
+            coords = atoms.get_positions()
             try:
-                stress = atoms.get_stress(False)
-                virials = np.array([-atoms.get_volume() * stress]).astype('float32')
-            except:
-                virials = np.zeros((1, 3, 3))
+                energies = atoms.get_potential_energy(force_consistent=True)
+            except PropertyNotImplementedError:
+                energies = atoms.get_potential_energy()
+            forces = atoms.get_forces()
             info_dict = {
                 'atom_names': atom_names,
                 'atom_numbs': atom_numbs,
                 'atom_types': atom_types,
-                'cells': cells,
-                'coords': coords,
-                'energies': energies,
-                'forces': forces,
-                'virials': virials, 
+                'cells': np.array([cells]).astype('float32'),
+                'coords': np.array([coords]).astype('float32'),
+                'energies': np.array([energies]).astype('float32'),
+                'forces': np.array([forces]).astype('float32'),
                 'orig': [0,0,0],
             }
+            try:
+                stress = atoms.get_stress(False)
+                virials = np.array([-atoms.get_volume() * stress]).astype('float32')
+                info_dict['virials'] = virials
+            except PropertyNotImplementedError:
+                pass
             yield info_dict
 
     def to_system(self, data, **kwargs):
