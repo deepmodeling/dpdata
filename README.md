@@ -1,4 +1,4 @@
-**dpdata** is a python package for manipulating DeePMD-kit, VASP, LAMMPS data formats.
+**dpdata** is a python package for manipulating data formats of software in computational science, including DeePMD-kit, VASP, LAMMPS, GROMACS, Gaussian.
 dpdata only works with python 3.x.
 
 
@@ -116,7 +116,7 @@ xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
 ```
 
 You may also use the following code to parse muti-system:
-```
+```python
 from dpdata import LabeledSystem,MultiSystems
 from glob import glob
 """

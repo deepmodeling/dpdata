@@ -63,7 +63,7 @@ def system_data_to_mol(data):
     mol = mol_ed.GetMol()
     # set formal charges
     for idx, atom in enumerate(mol.GetAtoms()):
-        atom.SetFormalCharge(data['formal_charges'][idx])
+        atom.SetFormalCharge(int(data['formal_charges'][idx]))
     # set mol name
     if '_name' in list(data.keys()):
         mol.SetProp("_Name", data['_name'])

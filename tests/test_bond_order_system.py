@@ -6,6 +6,7 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 import shutil
 import numpy as np
+from copy import deepcopy
 
 class TestBondOrderSystem(unittest.TestCase):
 
@@ -77,6 +78,16 @@ class TestBondOrderSystem(unittest.TestCase):
             for ii in range(3):
                 self.assertEqual(syst['bonds'][bond_idx][ii], bonds[bond_idx][ii])
         shutil.rmtree("bond_order/methane")
+    
+    def test_dump_to_sdf_file(self):
+        s1 = dpdata.BondOrderSystem("bond_order/methane.sdf", fmt="sdf")
+        s2 = deepcopy(s1)
+        s2.data["coords"] += 1.0
+        s2.to_sdf_file("bond_order/test.sdf")
+
+        nsyst = dpdata.BondOrderSystem("bond_order/test.sdf", fmt="sdf")
+        self.assertEqual(nsyst["coords"][0, 0, 0] - s1["coords"][0, 0, 0], 1.0)
+        os.remove("bond_order/test.sdf")
     
     def test_sanitize_mol_obabel(self):
         cnt = 0
