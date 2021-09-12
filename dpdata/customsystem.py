@@ -8,12 +8,10 @@ import dpdata.md.pbc
 from copy import deepcopy
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
-from dpdata.periodic_table import Element
 from dpdata.amber.mask import pick_by_amber_mask, load_param_file
 
 from dpdata.system import System, check_System, load_format, get_atom_perturb_vector
 from pymatgen.core.structure import Molecule
-from pymatgen.core.periodic_table import Element as ElementTuple
 from pymatgen.core.operations import SymmOp
 from collections import Counter
 # from dpdata.molecule import Molecule
@@ -122,20 +120,21 @@ class CustomSystem(System):
         ret+="\n-------------------"
         ret+="\n"+"  ".join(map(str,self.get_atom_names()))
         ret+="\n"+"  ".join(map(str,self.get_atom_numbs()))
-        ret+="\nMolecule List:\n"
-        for item in self.mols:
-            mol = item["mol"]
-            at = item["at"]
-            at_is_cartesian = item["at_is_cartesian"]
-            ret+=mol.__str__()
-            if at_is_cartesian:
-                ret+="\n"+"@ cartesian coordinate:"
-                ret+="\n"+"  ".join(map(str,at))
-                ret+="\n"
-            else:
-                ret+="\n"+"@ direct coordinate:"
-                ret+="\n"+"  ".join(map(str,at))
-                ret+="\n"
+        if (len(self.mols) > 0):
+            ret+="\nMolecule List:\n"
+            for item in self.mols:
+                mol = item["mol"]
+                at = item["at"]
+                at_is_cartesian = item["at_is_cartesian"]
+                ret+=mol.__str__()
+                if at_is_cartesian:
+                    ret+="\n"+"@ cartesian coordinate:"
+                    ret+="\n"+"  ".join(map(str,at))
+                    ret+="\n"
+                else:
+                    ret+="\n"+"@ direct coordinate:"
+                    ret+="\n"+"  ".join(map(str,at))
+                    ret+="\n"
         return ret
 
     def __getitem__(self, key):
@@ -307,6 +306,7 @@ class CustomSystem(System):
             axis = np.random.rand(3)
         if not angle:
             angle=random.uniform(-180, 180)
+        print("Rotate by angle %f around axis (%f,  %f,  %f)" % (angle, axis[0], axis[1], axis[2]))
         op = SymmOp.from_origin_axis_angle(
             (0, 0, 0),
             axis=np.array(axis),
@@ -422,7 +422,7 @@ def removeElem(elem_mol, elem, atomNumbs):
     return elem_latt[pickidces], atomNumbs_latt[pickidces], 
 
 
-def ctod(cart, cell):
+def c2d(cart, cell):
     reccell = np.zeros((3,3))
     Vcell = np.dot(cell[0], np.cross(cell[1], cell[2]))
     reccell[0] = np.cross(cell[1], cell[2])/Vcell
@@ -433,3 +433,4 @@ def ctod(cart, cell):
     direct[1] = cart[1]*reccell[0][1] + cart[1]*reccell[1][1] + cart[2]*reccell[2][1]
     direct[2] = cart[2]*reccell[0][2] + cart[1]*reccell[1][2] + cart[2]*reccell[2][2]
     return direct
+

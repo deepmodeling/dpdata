@@ -7,8 +7,6 @@ from dpdata.system import System
 
 # from dpdata.molecule import Molecule
 from pymatgen.core.structure import Molecule
-from pymatgen.core.periodic_table import Element
-from collections import Counter
 
 class TestCustomSystem(unittest.TestCase):
     

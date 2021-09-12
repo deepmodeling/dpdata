@@ -4,6 +4,7 @@ from . import md
 from .system import System
 from .system import LabeledSystem
 from .system import MultiSystems
+from .customsystem import CustomSystem
 
 try:
     from ._version import version as __version__
