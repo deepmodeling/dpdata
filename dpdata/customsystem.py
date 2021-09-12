@@ -327,7 +327,7 @@ class CustomSystem(System):
     def getLatticeData(self):
         return self.data
 
-    def popmol(self, idx):
+    def popmol(self, idx = -1):
         return self.mols.pop(idx)
 
     def addmol(self, file_name = None, at = [0.0, 0.0, 0.0], at_is_cartesian = False, mol = None):
