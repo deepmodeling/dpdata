@@ -14,7 +14,7 @@ class GromacsGroFormat(Format):
         file_name : str
             The input file name
         """
-        return dpdata.gromacs.gro.file_to_system_data(file_name, format_atom_name=format_atom_name)
+        return dpdata.gromacs.gro.file_to_system_data(file_name, format_atom_name=format_atom_name, **kwargs)
 
     def to_system(self, data, file_name=None, frame_idx=-1, **kwargs):
         """
@@ -31,12 +31,13 @@ class GromacsGroFormat(Format):
         if frame_idx == -1:
             strs = []
             for idx in range(data['coords'].shape[0]):
-                gro_str = dpdata.gromacs.gro.from_system_data(data, f_idx=idx)
+                gro_str = dpdata.gromacs.gro.from_system_data(data, f_idx=idx,
+                                                              **kwargs)
                 strs.append(gro_str)
             gro_str = "\n".join(strs)
         else:
             gro_str = dpdata.gromacs.gro.from_system_data(
-                data, f_idx=frame_idx)
+                data, f_idx=frame_idx, **kwargs)
 
         if file_name is None:
             return gro_str

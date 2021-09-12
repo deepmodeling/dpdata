@@ -1,0 +1,12 @@
+Run semi-emperical minimization
+ &qmmm
+     qm_theory='DFTB3'
+     qmcharge=0
+     maxcyc=0
+     verbosity=4
+ /
+   6     C       -0.0221        0.0032        0.0165
+   1     H       -0.6690        0.8894       -0.1009
+   1     H       -0.3778       -0.8578       -0.5883
+   1     H        0.0964       -0.3151        1.0638
+   1     H        0.9725        0.2803       -0.3911

@@ -34,4 +34,20 @@ class SQMOutFormat(Format):
         '''
         Read from ambertools sqm.out
         '''
-        return dpdata.amber.sqm.to_system_data(fname)
+        return dpdata.amber.sqm.parse_sqm_out(fname)
+    
+    def from_labeled_system(self, fname, **kwargs):
+        '''
+        Read from ambertools sqm.out
+        '''
+        data = dpdata.amber.sqm.parse_sqm_out(fname)
+        assert "forces" in list(data.keys()), f"No forces in {fname}"
+        return data
+
+@Format.register("sqm/in")
+class SQMINFormat(Format):
+    def to_system(self, data, fname=None, frame_idx=0, **kwargs):
+        """
+        Generate input files for semi-emperical calculation in sqm software
+        """
+        return dpdata.amber.sqm.make_sqm_in(data, fname, frame_idx, **kwargs)
