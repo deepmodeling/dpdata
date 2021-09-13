@@ -1,6 +1,5 @@
 from dpdata.format import Format
 import dpdata.pymatgen.molecule
-from collections import Counter
 
 
 @Format.register("pymatgen/structure")

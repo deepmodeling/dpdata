@@ -1,4 +1,6 @@
+import numpy as np
 from pymatgen.core import Molecule
+from collections import Counter
 
 def to_system_data(file_name) :
     mol = Molecule.from_file(file_name)
@@ -20,6 +22,6 @@ def to_system_data(file_name) :
     system['cells'] = []
 
     mol.get_centered_molecule()
-    system['coords'] = [np.copy(mol.cart_coords)]
+    system['coords'] = np.array([np.copy(mol.cart_coords)])
 
     return system
