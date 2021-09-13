@@ -163,33 +163,7 @@ class CustomSystem(System):
         system : System
             The system to append
         """
-        if not len(system.data['atom_numbs']):
-            # skip if the system to append is non-converged
-            return False
-        elif not len(self.data['atom_numbs']):
-            # this system is non-converged but the system to append is converged
-            self.data = system.data
-            return False
-        if system.uniq_formula != self.uniq_formula:
-            raise RuntimeError('systems with inconsistent formula could not be append: %s v.s. %s' % (self.uniq_formula, system.uniq_formula))
-        if system.data['atom_names'] != self.data['atom_names']:
-            # allow to append a system with different atom_names order
-            system.sort_atom_names()
-            self.sort_atom_names()
-        if (system.data['atom_types'] != self.data['atom_types']).any():
-            # allow to append a system with different atom_types order
-            system.sort_atom_types()
-            self.sort_atom_types()
-        for ii in ['atom_numbs', 'atom_names'] :
-            assert(system.data[ii] == self.data[ii])
-        for ii in ['atom_types','orig'] :
-            eq = [v1==v2 for v1,v2 in zip(system.data[ii], self.data[ii])]
-            assert(all(eq))
-        for ii in ['coords', 'cells'] :
-            self.data[ii] = np.concatenate((self.data[ii], system.data[ii]), axis = 0)
-        if self.nopbc and not system.nopbc:
-            # appended system uses PBC, cancel nopbc
-            self.data['nopbc'] = False
+        super().append(system)
         for item in system.mols:
             self.mols.append(item)
         return True
