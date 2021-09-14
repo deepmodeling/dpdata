@@ -8,11 +8,7 @@ def to_system_data(file_name) :
     elem_counter = Counter(elem_mol)
     atom_names = elem_counter.keys()
     atom_numbs = elem_counter.values()
-
-    atom_types = []
-    for idx,ii in enumerate(atom_numbs) :
-        for jj in range(ii) :
-            atom_types.append(idx)
+    atom_types = [list(atom_names).index(e) for e in elem_mol]
     
     system = {}
     system['atom_names'] = atom_names
