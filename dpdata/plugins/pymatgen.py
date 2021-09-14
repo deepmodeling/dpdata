@@ -34,7 +34,7 @@ class PyMatgenMoleculeFormat(Format):
         return dpdata.pymatgen.molecule.to_system_data(file_name)
 
     def to_system(self, data, **kwargs):
-        """convert System to Pymatgen Structure obj
+        """convert System to Pymatgen Molecule obj
         """
         molecules = []
         try:
