@@ -1,6 +1,7 @@
 import numpy as np
 from ..periodic_table import ELEMENTS
 
+kcal2ev = 1 / 23.06054764
 
 START = 0
 READ_ENERGY = 1
@@ -62,7 +63,7 @@ def parse_sqm_out(fname):
     data['coords'] = np.array([coords])
 
     energies = np.array(energies)
-    forces = np.array([forces], dtype=np.float32)
+    forces = np.array([forces], dtype=np.float32) * kcal2ev
     if len(forces) > 0:
         data['energies'] = energies
         data['forces'] = forces
