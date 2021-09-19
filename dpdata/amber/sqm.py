@@ -48,7 +48,8 @@ def parse_sqm_out(fname):
                 if len(coords) == len(charges):
                     flag = START
             elif flag == READ_FORCES:
-                forces.append([float(x) for x in line.strip().split()[-3:]])
+                ll = line.strip()
+                forces.append([float(ll[-20:]), float(ll[-40:-20]), float(ll[-60:-40])])
                 if len(forces) == len(charges):
                     flag = START
     
