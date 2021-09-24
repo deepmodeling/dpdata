@@ -34,6 +34,7 @@ class PyMatgenMoleculeFormat(Format):
 
         return dpdata.pymatgen.molecule.to_system_data(file_name)
 
+    @Format.post("remove_pbc")
     def to_system(self, data, **kwargs):
         """convert System to Pymatgen Molecule obj
         """
