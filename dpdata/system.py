@@ -428,6 +428,7 @@ class System (MSONable) :
         self.data['coords'] = np.matmul(ncoord, self.data['cells'])
 
 
+    @post_funcs.register("remove_pbc")
     def remove_pbc(self, protect_layer = 9):
         """
         This method does NOT delete the definition of the cells, it

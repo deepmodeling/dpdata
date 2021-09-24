@@ -15,7 +15,6 @@ def to_system_data(file_name) :
     system['atom_numbs'] = atom_numbs
     system['atom_types'] = np.array(atom_types, dtype = int)
     system['orig'] = np.array([0, 0, 0])
-    system['cells'] = []
 
     mol.get_centered_molecule()
     system['coords'] = np.array([np.copy(mol.cart_coords)])
