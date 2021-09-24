@@ -35,13 +35,10 @@ class CompSys :
     def test_cell(self):
         self.assertEqual(self.system_1.get_nframes(),
                          self.system_2.get_nframes())        
-        for ff in range(self.system_1.get_nframes()) :
-            for ii in range(3) :
-                for jj in range(3) :
-                    self.assertAlmostEqual(self.system_1.data['cells'][ff][ii][jj], 
-                                           self.system_2.data['cells'][ff][ii][jj], 
-                                           places = self.places,
-                                           msg = 'cell[%d][%d][%d] failed' % (ff,ii,jj))
+        np.testing.assert_almost_equal(self.system_1.data['cells'], 
+                                       self.system_2.data['cells'], 
+                                       decimal = self.places,
+                                       err_msg = 'cell failed')
 
     def test_coord(self): 
         self.assertEqual(self.system_1.get_nframes(),
@@ -49,14 +46,11 @@ class CompSys :
         # think about direct coord
         tmp_cell = self.system_1.data['cells']
         tmp_cell = np.reshape(tmp_cell, [-1, 3])
-        tmp_cell_norm = np.reshape(np.linalg.norm(tmp_cell, axis = 1), [-1, 3])
-        for ff in range(self.system_1.get_nframes()) :
-            for ii in range(sum(self.system_1.data['atom_numbs'])) :
-                for jj in range(3) :
-                    self.assertAlmostEqual(self.system_1.data['coords'][ff][ii][jj] / tmp_cell_norm[ff][jj], 
-                                           self.system_2.data['coords'][ff][ii][jj] / tmp_cell_norm[ff][jj], 
-                                           places = self.places,
-                                           msg = 'coord[%d][%d][%d] failed' % (ff,ii,jj))
+        tmp_cell_norm = np.reshape(np.linalg.norm(tmp_cell, axis = 1), [-1, 1, 3])
+        np.testing.assert_almost_equal(self.system_1.data['coords'] / tmp_cell_norm, 
+                                       self.system_2.data['coords'] / tmp_cell_norm, 
+                                       decimal = self.places,
+                                       err_msg = 'coord failed')
 
     def test_nopbc(self):
         self.assertEqual(self.system_1.nopbc, self.system_2.nopbc)
@@ -66,22 +60,18 @@ class CompLabeledSys (CompSys) :
     def test_energy(self) :
         self.assertEqual(self.system_1.get_nframes(),
                          self.system_2.get_nframes())
-        for ff in range(self.system_1.get_nframes()) :
-            self.assertAlmostEqual(self.system_1.data['energies'][ff], 
-                                   self.system_2.data['energies'][ff], 
-                                   places = self.e_places,
-                                   msg = 'energies[%d] failed' % (ff))
+        np.testing.assert_almost_equal(self.system_1.data['energies'], 
+                                       self.system_2.data['energies'], 
+                                       decimal = self.e_places,
+                                       err_msg = 'energies failed')
 
     def test_force(self) :
         self.assertEqual(self.system_1.get_nframes(),
                          self.system_2.get_nframes())        
-        for ff in range(self.system_1.get_nframes()) :
-            for ii in range(self.system_1.data['forces'].shape[1]) :
-                for jj in range(3) :
-                    self.assertAlmostEqual(self.system_1.data['forces'][ff][ii][jj], 
-                                           self.system_2.data['forces'][ff][ii][jj], 
-                                           places = self.f_places,
-                                           msg = 'forces[%d][%d][%d] failed' % (ff,ii,jj))
+        np.testing.assert_almost_equal(self.system_1.data['forces'], 
+                                       self.system_2.data['forces'], 
+                                       decimal = self.f_places,
+                                       err_msg = 'forces failed')
             
     def test_virial(self) :
         self.assertEqual(self.system_1.get_nframes(),
@@ -92,13 +82,10 @@ class CompLabeledSys (CompSys) :
         if not 'virials' in self.system_1:
             self.assertFalse('virials' in self.system_2)
             return
-        for ff in range(self.system_1.get_nframes()) :
-            for ii in range(3) :
-                for jj in range(3) :
-                    self.assertAlmostEqual(self.system_1['virials'][ff][ii][jj], 
-                                           self.system_2['virials'][ff][ii][jj], 
-                                           places = self.v_places,
-                                           msg = 'virials[%d][%d][%d] failed' % (ff,ii,jj))
+        np.testing.assert_almost_equal(self.system_1['virials'], 
+                                       self.system_2['virials'], 
+                                       decimal = self.v_places,
+                                       err_msg = 'virials failed')
 
 
 class MultiSystems:
