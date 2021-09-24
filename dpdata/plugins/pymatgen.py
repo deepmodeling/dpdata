@@ -25,6 +25,7 @@ class PyMatgenStructureFormat(Format):
 
 @Format.register("pymatgen/molecule")
 class PyMatgenMoleculeFormat(Format):
+    @Format.post("shift_orig_zero")
     def from_system(self, file_name, **kwargs):
         try:
             from pymatgen.core import Molecule
