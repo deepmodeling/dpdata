@@ -6,24 +6,25 @@ from context import dpdata
 class TestPOSCARCart(unittest.TestCase):
     
     def setUp(self): 
-        # self.system = dpdata.System()
-        # self.system.from_pymatgen_molecule(os.path.join('pymatgen', 'FA-001.xyz'))
-        # self.system.to("vasp/poscar", os.path.join('pymatgen', "FA-001.vasp"))
-        # self.assertEqual(list(self.system["atom_types"]), [0, 1, 2, 1, 1, 2, 1, 1])
-        pass
-
-    def test_to_molecule(self):
-        # mols = self.system.to_pymatgen_molecule()
-        # self.assertEqual(len(mols), 1)
-        pass
+        self.system = dpdata.System()
+        self.system.from_pymatgen_molecule(os.path.join('pymatgen', 'FA-001.xyz'))
+        self.assertEqual(list(self.system["atom_types"]), [0, 1, 2, 1, 1, 2, 1, 1])
 
     def test_poscar_to_molecule(self):
-        print("------------test_poscar_to_molecule---------------------\n")
         tmp_system = dpdata.System()
         tmp_system.from_vasp_poscar(os.path.join('pymatgen', 'mol2.vasp'))
+        natoms = len(tmp_system['coords'][0])
+        tmpcoord = tmp_system['coords'][0]
+        cog = np.average(tmpcoord, axis = 0)
+        dist = tmpcoord - np.tile(cog, [natoms, 1])
+        max_dist_0 = np.max(np.linalg.norm(dist, axis = 1))
+
         mols = tmp_system.to("pymatgen/molecule")
-        struct = mols[-1].get_boxed_structure(10.0, 10.0, 10.0)
-        struct.to(fmt = "poscar", filename = os.path.join('pymatgen', 'mol2-new.vasp'))
+        cog = np.average(mols[-1].cart_coords, axis = 0)
+        dist = mols[-1].cart_coords - np.tile(cog, [natoms, 1])
+        max_dist_1 = np.max(np.linalg.norm(dist, axis = 1))
+        self.assertAlmostEqual(max_dist_0, max_dist_1)
+        
 
 
 if __name__ == '__main__':
