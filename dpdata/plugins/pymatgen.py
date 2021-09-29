@@ -1,5 +1,6 @@
 from dpdata.format import Format
 import dpdata.pymatgen.molecule
+import numpy as np
 
 
 @Format.register("pymatgen/structure")
@@ -25,7 +26,7 @@ class PyMatgenStructureFormat(Format):
 
 @Format.register("pymatgen/molecule")
 class PyMatgenMoleculeFormat(Format):
-    @Format.post("shift_orig_zero")
+    @Format.post("remove_pbc")
     def from_system(self, file_name, **kwargs):
         try:
             from pymatgen.core import Molecule
@@ -34,7 +35,6 @@ class PyMatgenMoleculeFormat(Format):
 
         return dpdata.pymatgen.molecule.to_system_data(file_name)
 
-    @Format.post("remove_pbc")
     def to_system(self, data, **kwargs):
         """convert System to Pymatgen Molecule obj
         """
@@ -47,7 +47,8 @@ class PyMatgenMoleculeFormat(Format):
         species = []
         for name, numb in zip(data['atom_names'], data['atom_numbs']):
             species.extend([name]*numb)
-        for ii in range(data['coords'].shape[0]):
+        data = dpdata.pymatgen.molecule.remove_pbc(data)
+        for ii in range(np.array(data['coords']).shape[0]):
             molecule = Molecule(
                 species, data['coords'][ii])
             molecules.append(molecule)
