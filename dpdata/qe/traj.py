@@ -1,16 +1,14 @@
 #!/usr/bin/python3 
-
 import numpy as np
-import dpdata,warnings
+import dpdata, warnings
+from ..unit import EnergyConversion, LengthConversion, ForceConversion, VirialConversion
 
-ry2ev = 13.605693009
-hartree2ev = 27.211386018
-bohr2ang = 0.52917721067
-kbar2evperang3 = 1e3 / 1.602176621e6
+ry2ev = EnergyConversion("rydberg", "eV").value()
+kbar2evperang3 = VirialConversion("kbar", "eV/angstrom^3").value()
 
-length_convert = bohr2ang
-energy_convert = hartree2ev
-force_convert = energy_convert / length_convert
+length_convert = LengthConversion("bohr", "angstrom").value()
+energy_convert = EnergyConversion("hartree", "eV").value()
+force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 def load_key (lines, key) :
     for ii in lines :

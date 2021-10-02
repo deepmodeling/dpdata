@@ -1,7 +1,8 @@
 import numpy as np
-from ..periodic_table import ELEMENTS
+from dpdata.periodic_table import ELEMENTS
+from dpdata.unit import EnergyConversion
 
-kcal2ev = 1 / 23.06054764
+kcal2ev = EnergyConversion("kcal_mol", "eV").value()
 
 START = 0
 READ_ENERGY = 1

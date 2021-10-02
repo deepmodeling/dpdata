@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import re
 import numpy as np
-import json
-import os
+from ..unit import LengthConversion
 
-nm2ang = 10.
-ang2nm = 1. / nm2ang
+nm2ang = LengthConversion("nm", "angstrom").value()
+ang2nm = LengthConversion("angstrom", "nm").value()
 cell_idx_gmx2dp = [0, 4, 8, 1, 2, 3, 5, 6, 7]
 
 def _format_atom_name(atom_name):

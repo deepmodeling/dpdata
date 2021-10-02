@@ -3,11 +3,12 @@ import numpy as np
 import re
 from collections import OrderedDict
 from .cell import cell_to_low_triangle
+from ..unit import EnergyConversion, LengthConversion, ForceConversion
 
 #%%
-AU_TO_ANG = 5.29177208590000E-01
-AU_TO_EV = 2.72113838565563E+01
-AU_TO_EV_EVERY_ANG = AU_TO_EV/AU_TO_ANG
+AU_TO_ANG = LengthConversion("bohr", "angstrom").value()
+AU_TO_EV = EnergyConversion("hartree", "eV").value()
+AU_TO_EV_EVERY_ANG = ForceConversion("hartree/bohr", "eV/angstrom").value()
 delimiter_patterns=[]
 delimiter_p1 = re.compile(r'^ \* GO CP2K GO! \*+')
 delimiter_p2 = re.compile(r'^ \*+')

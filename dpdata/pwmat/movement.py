@@ -1,4 +1,5 @@
 import numpy as np
+from ..periodic_table import ELEMENTS
 
 def system_info (lines, type_idx_zero = False) :
     atom_names = []
@@ -32,12 +33,6 @@ def system_info (lines, type_idx_zero = False) :
                 atom_types.append(idx)
             else :
                 atom_types.append(idx+1)
-    ELEMENTS=['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', \
-            'Sc', 'Ti', 'V', 'Cr','Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', \
-            'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd',\
-            'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', \
-            'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', \
-            'Md', 'No', 'Lr']
     for ii in np.unique(sorted(atomic_number)):
         atom_names.append(ELEMENTS[ii-1])
     return atom_names, atom_numbs, np.array(atom_types, dtype = int), nelm
