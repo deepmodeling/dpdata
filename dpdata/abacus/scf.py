@@ -1,10 +1,10 @@
 import os,sys
 import numpy as np
-from ..unit import EnergyConversion, VirialConversion, ForceConversion, LengthConversion
+from ..unit import EnergyConversion, PressureConversion, LengthConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
 ry2ev = EnergyConversion("rydberg", "eV").value()
-kbar2evperang3 = VirialConversion("kbar", "eV/angstrom^3").value()
+kbar2evperang3 = PressureConversion("kbar", "eV/angstrom^3").value()
 
 def get_block (lines, keyword, skip = 0, nlines = None):
     ret = []

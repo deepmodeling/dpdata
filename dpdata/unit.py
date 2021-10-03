@@ -74,7 +74,7 @@ class ForceConversion(Conversion):
         lconv = LengthConversion(unitA.split("/")[1], unitB.split("/")[1]).value()
         self._value = econv / lconv
 
-class VirialConversion(Conversion):
+class PressureConversion(Conversion):
     def __init__(self, unitA, unitB):
         super().__init__(unitA, unitB, check=False)
         unitA, factorA = self._convert_unit(unitA)

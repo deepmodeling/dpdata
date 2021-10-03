@@ -1,10 +1,10 @@
 #!/usr/bin/python3 
 import numpy as np
 import dpdata, warnings
-from ..unit import EnergyConversion, LengthConversion, ForceConversion, VirialConversion
+from ..unit import EnergyConversion, LengthConversion, ForceConversion, PressureConversion
 
 ry2ev = EnergyConversion("rydberg", "eV").value()
-kbar2evperang3 = VirialConversion("kbar", "eV/angstrom^3").value()
+kbar2evperang3 = PressureConversion("kbar", "eV/angstrom^3").value()
 
 length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
