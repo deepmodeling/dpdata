@@ -54,7 +54,7 @@ class Conversion(ABC):
         >>> conv = Conversion("foo", "bar", check=False)
         >>> conv.set_value("10.0")
         >>> print(conv)
-        >>> "1 foo = 10.0 bar"
+        1 foo = 10.0 bar
         >>> conv.value()
         >>> 10.0
         """
