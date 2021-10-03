@@ -1,7 +1,9 @@
 from abc import ABC
+from scipy import constants
 
-AVOGADRO = 6.02214179E23    # Avagadro constant
-ELE_CHG  = 1.602176487E-19  # Elementary Charge, in C
+AVOGADRO = constants.Avogadro           # Avagadro constant
+ELE_CHG  = constants.elementary_charge  # Elementary Charge, in C
+BOHR     = constants.value("atomic unit of length") # Bohr, in m
 
 # energy conversions
 econvs = {
@@ -17,7 +19,7 @@ econvs = {
 # length conversions
 lconvs = {
     "angstrom": 1.0,
-    "bohr": 0.52917720859,
+    "bohr": BOHR * 1E10,
     "nm": 10.0,
     "m": 1E10,
 }
