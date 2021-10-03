@@ -154,6 +154,8 @@ class PressureConversion(Conversion):
             return "J/m^3", 1
         elif unit == "kPa" or unit == "kpa":
             return "kJ/m^3", 1
+        elif unit == "GPa" or unit == "Gpa":
+            return "kJ/m^3", 1E6
         elif unit == "bar":
             return "J/m^3", 1E5
         elif unit == "kbar":
