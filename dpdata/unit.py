@@ -4,12 +4,13 @@ from scipy import constants
 AVOGADRO = constants.Avogadro                             # Avagadro constant
 ELE_CHG  = constants.elementary_charge                    # Elementary Charge, in C
 BOHR     = constants.value("atomic unit of length")       # Bohr, in m
+HARTREE  = constants.value("atomic unit of energy")       # Hartree, in Jole
 RYDBERG  = constants.Rydberg * constants.h * constants.c  # Rydberg, in Jole
 
 # energy conversions
 econvs = {
     "eV": 1.0,
-    "hartree": 4.35974394E-18 / ELE_CHG,
+    "hartree": HARTREE / ELE_CHG,
     "kJ_mol": 1 / (ELE_CHG * AVOGADRO / 1000),
     "kcal_mol": 1 / (ELE_CHG * AVOGADRO / 1000 / 4.184),
     "rydberg": RYDBERG / ELE_CHG,
