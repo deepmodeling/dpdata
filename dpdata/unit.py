@@ -56,7 +56,7 @@ class Conversion(ABC):
         >>> print(conv)
         1 foo = 10.0 bar
         >>> conv.value()
-        >>> 10.0
+        10.0
         """
         if check:
             check_unit(unitA)
@@ -86,7 +86,7 @@ class EnergyConversion(Conversion):
         --------
         >>> conv = LengthConversion("eV", "kcal_mol")
         >>> conv.value()
-        >>> 23.06054783061903
+        23.06054783061903
         """
         super().__init__(unitA, unitB)
         self.set_value(econvs[unitA] / econvs[unitB])
@@ -100,7 +100,7 @@ class LengthConversion(Conversion):
         --------
         >>> conv = LengthConversion("angstrom", "nm")
         >>> conv.value()
-        >>> 0.1
+        0.1
         """
         super().__init__(unitA, unitB)
         self.set_value(lconvs[unitA] / lconvs[unitB])
@@ -118,7 +118,7 @@ class ForceConversion(Conversion):
         --------
         >>> conv = ForceConversion("kJ_mol/nm", "eV/angstrom")
         >>> conv.value()
-        >>> 0.0010364269656262175
+        0.0010364269656262175
         """
         super().__init__(unitA, unitB)
         econv = EnergyConversion(unitA.split("/")[0], unitB.split("/")[0]).value()
@@ -138,7 +138,7 @@ class PressureConversion(Conversion):
         --------
         >>> conv = PressureConversion("kbar", "eV/angstrom^3")
         >>> conv.value()
-        >>> 0.0006241509074460763
+        0.0006241509074460763
         """
         super().__init__(unitA, unitB, check=False)
         unitA, factorA = self._convert_unit(unitA)
