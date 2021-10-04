@@ -1,11 +1,10 @@
 import os,sys
 import numpy as np
+from ..unit import EnergyConversion, PressureConversion, LengthConversion
 
-bohr2ang = 0.5291770
-ry2ev = 13.605698
-kbar2evperang3 = 1e3 / 1.6021892e6
-# The consts are cited from $ABACUS_ROOT/source/src_global/constant.h
-
+bohr2ang = LengthConversion("bohr", "angstrom").value()
+ry2ev = EnergyConversion("rydberg", "eV").value()
+kbar2evperang3 = PressureConversion("kbar", "eV/angstrom^3").value()
 
 def get_block (lines, keyword, skip = 0, nlines = None):
     ret = []

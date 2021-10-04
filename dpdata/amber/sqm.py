@@ -1,6 +1,8 @@
 import numpy as np
-from ..periodic_table import ELEMENTS
+from dpdata.periodic_table import ELEMENTS
+from dpdata.unit import EnergyConversion
 
+kcal2ev = EnergyConversion("kcal_mol", "eV").value()
 
 START = 0
 READ_ENERGY = 1
@@ -47,7 +49,8 @@ def parse_sqm_out(fname):
                 if len(coords) == len(charges):
                     flag = START
             elif flag == READ_FORCES:
-                forces.append([float(x) for x in line.strip().split()[-3:]])
+                ll = line.strip()
+                forces.append([float(ll[-60:-40]), float(ll[-40:-20]), float(ll[-20:])])
                 if len(forces) == len(charges):
                     flag = START
     
@@ -62,7 +65,7 @@ def parse_sqm_out(fname):
     data['coords'] = np.array([coords])
 
     energies = np.array(energies)
-    forces = np.array([forces], dtype=np.float32)
+    forces = np.array([forces], dtype=np.float32) * kcal2ev
     if len(forces) > 0:
         data['energies'] = energies
         data['forces'] = forces

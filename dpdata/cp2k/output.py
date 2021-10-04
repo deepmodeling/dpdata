@@ -3,11 +3,12 @@ import numpy as np
 import re
 from collections import OrderedDict
 from .cell import cell_to_low_triangle
+from ..unit import EnergyConversion, LengthConversion, ForceConversion, PressureConversion
 
 #%%
-AU_TO_ANG = 5.29177208590000E-01
-AU_TO_EV = 2.72113838565563E+01
-AU_TO_EV_EVERY_ANG = AU_TO_EV/AU_TO_ANG
+AU_TO_ANG = LengthConversion("bohr", "angstrom").value()
+AU_TO_EV = EnergyConversion("hartree", "eV").value()
+AU_TO_EV_EVERY_ANG = ForceConversion("hartree/bohr", "eV/angstrom").value()
 delimiter_patterns=[]
 delimiter_p1 = re.compile(r'^ \* GO CP2K GO! \*+')
 delimiter_p2 = re.compile(r'^ \*+')
@@ -221,9 +222,9 @@ def get_frames (fname) :
     coord_flag = False
     force_flag = False
     stress_flag = False
-    eV = 2.72113838565563E+01 # hatree to eV
-    angstrom = 5.29177208590000E-01 # Bohr to Angstrom
-    GPa = 160.21766208 # 1 eV/(Angstrom^3) = 160.21 GPa
+    eV = EnergyConversion("hartree", "eV").value()
+    angstrom = LengthConversion("bohr", "angstrom").value()
+    GPa = PressureConversion("eV/angstrom^3", "GPa").value()
     atom_symbol_list = []
     cell = []
     coord = []

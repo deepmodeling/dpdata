@@ -1,14 +1,12 @@
 import numpy as np
+from ..unit import LengthConversion, EnergyConversion, ForceConversion
+from ..periodic_table import ELEMENTS
 
+length_convert = LengthConversion("bohr", "angstrom").value()
+energy_convert = EnergyConversion("hartree", "eV").value()
+force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
-hartree2ev = 27.211386018
-bohr2ang = 0.52917721067
-
-length_convert = bohr2ang
-energy_convert = hartree2ev
-force_convert = energy_convert / length_convert
-
-symbols = ['X', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og']
+symbols = ["X"] + ELEMENTS
 
 def to_system_data(file_name, md=False):
     data = {}

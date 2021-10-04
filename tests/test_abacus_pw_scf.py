@@ -2,6 +2,9 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
+from dpdata.unit import LengthConversion
+
+bohr2ang = LengthConversion("bohr", "angstrom").value()
 
 class TestABACUSSinglePointEnergy:
 
@@ -25,7 +28,8 @@ class TestABACUSSinglePointEnergy:
         #     self.assertEqual(self.system_h2o.data['atom_types'][ii], ref_type[ii])
 
     def test_cell(self) :
-        cell = 5.29177 * np.eye(3)
+        # cell = 5.29177 * np.eye(3)
+        cell = bohr2ang * 10 * np.eye(3)
         for ii in range(cell.shape[0]) :
             for jj in range(cell.shape[1]) :
                 self.assertAlmostEqual(self.system_ch4.data['cells'][0][ii][jj], cell[ii][jj])
@@ -49,7 +53,7 @@ class TestABACUSSinglePointEnergy:
         coord = np.array(coord)
         for ii in range(coord.shape[0]) :
             for jj in range(coord.shape[1]) :
-                self.assertAlmostEqual(self.system_ch4.data['coords'][0][ii][jj], coord[ii][jj])
+                self.assertAlmostEqual(self.system_ch4.data['coords'][0][ii][jj], coord[ii][jj], places=5)
         fp.close()
 
         # fp = open('qe.scf/h2o_coord')
