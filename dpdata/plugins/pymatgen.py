@@ -47,7 +47,7 @@ class PyMatgenMoleculeFormat(Format):
         species = []
         for name, numb in zip(data['atom_names'], data['atom_numbs']):
             species.extend([name]*numb)
-        data = dpdata.pymatgen.molecule.remove_pbc(data)
+        data = dpdata.system.remove_pbc(data)
         for ii in range(np.array(data['coords']).shape[0]):
             molecule = Molecule(
                 species, data['coords'][ii])

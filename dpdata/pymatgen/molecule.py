@@ -24,18 +24,3 @@ def to_system_data(file_name, protect_layer = 9) :
     system['coords'] = [tmpcoord]
     system['cells'] = [10.0 * np.eye(3)]
     return system
-
-def remove_pbc(system, protect_layer = 9):
-    nframes = len(system["coords"])
-    natoms = len(system['coords'][0])
-    for ff in range(nframes):
-        tmpcoord = system['coords'][ff]
-        cog = np.average(tmpcoord, axis = 0)
-        dist = tmpcoord - np.tile(cog, [natoms, 1])
-        max_dist = np.max(np.linalg.norm(dist, axis = 1))
-        h_cell_size = max_dist + protect_layer
-        cell_size = h_cell_size * 2
-        shift = np.array([1,1,1]) * h_cell_size - cog
-        system['coords'][ff] = system['coords'][ff] + np.tile(shift, [natoms, 1])
-        system['cells'][ff] = cell_size * np.eye(3)
-    return system
