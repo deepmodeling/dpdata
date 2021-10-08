@@ -59,6 +59,14 @@ class DeePMDCompFormat(Format):
 
 @Format.register("deepmd/hdf5")
 class DeePMDCompFormat(Format):
+    """HDF5 format for DeePMD-kit.
+    
+    Examples
+    --------
+    Dump a MultiSystems to a HDF5 file:
+    >>> import dpdata
+    >>> dpdata.MultiSystems().from_deepmd_npy("data").to_deepmd_hdf5("data.hdf5")
+    """
     def from_system(self, file_name, type_map=None, **kwargs):
         s = file_name.split("#")
         name = s[1] if len(s) > 1 else ""
