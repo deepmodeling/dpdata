@@ -55,11 +55,11 @@ def to_system_data(f: h5py.File,
     sets = globfilter(g.keys(), 'set.*')
 
     data_types = {
-        'cells': {'labeled': False, 'shape': (3,3), 'required': 'nopbc' not in data},
-        'coords': {'labeled': False, 'shape': (natoms,3), 'required': True},
-        'energies': {'labeled': True, 'shape': tuple(), 'required': False},
-        'forces': {'labeled': True, 'shape': (natoms,3), 'required': False},
-        'virials': {'labeled': True, 'shape': (3,3), 'required': False},
+        'cells': {'fn': 'box', 'labeled': False, 'shape': (3,3), 'required': 'nopbc' not in data},
+        'coords': {'fn': 'coord', 'labeled': False, 'shape': (natoms,3), 'required': True},
+        'energies': {'fn': 'energy', 'labeled': True, 'shape': tuple(), 'required': False},
+        'forces': {'fn': 'force', 'labeled': True, 'shape': (natoms,3), 'required': False},
+        'virials': {'fn': 'virial', 'labeled': True, 'shape': (3,3), 'required': False},
     }
     
     for dt, prop in data_types.items():
@@ -67,7 +67,7 @@ def to_system_data(f: h5py.File,
 
         for ii in sets:
             set = g[ii]
-            fn = '%s.npy' % dt
+            fn = '%s.npy' % prop['fn']
             if fn in set.keys():
                 dd = set[fn][:]
                 nframes = dd.shape[0]
@@ -100,8 +100,6 @@ def dump(f: h5py.File,
     comp_prec : np.dtype, default: np.float32
         precision of data
     """
-    data_types = ('cells', 'coords', 'energies', 'forces', 'virials')
-
     # if folder is None, use the root of the file
     if folder:
         if folder in f:
@@ -122,15 +120,18 @@ def dump(f: h5py.File,
 
     nopbc = data.get("nopbc", False)
     reshaped_data = {}
-    for dt in data_types:
+
+    data_types = {
+        'cells': {'fn': 'box', 'shape': (nframes, 9), 'dump': not nopbc},
+        'coords': {'fn': 'coord',  'shape': (nframes, -1), 'dump': True},
+        'energies': {'fn': 'energy', 'shape': (nframes,), 'dump': True},
+        'forces': {'fn': 'force', 'shape': (nframes, -1), 'dump': True},
+        'virials': {'fn': 'virial', 'shape': (nframes, 9), 'dump': True},
+    }
+    for dt, prop in data_types.items():
         if dt in data:
-            if dt == 'energies':
-                reshaped_data[dt] = np.reshape(data[dt], (nframes,)).astype(comp_prec)
-            elif nopbc and dt == 'cells':
-                # skip dump cells since deepmd-kit v2.0.2 does not need cells for a nopbc system
-                pass
-            else:
-                reshaped_data[dt] = np.reshape(data[dt], (nframes, -1)).astype(comp_prec)
+            if prop['dump']:
+                reshaped_data[dt] = np.reshape(data[dt], prop['shape']).astype(comp_prec)
 
     # dump frame properties: cell, coord, energy, force and virial
     nsets = nframes // set_size
@@ -140,9 +141,9 @@ def dump(f: h5py.File,
         set_stt = ii * set_size
         set_end = (ii+1) * set_size
         set_folder = g.create_group('set.%03d' % ii)
-        for dt in data_types:
+        for dt, prop in data_types.items():
             if dt in reshaped_data:
-                set_folder.create_dataset('%s.npy' % dt, data=reshaped_data[dt][set_stt:set_end])
+                set_folder.create_dataset('%s.npy' % prop['fn'], data=reshaped_data[dt][set_stt:set_end])
 
     if nopbc:
        g.create_dataset("nopbc", True)
