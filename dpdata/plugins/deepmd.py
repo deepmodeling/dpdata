@@ -1,6 +1,8 @@
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
+import dpdata.deepmd.hdf5
 import numpy as np
+import h5py
 from dpdata.format import Format
 
 
@@ -54,3 +56,49 @@ class DeePMDCompFormat(Format):
         return dpdata.deepmd.comp.to_system_data(file_name, type_map=type_map, labels=True)
 
     MultiMode = Format.MultiModes.Directory
+
+@Format.register("deepmd/hdf5")
+class DeePMDCompFormat(Format):
+    """HDF5 format for DeePMD-kit.
+    
+    Examples
+    --------
+    Dump a MultiSystems to a HDF5 file:
+    >>> import dpdata
+    >>> dpdata.MultiSystems().from_deepmd_npy("data").to_deepmd_hdf5("data.hdf5")
+    """
+    def from_system(self, file_name, type_map=None, **kwargs):
+        s = file_name.split("#")
+        name = s[1] if len(s) > 1 else ""
+        with h5py.File(s[0], 'r') as f:
+            return dpdata.deepmd.hdf5.to_system_data(f, name, type_map=type_map, labels=False)
+
+    def from_labeled_system(self, file_name, type_map=None, **kwargs):
+        s = file_name.split("#")
+        name = s[1] if len(s) > 1 else ""
+        with h5py.File(s[0], 'r') as f:
+            return dpdata.deepmd.hdf5.to_system_data(f, name, type_map=type_map, labels=True)
+    
+    def to_system(self,
+                  data : dict,
+                  file_name : str,
+                  set_size : int = 5000, 
+                  comp_prec : np.dtype = np.float32,
+                  **kwargs):
+        s = file_name.split("#")
+        name = s[1] if len(s) > 1 else ""
+        mode = 'a' if name else 'w'
+        with h5py.File(s[0], mode) as f:
+            dpdata.deepmd.hdf5.dump(f, name, data, set_size = set_size, comp_prec = comp_prec)
+
+    def from_multi_systems(self,
+                  directory,
+                  **kwargs):
+        with h5py.File(directory, 'r') as f:
+            return ["%s#%s" % (directory, ff) for ff in f.keys()]
+
+    def to_multi_systems(self,
+                  formulas,
+                  directory,
+                  **kwargs):
+        return ["%s#%s" % (directory, ff) for ff in formulas]
