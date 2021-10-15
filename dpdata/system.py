@@ -477,7 +477,6 @@ class System (MSONable) :
 
 
     def rot_frame_lower_triangular(self, f_idx = 0) :
-        print(self.data['cells'])
         qq, rr = np.linalg.qr(self.data['cells'][f_idx].T)
         if np.linalg.det(qq) < 0 :
             qq = -qq
