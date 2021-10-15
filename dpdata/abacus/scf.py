@@ -174,6 +174,6 @@ def get_frame (fname):
     # print("virial = ", data['virials'])
     return data
 
-if __name__ == "__main__":
-    path = "/home/lrx/work/12_ABACUS_dpgen_interface/dpdata/dpdata/tests/abacus.scf"
-    data = get_frame(path)
+#if __name__ == "__main__":
+#    path = "/home/lrx/work/12_ABACUS_dpgen_interface/dpdata/dpdata/tests/abacus.scf"
+#    data = get_frame(path)
