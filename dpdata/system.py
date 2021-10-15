@@ -661,7 +661,7 @@ class System (MSONable) :
 
         Returns
         -------
-        labeled_sys LabeledSystem
+        labeled_sys : LabeledSystem
             The labeled system.
         """
         try:
@@ -679,19 +679,33 @@ class System (MSONable) :
 
         labeled_sys = LabeledSystem()
 
-        for ss in self:
-            coord = ss['coords'].reshape((-1,1))
-            if not ss.nopbc:
-                cell = ss['cells'].reshape((-1,1))
+        if 'auto_batch_size' not in DeepPot.__init__.__code__.co_varnames:
+            for ss in self:
+                coord = ss['coords'].reshape((1, ss.get_natoms()*3))
+                if not ss.nopbc:
+                    cell = ss['cells'].reshape((1, 9))
+                else:
+                    cell = None
+                e, f, v = dp.eval(coord, cell, atype)
+                data = ss.data
+                data['energies'] = e.reshape((1, 1))
+                data['forces'] = f.reshape((1, ss.get_natoms(), 3))
+                data['virials'] = v.reshape((1, 3, 3))
+                this_sys = LabeledSystem.from_dict({'data': data})
+                labeled_sys.append(this_sys)
+        else:
+            # since v2.0.2, auto batch size is supported
+            coord = self.data['coords'].reshape((self.get_nframes(), self.get_natoms()*3))
+            if not self.nopbc:
+                cell = self.data['cells'].reshape((self.get_nframes(), 9))
             else:
                 cell = None
             e, f, v = dp.eval(coord, cell, atype)
-            data = ss.data
-            data['energies'] = e.reshape((1, 1))
-            data['forces'] = f.reshape((1, -1, 3))
-            data['virials'] = v.reshape((1, 3, 3))
-            this_sys = LabeledSystem.from_dict({'data': data})
-            labeled_sys.append(this_sys)
+            data = self.data.copy()
+            data['energies'] = e.reshape((self.get_nframes(), 1))
+            data['forces'] = f.reshape((self.get_nframes(), self.get_natoms(), 3))
+            data['virials'] = v.reshape((self.get_nframes(), 3, 3))
+            labeled_sys = LabeledSystem.from_dict({'data': data})
         return labeled_sys
 
     def pick_atom_idx(self, idx, nopbc=None):
