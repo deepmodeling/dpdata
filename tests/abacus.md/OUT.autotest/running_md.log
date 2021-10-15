@@ -1,0 +1,2608 @@
+                                                                                     
+                             WELCOME TO ABACUS                                       
+                                                                                     
+               'Atomic-orbital Based Ab-initio Computation at UStc'                  
+                                                                                     
+                     Website: http://abacus.ustc.edu.cn/                             
+                                                                                     
+    Version: Parallel, in development
+    Processor Number is 1
+    Start Time is Fri Oct 15 14:37:16 2021
+                                                                                     
+ ------------------------------------------------------------------------------------
+
+ READING GENERAL INFORMATION
+                           global_out_dir = OUT.autotest/
+                           global_in_card = INPUT
+                               pseudo_dir = ./
+                              orbital_dir = ./
+                              pseudo_type = auto
+                                    DRANK = 1
+                                    DSIZE = 1
+                                   DCOLOR = 1
+                                    GRANK = 1
+                                    GSIZE = 1
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading atom information in unitcell:                              |
+ | From the input file and the structure file we know the number of   |
+ | different elments in this unitcell, then we list the detail        |
+ | information for each element, especially the zeta and polar atomic |
+ | orbital number for each element. The total atom number is counted. |
+ | We calculate the nearest atom distance for each atom and show the  |
+ | Cartesian and Direct coordinates for each atom. We list the file   |
+ | address for atomic orbitals. The volume and the lattice vectors    |
+ | in real and reciprocal space is also shown.                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+ READING UNITCELL INFORMATION
+                                    ntype = 1
+                 atom label for species 1 = Si
+                  lattice constant (Bohr) = 10.2
+              lattice constant (Angstrom) = 5.39761
+
+ READING ATOM TYPE 1
+                               atom label = Si
+                      L=0, number of zeta = 1
+                      L=1, number of zeta = 1
+                      L=2, number of zeta = 1
+             number of atom for this type = 2
+                      start magnetization = FALSE
+                      start magnetization = FALSE
+
+                        TOTAL ATOM NUMBER = 2
+
+ CARTESIAN COORDINATES ( UNIT = 10.2 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+     tauc_Si1                   0                   0                   0                   0                   0                   0                   0
+     tauc_Si2               0.241               0.255      0.250999999999                   0                   0                   0                   0
+
+
+                          Volume (Bohr^3) = 265.302
+                             Volume (A^3) = 39.3136533177
+
+ Lattice vectors: (Cartesian coordinate: in unit of a_0)
+                 +0.5                +0.5                  +0
+                 +0.5                  +0                +0.5
+                   +0                +0.5                +0.5
+ Reciprocal vectors: (Cartesian coordinate: in unit of 2 pi/a_0)
+                   +1                  +1                  -1
+                   +1                  -1                  +1
+                   -1                  +1                  +1
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading pseudopotentials files:                                    |
+ | The pseudopotential file is in UPF format. The 'NC' indicates that |
+ | the type of pseudopotential is 'norm conserving'. Functional of    |
+ | exchange and correlation is decided by 4 given parameters in UPF   |
+ | file.  We also read in the 'core correction' if there exists.      |
+ | Also we can read the valence electrons number and the maximal      |
+ | angular momentum used in this pseudopotential. We also read in the |
+ | trail wave function, trail atomic density and local-pseudopotential|
+ | on logrithmic grid. The non-local pseudopotential projector is also|
+ | read in if there is any.                                           |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+                PAO radial cut off (Bohr) = 15
+
+ Read in pseudopotential file is ./Si_ONCV_PBE-1.0.upf
+                     pseudopotential type = NC
+                            functional Ex = PBE
+                            functional Ec = 
+                          functional GCEx = 
+                          functional GCEc = 
+                 nonlocal core correction = 0
+                        valence electrons = 4
+                                     lmax = 1
+                           number of zeta = 0
+                     number of projectors = 4
+                           L of projector = 0
+                           L of projector = 0
+                           L of projector = 1
+                           L of projector = 1
+     initial pseudo atomic orbital number = 0
+                                   NLOCAL = 18
+
+ SETUP THE ELECTRONS NUMBER
+            electron number of element Si = 4
+      total electron number of element Si = 8
+                           occupied bands = 4
+                                   NBANDS = 8
+ DONE : SETUP UNITCELL Time : 0.0648149461485 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup K-points                                                     |
+ | We setup the k-points according to input parameters.               |
+ | The reduced k-points are set according to symmetry operations.     |
+ | We treat the spin as another set of k-points.                      |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP K-POINTS
+                                    nspin = 1
+                   Input type of k points = Monkhorst-Pack(Gamma)
+                                   nkstot = 8
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0               0.125
+        2                 0.5                   0                   0               0.125
+        3                   0                 0.5                   0               0.125
+        4                 0.5                 0.5                   0               0.125
+        5                   0                   0                 0.5               0.125
+        6                 0.5                   0                 0.5               0.125
+        7                   0                 0.5                 0.5               0.125
+        8                 0.5                 0.5                 0.5               0.125
+
+           k-point number in this process = 8
+       minimum distributed K point number = 8
+
+  KPOINTS         CARTESIAN_X         CARTESIAN_Y         CARTESIAN_Z              WEIGHT
+        1                   0                   0                   0                0.25
+        2                 0.5                 0.5                -0.5                0.25
+        3                 0.5                -0.5                 0.5                0.25
+        4                   1                   0                   0                0.25
+        5                -0.5                 0.5                 0.5                0.25
+        6                   0                   1                   0                0.25
+        7                   0                   0                   1                0.25
+        8                 0.5                 0.5                 0.5                0.25
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0                0.25
+        2                 0.5                   0                   0                0.25
+        3                   0                 0.5                   0                0.25
+        4                 0.5                 0.5                   0                0.25
+        5                   0                   0                 0.5                0.25
+        6                 0.5                   0                 0.5                0.25
+        7                   0                 0.5                 0.5                0.25
+        8                 0.5                 0.5                 0.5                0.25
+ DONE : INIT K-POINTS Time : 0.0652149026282 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves:                                                 |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT.                              |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP THE PLANE WAVE BASIS
+     energy cutoff for wavefunc (unit:Ry) = 20
+            [fft grid for wave functions] = 24, 24, 24
+          [fft grid for charge/potential] = 24, 24, 24
+                      [fft grid division] = 1, 1, 1
+      [big fft grid for charge/potential] = 24, 24, 24
+                                     nbxx = 13824
+                                     nrxx = 13824
+
+ SETUP PLANE WAVES FOR CHARGE/POTENTIAL
+                    number of plane waves = 3143
+                         number of sticks = 283
+
+ SETUP PLANE WAVES FOR WAVE FUNCTIONS
+                    number of plane waves = 609
+                         number of sticks = 91
+
+ PARALLEL PW FOR CHARGE/POTENTIAL
+     PROC   COLUMNS(POT)             PW
+        1            283           3143
+ --------------- sum -------------------
+        1            283           3143
+
+ PARALLEL PW FOR WAVE FUNCTIONS
+     PROC     COLUMNS(W)             PW
+        1             91            609
+ --------------- sum -------------------
+        1             91            609
+
+ SETUP COORDINATES OF PLANE WAVES
+              number of total plane waves = 3143
+
+ SETUP COORDINATES OF PLANE WAVES
+                            number of |g| = 72
+                                  max |g| = 208
+                                  min |g| = 0
+ DONE : INIT PLANEWAVE Time : 0.0986429497134 (SEC)
+
+                                     npwx = 411
+
+ SETUP NONLOCAL PSEUDOPOTENTIALS IN PLANE WAVE BASIS
+ Si non-local projectors:
+ projector 1 L=0
+ projector 2 L=0
+ projector 3 L=1
+ projector 4 L=1
+      TOTAL NUMBER OF NONLOCAL PROJECTORS = 16
+ DONE : LOCAL POTENTIAL Time : 0.109992648242 (SEC)
+
+
+ Init Non-Local PseudoPotential table : 
+ Init Non-Local-Pseudopotential done.
+ DONE : NON-LOCAL POTENTIAL Time : 0.122797146207 (SEC)
+
+                                start_pot = atomic
+ DONE : INIT POTENTIAL Time : 0.135785 (SEC)
+
+
+ Make real space PAO into reciprocal space.
+       max mesh points in Pseudopotential = 601
+     dq(describe PAO in reciprocal space) = 0.01
+                                    max q = 542
+
+ number of pseudo atomic orbitals for Si is 0
+ DONE : INIT BASIS Time : 0.184089 (SEC)
+
+ ...............Nose-Hoover Chain parameter initialization...............  
+ Temperature =    3.16682e-05
+ Temperature2 =    10.0004
+ NHC frequency =    0.00120944
+ NHC chain =    4
+ Qmass  =    1823.61
+ ...............................................................  
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   1--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       6.125000       0.314119
+        2       6.500000       0.327905
+        3       6.750000       0.334448
+        4       6.125000       0.309547
+        5       6.750000       0.112520
+        6       6.125000       0.024925
+        7       5.875000       0.024036
+        8       6.250000       0.025291
+
+ Density error is 0.108050841230
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   2--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       2.500000       0.012342
+        2       2.250000       0.011339
+        3       2.625000       0.012621
+        4       3.250000       0.014770
+        5       2.500000       0.012183
+        6       3.125000       0.014333
+        7       2.125000       0.010831
+        8       2.625000       0.012575
+
+ Density error is 0.004334778560
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   3--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       3.375000       0.015399
+        2       3.250000       0.014874
+        3       3.125000       0.014380
+        4       4.000000       0.017413
+        5       3.250000       0.014776
+        6       4.000000       0.017425
+        7       3.750000       0.016523
+        8       2.875000       0.013438
+
+ Density error is 0.000134739187
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   4--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       3.750000       0.016717
+        2       3.250000       0.014854
+        3       3.375000       0.015229
+        4       4.000000       0.017399
+        5       3.500000       0.015669
+        6       4.000000       0.017380
+        7       4.500000       0.019148
+        8       3.375000       0.015188
+
+ Density error is 0.000014649703
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   5--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       2.750000       0.013183
+        2       2.625000       0.012728
+        3       2.750000       0.013067
+        4       2.750000       0.013018
+        5       2.875000       0.013453
+        6       2.750000       0.013008
+        7       2.625000       0.012593
+        8       2.625000       0.012567
+
+ Density error is 0.000000599415
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   6--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       3.125000       0.014489
+        2       3.625000       0.016131
+        3       3.250000       0.014781
+        4       4.375000       0.018739
+        5       3.375000       0.015250
+        6       4.000000       0.017425
+        7       4.250000       0.018253
+        8       3.375000       0.015213
+
+ Density error is 0.000000048534
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   7--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       3.250000       0.015027
+        2       3.000000       0.013998
+        3       3.125000       0.014375
+        4       3.625000       0.016117
+        5       3.000000       0.013941
+        6       4.125000       0.017842
+        7       3.500000       0.015638
+        8       3.125000       0.014323
+
+ Density error is 0.000000002823
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   8--------------------------------
+  K-point    CG iter num      Time(Sec)
+        1       3.500000       0.015909
+        2       3.125000       0.014437
+        3       3.000000       0.013954
+        4       3.500000       0.015692
+        5       3.250000       0.014873
+        6       3.250000       0.014791
+        7       3.375000       0.015237
+        8       3.125000       0.014335
+
+ Density error is 0.000000000061
+
+ charge density convergence is achieved
+ final etot is -211.771832657158 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+      Si1      -0.885363      +0.500467      +0.150240
+      Si2      +0.885363      -0.500467      -0.150240
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     +123.045273      -3.807537     -13.541448
+       -3.807537    +124.421298     +24.047975
+      -13.541448     +24.047975    +125.016023
+
+output Pressure for check!
+Virtual Pressure is +124.231102 Kbar 
+Virial is +124.160865 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 1
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564005 (Rydberg)
+ NVT Temperature      : +10.000364 (K)
+ NVT Kinetic energy   :  +0.000190 (Rydberg)
+ NVT Potential energy : -15.564937 (Rydberg)
+ maxForce             :  +0.000400
+ maxStep              :  +0.012800
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +1                  -7.782469           -7.782003           +0.000000           +14.311776          
+
+ PW ALGORITHM --------------- ION=+2    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +34.500000     +1.482434      
+ +2      +24.125000     +0.314735      
+ +3      +24.250000     +0.087904      
+ +4      +27.625000     +0.099392      
+ +5      +25.000000     +0.090634      
+ +6      +29.875000     +0.107431      
+ +7      +31.875000     +0.113921      
+ +8      +26.750000     +0.096067      
+
+ Density error is +0.000008438536
+
+ PW ALGORITHM --------------- ION=+2    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010623      
+ +2      +2.000000      +0.010501      
+ +3      +2.000000      +0.010437      
+ +4      +2.000000      +0.010430      
+ +5      +2.000000      +0.010417      
+ +6      +2.000000      +0.010392      
+ +7      +2.000000      +0.010413      
+ +8      +2.000000      +0.010431      
+
+ Density error is +0.000000589537
+
+ PW ALGORITHM --------------- ION=+2    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.375000      +0.011909      
+ +2      +2.125000      +0.010960      
+ +3      +2.125000      +0.010853      
+ +4      +2.750000      +0.013046      
+ +5      +2.000000      +0.010421      
+ +6      +2.750000      +0.013030      
+ +7      +3.375000      +0.015237      
+ +8      +2.125000      +0.010850      
+
+ Density error is +0.000000029687
+
+ PW ALGORITHM --------------- ION=+2    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.375000      +0.015446      
+ +2      +3.500000      +0.015794      
+ +3      +3.125000      +0.014440      
+ +4      +3.500000      +0.015678      
+ +5      +3.625000      +0.016125      
+ +6      +3.500000      +0.015643      
+ +7      +3.250000      +0.014765      
+ +8      +3.500000      +0.015638      
+
+ Density error is +0.000000000296
+
+ charge density convergence is achieved
+ final etot is -211.778481425683 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.815731      +0.355757      +0.109618      
+ Si2     +0.815731      -0.355757      -0.109618      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.843178    -2.800524      -9.609977      
+ -2.800524      +124.232437    +22.152784     
+ -9.609977      +22.152784     +124.529670    
+
+output Pressure for check!
+Virtual Pressure is +123.968947 Kbar 
+Virial is +123.868428 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 2
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564050 (Rydberg)
+ NVT Temperature      : +33.255982 (K)
+ NVT Kinetic energy   : +0.000632  (Rydberg)
+ NVT Potential energy : -15.565426 (Rydberg)
+ maxForce             : +0.000304 
+ maxStep              : +0.026509 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +2                  -7.782713           -7.782025           +0.000000           +66.542608          
+
+ PW ALGORITHM --------------- ION=+3    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +33.625000     +1.455297      
+ +2      +23.000000     +0.344287      
+ +3      +23.250000     +0.084591      
+ +4      +27.250000     +0.097961      
+ +5      +24.625000     +0.089419      
+ +6      +28.375000     +0.101985      
+ +7      +26.625000     +0.096635      
+ +8      +24.625000     +0.089249      
+
+ Density error is +0.000021869323
+
+ PW ALGORITHM --------------- ION=+3    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010696      
+ +2      +2.000000      +0.010427      
+ +3      +2.000000      +0.010429      
+ +4      +2.000000      +0.010408      
+ +5      +2.000000      +0.010427      
+ +6      +2.375000      +0.011750      
+ +7      +2.000000      +0.010404      
+ +8      +2.000000      +0.010397      
+
+ Density error is +0.000001763699
+
+ PW ALGORITHM --------------- ION=+3    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011012      
+ +2      +2.250000      +0.011394      
+ +3      +2.250000      +0.011290      
+ +4      +2.875000      +0.013481      
+ +5      +2.250000      +0.011358      
+ +6      +3.000000      +0.013927      
+ +7      +2.875000      +0.013486      
+ +8      +2.375000      +0.011717      
+
+ Density error is +0.000000036065
+
+ PW ALGORITHM --------------- ION=+3    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.625000      +0.016348      
+ +2      +3.750000      +0.016579      
+ +3      +3.750000      +0.016547      
+ +4      +4.375000      +0.018704      
+ +5      +3.500000      +0.015695      
+ +6      +4.125000      +0.017849      
+ +7      +4.625000      +0.019620      
+ +8      +3.625000      +0.016087      
+
+ Density error is +0.000000002244
+
+ PW ALGORITHM --------------- ION=+3    ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.875000      +0.013691      
+ +2      +3.000000      +0.013966      
+ +3      +2.875000      +0.013492      
+ +4      +3.875000      +0.016984      
+ +5      +3.250000      +0.014831      
+ +6      +3.750000      +0.016559      
+ +7      +3.000000      +0.013909      
+ +8      +3.000000      +0.013880      
+
+ Density error is +0.000000000184
+
+ charge density convergence is achieved
+ final etot is -211.794269556733 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.462515      +0.083202      +0.018773      
+ Si2     +0.462515      -0.083202      -0.018773      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.815311    -0.492388      -2.246119      
+ -0.492388      +123.347654    +12.547878     
+ -2.246119      +12.547878     +123.364301    
+
+output Pressure for check!
+Virtual Pressure is +123.643118 Kbar 
+Virial is +123.175755 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 3
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564151 (Rydberg)
+ NVT Temperature      : +88.343003 (K)
+ NVT Kinetic energy   : +0.001679  (Rydberg)
+ NVT Potential energy : -15.566586 (Rydberg)
+ maxForce             : +0.000084 
+ maxStep              : +0.033756 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +3                  -7.783293           -7.782076           +0.000000           +112.977290         
+
+ PW ALGORITHM --------------- ION=+4    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +37.125000     +1.584397      
+ +2      +24.625000     +0.212187      
+ +3      +25.750000     +0.092986      
+ +4      +29.250000     +0.104765      
+ +5      +27.000000     +0.097458      
+ +6      +31.875000     +0.113833      
+ +7      +28.250000     +0.101426      
+ +8      +25.250000     +0.091166      
+
+ Density error is +0.000033429323
+
+ PW ALGORITHM --------------- ION=+4    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010606      
+ +2      +2.000000      +0.010470      
+ +3      +2.000000      +0.010394      
+ +4      +2.000000      +0.010391      
+ +5      +2.000000      +0.010403      
+ +6      +2.000000      +0.010374      
+ +7      +2.000000      +0.010374      
+ +8      +2.000000      +0.010432      
+
+ Density error is +0.000002801781
+
+ PW ALGORITHM --------------- ION=+4    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011027      
+ +2      +2.500000      +0.012197      
+ +3      +2.250000      +0.011338      
+ +4      +2.375000      +0.011707      
+ +5      +2.250000      +0.011301      
+ +6      +2.625000      +0.012578      
+ +7      +2.875000      +0.013474      
+ +8      +2.375000      +0.011758      
+
+ Density error is +0.000000035628
+
+ PW ALGORITHM --------------- ION=+4    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.875000      +0.017185      
+ +2      +3.875000      +0.017012      
+ +3      +3.750000      +0.016533      
+ +4      +4.000000      +0.017359      
+ +5      +3.750000      +0.016991      
+ +6      +3.875000      +0.017340      
+ +7      +4.625000      +0.019603      
+ +8      +3.750000      +0.016469      
+
+ Density error is +0.000000003655
+
+ PW ALGORITHM --------------- ION=+4    ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013239      
+ +2      +2.625000      +0.012645      
+ +3      +2.750000      +0.013035      
+ +4      +3.750000      +0.016496      
+ +5      +2.750000      +0.013016      
+ +6      +3.250000      +0.014762      
+ +7      +3.000000      +0.013915      
+ +8      +2.625000      +0.012541      
+
+ Density error is +0.000000000196
+
+ charge density convergence is achieved
+ final etot is -211.798998994521 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.045801      -0.211053      -0.052135      
+ Si2     -0.045801      +0.211053      +0.052135      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.007250    +1.421851      +5.725860      
+ +1.421851      +122.897686    -1.245212      
+ +5.725860      -1.245212      +123.005310    
+
+output Pressure for check!
+Virtual Pressure is +123.763579 Kbar 
+Virial is +122.970082 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 4
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564177 (Rydberg)
+ NVT Temperature      : +103.974513 (K)
+ NVT Kinetic energy   : +0.001976  (Rydberg)
+ NVT Potential energy : -15.566934 (Rydberg)
+ maxForce             : +0.000019 
+ maxStep              : +0.030839 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +4                  -7.783467           -7.782089           +0.000000           +94.653093          
+
+ PW ALGORITHM --------------- ION=+5    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.125000     +1.541803      
+ +2      +24.500000     +0.265063      
+ +3      +26.125000     +0.094359      
+ +4      +30.250000     +0.108286      
+ +5      +25.500000     +0.091682      
+ +6      +28.875000     +0.104719      
+ +7      +29.250000     +0.105021      
+ +8      +25.125000     +0.090821      
+
+ Density error is +0.000028572302
+
+ PW ALGORITHM --------------- ION=+5    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010595      
+ +2      +2.000000      +0.010418      
+ +3      +2.000000      +0.010451      
+ +4      +2.000000      +0.010412      
+ +5      +2.000000      +0.010426      
+ +6      +2.000000      +0.010384      
+ +7      +2.000000      +0.010373      
+ +8      +2.000000      +0.010418      
+
+ Density error is +0.000002384066
+
+ PW ALGORITHM --------------- ION=+5    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011011      
+ +2      +2.375000      +0.011743      
+ +3      +2.250000      +0.011317      
+ +4      +2.625000      +0.012578      
+ +5      +2.250000      +0.011279      
+ +6      +2.750000      +0.013007      
+ +7      +2.875000      +0.013443      
+ +8      +2.375000      +0.011684      
+
+ Density error is +0.000000035575
+
+ PW ALGORITHM --------------- ION=+5    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.750000      +0.016778      
+ +2      +3.875000      +0.017042      
+ +3      +3.750000      +0.016539      
+ +4      +4.125000      +0.017849      
+ +5      +3.750000      +0.016577      
+ +6      +3.625000      +0.016055      
+ +7      +4.625000      +0.019602      
+ +8      +3.625000      +0.016048      
+
+ Density error is +0.000000003086
+
+ PW ALGORITHM --------------- ION=+5    ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013198      
+ +2      +2.625000      +0.012687      
+ +3      +2.875000      +0.013502      
+ +4      +3.750000      +0.016536      
+ +5      +2.750000      +0.013120      
+ +6      +3.375000      +0.015253      
+ +7      +2.875000      +0.013430      
+ +8      +2.875000      +0.013424      
+
+ Density error is +0.000000000189
+
+ charge density convergence is achieved
+ final etot is -211.787163106063 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.531795      -0.423861      -0.074943      
+ Si2     -0.531795      +0.423861      +0.074943      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.156562    +2.191352      +11.539648     
+ +2.191352      +123.421604    -14.461358     
+ +11.539648     -14.461358     +123.871961    
+
+output Pressure for check!
+Virtual Pressure is +124.148173 Kbar 
+Virial is +123.483375 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 5
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564100 (Rydberg)
+ NVT Temperature      : +61.015343 (K)
+ NVT Kinetic energy   : +0.001159  (Rydberg)
+ NVT Potential energy : -15.566064 (Rydberg)
+ maxForce             : +0.000177 
+ maxStep              : +0.019294 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +5                  -7.783032           -7.782050           +0.000000           +35.600513          
+
+ PW ALGORITHM --------------- ION=+6    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +35.750000     +1.538779      
+ +2      +23.375000     +0.281560      
+ +3      +26.625000     +0.096030      
+ +4      +29.375000     +0.105067      
+ +5      +25.125000     +0.090691      
+ +6      +30.000000     +0.107285      
+ +7      +30.125000     +0.107224      
+ +8      +23.875000     +0.086308      
+
+ Density error is +0.000013559050
+
+ PW ALGORITHM --------------- ION=+6    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010587      
+ +2      +2.000000      +0.010411      
+ +3      +2.000000      +0.010387      
+ +4      +2.000000      +0.010385      
+ +5      +2.000000      +0.010401      
+ +6      +2.000000      +0.010372      
+ +7      +2.000000      +0.010373      
+ +8      +2.000000      +0.010387      
+
+ Density error is +0.000001049378
+
+ PW ALGORITHM --------------- ION=+6    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.010993      
+ +2      +2.125000      +0.010884      
+ +3      +2.125000      +0.010912      
+ +4      +2.500000      +0.012157      
+ +5      +2.125000      +0.010852      
+ +6      +2.750000      +0.013010      
+ +7      +3.000000      +0.013908      
+ +8      +2.125000      +0.010824      
+
+ Density error is +0.000000034124
+
+ PW ALGORITHM --------------- ION=+6    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.625000      +0.016280      
+ +2      +3.625000      +0.016107      
+ +3      +3.625000      +0.016126      
+ +4      +3.875000      +0.016930      
+ +5      +3.625000      +0.016102      
+ +6      +3.625000      +0.016047      
+ +7      +4.375000      +0.018675      
+ +8      +3.625000      +0.016036      
+
+ Density error is +0.000000001047
+
+ PW ALGORITHM --------------- ION=+6    ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.250000      +0.015029      
+ +2      +3.250000      +0.014818      
+ +3      +3.125000      +0.014333      
+ +4      +4.500000      +0.019099      
+ +5      +3.125000      +0.014369      
+ +6      +4.250000      +0.018282      
+ +7      +3.250000      +0.014734      
+ +8      +3.250000      +0.014725      
+
+ Density error is +0.000000000093
+
+ charge density convergence is achieved
+ final etot is -211.773976096239 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.830073      -0.488698      -0.076368      
+ Si2     -0.830073      +0.488698      +0.076368      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.079115    +2.349387      +13.341463     
+ +2.349387      +124.240376    -22.607891     
+ +13.341463     -22.607891     +124.847553    
+
+output Pressure for check!
+Virtual Pressure is +124.305722 Kbar 
+Virial is +124.055681 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 6
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564017 (Rydberg)
+ NVT Temperature      : +13.869106 (K)
+ NVT Kinetic energy   : +0.000264  (Rydberg)
+ NVT Potential energy : -15.565095 (Rydberg)
+ maxForce             : +0.000353 
+ maxStep              : +0.009591 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +6                  -7.782547           -7.782009           +0.000000           +9.461554           
+
+ PW ALGORITHM --------------- ION=+7    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.250000     +1.548029      
+ +2      +24.625000     +0.276619      
+ +3      +27.375000     +0.098665      
+ +4      +30.375000     +0.108527      
+ +5      +26.375000     +0.095093      
+ +6      +30.625000     +0.109686      
+ +7      +31.000000     +0.110332      
+ +8      +25.250000     +0.091074      
+
+ Density error is +0.000006867857
+
+ PW ALGORITHM --------------- ION=+7    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010576      
+ +2      +2.000000      +0.010440      
+ +3      +2.000000      +0.010510      
+ +4      +2.000000      +0.010413      
+ +5      +2.000000      +0.010403      
+ +6      +2.125000      +0.010838      
+ +7      +2.000000      +0.010376      
+ +8      +2.000000      +0.010387      
+
+ Density error is +0.000000471169
+
+ PW ALGORITHM --------------- ION=+7    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013211      
+ +2      +2.000000      +0.010520      
+ +3      +2.000000      +0.010489      
+ +4      +2.750000      +0.013013      
+ +5      +2.125000      +0.010843      
+ +6      +2.500000      +0.012183      
+ +7      +3.250000      +0.014821      
+ +8      +2.000000      +0.010417      
+
+ Density error is +0.000000026949
+
+ PW ALGORITHM --------------- ION=+7    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.000000      +0.014095      
+ +2      +3.250000      +0.014863      
+ +3      +3.000000      +0.013942      
+ +4      +3.125000      +0.014354      
+ +5      +3.250000      +0.014813      
+ +6      +3.250000      +0.014752      
+ +7      +3.500000      +0.015640      
+ +8      +3.250000      +0.014764      
+
+ Density error is +0.000000000178
+
+ charge density convergence is achieved
+ final etot is -211.775966500996 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.841211      -0.388251      -0.083865      
+ Si2     -0.841211      +0.388251      +0.083865      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.888185    +2.498229      +10.607911     
+ +2.498229      +124.324706    -22.903208     
+ +10.607911     -22.903208     +124.699212    
+
+output Pressure for check!
+Virtual Pressure is +124.037154 Kbar 
+Virial is +123.970701 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 7
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564029 (Rydberg)
+ NVT Temperature      : +20.830773 (K)
+ NVT Kinetic energy   : +0.000396  (Rydberg)
+ NVT Potential energy : -15.565241 (Rydberg)
+ maxForce             : +0.000327 
+ maxStep              : +0.022260 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +7                  -7.782620           -7.782015           +0.000000           +47.763680          
+
+ PW ALGORITHM --------------- ION=+8    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +34.625000     +1.498024      
+ +2      +22.500000     +0.296778      
+ +3      +24.500000     +0.088638      
+ +4      +28.750000     +0.103008      
+ +5      +24.000000     +0.086877      
+ +6      +29.375000     +0.105138      
+ +7      +26.250000     +0.094433      
+ +8      +22.375000     +0.081172      
+
+ Density error is +0.000016498376
+
+ PW ALGORITHM --------------- ION=+8    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010574      
+ +2      +2.000000      +0.010443      
+ +3      +2.000000      +0.010379      
+ +4      +2.000000      +0.010399      
+ +5      +2.000000      +0.010420      
+ +6      +2.000000      +0.010425      
+ +7      +2.500000      +0.012164      
+ +8      +2.000000      +0.010416      
+
+ Density error is +0.000001314992
+
+ PW ALGORITHM --------------- ION=+8    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011051      
+ +2      +2.250000      +0.011345      
+ +3      +2.125000      +0.010869      
+ +4      +2.750000      +0.013016      
+ +5      +2.250000      +0.011286      
+ +6      +2.750000      +0.013011      
+ +7      +3.125000      +0.014347      
+ +8      +2.250000      +0.011259      
+
+ Density error is +0.000000033932
+
+ PW ALGORITHM --------------- ION=+8    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.750000      +0.017140      
+ +2      +3.625000      +0.016310      
+ +3      +3.750000      +0.016631      
+ +4      +4.000000      +0.017495      
+ +5      +3.500000      +0.015705      
+ +6      +4.125000      +0.017878      
+ +7      +4.250000      +0.018300      
+ +8      +3.500000      +0.015635      
+
+ Density error is +0.000000001483
+
+ PW ALGORITHM --------------- ION=+8    ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013210      
+ +2      +3.125000      +0.014428      
+ +3      +3.125000      +0.014340      
+ +4      +4.000000      +0.017385      
+ +5      +3.125000      +0.014518      
+ +6      +3.625000      +0.016115      
+ +7      +3.500000      +0.015627      
+ +8      +3.375000      +0.015173      
+
+ Density error is +0.000000000115
+
+ charge density convergence is achieved
+ final etot is -211.790638622284 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.562521      -0.158433      -0.082597      
+ Si2     -0.562521      +0.158433      +0.082597      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.818911    +2.300863      +4.331819      
+ +2.300863      +123.569280    -15.284717     
+ +4.331819      -15.284717     +123.616732    
+
+output Pressure for check!
+Virtual Pressure is +123.670443 Kbar 
+Virial is +123.334974 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 8
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564121 (Rydberg)
+ NVT Temperature      : +72.197413 (K)
+ NVT Kinetic energy   : +0.001372  (Rydberg)
+ NVT Potential energy : -15.566319 (Rydberg)
+ maxForce             : +0.000132 
+ maxStep              : +0.031989 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +8                  -7.783160           -7.782060           +0.000000           +101.706395         
+
+ PW ALGORITHM --------------- ION=+9    ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +35.875000     +1.531937      
+ +2      +26.875000     +0.264962      
+ +3      +26.750000     +0.096733      
+ +4      +30.375000     +0.108739      
+ +5      +27.000000     +0.097620      
+ +6      +31.875000     +0.114026      
+ +7      +28.000000     +0.100499      
+ +8      +25.250000     +0.092090      
+
+ Density error is +0.000030268617
+
+ PW ALGORITHM --------------- ION=+9    ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010942      
+ +2      +2.000000      +0.010442      
+ +3      +2.000000      +0.010413      
+ +4      +2.000000      +0.010444      
+ +5      +2.000000      +0.010413      
+ +6      +2.000000      +0.010372      
+ +7      +2.000000      +0.010379      
+ +8      +2.000000      +0.010382      
+
+ Density error is +0.000002526424
+
+ PW ALGORITHM --------------- ION=+9    ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011021      
+ +2      +2.500000      +0.012194      
+ +3      +2.250000      +0.011346      
+ +4      +2.375000      +0.011731      
+ +5      +2.250000      +0.011785      
+ +6      +2.750000      +0.013400      
+ +7      +2.875000      +0.013483      
+ +8      +2.500000      +0.012132      
+
+ Density error is +0.000000035287
+
+ PW ALGORITHM --------------- ION=+9    ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.625000      +0.016272      
+ +2      +3.750000      +0.016595      
+ +3      +3.625000      +0.016152      
+ +4      +3.875000      +0.016950      
+ +5      +3.625000      +0.016113      
+ +6      +3.750000      +0.016497      
+ +7      +4.625000      +0.019580      
+ +8      +3.750000      +0.016488      
+
+ Density error is +0.000000003280
+
+ PW ALGORITHM --------------- ION=+9    ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013195      
+ +2      +2.750000      +0.013069      
+ +3      +2.875000      +0.013452      
+ +4      +4.250000      +0.018388      
+ +5      +2.875000      +0.013480      
+ +6      +3.500000      +0.015655      
+ +7      +3.000000      +0.013869      
+ +8      +2.625000      +0.012553      
+
+ Density error is +0.000000000193
+
+ charge density convergence is achieved
+ final etot is -211.799689533651 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.088600      +0.125590      -0.036123      
+ Si2     -0.088600      -0.125590      +0.036123      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.942319    +0.972401      -3.404364      
+ +0.972401      +122.922036    -2.403271      
+ -3.404364      -2.403271      +122.959321    
+
+output Pressure for check!
+Virtual Pressure is +123.655562 Kbar 
+Virial is +122.941225 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 9
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564178 (Rydberg)
+ NVT Temperature      : +102.774866 (K)
+ NVT Kinetic energy   : +0.001953  (Rydberg)
+ NVT Potential energy : -15.566984 (Rydberg)
+ maxForce             : +0.000009 
+ maxStep              : +0.032288 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +9                  -7.783492           -7.782089           +0.000000           +102.692994         
+
+ PW ALGORITHM --------------- ION=+10   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.000000     +1.538429      
+ +2      +24.875000     +0.260502      
+ +3      +25.750000     +0.093167      
+ +4      +29.875000     +0.106972      
+ +5      +26.000000     +0.094130      
+ +6      +30.000000     +0.107537      
+ +7      +31.000000     +0.110836      
+ +8      +25.375000     +0.091698      
+
+ Density error is +0.000030737201
+
+ PW ALGORITHM --------------- ION=+10   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010666      
+ +2      +2.000000      +0.010444      
+ +3      +2.000000      +0.010477      
+ +4      +2.000000      +0.010404      
+ +5      +2.000000      +0.010414      
+ +6      +2.000000      +0.010377      
+ +7      +2.000000      +0.010374      
+ +8      +2.000000      +0.010388      
+
+ Density error is +0.000002560646
+
+ PW ALGORITHM --------------- ION=+10   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.250000      +0.011451      
+ +2      +2.500000      +0.012257      
+ +3      +2.250000      +0.011301      
+ +4      +2.750000      +0.013040      
+ +5      +2.250000      +0.011288      
+ +6      +2.625000      +0.012593      
+ +7      +3.000000      +0.013923      
+ +8      +2.500000      +0.012151      
+
+ Density error is +0.000000033975
+
+ PW ALGORITHM --------------- ION=+10   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.625000      +0.016339      
+ +2      +3.875000      +0.017015      
+ +3      +3.750000      +0.016527      
+ +4      +4.250000      +0.018269      
+ +5      +3.750000      +0.016535      
+ +6      +3.750000      +0.016493      
+ +7      +4.625000      +0.019590      
+ +8      +3.750000      +0.016482      
+
+ Density error is +0.000000003387
+
+ PW ALGORITHM --------------- ION=+10   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.875000      +0.013682      
+ +2      +2.625000      +0.012626      
+ +3      +2.750000      +0.013042      
+ +4      +3.750000      +0.016591      
+ +5      +3.000000      +0.013926      
+ +6      +3.500000      +0.015660      
+ +7      +3.000000      +0.013942      
+ +8      +2.625000      +0.012582      
+
+ Density error is +0.000000000211
+
+ charge density convergence is achieved
+ final etot is -211.791757080168 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.416931      +0.372190      +0.054656      
+ Si2     +0.416931      -0.372190      -0.054656      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.112004    -1.386177      -10.090684     
+ -1.386177      +123.202765    +11.305489     
+ -10.090684     +11.305489     +123.552704    
+
+output Pressure for check!
+Virtual Pressure is +124.010423 Kbar 
+Virial is +123.289157 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 10
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564126 (Rydberg)
+ NVT Temperature      : +73.190993 (K)
+ NVT Kinetic energy   : +0.001391  (Rydberg)
+ NVT Potential energy : -15.566401 (Rydberg)
+ maxForce             : +0.000119 
+ maxStep              : +0.022835 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +10                 -7.783201           -7.782063           +0.000000           +48.734190          
+
+ PW ALGORITHM --------------- ION=+11   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +35.875000     +1.541778      
+ +2      +25.500000     +0.266144      
+ +3      +25.250000     +0.091185      
+ +4      +29.250000     +0.104785      
+ +5      +24.875000     +0.090153      
+ +6      +30.625000     +0.109517      
+ +7      +28.875000     +0.103393      
+ +8      +27.500000     +0.098937      
+
+ Density error is +0.000016935127
+
+ PW ALGORITHM --------------- ION=+11   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010679      
+ +2      +2.000000      +0.010521      
+ +3      +2.000000      +0.010402      
+ +4      +2.000000      +0.010379      
+ +5      +2.000000      +0.010446      
+ +6      +2.000000      +0.010416      
+ +7      +2.000000      +0.010382      
+ +8      +2.000000      +0.010370      
+
+ Density error is +0.000001343508
+
+ PW ALGORITHM --------------- ION=+11   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.010997      
+ +2      +2.125000      +0.010874      
+ +3      +2.250000      +0.011252      
+ +4      +2.625000      +0.012581      
+ +5      +2.125000      +0.010886      
+ +6      +2.625000      +0.012585      
+ +7      +3.000000      +0.013888      
+ +8      +2.375000      +0.011709      
+
+ Density error is +0.000000032255
+
+ PW ALGORITHM --------------- ION=+11   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.750000      +0.016894      
+ +2      +3.750000      +0.016617      
+ +3      +3.625000      +0.016129      
+ +4      +3.875000      +0.016962      
+ +5      +3.750000      +0.016549      
+ +6      +3.750000      +0.016487      
+ +7      +4.500000      +0.019118      
+ +8      +3.500000      +0.015592      
+
+ Density error is +0.000000001579
+
+ PW ALGORITHM --------------- ION=+11   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.875000      +0.013663      
+ +2      +3.125000      +0.014367      
+ +3      +2.875000      +0.013494      
+ +4      +4.125000      +0.017819      
+ +5      +3.125000      +0.014308      
+ +6      +4.000000      +0.017389      
+ +7      +3.125000      +0.014286      
+ +8      +3.125000      +0.014297      
+
+ Density error is +0.000000000113
+
+ charge density convergence is achieved
+ final etot is -211.777136772291 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.774114      +0.493555      +0.132287      
+ Si2     +0.774114      -0.493555      -0.132287      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.125513    -3.354234      -13.360634     
+ -3.354234      +124.042603    +21.012997     
+ -13.360634     +21.012997     +124.630461    
+
+output Pressure for check!
+Virtual Pressure is +124.275144 Kbar 
+Virial is +123.932859 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 11
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564029 (Rydberg)
+ NVT Temperature      : +20.916618 (K)
+ NVT Kinetic energy   : +0.000397  (Rydberg)
+ NVT Potential energy : -15.565327 (Rydberg)
+ maxForce             : +0.000325 
+ maxStep              : +0.009427 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +11                 -7.782663           -7.782015           +0.000000           +9.036895           
+
+ PW ALGORITHM --------------- ION=+12   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.125000     +1.547415      
+ +2      +26.375000     +0.264168      
+ +3      +25.375000     +0.091673      
+ +4      +29.500000     +0.105644      
+ +5      +26.125000     +0.094314      
+ +6      +31.500000     +0.112479      
+ +7      +29.875000     +0.106803      
+ +8      +28.625000     +0.102367      
+
+ Density error is +0.000006530970
+
+ PW ALGORITHM --------------- ION=+12   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010577      
+ +2      +2.000000      +0.010466      
+ +3      +2.000000      +0.010402      
+ +4      +2.000000      +0.010371      
+ +5      +2.000000      +0.010404      
+ +6      +2.000000      +0.010385      
+ +7      +2.000000      +0.010377      
+ +8      +2.000000      +0.010356      
+
+ Density error is +0.000000440898
+
+ PW ALGORITHM --------------- ION=+12   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.625000      +0.012786      
+ +2      +2.000000      +0.010477      
+ +3      +2.000000      +0.010393      
+ +4      +2.750000      +0.013027      
+ +5      +2.125000      +0.010923      
+ +6      +2.750000      +0.012995      
+ +7      +3.125000      +0.014337      
+ +8      +2.000000      +0.010365      
+
+ Density error is +0.000000024207
+
+ PW ALGORITHM --------------- ION=+12   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.000000      +0.014107      
+ +2      +3.125000      +0.014392      
+ +3      +3.000000      +0.013912      
+ +4      +3.375000      +0.015251      
+ +5      +3.375000      +0.015234      
+ +6      +3.125000      +0.014438      
+ +7      +3.250000      +0.014784      
+ +8      +3.250000      +0.014731      
+
+ Density error is +0.000000000170
+
+ charge density convergence is achieved
+ final etot is -211.774943325509 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.854779      +0.436696      +0.135045      
+ Si2     +0.854779      -0.436696      -0.135045      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.950297    -3.436598      -11.810037     
+ -3.436598      +124.343261    +23.217684     
+ -11.810037     +23.217684     +124.792605    
+
+output Pressure for check!
+Virtual Pressure is +124.092191 Kbar 
+Virial is +124.028721 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 12
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564015 (Rydberg)
+ NVT Temperature      : +13.061843 (K)
+ NVT Kinetic energy   : +0.000248  (Rydberg)
+ NVT Potential energy : -15.565166 (Rydberg)
+ maxForce             : +0.000355 
+ maxStep              : +0.019395 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +12                 -7.782583           -7.782007           +0.000000           +34.185920          
+
+ PW ALGORITHM --------------- ION=+13   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +34.000000     +1.465002      
+ +2      +23.000000     +0.338683      
+ +3      +23.500000     +0.085138      
+ +4      +27.875000     +0.099984      
+ +5      +24.000000     +0.086926      
+ +6      +28.875000     +0.103425      
+ +7      +30.250000     +0.108009      
+ +8      +24.000000     +0.086816      
+
+ Density error is +0.000013073792
+
+ PW ALGORITHM --------------- ION=+13   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010625      
+ +2      +2.000000      +0.010427      
+ +3      +2.000000      +0.010396      
+ +4      +2.000000      +0.010386      
+ +5      +2.000000      +0.010431      
+ +6      +2.000000      +0.010378      
+ +7      +2.000000      +0.010379      
+ +8      +2.000000      +0.010393      
+
+ Density error is +0.000001008013
+
+ PW ALGORITHM --------------- ION=+13   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011016      
+ +2      +2.250000      +0.011351      
+ +3      +2.125000      +0.010831      
+ +4      +2.750000      +0.013017      
+ +5      +2.125000      +0.010830      
+ +6      +2.750000      +0.013067      
+ +7      +3.125000      +0.014333      
+ +8      +2.250000      +0.011270      
+
+ Density error is +0.000000030793
+
+ PW ALGORITHM --------------- ION=+13   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.625000      +0.016352      
+ +2      +3.500000      +0.015679      
+ +3      +3.625000      +0.016117      
+ +4      +3.875000      +0.016947      
+ +5      +3.625000      +0.016079      
+ +6      +3.750000      +0.016476      
+ +7      +4.250000      +0.018229      
+ +8      +3.500000      +0.015618      
+
+ Density error is +0.000000001065
+
+ PW ALGORITHM --------------- ION=+13   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.875000      +0.013652      
+ +2      +3.375000      +0.015279      
+ +3      +3.125000      +0.014327      
+ +4      +4.125000      +0.017830      
+ +5      +3.250000      +0.014748      
+ +6      +4.250000      +0.018231      
+ +7      +3.500000      +0.015621      
+ +8      +3.375000      +0.015172      
+
+ Density error is +0.000000000097
+
+ charge density convergence is achieved
+ final etot is -211.787892336077 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.634765      +0.219902      +0.063772      
+ Si2     +0.634765      -0.219902      -0.063772      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.810989    -1.646977      -5.949715      
+ -1.646977      +123.724465    +17.235456     
+ -5.949715      +17.235456     +123.839274    
+
+output Pressure for check!
+Virtual Pressure is +123.698348 Kbar 
+Virial is +123.458243 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 13
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564100 (Rydberg)
+ NVT Temperature      : +58.268396 (K)
+ NVT Kinetic energy   : +0.001107  (Rydberg)
+ NVT Potential energy : -15.566117 (Rydberg)
+ maxForce             : +0.000172 
+ maxStep              : +0.030214 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +13                 -7.783059           -7.782050           +0.000000           +89.458675          
+
+ PW ALGORITHM --------------- ION=+14   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +35.875000     +1.542133      
+ +2      +26.125000     +0.252769      
+ +3      +27.000000     +0.097434      
+ +4      +31.125000     +0.111257      
+ +5      +27.250000     +0.098368      
+ +6      +30.375000     +0.108770      
+ +7      +28.125000     +0.101032      
+ +8      +27.000000     +0.097412      
+
+ Density error is +0.000027152014
+
+ PW ALGORITHM --------------- ION=+14   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010571      
+ +2      +2.000000      +0.010418      
+ +3      +2.000000      +0.010469      
+ +4      +2.000000      +0.010378      
+ +5      +2.000000      +0.010391      
+ +6      +2.125000      +0.010816      
+ +7      +2.000000      +0.010413      
+ +8      +2.000000      +0.010387      
+
+ Density error is +0.000002253887
+
+ PW ALGORITHM --------------- ION=+14   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011042      
+ +2      +2.375000      +0.011756      
+ +3      +2.250000      +0.011280      
+ +4      +2.750000      +0.013020      
+ +5      +2.250000      +0.011259      
+ +6      +2.625000      +0.012556      
+ +7      +2.875000      +0.013452      
+ +8      +2.500000      +0.012282      
+
+ Density error is +0.000000033052
+
+ PW ALGORITHM --------------- ION=+14   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.875000      +0.017209      
+ +2      +3.750000      +0.016568      
+ +3      +3.625000      +0.016133      
+ +4      +4.250000      +0.018248      
+ +5      +3.625000      +0.016119      
+ +6      +4.250000      +0.018240      
+ +7      +4.750000      +0.020036      
+ +8      +3.625000      +0.016022      
+
+ Density error is +0.000000002963
+
+ PW ALGORITHM --------------- ION=+14   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.875000      +0.013700      
+ +2      +2.750000      +0.013049      
+ +3      +2.750000      +0.012990      
+ +4      +3.500000      +0.015607      
+ +5      +3.000000      +0.013859      
+ +6      +3.375000      +0.015179      
+ +7      +2.875000      +0.013422      
+ +8      +2.750000      +0.012955      
+
+ Density error is +0.000000000187
+
+ charge density convergence is achieved
+ final etot is -211.799136169946 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.198870      -0.070672      -0.020734      
+ Si2     +0.198870      +0.070672      +0.020734      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.902575    +0.551658      +1.913429      
+ +0.551658      +122.991496    +5.397063      
+ +1.913429      +5.397063      +123.003398    
+
+output Pressure for check!
+Virtual Pressure is +123.594137 Kbar 
+Virial is +122.965823 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 14
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564168 (Rydberg)
+ NVT Temperature      : +96.770497 (K)
+ NVT Kinetic energy   : +0.001839  (Rydberg)
+ NVT Potential energy : -15.566944 (Rydberg)
+ maxForce             : +0.000017 
+ maxStep              : +0.032116 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +14                 -7.783472           -7.782084           +0.000000           +103.109630         
+
+ PW ALGORITHM --------------- ION=+15   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +35.375000     +1.505918      
+ +2      +24.375000     +0.254664      
+ +3      +24.625000     +0.089084      
+ +4      +30.625000     +0.109605      
+ +5      +26.625000     +0.095625      
+ +6      +29.125000     +0.104515      
+ +7      +27.875000     +0.100128      
+ +8      +24.500000     +0.088547      
+
+ Density error is +0.000030393373
+
+ PW ALGORITHM --------------- ION=+15   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010563      
+ +2      +2.000000      +0.010432      
+ +3      +2.000000      +0.010404      
+ +4      +2.000000      +0.010375      
+ +5      +2.000000      +0.010381      
+ +6      +2.000000      +0.010377      
+ +7      +2.000000      +0.010377      
+ +8      +2.000000      +0.010354      
+
+ Density error is +0.000002547296
+
+ PW ALGORITHM --------------- ION=+15   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.250000      +0.011476      
+ +2      +2.500000      +0.012193      
+ +3      +2.250000      +0.011277      
+ +4      +2.750000      +0.013015      
+ +5      +2.250000      +0.011319      
+ +6      +2.750000      +0.013017      
+ +7      +2.750000      +0.013009      
+ +8      +2.500000      +0.012125      
+
+ Density error is +0.000000032257
+
+ PW ALGORITHM --------------- ION=+15   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.625000      +0.016335      
+ +2      +3.875000      +0.016993      
+ +3      +3.750000      +0.016491      
+ +4      +4.375000      +0.018723      
+ +5      +3.750000      +0.016532      
+ +6      +3.500000      +0.015608      
+ +7      +4.375000      +0.018691      
+ +8      +3.750000      +0.016462      
+
+ Density error is +0.000000003366
+
+ PW ALGORITHM --------------- ION=+15   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013287      
+ +2      +2.625000      +0.012630      
+ +3      +2.875000      +0.013438      
+ +4      +3.500000      +0.015728      
+ +5      +2.750000      +0.013063      
+ +6      +3.125000      +0.014314      
+ +7      +3.250000      +0.014752      
+ +8      +2.625000      +0.012547      
+
+ Density error is +0.000000000185
+
+ charge density convergence is achieved
+ final etot is -211.794739884606 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.297987      -0.327806      -0.066082      
+ Si2     -0.297987      +0.327806      +0.066082      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.100328    +1.856002      +8.909136      
+ +1.856002      +123.052207    -8.099784      
+ +8.909136      -8.099784      +123.317967    
+
+output Pressure for check!
+Virtual Pressure is +123.881026 Kbar 
+Virial is +123.156834 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 15
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564136 (Rydberg)
+ NVT Temperature      : +79.642870 (K)
+ NVT Kinetic energy   : +0.001513  (Rydberg)
+ NVT Potential energy : -15.566621 (Rydberg)
+ maxForce             : +0.000076 
+ maxStep              : +0.024468 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +15                 -7.783310           -7.782068           +0.000000           +58.786721          
+
+ PW ALGORITHM --------------- ION=+16   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.000000     +1.550421      
+ +2      +24.125000     +0.253604      
+ +3      +26.125000     +0.094431      
+ +4      +29.625000     +0.106054      
+ +5      +25.500000     +0.091700      
+ +6      +29.500000     +0.105684      
+ +7      +29.125000     +0.104354      
+ +8      +23.750000     +0.086118      
+
+ Density error is +0.000019003017
+
+ PW ALGORITHM --------------- ION=+16   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010587      
+ +2      +2.000000      +0.010446      
+ +3      +2.000000      +0.010445      
+ +4      +2.000000      +0.010404      
+ +5      +2.000000      +0.010390      
+ +6      +2.000000      +0.010379      
+ +7      +2.000000      +0.010378      
+ +8      +2.000000      +0.010370      
+
+ Density error is +0.000001546864
+
+ PW ALGORITHM --------------- ION=+16   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011046      
+ +2      +2.375000      +0.011756      
+ +3      +2.250000      +0.011289      
+ +4      +2.500000      +0.012140      
+ +5      +2.250000      +0.011313      
+ +6      +2.750000      +0.013017      
+ +7      +2.875000      +0.013462      
+ +8      +2.250000      +0.011249      
+
+ Density error is +0.000000031769
+
+ PW ALGORITHM --------------- ION=+16   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.750000      +0.016761      
+ +2      +3.500000      +0.015694      
+ +3      +3.750000      +0.016521      
+ +4      +4.000000      +0.017360      
+ +5      +3.500000      +0.015655      
+ +6      +3.625000      +0.016032      
+ +7      +4.625000      +0.019569      
+ +8      +3.625000      +0.016039      
+
+ Density error is +0.000000001918
+
+ PW ALGORITHM --------------- ION=+16   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013196      
+ +2      +3.125000      +0.014455      
+ +3      +2.875000      +0.013481      
+ +4      +4.000000      +0.017394      
+ +5      +3.000000      +0.013924      
+ +6      +3.750000      +0.016493      
+ +7      +3.000000      +0.013924      
+ +8      +3.125000      +0.014310      
+
+ Density error is +0.000000000142
+
+ charge density convergence is achieved
+ final etot is -211.780796729120 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.685454      -0.466777      -0.074732      
+ Si2     -0.685454      +0.466777      +0.074732      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.145046    +2.237882      +12.724721     
+ +2.237882      +123.794533    -18.656690     
+ +12.724721     -18.656690     +124.345426    
+
+output Pressure for check!
+Virtual Pressure is +124.174558 Kbar 
+Virial is +123.761668 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 16
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564047 (Rydberg)
+ NVT Temperature      : +29.284447 (K)
+ NVT Kinetic energy   : +0.000556  (Rydberg)
+ NVT Potential energy : -15.565596 (Rydberg)
+ maxForce             : +0.000262 
+ maxStep              : +0.011494 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +16                 -7.782798           -7.782023           +0.000000           +12.500370          
+
+ PW ALGORITHM --------------- ION=+17   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.250000     +1.548769      
+ +2      +24.250000     +0.238733      
+ +3      +26.875000     +0.097094      
+ +4      +30.500000     +0.109091      
+ +5      +25.500000     +0.092283      
+ +6      +29.500000     +0.106987      
+ +7      +30.375000     +0.108359      
+ +8      +24.000000     +0.086977      
+
+ Density error is +0.000007183223
+
+ PW ALGORITHM --------------- ION=+17   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010577      
+ +2      +2.000000      +0.010427      
+ +3      +2.000000      +0.010496      
+ +4      +2.000000      +0.010394      
+ +5      +2.000000      +0.010418      
+ +6      +2.125000      +0.010931      
+ +7      +2.000000      +0.010379      
+ +8      +2.000000      +0.010422      
+
+ Density error is +0.000000511477
+
+ PW ALGORITHM --------------- ION=+17   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.375000      +0.011921      
+ +2      +2.125000      +0.010910      
+ +3      +2.125000      +0.010844      
+ +4      +2.875000      +0.013531      
+ +5      +2.000000      +0.010405      
+ +6      +2.625000      +0.012594      
+ +7      +3.375000      +0.015197      
+ +8      +2.125000      +0.010844      
+
+ Density error is +0.000000026283
+
+ PW ALGORITHM --------------- ION=+17   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.375000      +0.015456      
+ +2      +3.625000      +0.016132      
+ +3      +3.250000      +0.014828      
+ +4      +3.500000      +0.015635      
+ +5      +3.375000      +0.015239      
+ +6      +3.375000      +0.015161      
+ +7      +3.125000      +0.014336      
+ +8      +3.500000      +0.015643      
+
+ Density error is +0.000000000237
+
+ charge density convergence is achieved
+ final etot is -211.774985509926 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.833310      -0.445812      -0.078719      
+ Si2     -0.833310      +0.445812      +0.078719      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.994195    +2.379118      +12.171980     
+ +2.379118      +124.272817    -22.694125     
+ +12.171980     -22.694125     +124.774373    
+
+output Pressure for check!
+Virtual Pressure is +124.101591 Kbar 
+Virial is +124.013795 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 17
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564010 (Rydberg)
+ NVT Temperature      : +8.524394  (K)
+ NVT Kinetic energy   : +0.000162  (Rydberg)
+ NVT Potential energy : -15.565169 (Rydberg)
+ maxForce             : +0.000340 
+ maxStep              : +0.014988 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +17                 -7.782584           -7.782005           +0.000000           +21.039416          
+
+ PW ALGORITHM --------------- ION=+18   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +34.250000     +1.473409      
+ +2      +22.000000     +0.326542      
+ +3      +24.000000     +0.087028      
+ +4      +28.000000     +0.100599      
+ +5      +24.000000     +0.086910      
+ +6      +29.000000     +0.103884      
+ +7      +27.125000     +0.097431      
+ +8      +21.625000     +0.078627      
+
+ Density error is +0.000009301236
+
+ PW ALGORITHM --------------- ION=+18   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010625      
+ +2      +2.000000      +0.010448      
+ +3      +2.000000      +0.010394      
+ +4      +2.000000      +0.010369      
+ +5      +2.000000      +0.010395      
+ +6      +2.125000      +0.010809      
+ +7      +2.000000      +0.010374      
+ +8      +2.000000      +0.010352      
+
+ Density error is +0.000000698839
+
+ PW ALGORITHM --------------- ION=+18   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.250000      +0.011468      
+ +2      +2.125000      +0.010873      
+ +3      +2.125000      +0.010841      
+ +4      +2.875000      +0.013464      
+ +5      +2.125000      +0.010821      
+ +6      +2.500000      +0.012141      
+ +7      +3.125000      +0.014320      
+ +8      +2.125000      +0.010803      
+
+ Density error is +0.000000028756
+
+ PW ALGORITHM --------------- ION=+18   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.500000      +0.015856      
+ +2      +3.625000      +0.016113      
+ +3      +3.500000      +0.015631      
+ +4      +3.625000      +0.016042      
+ +5      +3.625000      +0.016071      
+ +6      +3.750000      +0.016468      
+ +7      +4.000000      +0.017389      
+ +8      +3.625000      +0.016045      
+
+ Density error is +0.000000000545
+
+ charge density convergence is achieved
+ final etot is -211.784530531570 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.693682      -0.275109      -0.084557      
+ Si2     -0.693682      +0.275109      +0.084557      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.844932    +2.424056      +7.513685      
+ +2.424056      +123.890142    -18.864028     
+ +7.513685      -18.864028     +124.067900    
+
+output Pressure for check!
+Virtual Pressure is +123.748762 Kbar 
+Virial is +123.600991 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 18
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564069 (Rydberg)
+ NVT Temperature      : +42.047874 (K)
+ NVT Kinetic energy   : +0.000799  (Rydberg)
+ NVT Potential energy : -15.565870 (Rydberg)
+ maxForce             : +0.000213 
+ maxStep              : +0.027051 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +18                 -7.782935           -7.782034           +0.000000           +72.297418          
+
+ PW ALGORITHM --------------- ION=+19   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +33.625000     +1.446761      
+ +2      +22.750000     +0.337746      
+ +3      +24.500000     +0.088664      
+ +4      +26.875000     +0.096374      
+ +5      +24.375000     +0.088118      
+ +6      +27.625000     +0.099005      
+ +7      +26.125000     +0.093894      
+ +8      +23.000000     +0.083275      
+
+ Density error is +0.000022341414
+
+ PW ALGORITHM --------------- ION=+19   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010590      
+ +2      +2.000000      +0.010429      
+ +3      +2.000000      +0.010400      
+ +4      +2.500000      +0.012143      
+ +5      +2.000000      +0.010418      
+ +6      +2.000000      +0.010354      
+ +7      +2.375000      +0.011685      
+ +8      +2.000000      +0.010357      
+
+ Density error is +0.000001840522
+
+ PW ALGORITHM --------------- ION=+19   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011068      
+ +2      +2.375000      +0.011775      
+ +3      +2.250000      +0.011276      
+ +4      +2.500000      +0.012134      
+ +5      +2.250000      +0.011291      
+ +6      +2.500000      +0.012133      
+ +7      +3.000000      +0.013910      
+ +8      +2.375000      +0.011695      
+
+ Density error is +0.000000031328
+
+ PW ALGORITHM --------------- ION=+19   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.750000      +0.016750      
+ +2      +3.750000      +0.016541      
+ +3      +3.750000      +0.016522      
+ +4      +4.000000      +0.017360      
+ +5      +3.625000      +0.016071      
+ +6      +3.875000      +0.016922      
+ +7      +4.125000      +0.017815      
+ +8      +3.875000      +0.016914      
+
+ Density error is +0.000000002386
+
+ PW ALGORITHM --------------- ION=+19   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.750000      +0.013224      
+ +2      +2.875000      +0.013511      
+ +3      +2.875000      +0.013467      
+ +4      +3.875000      +0.016967      
+ +5      +2.875000      +0.013449      
+ +6      +3.500000      +0.015602      
+ +7      +3.500000      +0.015614      
+ +8      +2.500000      +0.012112      
+
+ Density error is +0.000000000165
+
+ charge density convergence is achieved
+ final etot is -211.797509996802 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.315435      -0.012610      -0.062567      
+ Si2     -0.315435      +0.012610      +0.062567      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +122.869560    +1.699030      +0.355976      
+ +1.699030      +123.125358    -8.562365      
+ +0.355976      -8.562365      +123.115733    
+
+output Pressure for check!
+Virtual Pressure is +123.544666 Kbar 
+Virial is +123.036884 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 19
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564150 (Rydberg)
+ NVT Temperature      : +86.724314 (K)
+ NVT Kinetic energy   : +0.001648  (Rydberg)
+ NVT Potential energy : -15.566824 (Rydberg)
+ maxForce             : +0.000039 
+ maxStep              : +0.031849 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +19                 -7.783412           -7.782075           +0.000000           +101.072847         
+
+ PW ALGORITHM --------------- ION=+20   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.000000     +1.535621      
+ +2      +25.500000     +0.274161      
+ +3      +26.125000     +0.094184      
+ +4      +29.875000     +0.106798      
+ +5      +26.375000     +0.095103      
+ +6      +30.750000     +0.109985      
+ +7      +31.875000     +0.114172      
+ +8      +25.750000     +0.092841      
+
+ Density error is +0.000029792721
+
+ PW ALGORITHM --------------- ION=+20   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011051      
+ +2      +2.000000      +0.010426      
+ +3      +2.000000      +0.010378      
+ +4      +2.125000      +0.010793      
+ +5      +2.000000      +0.010367      
+ +6      +2.000000      +0.010355      
+ +7      +2.000000      +0.010362      
+ +8      +2.000000      +0.010354      
+
+ Density error is +0.000002500903
+
+ PW ALGORITHM --------------- ION=+20   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.375000      +0.011932      
+ +2      +2.500000      +0.012164      
+ +3      +2.250000      +0.011253      
+ +4      +2.500000      +0.012117      
+ +5      +2.250000      +0.011252      
+ +6      +2.750000      +0.012983      
+ +7      +2.750000      +0.013005      
+ +8      +2.500000      +0.012105      
+
+ Density error is +0.000000031164
+
+ PW ALGORITHM --------------- ION=+20   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.750000      +0.016752      
+ +2      +3.875000      +0.016963      
+ +3      +3.750000      +0.016481      
+ +4      +3.875000      +0.016934      
+ +5      +3.750000      +0.016474      
+ +6      +3.625000      +0.016019      
+ +7      +4.750000      +0.019994      
+ +8      +3.750000      +0.016447      
+
+ Density error is +0.000000003269
+
+ PW ALGORITHM --------------- ION=+20   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.875000      +0.013655      
+ +2      +2.625000      +0.012594      
+ +3      +2.625000      +0.012553      
+ +4      +3.750000      +0.016475      
+ +5      +2.875000      +0.013402      
+ +6      +3.500000      +0.015683      
+ +7      +2.750000      +0.012961      
+ +8      +2.625000      +0.012526      
+
+ Density error is +0.000000000179
+
+ charge density convergence is achieved
+ final etot is -211.797737534802 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.171785      +0.257041      +0.008602      
+ Si2     +0.171785      -0.257041      -0.008602      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.033300    -0.204765      -6.972062      
+ -0.204765      +122.939153    +4.657249      
+ -6.972062      +4.657249      +123.108999    
+
+output Pressure for check!
+Virtual Pressure is +123.737037 Kbar 
+Virial is +123.027151 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 20
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564150 (Rydberg)
+ NVT Temperature      : +85.566203 (K)
+ NVT Kinetic energy   : +0.001626  (Rydberg)
+ NVT Potential energy : -15.566841 (Rydberg)
+ maxForce             : +0.000036 
+ maxStep              : +0.026933 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +20                 -7.783421           -7.782075           +0.000000           +70.314105          
+
+ PW ALGORITHM --------------- ION=+21   ELEC=+1  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +36.125000     +1.533770      
+ +2      +24.250000     +0.243025      
+ +3      +24.750000     +0.089487      
+ +4      +29.750000     +0.106362      
+ +5      +24.875000     +0.089914      
+ +6      +29.875000     +0.106912      
+ +7      +32.125000     +0.114500      
+ +8      +27.125000     +0.097630      
+
+ Density error is +0.000022029241
+
+ PW ALGORITHM --------------- ION=+21   ELEC=+2  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.000000      +0.010617      
+ +2      +2.000000      +0.010405      
+ +3      +2.000000      +0.010373      
+ +4      +2.000000      +0.010365      
+ +5      +2.000000      +0.010388      
+ +6      +2.000000      +0.010360      
+ +7      +2.000000      +0.010347      
+ +8      +2.000000      +0.010369      
+
+ Density error is +0.000001807441
+
+ PW ALGORITHM --------------- ION=+21   ELEC=+3  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.125000      +0.011063      
+ +2      +2.375000      +0.011747      
+ +3      +2.250000      +0.011261      
+ +4      +2.500000      +0.012112      
+ +5      +2.250000      +0.011278      
+ +6      +2.625000      +0.012552      
+ +7      +3.000000      +0.013891      
+ +8      +2.375000      +0.011680      
+
+ Density error is +0.000000029382
+
+ PW ALGORITHM --------------- ION=+21   ELEC=+4  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +3.625000      +0.016299      
+ +2      +3.625000      +0.016094      
+ +3      +3.750000      +0.016491      
+ +4      +3.875000      +0.016919      
+ +5      +3.750000      +0.016502      
+ +6      +3.750000      +0.016462      
+ +7      +4.625000      +0.019557      
+ +8      +3.625000      +0.016026      
+
+ Density error is +0.000000002371
+
+ PW ALGORITHM --------------- ION=+21   ELEC=+5  --------------------------------
+ K-point CG iter num    Time(Sec)      
+ +1      +2.875000      +0.013673      
+ +2      +2.875000      +0.013455      
+ +3      +2.875000      +0.013422      
+ +4      +4.125000      +0.017806      
+ +5      +3.000000      +0.013879      
+ +6      +3.875000      +0.016927      
+ +7      +3.000000      +0.013878      
+ +8      +2.875000      +0.013406      
+
+ Density error is +0.000000000178
+
+ charge density convergence is achieved
+ final etot is -211.785114277951 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.597076      +0.443380      +0.097410      
+ Si2     +0.597076      -0.443380      -0.097410      
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ +123.145634    -2.476538      -12.011339     
+ -2.476538      +123.557627    +16.195950     
+ -12.011339     +16.195950     +124.041967    
+
+output Pressure for check!
+Virtual Pressure is +124.075595 Kbar 
+Virial is +123.581743 Kbar 
+
+ --------------------------------------------------
+ Molecular Dynamics (NVT) STEP 21
+ --------------------------------------------------
+--------------------------------------------------
+            SUMMARY OF NVT CALCULATION            
+ --------------------------------------------------
+ NVT Conservation     : -15.564066 (Rydberg)
+ NVT Temperature      : +39.619227 (K)
+ NVT Kinetic energy   : +0.000753  (Rydberg)
+ NVT Potential energy : -15.565913 (Rydberg)
+ maxForce             : +0.000213 
+ maxStep              : +0.014552 
+ MD_STEP             SystemE             Conserved           DeltaE              Temperature         
+ +21                 -7.782957           -7.782033           +0.000000           +19.004126          
+
+
+ --------------------------------------------
+ !FINAL_ETOT_IS -211.7851142779510099 eV
+ --------------------------------------------
+
+
+
+
+
+
+  |CLASS_NAME---------|NAME---------------|TIME(Sec)-----|CALLS----|AVG------|PER%-------
+                       total               +35.575        15        +2.37     +100.00   %
+   Run_pw              plane_wave_line     +35.54         1         +35.54    +99.91    %
+   Run_MD_PW           md_cells_pw         +35.47         1         +35.47    +99.70    %
+   Potential           init_pot            +0.21          22        +0.01     +0.59     %
+   FFT                 FFT3D               +21.26         126906    +0.00     +59.76    %
+   Potential           v_of_rho            +1.13          125       +0.01     +3.17     %
+   H_XC_pw             v_xc                +1.20          146       +0.01     +3.36     %
+   wavefunc            wfcinit             +0.97          22        +0.04     +2.73     %
+   pp_cell_vnl         getvnl              +0.46          1336      +0.00     +1.29     %
+   Hamilt_PW           diagH_subspace      +3.41          984       +0.00     +9.57     %
+   Hamilt_PW           h_psi               +24.29         52236     +0.00     +68.28    %
+   Hamilt_PW           vloc                +22.85         52236     +0.00     +64.24    %
+   Hamilt_PW           vnl                 +1.29          52236     +0.00     +3.63     %
+   Hamilt_PW           add_nonlocal_pp     +0.75          52236     +0.00     +2.12     %
+   Run_MD_PW           md_ions_pw          +35.39         1         +35.39    +99.48    %
+   Electrons           self_consistent     +29.43         21        +1.40     +82.73    %
+   Electrons           c_bands             +25.56         103       +0.25     +71.86    %
+   Hamilt              diagH_pw            +25.14         824       +0.03     +70.67    %
+   Diago_CG            diag                +22.34         824       +0.03     +62.80    %
+   Charge              sum_band            +1.54          103       +0.01     +4.32     %
+   Charge              mix_rho             +0.20          103       +0.00     +0.57     %
+   Forces              cal_force_nl        +0.59          21        +0.03     +1.66     %
+   Stress_PW           cal_stress          +3.97          21        +0.19     +11.16    %
+   Stress_Func         stress_ew           +16.82         11        +1.53     +47.27    %
+   Force_Func          stress_ew           +16.82         11        +1.53     +47.27    %
+   Stress_Func         stress_gga          +0.11          21        +0.01     +0.31     %
+   Stress_Func         stres_nl            +3.76          21        +0.18     +10.57    %
+ ----------------------------------------------------------------------------------------
+
+ CLASS_NAME---------|NAME---------------|MEMORY(MB)--------
+                                         +5.1730
+ ----------------------------------------------------------
+
+ Start  Time  : Fri Oct 15 14:37:16 2021
+ Finish Time  : Fri Oct 15 14:37:52 2021
+ Total  Time  : 0 h 0 mins 36 secs 
