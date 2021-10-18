@@ -1,4 +1,6 @@
 from dpdata.format import Format
+import dpdata.pymatgen.molecule
+import numpy as np
 
 
 @Format.register("pymatgen/structure")
@@ -20,6 +22,37 @@ class PyMatgenStructureFormat(Format):
                 data['cells'][ii], species, data['coords'][ii], coords_are_cartesian=True)
             structures.append(structure)
         return structures
+
+
+@Format.register("pymatgen/molecule")
+class PyMatgenMoleculeFormat(Format):
+    @Format.post("remove_pbc")
+    def from_system(self, file_name, **kwargs):
+        try:
+            from pymatgen.core import Molecule
+        except ModuleNotFoundError as e:
+            raise ImportError('No module pymatgen.Molecule') from e
+
+        return dpdata.pymatgen.molecule.to_system_data(file_name)
+
+    def to_system(self, data, **kwargs):
+        """convert System to Pymatgen Molecule obj
+        """
+        molecules = []
+        try:
+            from pymatgen.core import Molecule
+        except ModuleNotFoundError as e:
+            raise ImportError('No module pymatgen.Molecule') from e
+
+        species = []
+        for name, numb in zip(data['atom_names'], data['atom_numbs']):
+            species.extend([name]*numb)
+        data = dpdata.system.remove_pbc(data)
+        for ii in range(np.array(data['coords']).shape[0]):
+            molecule = Molecule(
+                species, data['coords'][ii])
+            molecules.append(molecule)
+        return molecules
 
 
 @Format.register("pymatgen/computedstructureentry")
@@ -44,3 +77,5 @@ class PyMatgenCSEFormat(Format):
             entry = ComputedStructureEntry(structure, energy, data=csedata)
             entries.append(entry)
         return entries
+
+        

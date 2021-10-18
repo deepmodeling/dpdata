@@ -9,6 +9,7 @@ from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
 from dpdata.amber.mask import pick_by_amber_mask, load_param_file
+import dpdata
 
 # ensure all plugins are loaded!
 import dpdata.plugins
@@ -418,7 +419,7 @@ class System (MSONable) :
         for system in systems:
             self.append(system.copy())
 
-
+    
     def apply_pbc(self) :
         """
         Append periodic boundary condition
@@ -428,6 +429,7 @@ class System (MSONable) :
         self.data['coords'] = np.matmul(ncoord, self.data['cells'])
 
 
+    @post_funcs.register("remove_pbc")
     def remove_pbc(self, protect_layer = 9):
         """
         This method does NOT delete the definition of the cells, it
@@ -441,19 +443,8 @@ class System (MSONable) :
         protect_layer : the protect layer between the atoms and the cell
                         boundary
         """
-        nframes = self.get_nframes()
-        natoms = self.get_natoms()
         assert(protect_layer >= 0), "the protect_layer should be no less than 0"
-        for ff in range(nframes):
-            tmpcoord = self.data['coords'][ff]
-            cog = np.average(tmpcoord, axis = 0)
-            dist = tmpcoord - np.tile(cog, [natoms, 1])
-            max_dist = np.max(np.linalg.norm(dist, axis = 1))
-            h_cell_size = max_dist + protect_layer
-            cell_size = h_cell_size * 2
-            shift = np.array([1,1,1]) * h_cell_size - cog
-            self.data['coords'][ff] = self.data['coords'][ff] + np.tile(shift, [natoms, 1])
-            self.data['cells'][ff] = cell_size * np.eye(3)
+        remove_pbc(self.data, protect_layer)
 
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
@@ -1314,3 +1305,18 @@ def elements_index_map(elements,standard=False,inverse=False):
     else:
         return dict(zip(elements,range(len(elements))))
 # %%
+
+def remove_pbc(system, protect_layer = 9):
+    nframes = len(system["coords"])
+    natoms = len(system['coords'][0])
+    for ff in range(nframes):
+        tmpcoord = system['coords'][ff]
+        cog = np.average(tmpcoord, axis = 0)
+        dist = tmpcoord - np.tile(cog, [natoms, 1])
+        max_dist = np.max(np.linalg.norm(dist, axis = 1))
+        h_cell_size = max_dist + protect_layer
+        cell_size = h_cell_size * 2
+        shift = np.array([1,1,1]) * h_cell_size - cog
+        system['coords'][ff] = system['coords'][ff] + np.tile(shift, [natoms, 1])
+        system['cells'][ff] = cell_size * np.eye(3)
+    return system

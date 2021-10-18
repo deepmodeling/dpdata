@@ -41,6 +41,7 @@ setuptools.setup(
               'dpdata/abacus',
               'dpdata/rdkit',
               'dpdata/plugins',
+              'dpdata/pymatgen',
     ],
     package_data={'dpdata':['*.json']},
     classifiers=[
