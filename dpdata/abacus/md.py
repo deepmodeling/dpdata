@@ -185,6 +185,8 @@ def get_frame (fname):
     data['energies'] = energy
     data['forces'] = force
     data['virials'] = stress
+    if type(data['virials']) != np.ndarray:
+        del data['virials']
     data['orig'] = np.zeros(3)
 
     return data
