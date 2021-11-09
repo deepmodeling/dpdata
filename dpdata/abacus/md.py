@@ -164,7 +164,7 @@ def get_frame (fname):
     atom_names, natoms, types, coords = get_coords(celldm, cell, geometry_inlines, inlines) 
     # This coords is not to be used.
     dump_freq = get_coord_dump_freq(inlines = inlines)
-    ndump = int(os.popen("ls --l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
+    ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
     # number of dumped geometry files
     coords = get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, cell)
     
