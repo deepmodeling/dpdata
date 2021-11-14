@@ -12,7 +12,7 @@ except ImportError:
         readme = f.read()
 
 # install_requires = ['xml']
-install_requires=['numpy>=1.14.3', 'monty', 'scipy']
+install_requires=['numpy>=1.14.3', 'monty', 'scipy', 'h5py', 'wcmatch']
 
 setuptools.setup(
     name="dpdata",
@@ -41,6 +41,7 @@ setuptools.setup(
               'dpdata/abacus',
               'dpdata/rdkit',
               'dpdata/plugins',
+              'dpdata/pymatgen',
     ],
     package_data={'dpdata':['*.json']},
     classifiers=[
@@ -52,6 +53,8 @@ setuptools.setup(
     extras_require={
         'ase': ['ase'],
         'amber': ['parmed'],
+        'pymatgen': ['pymatgen'],
+        'docs': ['sphinx', 'recommonmark', 'sphinx_rtd_theme>=1.0.0rc1', 'numpydoc', 'm2r2'],
     }
 )
 

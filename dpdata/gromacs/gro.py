@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import re
 import numpy as np
-import json
-import os
+from ..unit import LengthConversion
 
-nm2ang = 10.
-ang2nm = 1. / nm2ang
+nm2ang = LengthConversion("nm", "angstrom").value()
+ang2nm = LengthConversion("angstrom", "nm").value()
 cell_idx_gmx2dp = [0, 4, 8, 1, 2, 3, 5, 6, 7]
 
 def _format_atom_name(atom_name):
@@ -41,7 +40,7 @@ def _get_cell(line):
     cell = cell * nm2ang
     return cell
 
-def file_to_system_data(fname, format_atom_name=True):
+def file_to_system_data(fname, format_atom_name=True, **kwargs):
     system = {'coords': [], 'cells': []}
     with open(fname) as fp:
         frame = 0
@@ -74,7 +73,9 @@ def file_to_system_data(fname, format_atom_name=True):
     system['cells'] = np.array(system['cells'])
     return system
 
-def from_system_data(system, f_idx=0):
+def from_system_data(system, f_idx=0, **kwargs):
+    resname = kwargs.get("resname", "MOL")
+    shift = kwargs.get("shift", 0)
     ret = ""
     ret += " molecule" + "\n"
     n_atoms = sum(system["atom_numbs"])
@@ -83,8 +84,8 @@ def from_system_data(system, f_idx=0):
         atom_type = system["atom_types"][i]
         atom_name = system["atom_names"][atom_type]
         coords = system["coords"][f_idx] * ang2nm
-        ret += "{:>5d}{:<5s}{:>5s}{:5d}{:8.3f}{:8.3f}{:8.3f}\n".format(1, "MOL", atom_name, i+1, *tuple(coords[i]))
+        ret += "{:>5d}{:<5s}{:>5s}{:5d}{:8.3f}{:8.3f}{:8.3f}\n".format(1, resname, atom_name, i+shift+1, *tuple(coords[i]))
     cell = (system["cells"][f_idx].flatten() * ang2nm)[cell_idx_gmx2dp]
-    ret += " " + " ".join([str(x) for x in cell])
+    ret += " " + " ".join([f"{x:.3f}" for x in cell])
 
     return ret

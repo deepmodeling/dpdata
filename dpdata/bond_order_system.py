@@ -4,6 +4,7 @@ from dpdata.system import System, LabeledSystem, check_System, load_format
 import dpdata.rdkit.utils
 from dpdata.rdkit.sanitize import Sanitizer, SanitizeError
 from copy import deepcopy
+from rdkit.Chem import Conformer
 # import dpdata.rdkit.mol2
 
 def check_BondOrderSystem(data):
@@ -95,6 +96,12 @@ class BondOrderSystem(System):
         return self
 
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
+        self.rdkit_mol.RemoveAllConformers()
+        for ii in range(self.get_nframes()):
+            conf = Conformer()
+            for idx in range(self.get_natoms()):
+                conf.SetAtomPosition(idx, self.data["coords"][ii][idx])
+            self.rdkit_mol.AddConformer(conf, assignId=True)
         return fmtobj.to_bond_order_system(self.data, self.rdkit_mol, *args, **kwargs)
 
     def __repr__(self):
@@ -151,7 +158,8 @@ class BondOrderSystem(System):
         self.__class__(data=deepcopy(self.data),
                        rdkit_mol=new_mol)
     
-    # def __add__(self, other):
+    def __add__(self, other):
+        raise NotImplementedError("magic method '+' has not been implemented on BondOrderSystem")
     #     '''
     #         magic method "+" operation
     #     '''

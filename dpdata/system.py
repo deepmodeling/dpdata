@@ -9,6 +9,7 @@ from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
 from dpdata.amber.mask import pick_by_amber_mask, load_param_file
+import dpdata
 
 # ensure all plugins are loaded!
 import dpdata.plugins
@@ -76,7 +77,8 @@ class System (MSONable) :
                 - ``vasp/poscar``: vasp POSCAR
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
-                - ``abacus/scf``: ABACUS plane wave scf. The directory containing INPUT file is required. 
+                - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required. 
+                - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required. 
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``pwmat/atom.config``: pwmat atom.config
@@ -418,7 +420,7 @@ class System (MSONable) :
         for system in systems:
             self.append(system.copy())
 
-
+    
     def apply_pbc(self) :
         """
         Append periodic boundary condition
@@ -428,6 +430,7 @@ class System (MSONable) :
         self.data['coords'] = np.matmul(ncoord, self.data['cells'])
 
 
+    @post_funcs.register("remove_pbc")
     def remove_pbc(self, protect_layer = 9):
         """
         This method does NOT delete the definition of the cells, it
@@ -441,19 +444,8 @@ class System (MSONable) :
         protect_layer : the protect layer between the atoms and the cell
                         boundary
         """
-        nframes = self.get_nframes()
-        natoms = self.get_natoms()
         assert(protect_layer >= 0), "the protect_layer should be no less than 0"
-        for ff in range(nframes):
-            tmpcoord = self.data['coords'][ff]
-            cog = np.average(tmpcoord, axis = 0)
-            dist = tmpcoord - np.tile(cog, [natoms, 1])
-            max_dist = np.max(np.linalg.norm(dist, axis = 1))
-            h_cell_size = max_dist + protect_layer
-            cell_size = h_cell_size * 2
-            shift = np.array([1,1,1]) * h_cell_size - cog
-            self.data['coords'][ff] = self.data['coords'][ff] + np.tile(shift, [natoms, 1])
-            self.data['cells'][ff] = cell_size * np.eye(3)
+        remove_pbc(self.data, protect_layer)
 
     def affine_map(self, trans, f_idx = 0) :
         assert(np.linalg.det(trans) != 0)
@@ -661,7 +653,7 @@ class System (MSONable) :
 
         Returns
         -------
-        labeled_sys LabeledSystem
+        labeled_sys : LabeledSystem
             The labeled system.
         """
         try:
@@ -679,19 +671,33 @@ class System (MSONable) :
 
         labeled_sys = LabeledSystem()
 
-        for ss in self:
-            coord = ss['coords'].reshape((-1,1))
-            if not ss.nopbc:
-                cell = ss['cells'].reshape((-1,1))
+        if 'auto_batch_size' not in DeepPot.__init__.__code__.co_varnames:
+            for ss in self:
+                coord = ss['coords'].reshape((1, ss.get_natoms()*3))
+                if not ss.nopbc:
+                    cell = ss['cells'].reshape((1, 9))
+                else:
+                    cell = None
+                e, f, v = dp.eval(coord, cell, atype)
+                data = ss.data
+                data['energies'] = e.reshape((1, 1))
+                data['forces'] = f.reshape((1, ss.get_natoms(), 3))
+                data['virials'] = v.reshape((1, 3, 3))
+                this_sys = LabeledSystem.from_dict({'data': data})
+                labeled_sys.append(this_sys)
+        else:
+            # since v2.0.2, auto batch size is supported
+            coord = self.data['coords'].reshape((self.get_nframes(), self.get_natoms()*3))
+            if not self.nopbc:
+                cell = self.data['cells'].reshape((self.get_nframes(), 9))
             else:
                 cell = None
             e, f, v = dp.eval(coord, cell, atype)
-            data = ss.data
-            data['energies'] = e.reshape((1, 1))
-            data['forces'] = f.reshape((1, -1, 3))
-            data['virials'] = v.reshape((1, 3, 3))
-            this_sys = LabeledSystem.from_dict({'data': data})
-            labeled_sys.append(this_sys)
+            data = self.data.copy()
+            data['energies'] = e.reshape((self.get_nframes(), 1))
+            data['forces'] = f.reshape((self.get_nframes(), self.get_natoms(), 3))
+            data['virials'] = v.reshape((self.get_nframes(), 3, 3))
+            labeled_sys = LabeledSystem.from_dict({'data': data})
         return labeled_sys
 
     def pick_atom_idx(self, idx, nopbc=None):
@@ -1300,3 +1306,18 @@ def elements_index_map(elements,standard=False,inverse=False):
     else:
         return dict(zip(elements,range(len(elements))))
 # %%
+
+def remove_pbc(system, protect_layer = 9):
+    nframes = len(system["coords"])
+    natoms = len(system['coords'][0])
+    for ff in range(nframes):
+        tmpcoord = system['coords'][ff]
+        cog = np.average(tmpcoord, axis = 0)
+        dist = tmpcoord - np.tile(cog, [natoms, 1])
+        max_dist = np.max(np.linalg.norm(dist, axis = 1))
+        h_cell_size = max_dist + protect_layer
+        cell_size = h_cell_size * 2
+        shift = np.array([1,1,1]) * h_cell_size - cog
+        system['coords'][ff] = system['coords'][ff] + np.tile(shift, [natoms, 1])
+        system['cells'][ff] = cell_size * np.eye(3)
+    return system

@@ -1,0 +1,30 @@
+INPUT_PARAMETERS
+#Parameters	(General)
+suffix          autotest
+pseudo_dir		./
+ntype			1	
+nbands			8
+calculation     md
+read_file_dir   ./
+
+#Parameters (Accuracy)
+ecutwfc			20
+niter			20
+
+basis_type		pw
+nstep           21 # number of MD/relaxation steps
+
+stress          1
+stress_thr      1e-6
+force           1
+force_thr_ev    1.0e-3
+
+ks_solver       cg
+mixing_type     pulay
+mixing_beta     0.7
+
+md_mdtype        1 # 0 for NVE; 1 for NVT with Nose Hoover; 2 for NVT with velocity rescaling
+md_tfirst        10 # temperature, unit: K
+md_dt            1 # unit: fs
+md_rstmd         0 # 1 for restart
+md_dumpmdfred    5 
