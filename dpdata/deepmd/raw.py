@@ -33,7 +33,11 @@ def to_system_data(folder, type_map = None, labels = True) :
     if os.path.isdir(folder) :
         data = load_type(folder, type_map = type_map)
         data['orig'] = np.zeros([3])        
-        data['cells'] = np.loadtxt(os.path.join(folder, 'box.raw'))
+        if os.path.isfile(os.path.join(folder, "nopbc")):
+            data['nopbc'] = True
+            data['cells'] = np.zeros((coords.shape[0], 3,3))
+        else:
+            data['cells'] = np.loadtxt(os.path.join(folder, 'box.raw'))
         data['coords'] = np.loadtxt(os.path.join(folder, 'coord.raw'))
         data['cells'] = np.reshape(data['cells'], [-1, 3, 3])
         nframes = data['cells'].shape[0]

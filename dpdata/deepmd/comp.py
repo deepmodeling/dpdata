@@ -8,9 +8,12 @@ def _cond_load_data(fname) :
         tmp = np.load(fname)
     return tmp
 
-def _load_set(folder) :
-    cells = np.load(os.path.join(folder, 'box.npy'))
+def _load_set(folder, nopbc: bool) :
     coords = np.load(os.path.join(folder, 'coord.npy'))
+    if nopbc:
+        cells = np.zeros((coords.shape[0], 3,3))
+    else:
+        cells = np.load(os.path.join(folder, 'box.npy'))
     eners  = _cond_load_data(os.path.join(folder, 'energy.npy'))
     forces = _cond_load_data(os.path.join(folder, 'force.npy'))
     virs   = _cond_load_data(os.path.join(folder, 'virial.npy'))
@@ -22,6 +25,8 @@ def to_system_data(folder,
     # data is empty
     data = load_type(folder, type_map = type_map)
     data['orig'] = np.zeros([3])
+    if os.path.isfile(os.path.join(folder, "nopbc")):
+        data['nopbc'] = True
     sets = sorted(glob.glob(os.path.join(folder, 'set.*')))
     all_cells = []
     all_coords = []
@@ -29,7 +34,7 @@ def to_system_data(folder,
     all_forces = []
     all_virs = []
     for ii in sets :
-        cells, coords, eners, forces, virs = _load_set(ii)
+        cells, coords, eners, forces, virs = _load_set(ii, data.get('nopbc', False))
         nframes = np.reshape(cells, [-1,3,3]).shape[0]
         all_cells.append(np.reshape(cells, [nframes,3,3]))
         all_coords.append(np.reshape(coords, [nframes,-1,3]))
@@ -50,8 +55,6 @@ def to_system_data(folder,
         data['forces'] = np.concatenate(all_forces, axis = 0)
     if len(all_virs) > 0:
         data['virials'] = np.concatenate(all_virs, axis = 0)
-    if os.path.isfile(os.path.join(folder, "nopbc")):
-        data['nopbc'] = True
     return data
 
 
