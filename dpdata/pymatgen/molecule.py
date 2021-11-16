@@ -1,5 +1,8 @@
 import numpy as np
-from pymatgen.core import Molecule
+try:
+    from pymatgen.core import Molecule
+except ImportError:
+    pass
 from collections import Counter
 import dpdata
 
