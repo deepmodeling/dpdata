@@ -35,10 +35,11 @@ class CompSys :
     def test_cell(self):
         self.assertEqual(self.system_1.get_nframes(),
                          self.system_2.get_nframes())        
-        np.testing.assert_almost_equal(self.system_1.data['cells'], 
-                                       self.system_2.data['cells'], 
-                                       decimal = self.places,
-                                       err_msg = 'cell failed')
+        if not self.system_1.nopbc and not self.system_2.nopbc:
+            np.testing.assert_almost_equal(self.system_1.data['cells'], 
+                                        self.system_2.data['cells'], 
+                                        decimal = self.places,
+                                        err_msg = 'cell failed')
 
     def test_coord(self): 
         self.assertEqual(self.system_1.get_nframes(),
