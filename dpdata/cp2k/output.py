@@ -264,6 +264,7 @@ def get_frames (fname) :
     energy = float(energy) * eV
     energy = np.array(energy)
     energy = energy[np.newaxis]
+    assert(coord.shape==force.shape), print('shape of coord and force not match', coord.shape, force.shape)
     tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)
     atom_types = []
     atom_numbs = []
