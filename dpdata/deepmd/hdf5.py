@@ -146,4 +146,4 @@ def dump(f: h5py.File,
                 set_folder.create_dataset('%s.npy' % prop['fn'], data=reshaped_data[dt][set_stt:set_end])
 
     if nopbc:
-       g.create_dataset("nopbc", True)
+       g.create_dataset("nopbc", data=True)
