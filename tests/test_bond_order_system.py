@@ -15,7 +15,7 @@ import numpy as np
 from copy import deepcopy
 
 
-@unittest.skipIf(skip_bond_order_system, "dpdata do not have BondOrderSystem")
+@unittest.skipIf(skip_bond_order_system, "dpdata does not have BondOrderSystem. One may install rdkit to fix.")
 class TestBondOrderSystem(unittest.TestCase):
 
     def test_from_rdkit_mol(self):
