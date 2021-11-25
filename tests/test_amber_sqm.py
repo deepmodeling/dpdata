@@ -4,6 +4,11 @@ import shutil
 from context import dpdata
 from comp_sys import CompSys, CompLabeledSys, IsNoPBC
 
+try:
+    from dpdata import BondOrderSystem
+    skip_bond_order_system = False
+except ImportError:
+    skip_bond_order_system = True
 
 class TestAmberSqmOut(unittest.TestCase, CompSys, IsNoPBC):
     def setUp (self) :
@@ -33,6 +38,7 @@ class TestAmberSqmOutLabeled(unittest.TestCase, CompLabeledSys, IsNoPBC):
         if os.path.exists('tmp.sqm.forces'):
             shutil.rmtree('tmp.sqm.forces')
 
+@unittest.skipIf(skip_bond_order_system, "dpdata do not have BondOrderSystem")
 class TestAmberSqmIn(unittest.TestCase):
     def setUp(self):
         self.system = dpdata.BondOrderSystem("amber/methane.mol", fmt='mol', type_map=['H','C'])
