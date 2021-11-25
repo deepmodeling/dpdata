@@ -38,7 +38,7 @@ class TestAmberSqmOutLabeled(unittest.TestCase, CompLabeledSys, IsNoPBC):
         if os.path.exists('tmp.sqm.forces'):
             shutil.rmtree('tmp.sqm.forces')
 
-@unittest.skipIf(skip_bond_order_system, "dpdata does not have BondOrderSystem")
+@unittest.skipIf(skip_bond_order_system, "dpdata does not have BondOrderSystem. One may install rdkit to fix.")
 class TestAmberSqmIn(unittest.TestCase):
     def setUp(self):
         self.system = dpdata.BondOrderSystem("amber/methane.mol", fmt='mol', type_map=['H','C'])
