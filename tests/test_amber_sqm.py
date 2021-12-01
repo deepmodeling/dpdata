@@ -6,9 +6,10 @@ from comp_sys import CompSys, CompLabeledSys, IsNoPBC
 
 try:
     from dpdata import BondOrderSystem
-    skip_bond_order_system = False
 except ImportError:
     skip_bond_order_system = True
+else:
+    skip_bond_order_system = False
 
 class TestAmberSqmOut(unittest.TestCase, CompSys, IsNoPBC):
     def setUp (self) :
