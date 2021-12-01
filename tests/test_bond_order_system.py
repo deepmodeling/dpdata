@@ -6,9 +6,10 @@ try:
     from rdkit import Chem
     from rdkit.Chem import AllChem
     from dpdata import BondOrderSystem
-    skip_bond_order_system = False
 except ImportError:
     skip_bond_order_system = True
+else:
+    skip_bond_order_system = False
 
 import shutil
 import numpy as np
