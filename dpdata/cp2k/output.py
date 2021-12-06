@@ -238,46 +238,55 @@ def get_frames (fname) :
     content = fp.read()
     count = content.count('SCF run converged')
     if count == 0:
-        return [], [], [], [], [], [], [], []
+        return [], [], [], [], [], [], [], None
 
+    # search duplicated header  
+    fp.seek(0)
+    header_idx = []
+    for idx, ii in enumerate(fp) :
+        if 'Multiplication driver' in ii :
+            header_idx.append(idx)
+
+    # parse from last header
     fp.seek(0)
     for idx, ii in enumerate(fp) :
-        if ('CELL| Vector' in ii) and (cell_count < 3) :
-            cell.append(ii.split()[4:7])
-            cell_count += 1
-        if 'Atom  Kind  Element' in ii :
-            coord_flag = True
-            coord_idx = idx
-            coord_count += 1
-        # get the coord block info
-        if coord_flag and (coord_count == 1):
-            if (idx > coord_idx + 1) :
-                if (ii == '\n') :
-                    coord_flag = False
-                else :
-                    coord.append(ii.split()[4:7])
-                    atom_symbol_list.append(ii.split()[2])
-        if 'ENERGY|' in ii :
-            energy = (ii.split()[8])
-        if ' Atom   Kind ' in ii :
-            force_flag = True
-            force_idx = idx
-        if force_flag :
-            if (idx > force_idx) :
-                if 'SUM OF ATOMIC FORCES' in ii :
-                    force_flag = False
-                else :
-                    force.append(ii.split()[3:6])
-        # add reading stress tensor
-        if 'STRESS TENSOR [GPa' in ii :
-            stress_flag = True
-            stress_idx = idx
-        if stress_flag :
-            if (idx > stress_idx + 2):
-                if (ii == '\n') :
-                    stress_flag = False
-                else :
-                    stress.append(ii.split()[1:4])
+        if idx > header_idx[-1] :
+            if 'CELL| Vector' in ii:
+                cell.append(ii.split()[4:7])
+
+            if 'Atom  Kind  Element' in ii :
+                coord_flag = True
+                coord_idx = idx
+                
+            # get the coord block info
+            if coord_flag :
+                if (idx > coord_idx + 1) :
+                    if (ii == '\n') :
+                        coord_flag = False
+                    else :
+                        coord.append(ii.split()[4:7])
+                        atom_symbol_list.append(ii.split()[2])
+            if 'ENERGY|' in ii :
+                energy = (ii.split()[8])
+            if ' Atom   Kind ' in ii :
+                force_flag = True
+                force_idx = idx
+            if force_flag :
+                if (idx > force_idx) :
+                    if 'SUM OF ATOMIC FORCES' in ii :
+                        force_flag = False
+                    else :
+                        force.append(ii.split()[3:6])
+            # add reading stress tensor
+            if 'STRESS TENSOR [GPa' in ii :
+                stress_flag = True
+                stress_idx = idx
+            if stress_flag :
+                if (idx > stress_idx + 2):
+                    if (ii == '\n') :
+                        stress_flag = False
+                    else :
+                        stress.append(ii.split()[1:4])
 
 
     fp.close()
