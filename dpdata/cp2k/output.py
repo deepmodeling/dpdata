@@ -238,7 +238,7 @@ def get_frames (fname) :
     content = fp.read()
     count = content.count('SCF run converged')
     if count == 0:
-        return [], [], [], [], [], [], [], []
+        return [], [], [], [], [], [], [], None
 
     fp.seek(0)
     for idx, ii in enumerate(fp) :
