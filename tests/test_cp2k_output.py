@@ -50,6 +50,11 @@ class TestCP2KLabeledOutput(unittest.TestCase, TestCP2KSinglePointEnergy):
     def setUp (self) :
         self.system = dpdata.LabeledSystem('cp2k/cp2k_output',
                                            fmt = 'cp2k/output')
+                                           
+class TestCP2KDuplicateHeader(unittest.TestCase, TestCP2KSinglePointEnergy):
+    def setUp (self) :
+        self.system = dpdata.LabeledSystem('cp2k/cp2k_output_duplicate_header',
+                                           fmt = 'cp2k/output')                                          
 
 class TestNonCoveragedCP2KOutput(unittest.TestCase):
     def setUp (self) :
