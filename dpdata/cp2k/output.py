@@ -225,13 +225,13 @@ def get_frames (fname) :
     eV = EnergyConversion("hartree", "eV").value()
     angstrom = LengthConversion("bohr", "angstrom").value()
     GPa = PressureConversion("eV/angstrom^3", "GPa").value()
+    atom_symbol_idx_list = []
     atom_symbol_list = []
     cell = []
     coord = []
     force = []
     stress = []
-    cell_count = 0
-    coord_count = 0
+
 
     fp = open(fname)
     # check if output is converged, if not, return sys = 0
@@ -253,7 +253,8 @@ def get_frames (fname) :
         if idx > header_idx[-1] :
             if 'CELL| Vector' in ii:
                 cell.append(ii.split()[4:7])
-
+            if 'Atomic kind:' in ii:
+                atom_symbol_list.append(ii.split()[3])
             if 'Atom  Kind  Element' in ii :
                 coord_flag = True
                 coord_idx = idx
@@ -265,7 +266,7 @@ def get_frames (fname) :
                         coord_flag = False
                     else :
                         coord.append(ii.split()[4:7])
-                        atom_symbol_list.append(ii.split()[2])
+                        atom_symbol_idx_list.append(ii.split()[1])
             if 'ENERGY|' in ii :
                 energy = (ii.split()[8])
             if ' Atom   Kind ' in ii :
@@ -296,20 +297,24 @@ def get_frames (fname) :
 
     #conver to float array and add extra dimension for nframes
     cell = np.array(cell)
-    cell = cell.astype(float)
+    cell = cell.astype('float32')
     cell = cell[np.newaxis, :, :]
     coord = np.array(coord)
-    coord = coord.astype(float)
+    coord = coord.astype('float32')
     coord = coord[np.newaxis, :, :]
+    atom_symbol_idx_list = np.array(atom_symbol_idx_list)
+    atom_symbol_idx_list = atom_symbol_idx_list.astype(int)
+    atom_symbol_idx_list = atom_symbol_idx_list - 1
     atom_symbol_list = np.array(atom_symbol_list)
+    atom_symbol_list = atom_symbol_list[atom_symbol_idx_list]
     force = np.array(force)
-    force = force.astype(float)
+    force = force.astype('float32')
     force = force[np.newaxis, :, :]
 
     # virial is not necessary
     if stress:
         stress = np.array(stress)
-        stress = stress.astype(float)
+        stress = stress.astype('float32')
         stress = stress[np.newaxis, :, :]
         # stress to virial conversion, default unit in cp2k is GPa
         # note the stress is virial = stress * volume
@@ -321,9 +326,8 @@ def get_frames (fname) :
     force = force * eV / angstrom
     # energy unit conversion, default unit in cp2k is hartree
     energy = float(energy) * eV
-    energy = np.array(energy)
+    energy = np.array(energy).astype('float32')
     energy = energy[np.newaxis]
-
 
 
     tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)
