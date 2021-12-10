@@ -12,7 +12,7 @@ class TestTypeMap():
             type_map = list(type_map)
             system.check_type_map(type_map=type_map)
             self.assertEqual(type_map, system['atom_names'])
-    
+
     def test_type_map_is_superset(self):
         system = dpdata.LabeledSystem(self.fn, fmt=self.fmt)
         atom_names = system['atom_names'] + ["X"]
@@ -31,7 +31,7 @@ class TestTypeMap1(TestTypeMap, unittest.TestCase):
 
 class TestTypeMap2(TestTypeMap, unittest.TestCase):
     def setUp(self):
-        self.fn = 'cp2k/cp2k_output'
+        self.fn = 'cp2k/cp2k_normal_output/cp2k_output'
         self.fmt = 'cp2k/output'
 
 
