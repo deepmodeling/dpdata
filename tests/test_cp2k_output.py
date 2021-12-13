@@ -12,7 +12,16 @@ class TestCp2kNormalOutput(unittest.TestCase, CompLabeledSys):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 4
-        
+
+class TestCp2k8NormalOutput(unittest.TestCase, CompLabeledSys):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem('cp2k/cp2k_8_output/cp2k_8_output',fmt='cp2k/output')
+        self.system_2 = dpdata.LabeledSystem('cp2k/cp2k_8_output/deepmd', fmt='deepmd/npy')
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
 class TestCP2KDuplicateHeader(unittest.TestCase, CompLabeledSys):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem('cp2k/cp2k_duplicate_header/cp2k_output_duplicate_header',fmt='cp2k/output')

@@ -222,6 +222,7 @@ def get_frames (fname) :
     coord_flag = False
     force_flag = False
     stress_flag = False
+    stress82_flag = False
     eV = EnergyConversion("hartree", "eV").value()
     angstrom = LengthConversion("bohr", "angstrom").value()
     GPa = PressureConversion("eV/angstrom^3", "GPa").value()
@@ -282,12 +283,22 @@ def get_frames (fname) :
             if 'STRESS TENSOR [GPa' in ii :
                 stress_flag = True
                 stress_idx = idx
-            if stress_flag :
+            if stress_flag:
                 if (idx > stress_idx + 2):
                     if (ii == '\n') :
                         stress_flag = False
                     else :
                         stress.append(ii.split()[1:4])
+
+            if 'STRESS| Analytical stress tensor' in ii:
+                stress82_flag = True
+                stress82_idx = idx
+            if stress82_flag:
+                if (idx > stress82_idx + 1):
+                    if ('STRESS| 1/3' in ii):
+                        stress82_flag = False
+                    else:
+                        stress.append(ii.split()[2:5])
 
 
     fp.close()
