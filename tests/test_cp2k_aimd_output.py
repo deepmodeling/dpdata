@@ -24,6 +24,14 @@ class TestCp2kAimdRestartOutput(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 4
 
+class TestCp2k8AimdOutput(unittest.TestCase, CompLabeledSys):
+    def setUp (self) :
+        self.system_1 = dpdata.LabeledSystem('cp2k/cp2k_8_aimd_output',fmt='cp2k/aimd_output')
+        self.system_2 = dpdata.LabeledSystem('cp2k/cp2k_8_aimd_output/deepmd', fmt='deepmd/raw')
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+
 class TestCp2kAimdOutputError(unittest.TestCase):
     def setUp(self):
         pass
