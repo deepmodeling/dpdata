@@ -23,7 +23,7 @@
  CP2K| cp2kflags: omp libint fftw3 libxc pexsi elpa parallel mpi3 scalapack xsmm
  CP2K|             plumed2 spglib sirius
  CP2K| is freely available from                            https://www.cp2k.org/
- CP2K| Program compiled at            2020年 08月 16日 星期日 05:07:56 CST
+ CP2K| Program compiled at
  CP2K| Program compiled on                                        hedley-MS-7B80
  CP2K| Program compiled for                                          local-intel
  CP2K| Data directory path            /home/hedley/cp2k/cp2k-7.1-cuda-intel/data
