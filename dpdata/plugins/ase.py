@@ -9,11 +9,20 @@ except ImportError:
 
 @Format.register("ase/structure")
 class ASEStructureFormat(Format):
+    """Format for the `Atomic Simulation Environment <https://wiki.fysik.dtu.dk/ase/>`_ (ase).
+
+    ASE supports parsing a few dozen of data formats. As described in i
+    `the documentation <ihttps://wiki.fysik.dtu.dk/ase/ase/io/io.html>`_,
+    many of these formats can be determined automatically.
+    Use the `ase_fmt` keyword argument to supply the format if
+    automatic detection fails.
+    """
+
     def from_labeled_system(self, data, **kwargs):
         return data
 
-    def from_multi_systems(self, file_name, begin=None, end=None, step=None, fmt='traj', **kwargs):
-        frames = ase.io.read(file_name, format=fmt, index=slice(begin, end, step))
+    def from_multi_systems(self, file_name, begin=None, end=None, step=None, ase_fmt=None, **kwargs):
+        frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
         for atoms in frames:
             symbols = atoms.get_chemical_symbols()
             atom_names = list(set(symbols))
