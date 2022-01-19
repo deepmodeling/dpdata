@@ -13,7 +13,9 @@ def system_info (lines, type_idx_zero = False) :
                 atom_names.append(_ii.split('_')[0])
             else:
                 atom_names.append(_ii)
-        elif 'NELM' in ii and nelm == None:
+        #find the line contains NELM but not initiated by other vasp_keys like NELMIN and NELMDL ...
+        #...format adjustmnet in vasp 6 request this check ; compatible with the older version
+        elif 'NELM' in ii and nelm == None and (ii.split()[0] != "NELMIN") and (ii.split()[0] != "NELMDL"):
             # will read only first nelm
             nelm = int(ii.split()[2].rstrip(";"))
         elif 'ions per type' in ii :
