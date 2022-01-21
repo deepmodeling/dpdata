@@ -4,7 +4,8 @@ def system_info (lines, type_idx_zero = False) :
     atom_names = []
     atom_numbs = None
     nelm = None
-    for ii in lines: 
+    for ii in lines:
+        ii_word_list=ii.split()
         if 'TITEL' in ii : 
             # get atom names from POTCAR info, tested only for PAW_PBE ...
             _ii=ii.split()[3]
@@ -13,11 +14,9 @@ def system_info (lines, type_idx_zero = False) :
                 atom_names.append(_ii.split('_')[0])
             else:
                 atom_names.append(_ii)
-        #find the line contains NELM but not initiated by other vasp_keys like NELMIN and NELMDL ...
-        #...format adjustmnet in vasp 6 request this check ; compatible with the older version
-        elif 'NELM' in ii and nelm == None and (ii.split()[0] != "NELMIN") and (ii.split()[0] != "NELMDL"):
-            # will read only first nelm
-            nelm = int(ii.split()[2].rstrip(";"))
+        #a stricker check for "NELM"; compatible with distingct formats in different versions(6 and older, newers_expect-to-work) of vasp
+        elif 'NELM' in ii_word_list and (ii_word_list[ii_word_list.index("NELM") + 1] == "=") and nelm == None:
+            nelm = int(ii_word_list[ii_word_list.index("NELM") + 2].rstrip(";"))
         elif 'ions per type' in ii :
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None :                
