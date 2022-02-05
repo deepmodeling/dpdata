@@ -2,6 +2,8 @@
 import numpy as np
 import re
 from collections import OrderedDict
+
+from scipy.constants.constants import R
 from .cell import cell_to_low_triangle
 from ..unit import EnergyConversion, LengthConversion, ForceConversion, PressureConversion
 
@@ -29,6 +31,8 @@ class Cp2kSystems(object):
         self.xyz_block_generator = self.get_xyz_block_generator()
         self.restart_flag = restart
         self.cell=None
+        self.print_level=None
+        self.atomic_kinds = None
 
         if self.restart_flag:
             self.handle_single_log_frame(next(self.log_block_generator))
@@ -43,13 +47,14 @@ class Cp2kSystems(object):
     def __next__(self):
         info_dict = {}
         log_info_dict = self.handle_single_log_frame(next(self.log_block_generator))
+        #print(log_info_dict)
         xyz_info_dict = self.handle_single_xyz_frame(next(self.xyz_block_generator))
-        eq1 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_numbs'], xyz_info_dict['atom_numbs'])]
-        eq2 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_names'], xyz_info_dict['atom_names'])]
-        eq3 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_types'], xyz_info_dict['atom_types'])]
-        assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
-        assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
-        assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
+        #eq1 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_numbs'], xyz_info_dict['atom_numbs'])]
+        #eq2 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_names'], xyz_info_dict['atom_names'])]
+        #eq3 = [v1==v2 for v1,v2 in zip(log_info_dict['atom_types'], xyz_info_dict['atom_types'])]
+        #assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
+        #assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
+        #assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         assert log_info_dict['energies']==xyz_info_dict['energies'], (log_info_dict['energies'], xyz_info_dict['energies'],'There may be errors in the file')
         info_dict.update(log_info_dict)
         info_dict.update(xyz_info_dict)
@@ -103,11 +108,18 @@ class Cp2kSystems(object):
         cell_angle_pattern = re.compile(r' INITIAL CELL ANGLS\[deg\]\s+=\s+(?P<alpha>\S+)\s+(?P<beta>\S+)\s+(?P<gamma>\S+)')
         cell_A, cell_B, cell_C = (0,0,0,)
         cell_alpha, cell_beta, cell_gamma=(0,0,0,)
+        cell_a_pattern = re.compile(r' CELL\| Vector a \[angstrom\]:\s+(?P<ax>\S+)\s+(?P<ay>\S+)\s+(?P<az>\S+)')
+        cell_b_pattern = re.compile(r' CELL\| Vector b \[angstrom\]:\s+(?P<bx>\S+)\s+(?P<by>\S+)\s+(?P<bz>\S+)')
+        cell_c_pattern = re.compile(r' CELL\| Vector c \[angstrom\]:\s+(?P<cx>\S+)\s+(?P<cy>\S+)\s+(?P<cz>\S+)')
         force_start_pattern = re.compile(r' ATOMIC FORCES in')
         force_flag=False
         force_end_pattern = re.compile(r' SUM OF ATOMIC FORCES')
         force_lines= []
         cell_flag=0
+        print_level_pattern = re.compile(r' GLOBAL\| Global print level\s+(?P<print_level>\S+)')
+        print_level_flag = 0
+        atomic_kinds_pattern = re.compile(r'\s+\d+\. Atomic kind:\s+(?P<akind>\S+)')
+        atomic_kinds = [] 
         for line in lines:
             if force_start_pattern.match(line):
                 force_flag=True
@@ -131,9 +143,47 @@ class Cp2kSystems(object):
                 cell_beta = np.deg2rad(float(cell_angle_pattern.match(line).groupdict()['beta']))
                 cell_gamma = np.deg2rad(float(cell_angle_pattern.match(line).groupdict()['gamma']))
                 cell_flag+=1
+            if print_level_pattern.match(line):
+                print_level = print_level_pattern.match(line).groupdict()['print_level']
+                print_level_flag += 1
+            if cell_a_pattern.match(line):
+                cell_ax = float(cell_a_pattern.match(line).groupdict()['ax'])
+                cell_ay = float(cell_a_pattern.match(line).groupdict()['ay'])
+                cell_az = float(cell_a_pattern.match(line).groupdict()['az'])
+                cell_flag+=1
+            if cell_b_pattern.match(line):
+                cell_bx = float(cell_b_pattern.match(line).groupdict()['bx'])
+                cell_by = float(cell_b_pattern.match(line).groupdict()['by'])
+                cell_bz = float(cell_b_pattern.match(line).groupdict()['bz'])
+                cell_flag+=1
+            if cell_c_pattern.match(line):
+                cell_cx = float(cell_c_pattern.match(line).groupdict()['cx'])
+                cell_cy = float(cell_c_pattern.match(line).groupdict()['cy'])
+                cell_cz = float(cell_c_pattern.match(line).groupdict()['cz'])
+                cell_flag+=1
+
+            if atomic_kinds_pattern.match(line):
+                akind = atomic_kinds_pattern.match(line).groupdict()['akind']
+                atomic_kinds.append(akind)
+        if print_level_flag == 1:
+            self.print_level = print_level
+            if print_level == 'LOW':
+                raise RuntimeError("please provide cp2k output with higher print level(at least MEDIUM)")
+        
+
         if cell_flag == 2:
             self.cell = cell_to_low_triangle(cell_A,cell_B,cell_C,
                 cell_alpha,cell_beta,cell_gamma)
+        elif cell_flag == 5:
+            self.cell = np.asarray(
+                [
+                    [cell_ax, cell_ay, cell_az],
+                    [cell_bx, cell_by, cell_bz], 
+                    [cell_cx, cell_cy, cell_cz]]
+                ).astype('float32')
+        if atomic_kinds:
+            self.atomic_kinds = atomic_kinds
+        #print(self.atomic_kinds)
             # lx = cell_A
             # xy = cell_B * np.cos(cell_gamma)
             # xz = cell_C * np.cos(cell_beta)
@@ -146,27 +196,32 @@ class Cp2kSystems(object):
 
         element_index = -1
         element_dict = OrderedDict()
-        atom_types_list = []
+        atom_types_idx_list = []
         forces_list = []
         for line in force_lines[3:]:
             line_list = line.split()
-            if element_dict.get(line_list[2]):
-                element_dict[line_list[2]][1]+=1
+            #print(line_list)
+            if element_dict.get(line_list[1]):
+                element_dict[line_list[1]][1]+=1
             else:
                 element_index +=1
-                element_dict[line_list[2]]=[element_index,1]
-            atom_types_list.append(element_dict[line_list[2]][0])
+                element_dict[line_list[1]]=[element_index,1]
+            atom_types_idx_list.append(element_dict[line_list[1]][0])
             forces_list.append([float(line_list[3])*AU_TO_EV_EVERY_ANG,
                 float(line_list[4])*AU_TO_EV_EVERY_ANG,
                 float(line_list[5])*AU_TO_EV_EVERY_ANG])
-
-        atom_names=list(element_dict.keys())
+        #print(atom_types_idx_list)
+        #atom_names=list(element_dict.keys())
+        atom_names=self.atomic_kinds
         atom_numbs=[]
-        for ii in atom_names:
+        
+        for ii in element_dict.keys():
             atom_numbs.append(element_dict[ii][1])
+        #print(atom_numbs)
         info_dict['atom_names'] = atom_names
         info_dict['atom_numbs'] = atom_numbs
-        info_dict['atom_types'] = np.asarray(atom_types_list)
+        info_dict['atom_types'] = np.asarray(atom_types_idx_list)
+        info_dict['print_level'] = self.print_level
         info_dict['cells'] = np.asarray([self.cell]).astype('float32')
         info_dict['energies'] = np.asarray([energy]).astype('float32')
         info_dict['forces'] = np.asarray([forces_list]).astype('float32')
@@ -208,9 +263,9 @@ class Cp2kSystems(object):
         atom_numbs=[]
         for ii in atom_names:
             atom_numbs.append(element_dict[ii][1])
-        info_dict['atom_names'] = atom_names
-        info_dict['atom_numbs'] = atom_numbs
-        info_dict['atom_types'] = np.asarray(atom_types_list)
+        #info_dict['atom_names'] = atom_names
+        #info_dict['atom_numbs'] = atom_numbs
+        #info_dict['atom_types'] = np.asarray(atom_types_list)
         info_dict['coords'] = np.asarray([coords_list]).astype('float32')
         info_dict['energies'] = np.array([energy]).astype('float32')
         info_dict['orig']=[0,0,0]
@@ -225,59 +280,69 @@ def get_frames (fname) :
     eV = EnergyConversion("hartree", "eV").value()
     angstrom = LengthConversion("bohr", "angstrom").value()
     GPa = PressureConversion("eV/angstrom^3", "GPa").value()
+    atom_symbol_idx_list = []
     atom_symbol_list = []
     cell = []
     coord = []
     force = []
     stress = []
-    cell_count = 0
-    coord_count = 0
+
 
     fp = open(fname)
     # check if output is converged, if not, return sys = 0
     content = fp.read()
     count = content.count('SCF run converged')
     if count == 0:
-        return [], [], [], [], [], [], [], []
+        return [], [], [], [], [], [], [], None
 
+    # search duplicated header  
+    fp.seek(0)
+    header_idx = []
+    for idx, ii in enumerate(fp) :
+        if 'Multiplication driver' in ii :
+            header_idx.append(idx)
+
+    # parse from last header
     fp.seek(0)
     for idx, ii in enumerate(fp) :
-        if ('CELL| Vector' in ii) and (cell_count < 3) :
-            cell.append(ii.split()[4:7])
-            cell_count += 1
-        if 'Atom  Kind  Element' in ii :
-            coord_flag = True
-            coord_idx = idx
-            coord_count += 1
-        # get the coord block info
-        if coord_flag and (coord_count == 1):
-            if (idx > coord_idx + 1) :
-                if (ii == '\n') :
-                    coord_flag = False
-                else :
-                    coord.append(ii.split()[4:7])
-                    atom_symbol_list.append(ii.split()[2])
-        if 'ENERGY|' in ii :
-            energy = (ii.split()[8])
-        if ' Atom   Kind ' in ii :
-            force_flag = True
-            force_idx = idx
-        if force_flag :
-            if (idx > force_idx) :
-                if 'SUM OF ATOMIC FORCES' in ii :
-                    force_flag = False
-                else :
-                    force.append(ii.split()[3:6])
-        # add reading stress tensor
-        if 'STRESS TENSOR [GPa' in ii :
-            stress_flag = True
-            stress_idx = idx
-        if stress_flag :
-            if (idx > stress_idx + 2):
-                if (ii == '\n') :
-                    stress_flag = False
-                else :
-                    stress.append(ii.split()[1:4])
+        if idx > header_idx[-1] :
+            if 'CELL| Vector' in ii:
+                cell.append(ii.split()[4:7])
+            if 'Atomic kind:' in ii:
+                atom_symbol_list.append(ii.split()[3])
+            if 'Atom  Kind  Element' in ii :
+                coord_flag = True
+                coord_idx = idx
+                
+            # get the coord block info
+            if coord_flag :
+                if (idx > coord_idx + 1) :
+                    if (ii == '\n') :
+                        coord_flag = False
+                    else :
+                        coord.append(ii.split()[4:7])
+                        atom_symbol_idx_list.append(ii.split()[1])
+            if 'ENERGY|' in ii :
+                energy = (ii.split()[8])
+            if ' Atom   Kind ' in ii :
+                force_flag = True
+                force_idx = idx
+            if force_flag :
+                if (idx > force_idx) :
+                    if 'SUM OF ATOMIC FORCES' in ii :
+                        force_flag = False
+                    else :
+                        force.append(ii.split()[3:6])
+            # add reading stress tensor
+            if 'STRESS TENSOR [GPa' in ii :
+                stress_flag = True
+                stress_idx = idx
+            if stress_flag :
+                if (idx > stress_idx + 2):
+                    if (ii == '\n') :
+                        stress_flag = False
+                    else :
+                        stress.append(ii.split()[1:4])
 
 
     fp.close()
@@ -287,20 +352,24 @@ def get_frames (fname) :
 
     #conver to float array and add extra dimension for nframes
     cell = np.array(cell)
-    cell = cell.astype(float)
+    cell = cell.astype('float32')
     cell = cell[np.newaxis, :, :]
     coord = np.array(coord)
-    coord = coord.astype(float)
+    coord = coord.astype('float32')
     coord = coord[np.newaxis, :, :]
+    atom_symbol_idx_list = np.array(atom_symbol_idx_list)
+    atom_symbol_idx_list = atom_symbol_idx_list.astype(int)
+    atom_symbol_idx_list = atom_symbol_idx_list - 1
     atom_symbol_list = np.array(atom_symbol_list)
+    atom_symbol_list = atom_symbol_list[atom_symbol_idx_list]
     force = np.array(force)
-    force = force.astype(float)
+    force = force.astype('float32')
     force = force[np.newaxis, :, :]
 
     # virial is not necessary
     if stress:
         stress = np.array(stress)
-        stress = stress.astype(float)
+        stress = stress.astype('float32')
         stress = stress[np.newaxis, :, :]
         # stress to virial conversion, default unit in cp2k is GPa
         # note the stress is virial = stress * volume
@@ -312,9 +381,8 @@ def get_frames (fname) :
     force = force * eV / angstrom
     # energy unit conversion, default unit in cp2k is hartree
     energy = float(energy) * eV
-    energy = np.array(energy)
+    energy = np.array(energy).astype('float32')
     energy = energy[np.newaxis]
-
 
 
     tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)

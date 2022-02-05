@@ -2,12 +2,21 @@ import os
 import unittest
 from context import dpdata
 import glob
-from rdkit import Chem
-from rdkit.Chem import AllChem
+try:
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+    from dpdata import BondOrderSystem
+except ImportError:
+    skip_bond_order_system = True
+else:
+    skip_bond_order_system = False
+
 import shutil
 import numpy as np
 from copy import deepcopy
 
+
+@unittest.skipIf(skip_bond_order_system, "dpdata does not have BondOrderSystem. One may install rdkit to fix.")
 class TestBondOrderSystem(unittest.TestCase):
 
     def test_from_rdkit_mol(self):

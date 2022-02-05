@@ -2,61 +2,39 @@ import os
 import numpy as np
 import unittest
 from context import dpdata
+from comp_sys import CompLabeledSys
 
-class TestCP2KSinglePointEnergy:
-    def test_atom_names(self):
-        self.assertEqual(self.system.data['atom_names'], ['Fe','O'])
-    def test_atom_numbs(self):
-        self.assertEqual(self.system.data['atom_numbs'], [12,18])
-    def test_atom_types(self):
-        ref_type = np.loadtxt('cp2k/ref_type')
-        for ii in range(ref_type.shape[0]) :
-            self.assertEqual(self.system.data['atom_types'][ii], ref_type[ii])
-    def test_cell(self):
-        cell = np.loadtxt('cp2k/ref_cell')
-        for ii in range(cell.shape[0]) :
-            for jj in range(cell.shape[1]) :
-                self.assertAlmostEqual(self.system.data['cells'][0][ii][jj], cell[ii][jj])
-
-
-    def test_coord(self):
-        coord = np.loadtxt('cp2k/ref_coord')
-        for ii in range(coord.shape[0]) :
-            for jj in range(coord.shape[1]) :
-                self.assertAlmostEqual(self.system.data['coords'][0][ii][jj], coord[ii][jj])
-
-    def test_force(self):
-        #eV = 2.72113838565563E+01
-        #angstrom = 5.29177208590000E-01
-        force = np.loadtxt('cp2k/ref_force')
-        for ii in range(force.shape[0]) :
-            for jj in range(force.shape[1]) :
-                self.assertAlmostEqual(self.system.data['forces'][0][ii][jj], force[ii][jj], places=6)
-
-    def test_energy(self):
-        #eV = 2.72113838565563E+01
-        ref_energy = -48061.44846401638
-        self.assertEqual(self.system.data['energies'][0], ref_energy)
-
-    def test_virial(self):
-        virial = np.loadtxt("cp2k/ref_virial")
-        for ii in range(virial.shape[0]) :
-            for jj in range(virial.shape[1]) :
-                self.assertAlmostEqual(self.system.data['virials'][0][ii][jj], virial[ii][jj], places=6)
-
-
-
-
-class TestCP2KLabeledOutput(unittest.TestCase, TestCP2KSinglePointEnergy):
-
+class TestCp2kNormalOutput(unittest.TestCase, CompLabeledSys):
     def setUp(self):
-        self.system = dpdata.LabeledSystem('cp2k/cp2k_output', fmt = 'cp2k/output')
+        self.system_1 = dpdata.LabeledSystem('cp2k/cp2k_normal_output/cp2k_output',fmt='cp2k/output')
+        self.system_2 = dpdata.LabeledSystem('cp2k/cp2k_normal_output/deepmd', fmt='deepmd/npy')
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+        
+class TestCP2KDuplicateHeader(unittest.TestCase, CompLabeledSys):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem('cp2k/cp2k_duplicate_header/cp2k_output_duplicate_header',fmt='cp2k/output')
+        self.system_2 = dpdata.LabeledSystem('cp2k/cp2k_duplicate_header/deepmd', fmt='deepmd/npy')                                      
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
 
-class TestNonCoveragedCP2KOutput:
+class TestCp2kReplaceElementOutput(unittest.TestCase, CompLabeledSys):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem('cp2k/cp2k_element_replace/cp2k_output_element_replace',fmt='cp2k/output')
+        self.system_2 = dpdata.LabeledSystem('cp2k/cp2k_element_replace/deepmd', fmt='deepmd/npy')
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+class TestNonCoveragedCP2KOutput(unittest.TestCase):
     def setUp (self) :
         self.system = dpdata.LabeledSystem('cp2k/cp2k_nocon_output',
                                            fmt = 'cp2k/output')
-
     def test_atom_types(self) :
         self.assertEqual(self.system.data['atom_types'], [])
 

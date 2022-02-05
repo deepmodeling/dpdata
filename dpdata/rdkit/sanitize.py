@@ -3,12 +3,15 @@ from rdkit import Chem
 from rdkit.Chem.rdchem import Atom, Bond, Mol, BondType
 import os
 import time
+
 # openbabel
 try:
     from openbabel import openbabel
+
     USE_OBABEL = True
 except ModuleNotFoundError as e:
     USE_OBABEL = False
+
 
 def get_explicit_valence(atom, verbose=False):
     exp_val_calculated_from_bonds = int(sum([bond.GetBondTypeAsDouble() for bond in atom.GetBonds()]))
@@ -16,10 +19,12 @@ def get_explicit_valence(atom, verbose=False):
         exp_val = atom.GetExplicitValence()
         if exp_val != exp_val_calculated_from_bonds:
             if verbose:
-                print(f"Explicit valence given by GetExplicitValence() and sum of bond order are inconsistent on {atom.GetSymbol()}{atom.GetIdx()+1}, using sum of bond order.")
+                print(
+                    f"Explicit valence given by GetExplicitValence() and sum of bond order are inconsistent on {atom.GetSymbol()}{atom.GetIdx() + 1}, using sum of bond order.")
         return exp_val_calculated_from_bonds
     except:
         return exp_val_calculated_from_bonds
+
 
 def regularize_formal_charges(mol, sanitize=True, verbose=False):
     """
@@ -37,6 +42,7 @@ def regularize_formal_charges(mol, sanitize=True, verbose=False):
     else:
         return mol
 
+
 def assign_formal_charge_for_atom(atom, verbose=False):
     """
         assigen formal charge according to 8-electron rule for element B,C,N,O,S,P,As
@@ -48,12 +54,13 @@ def assign_formal_charge_for_atom(atom, verbose=False):
     elif atom.GetSymbol() == "C":
         atom.SetFormalCharge(valence - 4)
         if valence == 3:
-            print(f"Detect a valence of 3 on #C{atom.GetIdx()+1}, the formal charge of this atom will be assigned to -1")
+            print(
+                f"Detect a valence of 3 on #C{atom.GetIdx() + 1}, the formal charge of this atom will be assigned to -1")
         elif valence > 4:
-            raise ValueError(f"#C{atom.GetIdx()+1} has a valence larger than 4")
+            raise ValueError(f"#C{atom.GetIdx() + 1} has a valence larger than 4")
     elif atom.GetSymbol() == "N":
         if valence > 4:
-            raise ValueError(f"#N{atom.GetIdx()+1} has a valence larger than 4")
+            raise ValueError(f"#N{atom.GetIdx() + 1} has a valence larger than 4")
         else:
             atom.SetFormalCharge(valence - 3)
     elif atom.GetSymbol() == "O":
@@ -64,34 +71,35 @@ def assign_formal_charge_for_atom(atom, verbose=False):
         elif valence == 3:
             atom.SetFormalCharge(1)
         elif valence > 6:
-            raise ValueError(f"#S{atom.GetIdx()+1} has a valence larger than 6")
+            raise ValueError(f"#S{atom.GetIdx() + 1} has a valence larger than 6")
         else:
             atom.SetFormalCharge(0)
     elif atom.GetSymbol() == "P" or atom.GetSymbol() == "As":
         if valence == 5:
             atom.SetFormalCharge(0)
         elif valence > 5:
-            raise ValueError(f"#{atom.GetSymbol()}{atom.GetIdx()+1} has a valence larger than 5")
+            raise ValueError(f"#{atom.GetSymbol()}{atom.GetIdx() + 1} has a valence larger than 5")
         else:
             atom.SetFormalCharge(valence - 3)
+
 
 # print bond and atom information (for debugger)
 def print_bonds(mol):
     for bond in mol.GetBonds():
         begin_atom = bond.GetBeginAtom()
         end_atom = bond.GetEndAtom()
-        print(f'{begin_atom.GetSymbol()}{begin_atom.GetIdx()+1} {end_atom.GetSymbol()}{end_atom.GetIdx()+1} {bond.GetBondType()}')
+        print(
+            f'{begin_atom.GetSymbol()}{begin_atom.GetIdx() + 1} {end_atom.GetSymbol()}{end_atom.GetIdx() + 1} {bond.GetBondType()}')
+
 
 def print_atoms(mol):
     for atom in mol.GetAtoms():
-        print(f'{atom.GetSymbol()}{atom.GetIdx()+1} {atom.GetFormalCharge()} {get_explicit_valence(atom)}')
+        print(f'{atom.GetSymbol()}{atom.GetIdx() + 1} {atom.GetFormalCharge()} {get_explicit_valence(atom)}')
 
 
 def is_terminal_oxygen(O_atom):
-    if len(O_atom.GetNeighbors()) == 1:
-        return True
-    else:
-        return False
+    return len(O_atom.GetNeighbors()) == 1
+
 
 def get_terminal_oxygens(atom):
     terminal_oxygens = []
@@ -100,6 +108,21 @@ def get_terminal_oxygens(atom):
             if is_terminal_oxygen(nei):
                 terminal_oxygens.append(nei)
     return terminal_oxygens
+
+
+def is_terminal_NR2(N_atom):
+    return len(N_atom.GetNeighbors()) == 3
+
+
+def get_terminal_NR2s(atom):
+    terminal_NR2s = []
+    for nei in atom.GetNeighbors():
+        if nei.GetSymbol() == "N":
+            if is_terminal_NR2(nei):
+                terminal_NR2s.append(nei)
+    terminal_NR2s.sort(key=lambda N_atom: len([atom for atom in N_atom.GetNeighbors() if atom.GetSymbol() == 'H']))
+    return terminal_NR2s
+
 
 def sanitize_phosphate_Patom(P_atom, verbose=True):
     if P_atom.GetSymbol() == "P":
@@ -116,10 +139,12 @@ def sanitize_phosphate_Patom(P_atom, verbose=True):
                 bond.SetBondType(Chem.rdchem.BondType.SINGLE)
                 terminal_oxygens[ii].SetFormalCharge(-1)
 
+
 def sanitize_phosphate(mol):
     for atom in mol.GetAtoms():
         sanitize_phosphate_Patom(atom)
     return mol
+
 
 def sanitize_sulfate_Satom(S_atom, verbose=True):
     if S_atom.GetSymbol() == "S":
@@ -136,10 +161,12 @@ def sanitize_sulfate_Satom(S_atom, verbose=True):
                 bond = mol.GetBondBetweenAtoms(S_atom.GetIdx(), terminal_oxygens[ii].GetIdx())
                 bond.SetBondType(Chem.rdchem.BondType.DOUBLE)
 
+
 def sanitize_sulfate(mol):
     for atom in mol.GetAtoms():
         sanitize_sulfate_Satom(atom)
     return mol
+
 
 def sanitize_carboxyl_Catom(C_atom, verbose=True):
     if C_atom.GetSymbol() == "C":
@@ -157,10 +184,39 @@ def sanitize_carboxyl_Catom(C_atom, verbose=True):
             bond2.SetBondType(Chem.rdchem.BondType.DOUBLE)
             terminal_oxygens[1].SetFormalCharge(0)
 
+
 def sanitize_carboxyl(mol):
     for atom in mol.GetAtoms():
         sanitize_carboxyl_Catom(atom)
     return mol
+
+
+def sanitize_guanidine_Catom(C_atom, verbose=True):
+    if C_atom.GetSymbol() == "C":
+        terminal_NR2s = get_terminal_NR2s(C_atom)
+        mol = C_atom.GetOwningMol()
+        if len(terminal_NR2s) == 3:
+            if verbose:
+                print("Guanidyl group detected, sanitizing it...")
+            # set two C-N and one C=N+
+            bond1 = mol.GetBondBetweenAtoms(C_atom.GetIdx(), terminal_NR2s[0].GetIdx())
+            bond1.SetBondType(Chem.rdchem.BondType.SINGLE)
+            terminal_NR2s[0].SetFormalCharge(-1)
+
+            bond2 = mol.GetBondBetweenAtoms(C_atom.GetIdx(), terminal_NR2s[1].GetIdx())
+            bond2.SetBondType(Chem.rdchem.BondType.SINGLE)
+            terminal_NR2s[1].SetFormalCharge(0)
+
+            bond3 = mol.GetBondBetweenAtoms(C_atom.GetIdx(), terminal_NR2s[2].GetIdx())
+            bond3.SetBondType(Chem.rdchem.BondType.DOUBLE)
+            terminal_NR2s[2].SetFormalCharge(1)
+
+
+def sanitize_guanidine(mol):
+    for atom in mol.GetAtoms():
+        sanitize_guanidine_Catom(atom)
+    return mol
+
 
 def sanitize_nitro_Natom(N_atom, verbose=True):
     if N_atom.GetSymbol() == "N":
@@ -178,16 +234,19 @@ def sanitize_nitro_Natom(N_atom, verbose=True):
             bond2.SetBondType(Chem.rdchem.BondType.DOUBLE)
             terminal_oxygens[1].SetFormalCharge(0)
 
+
 def sanitize_nitro(mol):
     for atom in mol.GetAtoms():
         sanitize_nitro_Natom(atom)
     return mol
+
 
 def is_terminal_nitrogen(N_atom):
     if N_atom.GetSymbol() == 'N' and len(N_atom.GetNeighbors()) == 1:
         return True
     else:
         return False
+
 
 def sanitize_nitrine_Natom(atom, verbose=True):
     if atom.GetSymbol() == "N" and len(atom.GetNeighbors()) == 2:
@@ -213,7 +272,8 @@ def sanitize_nitrine_Natom(atom, verbose=True):
 
                 bond = mol.GetBondBetweenAtoms(atom.GetIdx(), N_non_terminal.GetIdx())
                 bond.SetBondType(Chem.rdchem.BondType.DOUBLE)
-                atom.SetFormalCharge(1)                
+                atom.SetFormalCharge(1)
+
 
 def contain_hetero_aromatic(mol):
     flag = False
@@ -222,6 +282,7 @@ def contain_hetero_aromatic(mol):
             flag = True
             break
     return flag
+
 
 # for carbon with explicit valence > 4
 def regularize_carbon_bond_order(atom, verbose=True):
@@ -240,6 +301,7 @@ def regularize_carbon_bond_order(atom, verbose=True):
                 if bond.GetIdx() != double_bond_idx:
                     bond.SetBondType(Chem.rdchem.BondType.SINGLE)
 
+
 # for nitrogen with explicit valence > 4
 def regularize_nitrogen_bond_order(atom, verbose=True):
     mol = atom.GetOwningMol()
@@ -255,6 +317,7 @@ def regularize_nitrogen_bond_order(atom, verbose=True):
 def sanitize_mol(mol, verbose=False):
     for atom in mol.GetAtoms():
         sanitize_carboxyl_Catom(atom, verbose)
+        sanitize_guanidine_Catom(atom, verbose)
         sanitize_phosphate_Patom(atom, verbose)
         sanitize_sulfate_Satom(atom, verbose)
         sanitize_nitro_Natom(atom, verbose)
@@ -271,6 +334,7 @@ def mol_edit_log(mol, i, j):
     else:
         edited = mol.GetProp("edit")
         mol.SetProp("edit", edited + ",%d_%d" % (i, j))
+
 
 def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=True):
     mol = Chem.RWMol(mol_in)
@@ -345,7 +409,7 @@ def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=T
         elif bAllAr and not bAllC:
             HAr.append(ring)
 
-    if len(HAr) == 0: 
+    if len(HAr) == 0:
         # no hetrerocycles
         return mol_in
     else:
@@ -364,7 +428,7 @@ def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=T
                         fuseCAr[i] = j
                         break
                 if i > 1:
-                    if (fuseCAr[i] == fuseCAr[i-1]) & (fuseCAr[i] >= 0):
+                    if (fuseCAr[i] == fuseCAr[i - 1]) & (fuseCAr[i] >= 0):
                         fuseDouble.append(i)
                 atom = mol.GetAtomWithIdx(ring[i])
                 if atom.GetSymbol() != 'C':
@@ -376,7 +440,7 @@ def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=T
                     hasDouble.append(i)
                 bond = mol.GetBondBetweenAtoms(ring[i], ring[(i + 1) % lring])
 
-            if (fuseCAr[0] == fuseCAr[lring-1]) & (fuseCAr[0] >= 0):
+            if (fuseCAr[0] == fuseCAr[lring - 1]) & (fuseCAr[0] >= 0):
                 fuseDouble.append(0)
 
             if (len(hetero) > 0) | (len(hasDouble) > 0):
@@ -446,6 +510,7 @@ def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=T
             except Exception as e:
                 raise RuntimeError(f"Manual kekulization for aromatic heterocycles failed, below are errors:\n\t {e}")
 
+
 def convert_by_obabel(mol, cache_dir=os.path.join(os.getcwd(), '.cache'), obabel_path="obabel"):
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
@@ -463,6 +528,7 @@ def convert_by_obabel(mol, cache_dir=os.path.join(os.getcwd(), '.cache'), obabel
     obConversion.WriteFile(mol, mol_file_out)
     mol_obabel = Chem.MolFromMolFile(mol_file_out, removeHs=False, sanitize=False)
     return mol_obabel
+
 
 def super_sanitize_mol(mol, name=None, verbose=True):
     if name is None:
@@ -484,11 +550,13 @@ def super_sanitize_mol(mol, name=None, verbose=True):
     except Exception as e:
         try:
             if verbose:
-                print("Hermite procedure failed, maybe due to unsupported representation of hetero aromatic rings, re-try with obabel")
+                print(
+                    "Hermite procedure failed, maybe due to unsupported representation of hetero aromatic rings, re-try with obabel")
                 print("=====Stage 2: re-try with obabel=====")
             mol = convert_by_obabel(mol)
             mol = sanitize_mol(mol, verbose)
-            mol = kekulize_aromatic_heterocycles(mol, assign_formal_charge=False, sanitize=False)    # aromatic heterocycles
+            mol = kekulize_aromatic_heterocycles(mol, assign_formal_charge=False,
+                                                 sanitize=False)  # aromatic heterocycles
             mol = regularize_formal_charges(mol, sanitize=False)
             mol_copy = deepcopy(mol)
             Chem.SanitizeMol(mol_copy)
@@ -500,6 +568,7 @@ def super_sanitize_mol(mol, name=None, verbose=True):
                 print(e)
                 print(name, "Failed!")
             return None
+
 
 class Sanitizer(object):
     def __init__(self, level='medium', raise_errors=True, verbose=False):
@@ -526,7 +595,7 @@ class Sanitizer(object):
         else:
             if level == 'high' and not USE_OBABEL:
                 raise ModuleNotFoundError("obabel not installed, high level sanitizer cannot work")
-    
+
     def _handle_exception(self, error_info):
         if self.raise_errors:
             raise SanitizeError(error_info)
@@ -560,6 +629,7 @@ class Sanitizer(object):
             if mol is None:
                 self._handle_exception(error_info)
             return mol
+
 
 class SanitizeError(Exception):
     def __init__(self, content="Sanitization Failed."):
