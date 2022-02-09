@@ -15,8 +15,10 @@ def system_info (lines, type_idx_zero = False) :
             else:
                 atom_names.append(_ii)
         #a stricker check for "NELM"; compatible with distingct formats in different versions(6 and older, newers_expect-to-work) of vasp
-        elif 'NELM' in ii_word_list and (ii_word_list[ii_word_list.index("NELM") + 1] == "=") and nelm == None:
-            nelm = int(ii_word_list[ii_word_list.index("NELM") + 2].rstrip(";"))
+        elif nelm is None:
+            m = re.search(r'NELM\s*=\s*(\d+)', ii)
+            if m:
+                nelm = int(m.group(1))
         elif 'ions per type' in ii :
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None :                
