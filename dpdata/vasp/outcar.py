@@ -1,4 +1,5 @@
 import numpy as np
+import re
 
 def system_info (lines, type_idx_zero = False) :
     atom_names = []
