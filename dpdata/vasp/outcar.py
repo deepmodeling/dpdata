@@ -20,7 +20,7 @@ def system_info (lines, type_idx_zero = False) :
             m = re.search(r'NELM\s*=\s*(\d+)', ii)
             if m:
                 nelm = int(m.group(1))
-        elif 'ions per type' in ii :
+        if 'ions per type' in ii :
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None :                
                 atom_numbs = atom_numbs_
