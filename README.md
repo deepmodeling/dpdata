@@ -82,6 +82,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | Gromacs | gro         | True         | False   | System        | 'gromacs/gro'        |
 | ABACUS  | STRU        | False        | True    | LabeledSystem | 'abacus/scf'         |
 | ABACUS  | cif         | True         | True    | LabeledSystem | 'abacus/md'          |
+| ase     | structure   | True         | True    | MultiSystems  | 'ase/structure'      |
 
 
 The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
@@ -89,7 +90,7 @@ The Class `dpdata.MultiSystems`  can read data  from a dir which may contains ma
 Use `dpdata.MultiSystems.from_dir` to read from a  directory, `dpdata.MultiSystems` will walk in the directory 
 Recursively  and  find all file with specific file_name. Supports all the file formats that `dpdata.LabeledSystem` supports.
 
-Use  `dpdata.MultiSystems.from_file` to read from single file. Now only support quip/gap/xyz  format file.
+Use  `dpdata.MultiSystems.from_file` to read from single file. Single-file support is available for the `quip/gap/xyz` and `ase/structure` formats.
 
 For example, for `quip/gap xyz` files, single .xyz file may contain many different configurations with different atom numbers and atom type.
 
