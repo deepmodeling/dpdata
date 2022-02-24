@@ -24,7 +24,7 @@ class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
 @unittest.skipIf(skip_ase,"skip ase related test. install ase to fix")
 class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
-        self.system_temp0 = dpdata.MultiSystems.from_file(file_name='ase_traj/HeAlO.traj', fmt='ase_traj/structure')
+        self.system_temp0 = dpdata.MultiSystems.from_file(file_name='ase_traj/HeAlO.traj', fmt='ase/structure')
         self.system_1 = self.system_temp0.systems['Al2He1O3'] # .sort_atom_types()
         self.system_temp1 = dpdata.LabeledSystem('ase_traj/Al2He1O3', fmt='deepmd')
         self.system_temp2 = dpdata.LabeledSystem('ase_traj/Al4He4O6', fmt='deepmd')
