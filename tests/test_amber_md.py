@@ -5,7 +5,7 @@ from context import dpdata
 from comp_sys import CompLabeledSys, IsPBC
 try:
     import parmed
-except:
+except ModuleNotFoundError:
     skip_parmed_related_test=True
 else:
     skip_parmed_related_test=False

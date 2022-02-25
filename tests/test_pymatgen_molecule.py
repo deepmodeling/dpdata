@@ -4,7 +4,7 @@ import unittest
 from context import dpdata
 try:
     import pymatgen
-except:
+except ModuleNotFoundError:
     skip_pymatgen=True
 else:
     skip_pymatgen=False
