@@ -3,7 +3,7 @@ import dpdata.vasp.xml
 import dpdata.vasp.outcar
 import numpy as np
 from dpdata.format import Format
-
+from dpdata.utils import sort_atom_names, uniq_atom_name
 
 @Format.register("poscar")
 @Format.register("contcar")
@@ -71,6 +71,7 @@ class VASPOutcarFormat(Format):
             for ii in range(data['cells'].shape[0]):
                 vol = np.linalg.det(np.reshape(data['cells'][ii], [3, 3]))
                 data['virials'][ii] *= v_pref * vol
+        data = uniq_atom_name(data)
         return data
 
 
@@ -102,4 +103,5 @@ class VASPXMLFormat(Format):
         for ii in range(data['cells'].shape[0]):
             vol = np.linalg.det(np.reshape(data['cells'][ii], [3, 3]))
             data['virials'][ii] *= v_pref * vol
+        data = uniq_atom_name(data)
         return data

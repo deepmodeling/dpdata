@@ -16,6 +16,13 @@ import dpdata.plugins
 from dpdata.plugin import Plugin
 from dpdata.format import Format
 
+from dpdata.utils import (
+    elements_index_map,
+    remove_pbc,
+    sort_atom_names,
+    add_atom_names,
+)
+
 def load_format(fmt):
     fmt = fmt.lower()
     formats = Format.get_formats()
@@ -341,27 +348,7 @@ class System (MSONable) :
         type_map : list
             type_map
         """
-        if type_map is not None:
-            # assign atom_names index to the specify order
-            # atom_names must be a subset of type_map
-            assert (set(self.data['atom_names']).issubset(set(type_map)))
-            # for the condition that type_map is a proper superset of atom_names
-            # new_atoms = set(type_map) - set(self.data["atom_names"])
-            new_atoms = [e for e in type_map if e not in self.data["atom_names"]]
-            if new_atoms:
-                self.add_atom_names(new_atoms)
-            # index that will sort an array by type_map
-            # a[as[a]] == b[as[b]]  as == argsort
-            # as[as[b]] == as^{-1}[b]
-            # a[as[a][as[as[b]]]] = b[as[b][as^{-1}[b]]] = b[id]
-            idx = np.argsort(self.data['atom_names'])[np.argsort(np.argsort(type_map))]
-        else:
-            # index that will sort an array by alphabetical order
-            idx = np.argsort(self.data['atom_names'])
-        # sort atom_names, atom_numbs, atom_types by idx
-        self.data['atom_names'] = list(np.array(self.data['atom_names'])[idx])
-        self.data['atom_numbs'] = list(np.array(self.data['atom_numbs'])[idx])
-        self.data['atom_types'] = np.argsort(idx)[self.data['atom_types']]
+        self.data = sort_atom_names(self.data, type_map=type_map)
 
     def check_type_map(self, type_map):
         """
@@ -489,8 +476,7 @@ class System (MSONable) :
         """
         Add atom_names that do not exist.
         """
-        self.data['atom_names'].extend(atom_names)
-        self.data['atom_numbs'].extend([0 for _ in atom_names])
+        self.data = add_atom_names(self.data, atom_names)
 
     def replicate(self, ncopy):
         """
@@ -1298,26 +1284,3 @@ def check_LabeledSystem(data):
         assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
 
 
-def elements_index_map(elements,standard=False,inverse=False):
-    if standard:
-        elements.sort(key=lambda x: Element(x).Z)
-    if inverse:
-        return dict(zip(range(len(elements)),elements))
-    else:
-        return dict(zip(elements,range(len(elements))))
-# %%
-
-def remove_pbc(system, protect_layer = 9):
-    nframes = len(system["coords"])
-    natoms = len(system['coords'][0])
-    for ff in range(nframes):
-        tmpcoord = system['coords'][ff]
-        cog = np.average(tmpcoord, axis = 0)
-        dist = tmpcoord - np.tile(cog, [natoms, 1])
-        max_dist = np.max(np.linalg.norm(dist, axis = 1))
-        h_cell_size = max_dist + protect_layer
-        cell_size = h_cell_size * 2
-        shift = np.array([1,1,1]) * h_cell_size - cog
-        system['coords'][ff] = system['coords'][ff] + np.tile(shift, [natoms, 1])
-        system['cells'][ff] = cell_size * np.eye(3)
-    return system
