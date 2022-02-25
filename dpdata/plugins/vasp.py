@@ -14,7 +14,9 @@ class VASPPoscarFormat(Format):
     def from_system(self, file_name, **kwargs):
         with open(file_name) as fp:
             lines = [line.rstrip('\n') for line in fp]
-        return dpdata.vasp.poscar.to_system_data(lines)
+        data = dpdata.vasp.poscar.to_system_data(lines)
+        data = uniq_atom_name(data)
+        return data
 
     def to_system(self, data, file_name, frame_idx=0, **kwargs):
         """
