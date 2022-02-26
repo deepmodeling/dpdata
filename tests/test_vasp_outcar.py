@@ -3,7 +3,7 @@ import numpy as np
 import unittest
 from context import dpdata
 from comp_sys import CompLabeledSys, IsPBC
-from dpdata.utils import uniq_atom_name
+from dpdata.utils import uniq_atom_names
 
 class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
@@ -76,7 +76,7 @@ class TestUniqAtomNames(unittest.TestCase):
         data['atom_names'] = ['O', 'H', 'O', 'H']
         data['atom_types'] = np.array([0, 1, 2, 3, 3, 2, 1], dtype=int)
         
-        data = uniq_atom_name(data)
+        data = uniq_atom_names(data)
         self.assertEqual(list(data['atom_types']),
                          [0, 1, 0, 1, 1, 0, 1])
         self.assertEqual(list(data['atom_names']),

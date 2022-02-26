@@ -67,7 +67,7 @@ def sort_atom_names(data, type_map=None):
     data['atom_types'] = np.argsort(idx)[data['atom_types']]
     return data
 
-def uniq_atom_name(data):
+def uniq_atom_names(data):
     """
     Make the atom names uniq. For example
     ['O', 'H', 'O', 'H', 'O'] -> ['O', 'H']
