@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'dpdata'
-copyright = '2019-%d, Deep Modeling ' % date.today().year
+copyright = '2019-%d, DeepModeling ' % date.today().year
 author = 'Han Wang'
 
 # The short X.Y version
@@ -40,6 +40,7 @@ release = '0.0.0-rc'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'deepmodeling_sphinx',
     'sphinx_rtd_theme',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
