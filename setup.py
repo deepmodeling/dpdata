@@ -54,7 +54,7 @@ setuptools.setup(
         'ase': ['ase'],
         'amber': ['parmed'],
         'pymatgen': ['pymatgen'],
-        'docs': ['sphinx', 'recommonmark', 'sphinx_rtd_theme>=1.0.0rc1', 'numpydoc', 'm2r2'],
+        'docs': ['sphinx', 'recommonmark', 'sphinx_rtd_theme>=1.0.0rc1', 'numpydoc', 'm2r2', 'deepmodeling-sphinx'],
     }
 )
 
