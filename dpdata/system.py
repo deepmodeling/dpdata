@@ -1082,6 +1082,21 @@ class MultiSystems:
         for fn, ss in zip(fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs), self.systems.values()):
             ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
         return self
+    
+    def to(self, fmt: str, *args, **kwargs) -> "MultiSystems":
+        """Dump systems to the specific format.
+        
+        Parameters
+        ----------
+        fmt : str
+            format
+        
+        Returns
+        -------
+        MultiSystems
+            self
+        """
+        return self.to_fmt_obj(load_format(fmt), *args, **kwargs)
 
     def __getitem__(self, key):
         """Returns proerty stored in System by key or by idx"""

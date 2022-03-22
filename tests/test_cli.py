@@ -1,0 +1,18 @@
+import unittest
+from context import dpdata
+from poscars.poscar_ref_oh import TestPOSCARoh
+import subprocess as sp
+
+
+class TestCli(unittest.TestCase, TestPOSCARoh):
+    
+    @classmethod
+    def setUpClass(cls) -> None:
+        with sp.Popen(["dpdata", "poscars/conf.lmp", "--type-map O H", "-olammps/lmp", "-O tmp.lmp", "--nolabeled"]):
+            pass
+        cls.system = dpdata.System('tmp.lmp', fmt='lammps/lmp',
+                             type_map = ['O', 'H'])
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.system = None

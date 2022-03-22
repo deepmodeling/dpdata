@@ -55,6 +55,7 @@ setuptools.setup(
         'amber': ['parmed'],
         'pymatgen': ['pymatgen'],
         'docs': ['sphinx', 'recommonmark', 'sphinx_rtd_theme>=1.0.0rc1', 'numpydoc', 'm2r2', 'deepmodeling-sphinx'],
-    }
+    },
+    entry_points={"console_scripts": ["dpdata = dpdata.cli:dpdata_cli"]},
 )
 
