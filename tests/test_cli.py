@@ -8,8 +8,7 @@ class TestCli(unittest.TestCase, TestPOSCARoh):
     
     @classmethod
     def setUpClass(cls) -> None:
-        with sp.Popen(["dpdata", "poscars/conf.lmp", "--type-map O H", "-olammps/lmp", "-O tmp.lmp", "--nolabeled"]):
-            pass
+        sp.check_output(["dpdata", "poscars/conf.lmp", "--type-map O H", "-olammps/lmp", "-O tmp.lmp", "--nolabeled"])
         cls.system = dpdata.System('tmp.lmp', fmt='lammps/lmp',
                              type_map = ['O', 'H'])
 
