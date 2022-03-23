@@ -1215,6 +1215,20 @@ class MultiSystems:
             new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
         return new_sys
 
+def get_cls_name(cls: object) -> str:
+    """Returns the fully qualified name of a class, such as `np.ndarray`.
+    
+    Parameters
+    ----------
+    cls : object
+        the class
+    
+    Returns
+    -------
+    str
+        the fully qualified name of a class
+    """
+    return ".".join([cls.__module__, cls.__name__])
 
 def add_format_methods():
     """Add format methods to System, LabeledSystem, and MultiSystems.
@@ -1237,6 +1251,7 @@ def add_format_methods():
             # ff is not initized when defining from_format so cannot be polluted
             def from_format(self, file_name, **kwargs):
                 return self.from_fmt_obj(ff(), file_name, **kwargs)
+            from_format.__doc__ = "Read data from :class:`%s` format." % (get_cls_name(ff))
             return from_format
 
         setattr(System, method, get_func(formatcls))
@@ -1247,6 +1262,7 @@ def add_format_methods():
         def get_func(ff):
             def to_format(self, *args, **kwargs):
                 return self.to_fmt_obj(ff(), *args, **kwargs)
+            to_format.__doc__ = "Dump data to :class:`%s` format." % (get_cls_name(ff))
             return to_format
 
         setattr(System, method, get_func(formatcls))
