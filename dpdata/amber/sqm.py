@@ -65,7 +65,7 @@ def parse_sqm_out(fname):
     data['coords'] = np.array([coords])
 
     energies = np.array(energies)
-    forces = np.array([forces], dtype=np.float32) * kcal2ev
+    forces = -np.array([forces], dtype=np.float32) * kcal2ev
     if len(forces) > 0:
         data['energies'] = energies
         data['forces'] = forces
