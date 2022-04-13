@@ -139,7 +139,19 @@ class System (MSONable) :
                     self.post_funcs.get_plugin(post_f)(self)
         return self
 
-    def to(self, fmt, *args, **kwargs):
+    def to(self, fmt: str, *args, **kwargs) -> System:
+        """Dump systems to the specific format.
+        
+        Parameters
+        ----------
+        fmt : str
+            format
+        
+        Returns
+        -------
+        System
+            self
+        """
         return self.to_fmt_obj(load_format(fmt), *args, **kwargs)
     
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
