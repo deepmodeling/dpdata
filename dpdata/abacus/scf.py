@@ -16,15 +16,18 @@ def get_block (lines, keyword, skip = 0, nlines = None):
             found = True
             blk_idx = idx + 1 + skip
             line_idx = 0
-            while len(lines[blk_idx]) == 0:
+            while len(lines[blk_idx].split("\s+")) == 0:
                 blk_idx += 1
-            while len(lines[blk_idx]) != 0 and line_idx < nlines and blk_idx != len(lines):
+            while line_idx < nlines and blk_idx != len(lines):
+                if len(lines[blk_idx].split("\s+")) == 0 or lines[blk_idx] == "":
+                    blk_idx+=1
+                    continue
                 ret.append(lines[blk_idx])
                 blk_idx += 1
                 line_idx += 1
             break
     if not found:
-        raise RuntimeError("The keyword %s is not found in the script." %keyword)
+        return None
     return ret
 
 def get_geometry_in(fname, inlines):
@@ -111,9 +114,11 @@ def get_energy(outlines):
             raise RuntimeError("Final total energy cannot be found in output. Unknown problem.")
     return Etot
 
-def get_force (outlines):
+def get_force (outlines, natoms):
     force = []
-    force_inlines = get_block (outlines, "TOTAL-FORCE (eV/Angstrom)", skip = 4)
+    force_inlines = get_block (outlines, "TOTAL-FORCE (eV/Angstrom)", skip = 4, nlines=np.sum(natoms))
+    if force_inlines is None:
+        raise RuntimeError("TOTAL-FORCE (eV/Angstrom) is not found in running_scf.log. Please check.")
     for line in force_inlines:
         force.append([float(f) for f in line.split()[1:4]])
     force = np.array(force)
@@ -121,7 +126,9 @@ def get_force (outlines):
 
 def get_stress(outlines):
     stress = []
-    stress_inlines = get_block(outlines, "TOTAL-STRESS (KBAR)", skip = 3)
+    stress_inlines = get_block(outlines, "TOTAL-STRESS (KBAR)", skip = 3, nlines=3)
+    if stress_inlines is None:
+        return None
     for line in stress_inlines:
         stress.append([float(f) for f in line.split()])
     stress = np.array(stress) * kbar2evperang3
@@ -151,8 +158,10 @@ def get_frame (fname):
     atom_names, natoms, types, coords = get_coords(celldm, cell, geometry_inlines, inlines) 
     
     energy = get_energy(outlines) 
-    force = get_force (outlines) 
-    stress = get_stress(outlines) * np.linalg.det(cell) 
+    force = get_force (outlines, natoms) 
+    stress = get_stress(outlines) 
+    if stress is not None:
+        stress *= np.abs(np.linalg.det(cell)) 
     
     data = {}
     data['atom_names'] = atom_names
@@ -162,7 +171,8 @@ def get_frame (fname):
     data['coords'] = coords[np.newaxis, :, :]
     data['energies'] = np.array(energy)[np.newaxis]
     data['forces'] = force[np.newaxis, :, :]
-    data['virials'] = stress[np.newaxis, :, :]
+    if stress is not None:
+        data['virials'] = stress[np.newaxis, :, :]
     data['orig'] = np.zeros(3)
     # print("atom_names = ", data['atom_names'])
     # print("natoms = ", data['atom_numbs'])

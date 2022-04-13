@@ -1,6 +1,8 @@
+from ast import dump
 import os,sys
 import numpy as np
-from .scf import ry2ev, kbar2evperang3, get_block, get_geometry_in, get_cell, get_coords
+from .scf import ry2ev, bohr2ang, kbar2evperang3, get_block, get_geometry_in, get_cell, get_coords
+import re
 
 # Read in geometries from an ABACUS MD trajectory.
 # The atomic coordinates are read in from generated files in OUT.XXXX.
@@ -24,7 +26,7 @@ def get_path_out(fname, inlines):
 
 def get_coord_dump_freq(inlines):
     for line in inlines:
-        if  len(line)>0 and "md_dumpmdfred" in line and "md_dumpmdfred" == line.split()[0]:
+        if  len(line)>0 and "md_dumpfreq" in line and "md_dumpfreq" == line.split()[0]:
             return int(line.split()[1])
     return 1
 
@@ -40,7 +42,7 @@ def setup_cell(a, b, c, alpha, beta, gamma):
     cell[2, 1] = c*(b*np.cos(alpha/180*np.pi) - cell[1, 0]*np.cos(beta/180*np.pi))/cell[1, 1]
     cell[2, 2] = np.sqrt(c**2 - cell[2, 0]**2 - cell[2, 1]**2)
     return cell
-'''
+
 
 def get_single_coord_from_cif(pos_file, atom_names, natoms, cell):
     assert(len(atom_names) == len(natoms))
@@ -97,53 +99,47 @@ def get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, c
         pos_file = os.path.join(path_out, "md_pos_%d.cif" %(dump_idx*dump_freq))
         #print("dump_idx = %s" %dump_idx)
         coords[dump_idx] = get_single_coord_from_cif(pos_file, atom_names, natoms, cell)
-    return coords
+    return coords'''
 
-def get_energy_force_stress(outlines, inlines, dump_freq, ndump, natoms, atom_names):
-    stress = None
+def get_coords_from_dump(dumplines, natoms):
+    nlines = len(dumplines)
     total_natoms = sum(natoms)
-    for line in inlines:
-        if len(line)>0 and "stress" in line and "stress" == line.split()[0] and "1" == line.split()[1]:
-            stress = np.zeros([ndump, 3, 3])
-            break
-    if type(stress) != np.ndarray:
-        print("The ABACUS program has no stress output. Stress will not be read.")
-    nenergy = 0
-    nforce = 0
-    nstress = 0
-    energy = np.zeros(ndump)
-    force = np.zeros([ndump, total_natoms, 3])
+    nframes_dump = int(nlines/(total_natoms + 13))
+    
+    cells = np.zeros([nframes_dump, 3, 3])
+    stresses = np.zeros([nframes_dump, 3, 3])
+    forces = np.zeros([nframes_dump, total_natoms, 3])
+    coords = np.zeros([nframes_dump, total_natoms, 3])
+    iframe = 0
+    for iline in range(nlines):
+        if "MDSTEP" in dumplines[iline]:
+            # read in LATTICE_CONSTANT
+            celldm = float(dumplines[iline+1].split(" ")[-1])
+            # read in LATTICE_VECTORS
+            for ix in range(3):
+                cells[iframe, ix] = np.array([float(i) for i in re.split('\s+', dumplines[iline+3+ix])[-3:]]) * celldm
+                stresses[iframe, ix] = np.array([float(i) for i in re.split('\s+', dumplines[iline+7+ix])[-3:]])
+            for iat in range(total_natoms):
+                coords[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+11+iat])[-6:-3]])*celldm
+                forces[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+11+iat])[-3:]])
+            iframe += 1
+    assert(iframe == nframes_dump)
+    cells *= bohr2ang
+    coords *= bohr2ang
+    stresses *= kbar2evperang3
+    return coords, cells, forces, stresses
 
+def get_energy(outlines, ndump, dump_freq):
+    energy = []
+    nenergy = 0
     for line_idx, line in enumerate(outlines):
         if "final etot is" in line:
             if nenergy%dump_freq == 0:
-                energy[int(nenergy/dump_freq)] = float(line.split()[-2])
+                energy.append(float(line.split()[-2]))
             nenergy+=1
-        if "TOTAL-FORCE (eV/Angstrom)" in line:
-            for iatom in range(0, total_natoms):
-                force_line = outlines[line_idx+5+iatom]
-                atom_force = [float(i) for i in force_line.split()[1:]]
-                assert(len(atom_force) == 3)
-                atom_force = np.array(atom_force)
-                if nforce%dump_freq == 0:
-                    force[int(nforce/dump_freq), iatom] = atom_force
-            nforce+=1
-            assert(nforce==nenergy)
-        if "TOTAL-STRESS (KBAR)" in line:
-            for idx in range(0, 3):
-                stress_line = outlines[line_idx+4+idx]
-                single_stress = [float(i) for i in stress_line.split()]
-                if len(single_stress) != 3:
-                    print(single_stress)
-                assert(len(single_stress) == 3)
-                single_stress = np.array(single_stress)
-                if nstress%dump_freq == 0:
-                    stress[int(nstress/dump_freq), idx] = single_stress
-            nstress+=1
-            assert(nstress==nforce)
-    if type(stress) == np.ndarray:
-        stress *= kbar2evperang3
-    return energy, force, stress
+    assert(ndump == len(energy))
+    energy = np.array(energy)
+    return energy
 
 
 def get_frame (fname):
@@ -164,23 +160,27 @@ def get_frame (fname):
     atom_names, natoms, types, coords = get_coords(celldm, cell, geometry_inlines, inlines) 
     # This coords is not to be used.
     dump_freq = get_coord_dump_freq(inlines = inlines)
-    ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
+    #ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
     # number of dumped geometry files
-    coords = get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, cell)
-    
-    # TODO: Read in energies, forces and pressures.
+    #coords = get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, cell)
+    with open(os.path.join(path_out, "MD_dump"), 'r') as fp:
+        dumplines = fp.read().split('\n')
+    coords, cells, force, stress = get_coords_from_dump(dumplines, natoms)
+    ndump = np.shape(coords)[0]
     with open(os.path.join(path_out, "running_md.log"), 'r') as fp:
         outlines = fp.read().split('\n')
-    energy, force, stress = get_energy_force_stress(outlines, inlines, dump_freq, ndump, natoms, atom_names)
-    if type(stress) == np.ndarray:
-        stress *= np.linalg.det(cell)
+    energy = get_energy(outlines, ndump, dump_freq)
+    for iframe in range(ndump):
+        stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))
+    if np.sum(np.abs(stress[0])) < 1e-10:
+        stress = None
     data = {}
     data['atom_names'] = atom_names
     data['atom_numbs'] = natoms
     data['atom_types'] = types
-    data['cells'] = np.zeros([ndump, 3, 3])
-    for idx in range(ndump):
-        data['cells'][:, :, :] = cell
+    data['cells'] = cells
+    #for idx in range(ndump):
+    #    data['cells'][:, :, :] = cell
     data['coords'] = coords
     data['energies'] = energy
     data['forces'] = force

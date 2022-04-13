@@ -70,7 +70,7 @@ def get_coords (lines, cell) :
                 coord.append([float(jj) for jj in ii.split()[1:4]])
                 atom_symbol_list.append(ii.split()[0])
             coord = np.array(coord)
-            coord = np.matmul(coord, cell.T)
+            coord = np.matmul(coord, cell)
     atom_symbol_list = np.array(atom_symbol_list)
     tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)
     atom_types = []
