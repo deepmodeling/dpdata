@@ -139,7 +139,7 @@ class System (MSONable) :
                     self.post_funcs.get_plugin(post_f)(self)
         return self
 
-    def to(self, fmt: str, *args, **kwargs) -> System:
+    def to(self, fmt: str, *args, **kwargs) -> 'System':
         """Dump systems to the specific format.
         
         Parameters
