@@ -7,7 +7,7 @@ try:
    from ase import Atoms
    from ase.io import write
    exist_module=True
-except:
+except Exception:
    exist_module=False
 
 @unittest.skipIf(not exist_module,"skip test_ase")

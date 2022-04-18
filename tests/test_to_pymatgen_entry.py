@@ -7,7 +7,7 @@ from monty.serialization import  loadfn
 try:
    from pymatgen.entries.computed_entries import ComputedStructureEntry
    exist_module=True
-except:
+except Exception:
    exist_module=False
 
 @unittest.skipIf(not exist_module,"skip pymatgen")
