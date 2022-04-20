@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import subprocess as sp
 from datetime import date
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -21,7 +22,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'dpdata'
-copyright = '2019-%d, Deep Modeling ' % date.today().year
+copyright = '2019-%d, DeepModeling ' % date.today().year
 author = 'Han Wang'
 
 # The short X.Y version
@@ -40,6 +41,7 @@ release = '0.0.0-rc'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'deepmodeling_sphinx',
     'sphinx_rtd_theme',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
@@ -170,8 +172,12 @@ def run_apidoc(_):
     module = os.path.join(cur_dir, "..", "dpdata")
     main(['-M', '--tocfile', 'api', '-H', 'API documentation', '-o', os.path.join(cur_dir, "api"), module, '--force'])
 
+def run_formats(_):
+    sp.check_output([sys.executable, "make_format.py"])
+
 def setup(app):
     app.connect('builder-inited', run_apidoc)
+    app.connect('builder-inited', run_formats)
 
 
 intersphinx_mapping = {

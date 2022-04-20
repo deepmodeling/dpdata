@@ -3,7 +3,12 @@ import unittest
 import shutil
 from context import dpdata
 from comp_sys import CompLabeledSys, IsPBC
-
+try:
+    import parmed
+except ModuleNotFoundError:
+    skip_parmed_related_test=True
+else:
+    skip_parmed_related_test=False
 
 class TestAmberMD(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
@@ -19,6 +24,7 @@ class TestAmberMD(unittest.TestCase, CompLabeledSys, IsPBC):
         if os.path.exists('tmp.deepmd.npy'):
             shutil.rmtree('tmp.deepmd.npy')
 
+@unittest.skipIf(skip_parmed_related_test,"skip parmed related test. install parmed to fix")
 class TestAmberMDTarget(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         ll="amber/corr/low_level"

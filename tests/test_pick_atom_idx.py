@@ -5,7 +5,7 @@ from comp_sys import CompSys, IsNoPBC
 try:
    import parmed
    exist_module=True
-except:
+except Exception:
    exist_module=False
 
 class TestPickAtomIdx(unittest.TestCase, CompSys, IsNoPBC):

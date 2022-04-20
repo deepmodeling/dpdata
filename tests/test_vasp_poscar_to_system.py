@@ -17,6 +17,19 @@ class TestPOSCARDirect(unittest.TestCase, TestPOSCARoh):
         self.system = dpdata.System()
         self.system.from_vasp_poscar(os.path.join('poscars', 'POSCAR.oh.d'))
 
+class TestPOSCARDirectDuplicated(unittest.TestCase):    
+    def test(self): 
+        ss = dpdata.System(os.path.join('poscars', 'POSCAR.oh.d.dup'), fmt='vasp/poscar')
+        self.assertEqual(ss['atom_names'], ['O', 'H'])
+        self.assertEqual(ss['atom_numbs'], [2, 1])
+        self.assertEqual(list(ss['atom_types']), [0, 1, 0])
+
+    def test_type_map(self): 
+        ss = dpdata.System(os.path.join('poscars', 'POSCAR.oh.d.dup'), fmt='vasp/poscar', type_map=['H', 'O'])
+        self.assertEqual(ss['atom_names'], ['H', 'O'])
+        self.assertEqual(ss['atom_numbs'], [1, 2])
+        self.assertEqual(list(ss['atom_types']), [1, 0, 1])
+
 class TestVaspPOSCARTypeMap(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
         sys0 = dpdata.System('poscars/POSCAR.oh.d', fmt =  'vasp/poscar')

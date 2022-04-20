@@ -127,7 +127,9 @@ def analyze_block(lines, ntot, nelm) :
             virial[2][1] = tmp_v[4]
             virial[0][2] = tmp_v[5]
             virial[2][0] = tmp_v[5]
-        elif 'TOTAL-FORCE' in ii:
+        elif 'TOTAL-FORCE' in ii and ("ML" not in ii):
+            # use the lines with " POSITION                                       TOTAL-FORCE (eV/Angst)"
+            # exclude the lines with "  POSITION                                       TOTAL-FORCE (eV/Angst) (ML)"
             for jj in range(idx+2, idx+2+ntot) :
                 tmp_l = lines[jj]
                 info = [float(ss) for ss in tmp_l.split()]

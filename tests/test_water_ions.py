@@ -6,7 +6,7 @@ try:
     import ase
     import ase.neighborlist    
     exist_ase=True
-except:
+except Exception:
     exist_ase=False
 
 class TestIons(unittest.TestCase):
