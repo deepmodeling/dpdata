@@ -124,7 +124,7 @@ def analyze_block(lines, first_blk=False, md=True) :
     contents="\n".join(lines)
     try:
        natom=int(re.findall("Number of atoms.*([0-9]{1,})",lines)[0])
-    except:
+    except Exception:
        natom=0
 
     if first_blk:
@@ -154,7 +154,7 @@ def analyze_block(lines, first_blk=False, md=True) :
     try:
       _eng_patt=re.compile(eng_patt)
       energy=float(_eng_patt.search(contents).group().split()[-2])
-    except:
+    except Exception:
      energy=None
     
     if not energy:
