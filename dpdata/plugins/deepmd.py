@@ -58,7 +58,7 @@ class DeePMDCompFormat(Format):
     MultiMode = Format.MultiModes.Directory
 
 @Format.register("deepmd/hdf5")
-class DeePMDCompFormat(Format):
+class DeePMDHDF5Format(Format):
     """HDF5 format for DeePMD-kit.
     
     Examples
