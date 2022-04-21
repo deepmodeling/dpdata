@@ -22,7 +22,7 @@ def get_explicit_valence(atom, verbose=False):
                 print(
                     f"Explicit valence given by GetExplicitValence() and sum of bond order are inconsistent on {atom.GetSymbol()}{atom.GetIdx() + 1}, using sum of bond order.")
         return exp_val_calculated_from_bonds
-    except:
+    except Exception:
         return exp_val_calculated_from_bonds
 
 
@@ -37,7 +37,7 @@ def regularize_formal_charges(mol, sanitize=True, verbose=False):
         try:
             Chem.SanitizeMol(mol)
             return mol
-        except:
+        except Exception:
             return None
     else:
         return mol

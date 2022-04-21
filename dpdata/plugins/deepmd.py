@@ -29,7 +29,7 @@ class DeePMDCompFormat(Format):
     def from_system(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.comp.to_system_data(file_name, type_map=type_map, labels=False)
 
-    def to_system(self, data, file_name, set_size=5000, prec=np.float32, **kwargs):
+    def to_system(self, data, file_name, set_size=5000, prec=np.float64, **kwargs):
         """
         Dump the system in deepmd compressed format (numpy binary) to `folder`.
 
@@ -58,7 +58,7 @@ class DeePMDCompFormat(Format):
     MultiMode = Format.MultiModes.Directory
 
 @Format.register("deepmd/hdf5")
-class DeePMDCompFormat(Format):
+class DeePMDHDF5Format(Format):
     """HDF5 format for DeePMD-kit.
     
     Examples
@@ -83,7 +83,7 @@ class DeePMDCompFormat(Format):
                   data : dict,
                   file_name : str,
                   set_size : int = 5000, 
-                  comp_prec : np.dtype = np.float32,
+                  comp_prec : np.dtype = np.float64,
                   **kwargs):
         s = file_name.split("#")
         name = s[1] if len(s) > 1 else ""

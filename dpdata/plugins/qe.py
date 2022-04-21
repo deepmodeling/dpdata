@@ -27,7 +27,7 @@ class QECPTrajFormat(Format):
         return data
 
 @Format.register("qe/pw/scf")
-class QECPTrajFormat(Format):
+class QECPPWSCFFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
         data = {}

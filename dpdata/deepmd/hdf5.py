@@ -77,6 +77,9 @@ def to_system_data(f: h5py.File,
         
         if len(all_data) > 0 :
             data[dt] = np.concatenate(all_data, axis = 0)
+    if 'cells' not in data:
+        nframes = data['coords'].shape[0]
+        data['cells'] = np.zeros((nframes, 3, 3))
     return data
 
 def dump(f: h5py.File,
