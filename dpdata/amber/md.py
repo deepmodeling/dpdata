@@ -69,15 +69,17 @@ def read_amber_traj(parm7_file, nc_file, mdfrc_file=None, mden_file = None, mdou
         coords = np.array(f.variables["coordinates"][:])
         cell_lengths = np.array(f.variables["cell_lengths"][:])
         cell_angles = np.array(f.variables["cell_angles"][:])
+        shape = cell_lengths.shape
+        cells = np.zeros((shape[0], 3, 3))
         if np.all(cell_angles > 89.99 ) and np.all(cell_angles < 90.01):
             # only support 90
             # TODO: support other angles
-            shape = cell_lengths.shape
-            cells = np.zeros((shape[0], 3, 3))
             for ii in range(3):
                 cells[:, ii, ii] = cell_lengths[:, ii]
         else:
-            raise RuntimeError("Unsupported cells")
+            from ase.geometry import cellpar_to_cell
+            for ii in range(cell_lengths.shape[0]):
+                cells[ii, :, :] = cellpar_to_cell([*cell_lengths[ii], *cell_angles[ii]])
 
     if labeled:
         with netcdf.netcdf_file(mdfrc_file, 'r') as f:
