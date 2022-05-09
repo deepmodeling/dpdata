@@ -5,6 +5,7 @@ import inspect
 import numpy as np
 import dpdata.md.pbc
 from copy import deepcopy
+from typing import Any
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
@@ -15,6 +16,7 @@ import dpdata
 import dpdata.plugins
 from dpdata.plugin import Plugin
 from dpdata.format import Format
+from dpdata.driver import Driver
 
 from dpdata.utils import (
     elements_index_map,
@@ -207,6 +209,7 @@ class System (MSONable) :
     def map_atom_types(self,type_map=None):
         """
         Map the atom types of the system
+
         Parameters
         ----------
         type_map :
@@ -640,63 +643,33 @@ class System (MSONable) :
             self.data[ii] = self.data[ii][idx]
         return idx
 
-    def predict(self, dp):
+    def predict(self, *args: Any, driver: str="dp", **kwargs: Any) -> "LabeledSystem":
         """
-        Predict energies and forces by deepmd-kit.
+        Predict energies and forces by a driver.
 
         Parameters
         ----------
-        dp : deepmd.DeepPot or str
-            The deepmd-kit potential class or the filename of the model.
+        *args : iterable
+            Arguments passing to the driver
+        driver : str, default=dp
+            The assigned driver. For compatibility, default is dp
+        **kwargs : dict
+            Other arguments passing to the driver
 
         Returns
         -------
         labeled_sys : LabeledSystem
-            The labeled system.
+            A new labeled system.
+
+        Examples
+        --------
+        The default driver is DP:
+        >>> labeled_sys = ori_sys.predict("frozen_model_compressed.pb")
         """
-        try:
-            # DP 1.x
-            import deepmd.DeepPot as DeepPot
-        except ModuleNotFoundError:
-            # DP 2.x
-            from deepmd.infer import DeepPot
-        if not isinstance(dp, DeepPot):
-            dp = DeepPot(dp)
-        type_map = dp.get_type_map()
-        ori_sys = self.copy()
-        ori_sys.sort_atom_names(type_map=type_map)
-        atype = ori_sys['atom_types']
-
-        labeled_sys = LabeledSystem()
-
-        if 'auto_batch_size' not in DeepPot.__init__.__code__.co_varnames:
-            for ss in self:
-                coord = ss['coords'].reshape((1, ss.get_natoms()*3))
-                if not ss.nopbc:
-                    cell = ss['cells'].reshape((1, 9))
-                else:
-                    cell = None
-                e, f, v = dp.eval(coord, cell, atype)
-                data = ss.data
-                data['energies'] = e.reshape((1, 1))
-                data['forces'] = f.reshape((1, ss.get_natoms(), 3))
-                data['virials'] = v.reshape((1, 3, 3))
-                this_sys = LabeledSystem.from_dict({'data': data})
-                labeled_sys.append(this_sys)
-        else:
-            # since v2.0.2, auto batch size is supported
-            coord = self.data['coords'].reshape((self.get_nframes(), self.get_natoms()*3))
-            if not self.nopbc:
-                cell = self.data['cells'].reshape((self.get_nframes(), 9))
-            else:
-                cell = None
-            e, f, v = dp.eval(coord, cell, atype)
-            data = self.data.copy()
-            data['energies'] = e.reshape((self.get_nframes(), 1))
-            data['forces'] = f.reshape((self.get_nframes(), self.get_natoms(), 3))
-            data['virials'] = v.reshape((self.get_nframes(), 3, 3))
-            labeled_sys = LabeledSystem.from_dict({'data': data})
-        return labeled_sys
+        if not isinstance(driver, Driver):
+            driver = Driver.get_driver(driver)(*args, **kwargs)
+        data = driver.label(self.data.copy())
+        return LabeledSystem(data=data)
 
     def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
@@ -1026,6 +999,7 @@ class LabeledSystem (System):
         ----------
         hl_sys: LabeledSystem
             high-level LabeledSystem
+
         Returns
         ----------
         corrected_sys: LabeledSystem
@@ -1208,18 +1182,29 @@ class MultiSystems:
             system.add_atom_names(new_in_self)
         system.sort_atom_names(type_map=self.atom_names)
 
-    def predict(self, dp):
-        try:
-            # DP 1.x
-            import deepmd.DeepPot as DeepPot
-        except ModuleNotFoundError:
-            # DP 2.x
-            from deepmd.infer import DeepPot
-        if not isinstance(dp, DeepPot):
-            dp = DeepPot(dp)
+    def predict(self, *args: Any, driver="dp", **kwargs: Any) -> "MultiSystems":
+        """
+        Predict energies and forces by a driver.
+
+        Parameters
+        ----------
+        *args : iterable
+            Arguments passing to the driver
+        driver : str, default=dp
+            The assigned driver. For compatibility, default is dp
+        **kwargs : dict
+            Other arguments passing to the driver
+
+        Returns
+        -------
+        MultiSystems
+            A new labeled MultiSystems.
+        """
+        if not isinstance(driver, Driver):
+            driver = Driver.get_driver(driver)(*args, **kwargs)
         new_multisystems = dpdata.MultiSystems()
         for ss in self:
-            new_multisystems.append(ss.predict(dp))
+            new_multisystems.append(ss.predict(*args, driver=driver, **kwargs))
         return new_multisystems
     
     def pick_atom_idx(self, idx, nopbc=None):
