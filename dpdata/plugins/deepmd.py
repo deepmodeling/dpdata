@@ -1,9 +1,11 @@
+import dpdata
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.deepmd.hdf5
 import numpy as np
 import h5py
 from dpdata.format import Format
+from dpdata.driver import Driver
 
 
 @Format.register("deepmd")
@@ -102,3 +104,81 @@ class DeePMDHDF5Format(Format):
                   directory,
                   **kwargs):
         return ["%s#%s" % (directory, ff) for ff in formulas]
+
+
+@Driver.register("dp")
+@Driver.register("deepmd")
+@Driver.register("deepmd-kit")
+class DPDriver(Driver):
+    """DeePMD-kit driver.
+    
+    Parameters
+    ----------
+    dp : deepmd.DeepPot or str
+        The deepmd-kit potential class or the filename of the model.
+    
+    Examples
+    --------
+    >>> DPDriver("frozen_model.pb")
+    """
+    def __init__(self, dp: str) -> None:
+        try:
+            # DP 1.x
+            import deepmd.DeepPot as DeepPot
+        except ModuleNotFoundError:
+            # DP 2.x
+            from deepmd.infer import DeepPot
+        if not isinstance(dp, DeepPot):
+            self.dp = DeepPot(dp)
+        else:
+            self.dp = dp
+        self.enable_auto_batch_size = 'auto_batch_size' in DeepPot.__init__.__code__.co_varnames
+
+    def label(self, data: dict) -> dict:
+        """Label a system data by deepmd-kit. Returns new data with energy, forces, and virials.
+        
+        Parameters
+        ----------
+        data : dict
+            data with coordinates and atom types
+        
+        Returns
+        -------
+        dict
+            labeled data with energies and forces
+        """
+        type_map = self.dp.get_type_map()
+
+        ori_sys = dpdata.System.from_dict({'data': data})
+        ori_sys.sort_atom_names(type_map=type_map)
+        atype = ori_sys['atom_types']
+
+        if not self.enable_auto_batch_size:
+            labeled_sys = dpdata.LabeledSystem()
+            for ss in ori_sys:
+                coord = ss['coords'].reshape((1, ss.get_natoms()*3))
+                if not ss.nopbc:
+                    cell = ss['cells'].reshape((1, 9))
+                else:
+                    cell = None
+                e, f, v = self.dp.eval(coord, cell, atype)
+                data = ss.data
+                data['energies'] = e.reshape((1, 1))
+                data['forces'] = f.reshape((1, ss.get_natoms(), 3))
+                data['virials'] = v.reshape((1, 3, 3))
+                this_sys = dpdata.LabeledSystem.from_dict({'data': data})
+                labeled_sys.append(this_sys)
+            data = labeled_sys.data
+        else:
+            # since v2.0.2, auto batch size is supported
+            coord = ori_sys.data['coords'].reshape((ori_sys.get_nframes(), ori_sys.get_natoms()*3))
+            if not ori_sys.nopbc:
+                cell = ori_sys.data['cells'].reshape((ori_sys.get_nframes(), 9))
+            else:
+                cell = None
+            e, f, v = self.dp.eval(coord, cell, atype)
+            data = ori_sys.data.copy()
+            data['energies'] = e.reshape((ori_sys.get_nframes(), 1))
+            data['forces'] = f.reshape((ori_sys.get_nframes(), ori_sys.get_natoms(), 3))
+            data['virials'] = v.reshape((ori_sys.get_nframes(), 3, 3))
+        return data
