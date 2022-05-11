@@ -56,6 +56,11 @@ class VASPOutcarFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
         data = {}
+        ml = False
+        if kwargs is not None:
+            for key, value in kwargs.items():
+                if key=="ml":
+                    ml = value
         data['atom_names'], \
             data['atom_numbs'], \
             data['atom_types'], \
@@ -64,7 +69,7 @@ class VASPOutcarFormat(Format):
             data['energies'], \
             data['forces'], \
             tmp_virial, \
-            = dpdata.vasp.outcar.get_frames(file_name, begin=begin, step=step)
+            = dpdata.vasp.outcar.get_frames(file_name, begin=begin, step=step,ml=ml)
         if tmp_virial is not None:
             data['virials'] = tmp_virial
         # scale virial to the unit of eV
