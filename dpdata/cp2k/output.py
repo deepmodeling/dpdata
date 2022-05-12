@@ -3,7 +3,7 @@ import numpy as np
 import re
 from collections import OrderedDict
 
-from scipy.constants.constants import R
+from scipy.constants import R
 from .cell import cell_to_low_triangle
 from ..unit import EnergyConversion, LengthConversion, ForceConversion, PressureConversion
 
