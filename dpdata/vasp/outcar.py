@@ -39,23 +39,15 @@ def system_info (lines, type_idx_zero = False) :
     return atom_names, atom_numbs, np.array(atom_types, dtype = int), nelm
 
 
-def get_outcar_block(fp) :
+def get_outcar_block(fp, ml = False) :
     blk = []
+    energy_token = ['free  energy   TOTEN', 'free  energy ML TOTEN']
+    ml_index = int(ml)
     for ii in fp :
         if not ii :
             return blk
         blk.append(ii.rstrip('\n'))
-        if 'free  energy   TOTEN' in ii:
-            return blk
-    return blk
-
-def get_outcar_block_ml(fp) :
-    blk = []
-    for ii in fp :
-        if not ii :
-            return blk
-        blk.append(ii.rstrip('\n'))
-        if 'free  energy ML TOTEN' in ii:
+        if energy_token[ml_index] in ii:
             return blk
     return blk
 
@@ -76,8 +68,8 @@ def get_frames (fname, begin = 0, step = 1, ml = False) :
     cc = 0
     while len(blk) > 0 :
         if cc >= begin and (cc - begin) % step == 0 :
-            if ml:
-                coord, cell, energy, force, virial = analyze_block_ml(blk, ntot)
+            coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm, ml)
+            if is_converge : 
                 if len(coord) == 0:
                     break
                 all_coords.append(coord)
@@ -86,21 +78,8 @@ def get_frames (fname, begin = 0, step = 1, ml = False) :
                 all_forces.append(force)
                 if virial is not None :
                     all_virials.append(virial)
-            else:
-                coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm)
-                if is_converge : 
-                    if len(coord) == 0:
-                        break
-                    all_coords.append(coord)
-                    all_cells.append(cell)
-                    all_energies.append(energy)
-                    all_forces.append(force)
-                    if virial is not None :
-                        all_virials.append(virial)
-        if ml:
-            blk = get_outcar_block_ml(fp)
-        else:
-            blk = get_outcar_block(fp)
+
+        blk = get_outcar_block(fp, ml)
         cc += 1
 
     if len(all_virials) == 0 :
@@ -111,7 +90,7 @@ def get_frames (fname, begin = 0, step = 1, ml = False) :
     return atom_names, atom_numbs, atom_types, np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), all_virials
 
 
-def analyze_block(lines, ntot, nelm) :
+def analyze_block(lines, ntot, nelm, ml = False) :
     coord = []
     cell = []
     energy = None
@@ -119,22 +98,29 @@ def analyze_block(lines, ntot, nelm) :
     virial = None
     is_converge = True
     sc_index = 0
+    energy_token = ['free  energy   TOTEN', 'free  energy ML TOTEN']
+    energy_index = [4, 5]
+    viral_token = ['FORCE on cell =-STRESS in cart. coord.  units', 'ML FORCE']
+    viral_index = [14, 4]
+    cell_token = ['BASIS-vectors', 'ML FORCE']
+    cell_index = [5, 12]
+    ml_index = int(ml)
     for idx,ii in enumerate(lines):
-        if 'Iteration' in ii:
+        if ('Iteration' in ii) and (not ml):
             sc_index = int(ii.split()[3][:-1])
             if sc_index >= nelm:
                 is_converge = False
-        elif 'free  energy   TOTEN' in ii:
-            energy = float(ii.split()[4])
+        elif energy_token[ml_index] in ii:
+            energy = float(ii.split()[energy_index[ml_index]])
             assert((force is not None) and len(coord) > 0 and len(cell) > 0)
             return coord, cell, energy, force, virial, is_converge
-        elif 'VOLUME and BASIS' in ii:
+        elif cell_token[ml_index] in ii:
             for dd in range(3) :
-                tmp_l = lines[idx+5+dd]
+                tmp_l = lines[idx+cell_index[ml_index]+dd]
                 cell.append([float(ss) 
                              for ss in tmp_l.replace('-',' -').split()[0:3]])
-        elif 'in kB' in ii:
-            tmp_v = [float(ss) for ss in ii.split()[2:8]]
+        elif viral_token[ml_index] in ii:
+            tmp_v = [float(ss) for ss in lines[idx+viral_index[ml_index]].split()[2:8]]
             virial = np.zeros([3,3])
             virial[0][0] = tmp_v[0]
             virial[1][1] = tmp_v[1]
@@ -145,7 +131,7 @@ def analyze_block(lines, ntot, nelm) :
             virial[2][1] = tmp_v[4]
             virial[0][2] = tmp_v[5]
             virial[2][0] = tmp_v[5]
-        elif 'TOTAL-FORCE' in ii and ("ML" not in ii):
+        elif 'TOTAL-FORCE' in ii and (("ML" in ii) == ml):
             # use the lines with " POSITION                                       TOTAL-FORCE (eV/Angst)"
             # exclude the lines with "  POSITION                                       TOTAL-FORCE (eV/Angst) (ML)"
             for jj in range(idx+2, idx+2+ntot) :
@@ -154,39 +140,3 @@ def analyze_block(lines, ntot, nelm) :
                 coord.append(info[:3])
                 force.append(info[3:6])
     return coord, cell, energy, force, virial, is_converge
-
-def analyze_block_ml(lines, ntot) :
-    coord = []
-    cell = []
-    energy = None
-    force = []
-    virial = None
-    for idx,ii in enumerate(lines):
-        if 'free  energy ML TOTEN' in ii:
-            energy = float(ii.split()[5])
-            assert((force is not None) and len(coord) > 0 and len(cell) > 0)
-            return coord, cell, energy, force, virial
-        elif 'ML FORCE' in ii:
-            for dd in range(3) :
-                tmp_l = lines[idx+12+dd]
-                cell.append([float(ss) 
-                             for ss in tmp_l.replace('-',' -').split()[0:3]])
-            tmp_v = [float(ss) for ss in lines[idx+4].split()[2:8]]
-            virial = np.zeros([3,3])
-            virial[0][0] = tmp_v[0]
-            virial[1][1] = tmp_v[1]
-            virial[2][2] = tmp_v[2]
-            virial[0][1] = tmp_v[3]
-            virial[1][0] = tmp_v[3]
-            virial[1][2] = tmp_v[4]
-            virial[2][1] = tmp_v[4]
-            virial[0][2] = tmp_v[5]
-            virial[2][0] = tmp_v[5]
-        elif 'TOTAL-FORCE' in ii and ("ML" in ii):
-            # use the lines with "  POSITION                                       TOTAL-FORCE (eV/Angst) (ML)"
-            for jj in range(idx+2, idx+2+ntot) :
-                tmp_l = lines[jj]
-                info = [float(ss) for ss in tmp_l.split()]
-                coord.append(info[:3])
-                force.append(info[3:6])
-    return coord, cell, energy, force, virial
