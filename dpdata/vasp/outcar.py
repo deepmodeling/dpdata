@@ -30,7 +30,7 @@ def system_info (lines, type_idx_zero = False) :
     assert(atom_numbs is not None), "cannot find ion type info in OUTCAR"
     atom_names = atom_names[:len(atom_numbs)]
     atom_types = []
-    for idx,ii in enumerate(atom_numbs) :
+    for idx,ii in enumerate(atom_numbs):
         for jj in range(ii) :
             if type_idx_zero :
                 atom_types.append(idx)
@@ -60,7 +60,7 @@ def get_outcar_block_ml(fp) :
     return blk
 
 # we assume that the force is printed ...
-def get_frames (fname, begin = 0, step = 1,ml = False) :
+def get_frames (fname, begin = 0, step = 1, ml = False) :
     fp = open(fname)
     blk = get_outcar_block(fp)
 
@@ -76,7 +76,17 @@ def get_frames (fname, begin = 0, step = 1,ml = False) :
     cc = 0
     while len(blk) > 0 :
         if cc >= begin and (cc - begin) % step == 0 :
-            if ml == False:
+            if ml:
+                coord, cell, energy, force, virial = analyze_block_ml(blk, ntot)
+                if len(coord) == 0:
+                    break
+                all_coords.append(coord)
+                all_cells.append(cell)
+                all_energies.append(energy)
+                all_forces.append(force)
+                if virial is not None :
+                    all_virials.append(virial)
+            else:
                 coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm)
                 if is_converge : 
                     if len(coord) == 0:
@@ -87,21 +97,11 @@ def get_frames (fname, begin = 0, step = 1,ml = False) :
                     all_forces.append(force)
                     if virial is not None :
                         all_virials.append(virial)
-            else:
-                coord, cell, energy, force, virial = analyze_block_ml(blk, ntot)
-                if len(coord) == 0:
-                        break
-                all_coords.append(coord)
-                all_cells.append(cell)
-                all_energies.append(energy)
-                all_forces.append(force)
-                if virial is not None :
-                    all_virials.append(virial)
-        if ml == False:
-            blk = get_outcar_block(fp)
-        else:
+        if ml:
             blk = get_outcar_block_ml(fp)
-        cc+=1
+        else:
+            blk = get_outcar_block(fp)
+        cc += 1
 
     if len(all_virials) == 0 :
         all_virials = None
@@ -119,7 +119,7 @@ def analyze_block(lines, ntot, nelm) :
     virial = None
     is_converge = True
     sc_index = 0
-    for idx,ii in enumerate(lines) :
+    for idx,ii in enumerate(lines):
         if 'Iteration' in ii:
             sc_index = int(ii.split()[3][:-1])
             if sc_index >= nelm:
@@ -127,12 +127,6 @@ def analyze_block(lines, ntot, nelm) :
         elif 'free  energy   TOTEN' in ii:
             energy = float(ii.split()[4])
             assert((force is not None) and len(coord) > 0 and len(cell) > 0)
-            # all_coords.append(coord)
-            # all_cells.append(cell)
-            # all_energies.append(energy)
-            # all_forces.append(force)
-            # if virial is not None :
-            #     all_virials.append(virial)
             return coord, cell, energy, force, virial, is_converge
         elif 'VOLUME and BASIS' in ii:
             for dd in range(3) :
@@ -167,16 +161,10 @@ def analyze_block_ml(lines, ntot) :
     energy = None
     force = []
     virial = None
-    for idx,ii in enumerate(lines) :
+    for idx,ii in enumerate(lines):
         if 'free  energy ML TOTEN' in ii:
             energy = float(ii.split()[5])
             assert((force is not None) and len(coord) > 0 and len(cell) > 0)
-            # all_coords.append(coord)
-            # all_cells.append(cell)
-            # all_energies.append(energy)
-            # all_forces.append(force)
-            # if virial is not None :
-            #     all_virials.append(virial)
             return coord, cell, energy, force, virial
         elif 'ML FORCE' in ii:
             for dd in range(3) :
