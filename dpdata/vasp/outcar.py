@@ -98,14 +98,16 @@ def analyze_block(lines, ntot, nelm, ml = False) :
     virial = None
     is_converge = True
     sc_index = 0
+    #select different searching tokens based on the ml label
     energy_token = ['free  energy   TOTEN', 'free  energy ML TOTEN']
     energy_index = [4, 5]
     viral_token = ['FORCE on cell =-STRESS in cart. coord.  units', 'ML FORCE']
     viral_index = [14, 4]
-    cell_token = ['BASIS-vectors', 'ML FORCE']
+    cell_token = ['VOLUME and BASIS', 'ML FORCE']
     cell_index = [5, 12]
     ml_index = int(ml)
     for idx,ii in enumerate(lines):
+        #if set ml == True, is_converged will always be True
         if ('Iteration' in ii) and (not ml):
             sc_index = int(ii.split()[3][:-1])
             if sc_index >= nelm:
@@ -132,8 +134,6 @@ def analyze_block(lines, ntot, nelm, ml = False) :
             virial[0][2] = tmp_v[5]
             virial[2][0] = tmp_v[5]
         elif 'TOTAL-FORCE' in ii and (("ML" in ii) == ml):
-            # use the lines with " POSITION                                       TOTAL-FORCE (eV/Angst)"
-            # exclude the lines with "  POSITION                                       TOTAL-FORCE (eV/Angst) (ML)"
             for jj in range(idx+2, idx+2+ntot) :
                 tmp_l = lines[jj]
                 info = [float(ss) for ss in tmp_l.split()]
