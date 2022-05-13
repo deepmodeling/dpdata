@@ -84,7 +84,7 @@ class EnergyConversion(Conversion):
 
         Examples
         --------
-        >>> conv = LengthConversion("eV", "kcal_mol")
+        >>> conv = EnergyConversion("eV", "kcal_mol")
         >>> conv.value()
         23.06054783061903
         """
