@@ -1,7 +1,7 @@
 import numpy as np
 import re
 
-def system_info (lines, type_idx_zero = False) :
+def system_info(lines, type_idx_zero = False):
     atom_names = []
     atom_numbs = None
     nelm = None
@@ -39,7 +39,7 @@ def system_info (lines, type_idx_zero = False) :
     return atom_names, atom_numbs, np.array(atom_types, dtype = int), nelm
 
 
-def get_outcar_block(fp, ml = False) :
+def get_outcar_block(fp, ml = False):
     blk = []
     energy_token = ['free  energy   TOTEN', 'free  energy ML TOTEN']
     ml_index = int(ml)
@@ -52,7 +52,7 @@ def get_outcar_block(fp, ml = False) :
     return blk
 
 # we assume that the force is printed ...
-def get_frames (fname, begin = 0, step = 1, ml = False) :
+def get_frames(fname, begin = 0, step = 1, ml = False):
     fp = open(fname)
     blk = get_outcar_block(fp)
 
@@ -90,7 +90,7 @@ def get_frames (fname, begin = 0, step = 1, ml = False) :
     return atom_names, atom_numbs, atom_types, np.array(all_cells), np.array(all_coords), np.array(all_energies), np.array(all_forces), all_virials
 
 
-def analyze_block(lines, ntot, nelm, ml = False) :
+def analyze_block(lines, ntot, nelm, ml = False):
     coord = []
     cell = []
     energy = None
