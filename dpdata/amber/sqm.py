@@ -5,7 +5,6 @@ from dpdata.unit import EnergyConversion
 kcal2ev = EnergyConversion("kcal_mol", "eV").value()
 
 START = 0
-READ_ENERGY = 1
 READ_CHARGE = 2
 READ_COORDS_START = 3
 READ_COORDS = 6
@@ -25,7 +24,8 @@ def parse_sqm_out(fname):
         flag = START
         for line in f:
             if line.startswith(" Total SCF energy"):
-                flag = READ_ENERGY
+                energy = float(line.strip().split()[-2])
+                energies.append(energy)
             elif line.startswith("  Atom    Element       Mulliken Charge"):
                 flag = READ_CHARGE
             elif line.startswith(" Total Mulliken Charge"):
@@ -34,10 +34,6 @@ def parse_sqm_out(fname):
                 flag = READ_COORDS_START
             elif line.startswith("QMMM: Forces on QM atoms"):
                 flag = READ_FORCES
-            elif flag == READ_ENERGY:
-                energy = float(line.strip().split()[-2])
-                energies.append(energy)
-                flag = START
             elif flag == READ_CHARGE:
                 ls = line.strip().split()
                 atom_symbols.append(ls[-2])
