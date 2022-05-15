@@ -18,10 +18,8 @@ class CompSys :
                          self.system_2.data['atom_names'])
 
     def test_atom_types(self):
-        self.assertEqual(self.system_1.data['atom_types'][0], 
-                         self.system_2.data['atom_types'][0])
-        self.assertEqual(self.system_1.data['atom_types'][1],
-                         self.system_2.data['atom_types'][1])
+        np.testing.assert_array_equal(self.system_1.data['atom_types'],
+                                      self.system_2.data['atom_types'])
 
     def test_orig(self):
         for d0 in range(3) :
