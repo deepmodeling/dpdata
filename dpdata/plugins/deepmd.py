@@ -163,7 +163,7 @@ class DPDriver(Driver):
                     cell = None
                 e, f, v = self.dp.eval(coord, cell, atype)
                 data = ss.data
-                data['energies'] = e.reshape((1, 1))
+                data['energies'] = e.reshape((1,))
                 data['forces'] = f.reshape((1, ss.get_natoms(), 3))
                 data['virials'] = v.reshape((1, 3, 3))
                 this_sys = dpdata.LabeledSystem.from_dict({'data': data})
@@ -178,7 +178,7 @@ class DPDriver(Driver):
                 cell = None
             e, f, v = self.dp.eval(coord, cell, atype)
             data = ori_sys.data.copy()
-            data['energies'] = e.reshape((ori_sys.get_nframes(), 1))
+            data['energies'] = e.reshape((ori_sys.get_nframes(),))
             data['forces'] = f.reshape((ori_sys.get_nframes(), ori_sys.get_natoms(), 3))
             data['virials'] = v.reshape((ori_sys.get_nframes(), 3, 3))
         return data
