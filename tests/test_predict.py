@@ -16,6 +16,17 @@ class ZeroDriver(dpdata.driver.Driver):
         return data
 
 
+@dpdata.driver.Driver.register("one")
+class ZeroDriver(dpdata.driver.Driver):
+    def label(self, data):
+        nframes = data['coords'].shape[0]
+        natoms = data['coords'].shape[1]
+        data['energies'] = np.ones((nframes,))
+        data['forces'] = np.ones((nframes, natoms, 3))
+        data['virials'] = np.ones((nframes, 3, 3))
+        return data
+
+
 class TestPredict(unittest.TestCase, CompLabeledSys):
     def setUp (self) :
         ori_sys = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
@@ -27,6 +38,32 @@ class TestPredict(unittest.TestCase, CompLabeledSys):
                                              type_map = ['O', 'H'])
         for pp in ('energies', 'forces', 'virials'):
             self.system_2.data[pp][:] = 0.
+
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+
+class TestHybridDriver(unittest.TestCase, CompLabeledSys):
+    """Test HybridDriver."""
+    def setUp(self) :
+        ori_sys = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
+                                        fmt = 'deepmd/raw', 
+                                        type_map = ['O', 'H'])
+        self.system_1 = ori_sys.predict([
+                {"type": "one"},
+                {"type": "one"},
+                {"type": "one"},
+                {"type": "zero"},
+            ],
+            driver="hybrid")
+        # sum is 3
+        self.system_2 = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
+                                             fmt = 'deepmd/raw', 
+                                             type_map = ['O', 'H'])
+        for pp in ('energies', 'forces'):
+            self.system_2.data[pp][:] = 3.
 
         self.places = 6
         self.e_places = 6
