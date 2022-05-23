@@ -1,3 +1,5 @@
+from typing import Union, List
+
 import dpdata
 import dpdata.deepmd.raw
 import dpdata.deepmd.comp
@@ -69,41 +71,164 @@ class DeePMDHDF5Format(Format):
     >>> import dpdata
     >>> dpdata.MultiSystems().from_deepmd_npy("data").to_deepmd_hdf5("data.hdf5")
     """
-    def from_system(self, file_name, type_map=None, **kwargs):
-        s = file_name.split("#")
-        name = s[1] if len(s) > 1 else ""
-        with h5py.File(s[0], 'r') as f:
-            return dpdata.deepmd.hdf5.to_system_data(f, name, type_map=type_map, labels=False)
+    def _from_system(self, file_name: Union[str, h5py.Group, h5py.File], type_map: List[str], labels: bool):
+        """Convert HDF5 file to System or LabeledSystem data.
+        
+        This method is used to switch from labeled or non-labeled options.
+        
+        Parameters
+        ----------
+        file_name : str or h5py.Group or h5py.File
+            file name of the HDF5 file or HDF5 object. If it is a string,
+            hashtag is used to split path to the HDF5 file and the HDF5 group
+        type_map : dict[str]
+            type map
+        labels : bool
+            if Labeled
 
-    def from_labeled_system(self, file_name, type_map=None, **kwargs):
-        s = file_name.split("#")
-        name = s[1] if len(s) > 1 else ""
-        with h5py.File(s[0], 'r') as f:
-            return dpdata.deepmd.hdf5.to_system_data(f, name, type_map=type_map, labels=True)
-    
+        Returns
+        -------
+        dict
+            System or LabeledSystem data
+
+        Raises
+        ------
+        TypeError
+            file_name is not str or h5py.Group or h5py.File
+        """
+        if isinstance(file_name, (h5py.Group, h5py.File)):
+            return dpdata.deepmd.hdf5.to_system_data(file_name, "", type_map=type_map, labels=labels)
+        elif isinstance(file_name, str):
+            s = file_name.split("#")
+            name = s[1] if len(s) > 1 else ""
+            with h5py.File(s[0], 'r') as f:
+                return dpdata.deepmd.hdf5.to_system_data(f, name, type_map=type_map, labels=labels)
+        else:
+            raise TypeError("Unsupported file_name")
+
+    def from_system(self,
+                    file_name: Union[str, h5py.Group, h5py.File],
+                    type_map: List[str]=None,
+                    **kwargs) -> dict:
+        """Convert HDF5 file to System data.
+
+        Parameters
+        ----------
+        file_name : str or h5py.Group or h5py.File
+            file name of the HDF5 file or HDF5 object. If it is a string,
+            hashtag is used to split path to the HDF5 file and the HDF5 group
+        type_map : dict[str]
+            type map
+
+        Returns
+        -------
+        dict
+            System data
+
+        Raises
+        ------
+        TypeError
+            file_name is not str or h5py.Group or h5py.File
+        """
+        return self._from_system(file_name, type_map=type_map, labels=False)
+
+    def from_labeled_system(self,
+                            file_name: Union[str, h5py.Group, h5py.File],
+                            type_map: List[str]=None,
+                            **kwargs) -> dict:
+        """Convert HDF5 file to LabeledSystem data.
+
+        Parameters
+        ----------
+        file_name : str or h5py.Group or h5py.File
+            file name of the HDF5 file or HDF5 object. If it is a string,
+            hashtag is used to split path to the HDF5 file and the HDF5 group
+        type_map : dict[str]
+            type map
+
+        Returns
+        -------
+        dict
+            LabeledSystem data
+
+        Raises
+        ------
+        TypeError
+            file_name is not str or h5py.Group or h5py.File
+        """
+        return self._from_system(file_name, type_map=type_map, labels=True)
+
     def to_system(self,
                   data : dict,
-                  file_name : str,
+                  file_name: Union[str, h5py.Group, h5py.File],
                   set_size : int = 5000, 
                   comp_prec : np.dtype = np.float64,
                   **kwargs):
-        s = file_name.split("#")
-        name = s[1] if len(s) > 1 else ""
-        mode = 'a' if name else 'w'
-        with h5py.File(s[0], mode) as f:
-            dpdata.deepmd.hdf5.dump(f, name, data, set_size = set_size, comp_prec = comp_prec)
+        """Convert System data to HDF5 file.
+        
+        Parameters
+        ----------
+        data : dict
+            data dict
+        file_name : str or h5py.Group or h5py.File
+            file name of the HDF5 file or HDF5 object. If it is a string,
+            hashtag is used to split path to the HDF5 file and the HDF5 group
+        set_size : int, default=5000
+            set size
+        comp_prec : np.dtype
+            data precision
+        """
+        if isinstance(file_name, (h5py.Group, h5py.File)):
+            dpdata.deepmd.hdf5.dump(file_name, "", data, set_size = set_size, comp_prec = comp_prec)
+        elif isinstance(file_name, str):
+            s = file_name.split("#")
+            name = s[1] if len(s) > 1 else ""
+            with h5py.File(s[0], 'w') as f:
+                dpdata.deepmd.hdf5.dump(f, name, data, set_size = set_size, comp_prec = comp_prec)
+        else:
+            raise TypeError("Unsupported file_name")
 
     def from_multi_systems(self,
-                  directory,
-                  **kwargs):
+                  directory: str,
+                  **kwargs) -> h5py.Group:
+        """Generate HDF5 groups from a HDF5 file, which will be
+        passed to `from_system`.
+        
+        Parameters
+        ----------
+        directory : str
+            HDF5 file name
+
+        Yields
+        ------
+        h5py.Group
+            a HDF5 group in the HDF5 file
+        """
         with h5py.File(directory, 'r') as f:
-            return ["%s#%s" % (directory, ff) for ff in f.keys()]
+            for ff in f.keys():
+                yield f[ff]
 
     def to_multi_systems(self,
-                  formulas,
-                  directory,
-                  **kwargs):
-        return ["%s#%s" % (directory, ff) for ff in formulas]
+                  formulas: List[str],
+                  directory: str,
+                  **kwargs) -> h5py.Group:
+        """Generate HDF5 groups, which will be passed to `to_system`.
+        
+        Parameters
+        ----------
+        formulas : list[str]
+            formulas of MultiSystems
+        directory : str
+            HDF5 file name
+        
+        Yields
+        ------
+        h5py.Group
+            a HDF5 group with the name of formula
+        """
+        with h5py.File(directory, 'w') as f:
+            for ff in formulas:
+                yield f.create_group(ff)
 
 
 @Driver.register("dp")
