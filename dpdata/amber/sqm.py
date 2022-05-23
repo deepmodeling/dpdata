@@ -25,15 +25,18 @@ def parse_sqm_out(fname):
         for line in f:
             if line.startswith(" Total SCF energy"):
                 energy = float(line.strip().split()[-2])
-                energies.append(energy)
+                energies = [energy]
             elif line.startswith("  Atom    Element       Mulliken Charge"):
                 flag = READ_CHARGE
+                charges = []
             elif line.startswith(" Total Mulliken Charge"):
                 flag = START
             elif line.startswith(" Final Structure"):
                 flag = READ_COORDS_START
+                coords = []
             elif line.startswith("QMMM: Forces on QM atoms"):
                 flag = READ_FORCES
+                forces = []
             elif flag == READ_CHARGE:
                 ls = line.strip().split()
                 atom_symbols.append(ls[-2])
@@ -46,6 +49,9 @@ def parse_sqm_out(fname):
                     flag = START
             elif flag == READ_FORCES:
                 ll = line.strip()
+                if not ll.startswith("QMMM: Atm "):
+                    flag = START
+                    continue
                 forces.append([float(ll[-60:-40]), float(ll[-40:-20]), float(ll[-20:])])
                 if len(forces) == len(charges):
                     flag = START
