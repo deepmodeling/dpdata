@@ -1154,6 +1154,8 @@ class MultiSystems:
             return
         self.check_atom_names(system)
         formula = system.formula
+        if 'virials' in system.data:
+            formula = formula + "_virials"
         if formula in self.systems:
             self.systems[formula].append(system)
         else:
