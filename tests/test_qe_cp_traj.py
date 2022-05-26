@@ -64,6 +64,27 @@ class TestConverCellDim(unittest.TestCase):
             for jj in range(3):
                 self.assertAlmostEqual(cell[ii][jj], ref[ii][jj])
 
+class TestCPTRAJTrajCellParamAngstrom(unittest.TestCase):
+    def test(self):
+        ss = dpdata.System('qe.traj/traj_angs', fmt = 'qe/cp/traj')
+        expected_cell = 24 * np.eye(3)
+        expected_coord5 = \
+            [0.32121855340601E+02,     0.17164728967776E+02,     0.36182628967521E+01,
+             0.14321036136090E+01,     0.54322965963498E+01,     0.16038534464162E+02,]
+        expected_coord5 = np.array(expected_coord5).reshape([2,3]) * bohr2ang
+        self.assertEqual(ss.get_natoms(), 2)
+        self.assertEqual(ss.get_nframes(), 6)
+        self.assertEqual(ss['atom_names'], ['O','H'])
+        self.assertEqual(ss['atom_numbs'], [1,1])
+        np.testing.assert_equal(ss['atom_types'], [0,1])
+        for ii in range(6):
+            np.testing.assert_almost_equal(expected_cell, ss['cells'][ii])
+        np.testing.assert_almost_equal(expected_coord5, ss['coords'][5])
+
+class TestCPTRAJTrajCellParamAngstrom(unittest.TestCase):
+    def test(self):
+        with self.assertRaises(RuntimeError) as ee:
+            ss = dpdata.System('qe.traj/traj_alat', fmt = 'qe/cp/traj')
 
 if __name__ == '__main__':
     unittest.main()

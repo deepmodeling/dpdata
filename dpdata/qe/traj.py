@@ -25,6 +25,20 @@ def load_block(lines, key, nlines) :
             break
     return lines[idx+1:idx+1+nlines]
 
+def load_unit(lines, key):
+    for idx,ii in enumerate(lines):
+        if key in ii:
+            break
+    line = lines[idx].lower()
+    if 'angstrom' in line:
+        return 'angstrom'
+    elif 'bohr' in line:
+        return bohr
+    elif 'alat' in ii or 'crystal' in ii or 'crystal_sg' in ii:
+        raise RuntimeError('unsupported unit', 'alat')
+    else:
+        return None
+
 def convert_celldm(ibrav, celldm) :
     if ibrav == 1 :
         return celldm[0] * np.eye(3) 
@@ -41,10 +55,11 @@ def convert_celldm(ibrav, celldm) :
 
 def load_cell_parameters(lines) :
     blk = load_block(lines, 'CELL_PARAMETERS', 3)
+    unit = load_unit(lines, 'CELL_PARAMETERS')
     ret = []
     for ii in blk :
         ret.append([float(jj) for jj in ii.split()[0:3]])
-    return np.array(ret)
+    return np.array(ret), unit
 
 
 def load_atom_names(lines, ntypes) :
@@ -83,10 +98,17 @@ def load_param_file(fname) :
     ibrav = int(load_key(lines, 'ibrav'))
     celldm = load_celldm(lines)
     if ibrav == 0 :
-        cell = load_cell_parameters(lines) 
+        cell, unit = load_cell_parameters(lines) 
     else :
-        cell = convert_celldm(ibrav, celldm)
-    cell = cell * length_convert
+        cell = convert_celldm(ibrav, celldm)        
+        unit = 'bohr'
+    if unit == 'bohr':
+        # bohr to angstrom
+        cell = cell * length_convert        
+    elif unit == 'angstrom':
+        pass
+    else:
+        raise RuntimeError('unsupported unit', unit)
     # print(atom_names)
     # print(atom_numbs)
     # print(atom_types)
