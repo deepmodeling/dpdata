@@ -33,7 +33,7 @@ def load_unit(lines, key):
     if 'angstrom' in line:
         return 'angstrom'
     elif 'bohr' in line:
-        return bohr
+        return 'bohr'
     elif 'alat' in ii or 'crystal' in ii or 'crystal_sg' in ii:
         raise RuntimeError('unsupported unit', 'alat')
     else:
