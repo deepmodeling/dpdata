@@ -23,8 +23,9 @@ class BondOrderSystem(System):
     '''
     DTYPES = System.DTYPES + (
         DataType("bonds", np.ndarray, (Axis.NBONDS, 3)),
-        DataType("formal_charges", np.ndarray, (Axis.NATOMS, 1)),
+        DataType("formal_charges", np.ndarray, (Axis.NATOMS,)),
     )
+
     def __init__(self,
                  file_name = None,
                  fmt = 'auto',
