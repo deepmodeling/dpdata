@@ -11,7 +11,7 @@ def _to_system_data_lower(lines) :
             for kk in range(idx+1,idx+1+3):
                 vector=[float(jj) for jj in lines[kk].split()[0:3]]
                 cell.append(vector)
-    system['cells'] = [np.array(cell)]
+    system['cells'] = np.array([np.array(cell)])
     coord = []
     atomic_number = []
     atom_numbs = []
@@ -32,7 +32,7 @@ def _to_system_data_lower(lines) :
     for ii in np.unique(sorted(atomic_number)) :
         atom_numbs.append(atomic_number.count(ii))
     system['atom_numbs'] = [int(ii) for ii in atom_numbs]
-    system['coords'] = [np.array(coord)]
+    system['coords'] = np.array([np.array(coord)])
     system['orig'] = np.zeros(3)
     atom_types = []
     for idx,ii in enumerate(system['atom_numbs']) :

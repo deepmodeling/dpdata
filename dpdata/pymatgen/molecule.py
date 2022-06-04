@@ -24,6 +24,6 @@ def to_system_data(file_name, protect_layer = 9) :
     # center = [c - h_cell_size for c in mol.center_of_mass]
     system['orig'] = np.array([0, 0, 0])
 
-    system['coords'] = [tmpcoord]
-    system['cells'] = [10.0 * np.eye(3)]
+    system['coords'] = np.array([tmpcoord])
+    system['cells'] = np.array([10.0 * np.eye(3)])
     return system

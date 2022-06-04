@@ -1,15 +1,13 @@
 #%%
 # Bond Order System
-from dpdata.system import System, LabeledSystem, check_System, load_format
+import numpy as np
+from dpdata.system import System, LabeledSystem, load_format, DataType, Axis
 import dpdata.rdkit.utils
 from dpdata.rdkit.sanitize import Sanitizer, SanitizeError
 from copy import deepcopy
 from rdkit.Chem import Conformer
 # import dpdata.rdkit.mol2
 
-def check_BondOrderSystem(data):
-    check_System(data)
-    assert ('bonds' in data.keys())
     
 class BondOrderSystem(System):
     '''
@@ -23,6 +21,10 @@ class BondOrderSystem(System):
                                         1 - single bond, 2 - double bond, 3 - triple bond, 1.5 - aromatic bond
         - `d_example['formal_charges']` : a numpy array of size 5 x 1
     '''
+    DTYPES = System.DTYPES + (
+        DataType("bonds", np.ndarray, (Axis.NBONDS, 3)),
+        DataType("formal_charges", np.ndarray, (Axis.NATOMS, 1)),
+    )
     def __init__(self,
                  file_name = None,
                  fmt = 'auto',
@@ -86,6 +88,7 @@ class BondOrderSystem(System):
 
         if type_map:
             self.apply_type_map(type_map)
+        self.check_data()
 
     def from_fmt_obj(self, fmtobj, file_name, **kwargs):
         mol = fmtobj.from_bond_order_system(file_name, **kwargs)
@@ -103,9 +106,6 @@ class BondOrderSystem(System):
                 conf.SetAtomPosition(idx, self.data["coords"][ii][idx])
             self.rdkit_mol.AddConformer(conf, assignId=True)
         return fmtobj.to_bond_order_system(self.data, self.rdkit_mol, *args, **kwargs)
-
-    def __repr__(self):
-        return self.__str__()
 
     def __str__(self):
         '''
