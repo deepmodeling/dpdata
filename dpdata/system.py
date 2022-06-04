@@ -430,7 +430,7 @@ class System (MSONable) :
         sub_system : System
             The subsystem
         """
-        tmp = System()
+        tmp = self.__class__()
         # convert int to array_like
         if isinstance(f_idx, (int, np.int64)):
             f_idx = np.array([f_idx])
