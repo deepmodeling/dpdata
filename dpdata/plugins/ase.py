@@ -43,7 +43,7 @@ class ASEStructureFormat(Format):
             'atom_types': atom_types,
             'cells': np.array([cells]).astype('float32'),
             'coords': np.array([coords]).astype('float32'),
-            'orig': [0,0,0],
+            'orig': np.zeros(3),
         }
         return info_dict
 

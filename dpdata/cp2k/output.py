@@ -268,7 +268,7 @@ class Cp2kSystems(object):
         #info_dict['atom_types'] = np.asarray(atom_types_list)
         info_dict['coords'] = np.asarray([coords_list]).astype('float32')
         info_dict['energies'] = np.array([energy]).astype('float32')
-        info_dict['orig']=[0,0,0]
+        info_dict['orig'] = np.zeros(3)
         return info_dict
 
 #%%
