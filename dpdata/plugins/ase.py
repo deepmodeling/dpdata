@@ -1,5 +1,7 @@
+from dpdata.driver import Driver
 from dpdata.format import Format
 import numpy as np
+import dpdata
 try:
     import ase.io
     from ase.calculators.calculator import PropertyNotImplementedError
@@ -162,3 +164,42 @@ class ASEStructureFormat(Format):
             structures.append(structure)
 
         return structures
+
+
+@Driver.register("ase")
+class ASEDriver(Driver):
+    """ASE Driver.
+    
+    Parameters
+    ----------
+    calculator : ase.calculators.calculator.Calculato
+        ASE calculator
+    """
+
+    def __init__(self, calculator: "ase.calculators.calculator.Calculator") -> None:
+        """Setup the driver."""
+        self.calculator = calculator
+
+    def label(self, data: dict) -> dict:
+        """Label a system data. Returns new data with energy, forces, and virials.
+        
+        Parameters
+        ----------
+        data : dict
+            data with coordinates and atom types
+        
+        Returns
+        -------
+        dict
+            labeled data with energies and forces
+        """
+        # convert data to ase data
+        system = dpdata.System(data=data)
+        # list[Atoms]
+        structures = system.to_ase_structure()
+        labeled_system = dpdata.LabeledSystem()
+        for atoms in structures:
+            atoms.calc = self.calculator
+            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
+            labeled_system.append(ls)
+        return labeled_system.data
