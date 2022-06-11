@@ -1,8 +1,10 @@
 """Driver plugin system."""
-from typing import Callable, List, Union
+from typing import Callable, List, Union, TYPE_CHECKING
 from .plugin import Plugin
 from abc import ABC, abstractmethod
 
+if TYPE_CHECKING:
+    import ase
 
 class Driver(ABC):
     """The base class for a driver plugin. A driver can
@@ -78,6 +80,12 @@ class Driver(ABC):
             labeled data with energies and forces
         """
         return NotImplemented
+
+    @property
+    def ase_calculator(self) -> "ase.calculators.calculator.Calculator":
+        """Returns an ase calculator based on this driver."""
+        from .ase_calculator import DPDataCalculator
+        return DPDataCalculator(self)
 
 
 @Driver.register("hybrid")
