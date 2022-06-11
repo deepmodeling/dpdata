@@ -46,16 +46,16 @@ class TestABACUSSinglePointEnergy:
 
 
     def test_coord(self) :
-        fp = open('abacus.scf/ch4_coord')
-        coord = []
-        for ii in fp :
-            coord.append([float(jj) for jj in ii.split()])
-        coord = np.array(coord)
-        for ii in range(coord.shape[0]) :
-            for jj in range(coord.shape[1]) :
-                self.assertAlmostEqual(self.system_ch4.data['coords'][0][ii][jj], coord[ii][jj], places=5)
-                self.assertAlmostEqual(self.system_ch4_unlabeled.data['coords'][0][ii][jj], coord[ii][jj], places=5)
-        fp.close()
+        with open('abacus.scf/ch4_coord') as fp:
+            coord = []
+            for ii in fp :
+                coord.append([float(jj) for jj in ii.split()])
+            coord = np.array(coord)
+            for ii in range(coord.shape[0]) :
+                for jj in range(coord.shape[1]) :
+                    self.assertAlmostEqual(self.system_ch4.data['coords'][0][ii][jj], coord[ii][jj], places=5)
+                    self.assertAlmostEqual(self.system_ch4_unlabeled.data['coords'][0][ii][jj], coord[ii][jj], places=5)
+
 
         # fp = open('qe.scf/h2o_coord')
         # coord = []
@@ -68,15 +68,15 @@ class TestABACUSSinglePointEnergy:
         # fp.close()
 
     def test_force(self) :
-        fp = open('abacus.scf/ch4_force')
-        force = []
-        for ii in fp :
-            force.append([float(jj) for jj in ii.split()])
-        force = np.array(force)
-        for ii in range(force.shape[0]) :
-            for jj in range(force.shape[1]) :
-                self.assertAlmostEqual(self.system_ch4.data['forces'][0][ii][jj], force[ii][jj])
-        fp.close()
+        with open('abacus.scf/ch4_force') as fp:
+            force = []
+            for ii in fp :
+                force.append([float(jj) for jj in ii.split()])
+            force = np.array(force)
+            for ii in range(force.shape[0]) :
+                for jj in range(force.shape[1]) :
+                    self.assertAlmostEqual(self.system_ch4.data['forces'][0][ii][jj], force[ii][jj])
+
 
         # fp = open('qe.scf/h2o_force')
         # force = []
@@ -89,15 +89,15 @@ class TestABACUSSinglePointEnergy:
         # fp.close()
 
     def test_virial(self) :
-        fp = open('abacus.scf/ch4_virial')
-        virial = []
-        for ii in fp :
-            virial.append([float(jj) for jj in ii.split()])
-        virial = np.array(virial)
-        for ii in range(virial.shape[0]) :
-            for jj in range(virial.shape[1]) :
-                self.assertAlmostEqual(self.system_ch4.data['virials'][0][ii][jj], virial[ii][jj], places = 3)
-        fp.close()
+        with open('abacus.scf/ch4_virial') as fp:
+            virial = []
+            for ii in fp :
+                virial.append([float(jj) for jj in ii.split()])
+            virial = np.array(virial)
+            for ii in range(virial.shape[0]) :
+                for jj in range(virial.shape[1]) :
+                    self.assertAlmostEqual(self.system_ch4.data['virials'][0][ii][jj], virial[ii][jj], places = 3)
+
 
         # fp = open('qe.scf/h2o_virial')
         # virial = []
