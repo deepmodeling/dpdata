@@ -1,4 +1,3 @@
-from ast import For
 import dpdata.abacus.scf
 import dpdata.abacus.md
 from dpdata.format import Format
@@ -8,6 +7,7 @@ from dpdata.format import Format
 class AbacusSTRUFormat(Format):
     def from_system(self, file_name, **kwargs):
         return dpdata.abacus.scf.get_frame_from_stru(file_name)
+    
     def to_system(self, data, file_name, frame_idx=0, **kwargs):
         """
         Dump the system into ABACUS STRU format file.
@@ -32,13 +32,13 @@ class AbacusSTRUFormat(Format):
         mass = None
         numerical_descriptor = None
         if 'pp_file' in kwargs:
-            pp_file = kwargs['pp_file']
+            pp_file = kwargs.get('pp_file')
         if 'numerical_orbital' in kwargs:
-            numerical_orbital = kwargs['numerical_orbital']
+            numerical_orbital = kwargs.get('numerical_orbital')
         if 'mass' in kwargs:
-            mass = kwargs['mass']
+            mass = kwargs.get('mass')
         if 'numerical_descriptor' in kwargs:
-            numerical_descriptor = kwargs['numerical_descriptor']
+            numerical_descriptor = kwargs.get('numerical_descriptor')
         stru_string = dpdata.abacus.scf.make_unlabeled_stru(data=data, frame_idx=frame_idx, pp_file=pp_file, numerical_orbital=numerical_orbital, numerical_descriptor=numerical_descriptor, mass=mass)
         with open(file_name, "w") as fp:
             fp.write(stru_string)

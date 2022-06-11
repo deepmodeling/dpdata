@@ -29,13 +29,9 @@ class TestABACUSMD:
         cell = bohr2ang * 28 * np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         cell2 = bohr2ang * 5.1 * np.array([[1, 1, 0], [1, 0, 1], [0, 1, 1]])
         for idx in range(np.shape(self.system_water.data['cells'])[0]):
-            for ii in range(cell.shape[0]) :
-                for jj in range(cell.shape[1]) :
-                    self.assertAlmostEqual(self.system_water.data['cells'][idx][ii][jj], cell[ii][jj])
+            np.testing.assert_almost_equal(cell, self.system_water.data['cells'][idx], decimal = 5)
         for idx in range(np.shape(self.system_Si.data['cells'])[0]):
-            for ii in range(cell2.shape[0]) :
-                for jj in range(cell2.shape[1]) :
-                    self.assertAlmostEqual(self.system_Si.data['cells'][idx][ii][jj], cell2[ii][jj])
+            np.testing.assert_almost_equal(self.system_Si.data['cells'][idx], cell2, decimal = 5)
 
     def test_coord(self) :
         with open('abacus.md/water_coord') as fp:
@@ -44,10 +40,7 @@ class TestABACUSMD:
                 coord.append([float(jj) for jj in ii.split()])
             coord = np.array(coord)
             coord = coord.reshape([5, 3, 3])
-            for ii in range(coord.shape[0]) :
-                for jj in range(coord.shape[1]) :
-                    for kk in range(coord.shape[2]):
-                        self.assertAlmostEqual(self.system_water.data['coords'][ii][jj][kk], coord[ii][jj][kk])
+            np.testing.assert_almost_equal(self.system_water.data['coords'], coord, decimal = 5)
 
         with open('abacus.md.nostress/Si_coord') as fp2:
             coord = []
@@ -55,10 +48,7 @@ class TestABACUSMD:
                 coord.append([float(jj) for jj in ii.split()])
             coord = np.array(coord)
             coord = coord.reshape([4, 2, 3])
-            for ii in range(coord.shape[0]) :
-                for jj in range(coord.shape[1]) :
-                    for kk in range(coord.shape[2]):
-                        self.assertAlmostEqual(self.system_Si.data['coords'][ii][jj][kk], coord[ii][jj][kk])
+            np.testing.assert_almost_equal(self.system_Si.data['coords'], coord, decimal = 5)
 
     def test_force(self) :
         with open('abacus.md/water_force') as fp:
@@ -67,10 +57,7 @@ class TestABACUSMD:
                 force.append([float(jj) for jj in ii.split()])
             force = np.array(force)
             force = force.reshape([5, 3, 3])
-            for ii in range(force.shape[0]) :
-                for jj in range(force.shape[1]) :
-                    for kk in range(force.shape[2]):
-                        self.assertAlmostEqual(self.system_water.data['forces'][ii][jj][kk], force[ii][jj][kk])
+            np.testing.assert_almost_equal(self.system_water.data['forces'], force, decimal=5)
 
 
         with open('abacus.md.nostress/Si_force') as fp2:
@@ -79,10 +66,7 @@ class TestABACUSMD:
                 force.append([float(jj) for jj in ii.split()])
             force = np.array(force)
             force = force.reshape([4, 2, 3])
-            for ii in range(force.shape[0]) :
-                for jj in range(force.shape[1]) :
-                    for kk in range(force.shape[2]):
-                        self.assertAlmostEqual(self.system_Si.data['forces'][ii][jj][kk], force[ii][jj][kk])
+            np.testing.assert_almost_equal(self.system_Si.data['forces'], force, decimal=5)
 
 
     def test_virial(self) :
@@ -92,19 +76,14 @@ class TestABACUSMD:
                 virial.append([float(jj) for jj in ii.split()])
             virial = np.array(virial)
             virial = virial.reshape([5, 3, 3])
-            for ii in range(virial.shape[0]) :
-                for jj in range(virial.shape[1]) :
-                    for kk in range(virial.shape[2]) :
-                        self.assertAlmostEqual(self.system_water.data['virials'][ii][jj][kk], virial[ii][jj][kk]) 
+            np.testing.assert_almost_equal(self.system_water.data['virials'], virial, decimal=5) 
 
     def test_energy(self) :
         ref_energy = np.array([-466.69285117, -466.69929051, -466.69829826, -466.70364664,
        -466.6976083])
         ref_energy2 = np.array([-211.77184603, -211.78111966, -211.79681663, -211.79875524])
-        for ii in range(5):
-            self.assertAlmostEqual(self.system_water.data['energies'][ii], ref_energy[ii])
-        for ii in range(4):
-            self.assertAlmostEqual(self.system_Si.data['energies'][ii], ref_energy2[ii])
+        np.testing.assert_almost_equal(self.system_water.data['energies'], ref_energy)
+        np.testing.assert_almost_equal(self.system_Si.data['energies'], ref_energy2)
 
 
 class TestABACUSMDLabeledOutput(unittest.TestCase, TestABACUSMD):

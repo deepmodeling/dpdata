@@ -30,10 +30,8 @@ class TestABACUSSinglePointEnergy:
     def test_cell(self) :
         # cell = 5.29177 * np.eye(3)
         cell = bohr2ang * 10 * np.eye(3)
-        for ii in range(cell.shape[0]) :
-            for jj in range(cell.shape[1]) :
-                self.assertAlmostEqual(self.system_ch4.data['cells'][0][ii][jj], cell[ii][jj])
-                self.assertAlmostEqual(self.system_ch4_unlabeled.data['cells'][0][ii][jj], cell[ii][jj])
+        np.testing.assert_almost_equal(self.system_ch4.data['cells'][0], cell)
+        np.testing.assert_almost_equal(self.system_ch4_unlabeled.data['cells'][0], cell)
         # fp = open('qe.scf/h2o_cell')
         # cell = []
         # for ii in fp :
@@ -51,10 +49,8 @@ class TestABACUSSinglePointEnergy:
             for ii in fp :
                 coord.append([float(jj) for jj in ii.split()])
             coord = np.array(coord)
-            for ii in range(coord.shape[0]) :
-                for jj in range(coord.shape[1]) :
-                    self.assertAlmostEqual(self.system_ch4.data['coords'][0][ii][jj], coord[ii][jj], places=5)
-                    self.assertAlmostEqual(self.system_ch4_unlabeled.data['coords'][0][ii][jj], coord[ii][jj], places=5)
+            np.testing.assert_almost_equal(self.system_ch4.data['coords'][0], coord, decimal=5)
+            np.testing.assert_almost_equal(self.system_ch4_unlabeled.data['coords'][0], coord, decimal=5)
 
 
         # fp = open('qe.scf/h2o_coord')
@@ -73,9 +69,7 @@ class TestABACUSSinglePointEnergy:
             for ii in fp :
                 force.append([float(jj) for jj in ii.split()])
             force = np.array(force)
-            for ii in range(force.shape[0]) :
-                for jj in range(force.shape[1]) :
-                    self.assertAlmostEqual(self.system_ch4.data['forces'][0][ii][jj], force[ii][jj])
+            np.testing.assert_almost_equal(self.system_ch4.data['forces'][0], force)
 
 
         # fp = open('qe.scf/h2o_force')
@@ -94,9 +88,7 @@ class TestABACUSSinglePointEnergy:
             for ii in fp :
                 virial.append([float(jj) for jj in ii.split()])
             virial = np.array(virial)
-            for ii in range(virial.shape[0]) :
-                for jj in range(virial.shape[1]) :
-                    self.assertAlmostEqual(self.system_ch4.data['virials'][0][ii][jj], virial[ii][jj], places = 3)
+            np.testing.assert_almost_equal(self.system_ch4.data['virials'][0], virial, decimal = 3)
 
 
         # fp = open('qe.scf/h2o_virial')
