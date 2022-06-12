@@ -27,18 +27,11 @@ class AbacusSTRUFormat(Format):
         numerical_descriptor: str, optional
             numerical descriptor file
         """
-        pp_file = None
-        numerical_orbital = None
-        mass = None
-        numerical_descriptor = None
-        if 'pp_file' in kwargs:
-            pp_file = kwargs.get('pp_file')
-        if 'numerical_orbital' in kwargs:
-            numerical_orbital = kwargs.get('numerical_orbital')
-        if 'mass' in kwargs:
-            mass = kwargs.get('mass')
-        if 'numerical_descriptor' in kwargs:
-            numerical_descriptor = kwargs.get('numerical_descriptor')
+        
+        pp_file = kwargs.get('pp_file')
+        numerical_orbital = kwargs.get('numerical_orbital')
+        mass = kwargs.get('mass')
+        numerical_descriptor = kwargs.get('numerical_descriptor')
         stru_string = dpdata.abacus.scf.make_unlabeled_stru(data=data, frame_idx=frame_idx, pp_file=pp_file, numerical_orbital=numerical_orbital, numerical_descriptor=numerical_descriptor, mass=mass)
         with open(file_name, "w") as fp:
             fp.write(stru_string)
