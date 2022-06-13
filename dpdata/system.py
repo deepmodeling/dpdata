@@ -1291,7 +1291,7 @@ class MultiSystems:
         """
         if not isinstance(driver, Driver):
             driver = Driver.get_driver(driver)(*args, **kwargs)
-        new_multisystems = dpdata.MultiSystems()
+        new_multisystems = dpdata.MultiSystems(type_map=self.atom_names)
         for ss in self:
             new_multisystems.append(ss.predict(*args, driver=driver, **kwargs))
         return new_multisystems
@@ -1316,7 +1316,7 @@ class MultiSystems:
         """
         if not isinstance(driver, Driver):
             driver = Driver.get_driver(driver)(*args, **kwargs)
-        new_multisystems = dpdata.MultiSystems()
+        new_multisystems = dpdata.MultiSystems(type_map=self.atom_names)
         for ss in self:
             new_multisystems.append(ss.minimize(*args, driver=driver, **kwargs))
         return new_multisystems
