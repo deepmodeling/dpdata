@@ -92,7 +92,7 @@ class TestASEDriver(unittest.TestCase, CompLabeledSys, IsPBC):
         self.v_places = 4
 
 
-@unittest.skipIf(skip_ase,"skip ase related test. install ase to fix")
+@unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
 class TestMinimize(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         ori_sys = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
@@ -100,6 +100,21 @@ class TestMinimize(unittest.TestCase, CompLabeledSys, IsPBC):
                                         type_map = ['O', 'H'])
         self.system_1 = ori_sys.predict(driver="zero")
         self.system_2 = ori_sys.minimize(driver="zero")
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+
+@unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
+class TestMinimizeMultiSystems(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp (self) :
+        ori_sys = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
+                                        fmt = 'deepmd/raw', 
+                                        type_map = ['O', 'H'])
+        multi_sys = dpdata.MultiSystems(ori_sys)
+        self.system_1 = list(multi_sys.predict(driver="zero").systems.values())[0]
+        self.system_2 = list(multi_sys.minimize(driver="zero").systems.values())[0]
         self.places = 6
         self.e_places = 6
         self.f_places = 6
