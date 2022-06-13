@@ -3,6 +3,8 @@ from typing import Callable, List, Union, TYPE_CHECKING
 from .plugin import Plugin
 from abc import ABC, abstractmethod
 
+import dpdata
+
 if TYPE_CHECKING:
     import ase
 
@@ -80,6 +82,35 @@ class Driver(ABC):
             labeled data with energies and forces
         """
         return NotImplemented
+
+    def minimize(self, data: dict) -> dict:
+        """Minimize the geometry.
+
+        If not implemented, this method calls ASE to minimize.
+
+        Parameters
+        ----------
+        data : dict
+            data with coordinates and atom types
+        
+        Returns
+        -------
+        dict
+            labeled data with minimized coordinates, energies, and forces
+        """
+        from ase.optimize import BFGS
+        
+        system = dpdata.System(data=data)
+        # list[Atoms]
+        structures = system.to_ase_structure()
+        labeled_system = dpdata.LabeledSystem()
+        for atoms in structures:
+            atoms.calc = self.ase_calculator
+            dyn = BFGS(atoms)
+            dyn.run(fmax=5e-3)
+            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure")
+            labeled_system.append(ls)
+        return labeled_system.data
 
     @property
     def ase_calculator(self) -> "ase.calculators.calculator.Calculator":

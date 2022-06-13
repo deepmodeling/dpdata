@@ -6,7 +6,7 @@ import numpy as np
 import dpdata.md.pbc
 from copy import deepcopy
 from enum import Enum, unique
-from typing import Any, Tuple
+from typing import Any, Tuple, Union
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
@@ -830,6 +830,28 @@ class System (MSONable) :
         data = driver.label(self.data.copy())
         return LabeledSystem(data=data)
 
+    def minimize(self, *args: Any, driver: Union[str, Driver], **kwargs: Any) -> "LabeledSystem":
+        """Minimize the geometry.
+        
+        Parameters
+        ----------
+        *args : iterable
+            Arguments passing to the driver
+        driver : str or Driver
+            The assigned driver
+        **kwargs : dict
+            Other arguments passing to the driver
+
+        Returns
+        -------
+        labeled_sys : LabeledSystem
+            A new labeled system.
+        """
+        if not isinstance(driver, Driver):
+            driver = Driver.get_driver(driver)(*args, **kwargs)
+        data = driver.minimize(self.data.copy())
+        return LabeledSystem(data=data)
+
     def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
         
@@ -1272,6 +1294,31 @@ class MultiSystems:
         new_multisystems = dpdata.MultiSystems()
         for ss in self:
             new_multisystems.append(ss.predict(*args, driver=driver, **kwargs))
+        return new_multisystems
+
+    def minimize(self, *args: Any, driver: Union[str, Driver], **kwargs: Any) -> "MultiSystems":
+        """
+        Minimize geometry by a driver.
+
+        Parameters
+        ----------
+        *args : iterable
+            Arguments passing to the driver
+        driver : str or Driver
+            The assigned driver
+        **kwargs : dict
+            Other arguments passing to the driver
+
+        Returns
+        -------
+        MultiSystems
+            A new labeled MultiSystems.
+        """
+        if not isinstance(driver, Driver):
+            driver = Driver.get_driver(driver)(*args, **kwargs)
+        new_multisystems = dpdata.MultiSystems()
+        for ss in self:
+            new_multisystems.append(ss.minimize(*args, driver=driver, **kwargs))
         return new_multisystems
     
     def pick_atom_idx(self, idx, nopbc=None):

@@ -121,3 +121,9 @@ class SQMDriver(Driver):
                             ) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="sqm/out"))
         return labeled_system.data
+    
+    def minimize(self, data: dict) -> dict:
+        # sqm has minimize feature
+        if self.kwargs['maxcyc'] <= 0:
+            raise RuntimeError("To minimize, maxcyc should be more than 0")
+        return self.label(data)
