@@ -98,7 +98,7 @@ class Driver(ABC):
         dict
             labeled data with minimized coordinates, energies, and forces
         """
-        from ase.optimize import BFGS
+        from ase.optimize import LBFGS
         
         system = dpdata.System(data=data)
         # list[Atoms]
@@ -106,9 +106,9 @@ class Driver(ABC):
         labeled_system = dpdata.LabeledSystem()
         for atoms in structures:
             atoms.calc = self.ase_calculator
-            dyn = BFGS(atoms)
+            dyn = LBFGS(atoms, logfile=None)
             dyn.run(fmax=5e-3)
-            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure")
+            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
             labeled_system.append(ls)
         return labeled_system.data
 

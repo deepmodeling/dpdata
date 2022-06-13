@@ -78,7 +78,7 @@ class TestHybridDriver(unittest.TestCase, CompLabeledSys):
 
 
 @unittest.skipIf(skip_ase,"skip ase related test. install ase to fix")
-class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
+class TestASEDriver(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         ori_sys = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
                                         fmt = 'deepmd/raw', 
@@ -86,6 +86,20 @@ class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
         one_driver = OneDriver()
         self.system_1 = ori_sys.predict(driver=one_driver)
         self.system_2 = ori_sys.predict(one_driver.ase_calculator, driver="ase")
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+
+@unittest.skipIf(skip_ase,"skip ase related test. install ase to fix")
+class TestMinimize(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp (self) :
+        ori_sys = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
+                                        fmt = 'deepmd/raw', 
+                                        type_map = ['O', 'H'])
+        self.system_1 = ori_sys.predict(driver="zero")
+        self.system_2 = ori_sys.minimize(driver="zero")
         self.places = 6
         self.e_places = 6
         self.f_places = 6
