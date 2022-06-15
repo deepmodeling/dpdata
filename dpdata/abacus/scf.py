@@ -1,7 +1,7 @@
 import os,sys
 import numpy as np
 from ..unit import EnergyConversion, PressureConversion, LengthConversion
-
+import re
 bohr2ang = LengthConversion("bohr", "angstrom").value()
 ry2ev = EnergyConversion("rydberg", "eV").value()
 kbar2evperang3 = PressureConversion("kbar", "eV/angstrom^3").value()
@@ -16,10 +16,10 @@ def get_block (lines, keyword, skip = 0, nlines = None):
             found = True
             blk_idx = idx + 1 + skip
             line_idx = 0
-            while len(lines[blk_idx].split("\s+")) == 0:
+            while len(re.split("\s+", lines[blk_idx])) == 0:
                 blk_idx += 1
             while line_idx < nlines and blk_idx != len(lines):
-                if len(lines[blk_idx].split("\s+")) == 0 or lines[blk_idx] == "":
+                if len(re.split("\s+", lines[blk_idx])) == 0 or lines[blk_idx] == "":
                     blk_idx+=1
                     continue
                 ret.append(lines[blk_idx])
@@ -183,6 +183,100 @@ def get_frame (fname):
     # print("force = ", data['forces'])
     # print("virial = ", data['virials'])
     return data
+
+def get_nele_from_stru(geometry_inlines):
+    key_words_list = ["ATOMIC_SPECIES", "NUMERICAL_ORBITAL", "LATTICE_CONSTANT", "LATTICE_VECTORS", "ATOMIC_POSITIONS", "NUMERICAL_DESCRIPTOR"]
+    keyword_sequence = []
+    keyword_line_index = []
+    atom_names = []
+    atom_numbs = []
+    for iline, line in enumerate(geometry_inlines):
+        if line.split() == []:
+            continue
+        have_key_word = False
+        for keyword in key_words_list:
+            if keyword in line and keyword == line.split()[0]:
+                keyword_sequence.append(keyword)
+                keyword_line_index.append(iline)
+    assert(len(keyword_line_index) == len(keyword_sequence))
+    assert(len(keyword_sequence) > 0)
+    keyword_line_index.append(len(geometry_inlines))
+
+    nele = 0
+    for idx, keyword in enumerate(keyword_sequence):
+        if keyword == "ATOMIC_SPECIES":
+            for iline in range(keyword_line_index[idx]+1, keyword_line_index[idx+1]):
+                if len(re.split("\s+", geometry_inlines[iline])) >= 3:
+                    nele += 1
+    return nele
+
+def get_frame_from_stru(fname):
+    assert(type(fname) == str)
+    with open(fname, 'r') as fp:
+        geometry_inlines = fp.read().split('\n')
+    nele = get_nele_from_stru(geometry_inlines)
+    inlines = ["ntype %d" %nele]
+    celldm, cell = get_cell(geometry_inlines)
+    atom_names, natoms, types, coords = get_coords(celldm, cell, geometry_inlines, inlines) 
+    data = {}
+    data['atom_names'] = atom_names
+    data['atom_numbs'] = natoms
+    data['atom_types'] = types
+    data['cells'] = cell[np.newaxis, :, :]
+    data['coords'] = coords[np.newaxis, :, :]
+    data['orig'] = np.zeros(3)
+
+    return data
+
+def make_unlabeled_stru(data, frame_idx, pp_file=None, numerical_orbital=None, numerical_descriptor=None, mass=None):
+    out = "ATOMIC_SPECIES\n"
+    for iele in range(len(data['atom_names'])):
+        out += data['atom_names'][iele] + " "
+        if mass is not None:
+            out += "%d "%mass[iele]
+        else:
+            out += "1 "
+        if pp_file is not None:
+            out += "%s\n"%pp_file[iele]
+        else:
+            out += "\n"
+    out += "\n"
+
+    if numerical_orbital is not None:
+        assert(len(numerical_orbital) == len(data['atom_names']))
+        out += "NUMERICAL_ORBITAL\n"
+        for iele in range(len(numerical_orbital)):
+            out += "%s\n"%numerical_orbital[iele]
+        out += "\n"
+
+    if numerical_descriptor is not None:
+        assert(type(numerical_descriptor) == str)
+        out += "NUMERICAL_DESCRIPTOR\n%s\n"%numerical_descriptor
+        out += "\n"
+    
+    out += "LATTICE_CONSTANT\n"
+    out += str(1/bohr2ang) + "\n\n"
+
+    out += "LATTICE_VECTORS\n"
+    for ix in range(3):
+        for iy in range(3):
+            out += str(data['cells'][frame_idx][ix][iy]) + " "
+        out += "\n"
+    out += "\n"
+
+    out += "ATOMIC_POSITIONS\n"
+    out += "Cartesian    # Cartesian(Unit is LATTICE_CONSTANT)\n"
+    #ret += "\n"
+    natom_tot = 0
+    for iele in range(len(data['atom_names'])):
+        out += data['atom_names'][iele] + "\n"
+        out += "0.0\n"
+        out += str(data['atom_numbs'][iele]) + "\n"
+        for iatom in range(data['atom_numbs'][iele]):
+            out += "%.12f %.12f %.12f %d %d %d\n" % (data['coords'][frame_idx][natom_tot, 0], data['coords'][frame_idx][natom_tot, 1], data['coords'][frame_idx][natom_tot, 2], 1, 1, 1)
+            natom_tot += 1
+    assert(natom_tot == sum(data['atom_numbs']))
+    return out
 
 #if __name__ == "__main__":
 #    path = "/home/lrx/work/12_ABACUS_dpgen_interface/dpdata/dpdata/tests/abacus.scf"

@@ -39,6 +39,22 @@ class TestAmberSqmOutLabeled(unittest.TestCase, CompLabeledSys, IsNoPBC):
         if os.path.exists('tmp.sqm.forces'):
             shutil.rmtree('tmp.sqm.forces')
 
+
+class TestAmberSqmOutOpt(unittest.TestCase, CompLabeledSys, IsNoPBC):
+    def setUp(self) :
+        self.system_1 = dpdata.LabeledSystem('amber/sqm_opt.out', fmt = 'sqm/out')
+        self.system_1.to('deepmd/npy','tmp.sqm.opt')
+        self.system_2 = dpdata.LabeledSystem('tmp.sqm.opt', fmt = 'deepmd/npy')
+        self.places = 5
+        self.e_places = 4
+        self.f_places = 6
+        self.v_places = 6
+
+    def tearDown(self) :
+        if os.path.exists('tmp.sqm.opt'):
+            shutil.rmtree('tmp.sqm.opt')
+
+
 @unittest.skipIf(skip_bond_order_system, "dpdata does not have BondOrderSystem. One may install rdkit to fix.")
 class TestAmberSqmIn(unittest.TestCase):
     def setUp(self):

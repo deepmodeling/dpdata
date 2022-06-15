@@ -84,6 +84,18 @@ class TestUniqAtomNames(unittest.TestCase):
         self.assertEqual(list(data['atom_numbs']),
                          [3, 4])
 
+class TestVaspOUTCARML(unittest.TestCase):
+    def test(self):
+        system1 = dpdata.LabeledSystem('poscars/OUTCAR.ch4.ml', fmt = 'vasp/outcar',ml=True)
+        system2 = dpdata.LabeledSystem('poscars/OUTCAR.ch4.ml', fmt = 'vasp/outcar',ml=False)
+        expected_types = [0, 0, 0, 0, 1]
+        self.assertEqual(list(system1['atom_types']), expected_types)
+        self.assertEqual(system1['atom_names'], ['H', 'C'])
+        self.assertEqual(len(system1['energies']), 10)
+        self.assertEqual(list(system2['atom_types']), expected_types)
+        self.assertEqual(system2['atom_names'], ['H', 'C'])
+        self.assertEqual(len(system2['energies']), 4)
+
 
 if __name__ == '__main__':
     unittest.main()

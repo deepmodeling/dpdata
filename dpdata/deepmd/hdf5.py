@@ -1,4 +1,6 @@
 """Utils for deepmd/hdf5 format."""
+from typing import Union
+
 import h5py
 import numpy as np
 
@@ -7,7 +9,7 @@ from wcmatch.glob import globfilter
 
 __all__ = ['to_system_data', 'dump']
 
-def to_system_data(f: h5py.File,
+def to_system_data(f: Union[h5py.File, h5py.Group],
                    folder: str, 
                    type_map: list = None,
                    labels: bool = True) :
@@ -15,8 +17,8 @@ def to_system_data(f: h5py.File,
 
     Parameters
     ----------
-    f : h5py.File
-        HDF5 file object
+    f : h5py.File or h5py.Group
+        HDF5 file or group object
     folder : str
         path in the HDF5 file
     type_map : list
@@ -82,7 +84,7 @@ def to_system_data(f: h5py.File,
         data['cells'] = np.zeros((nframes, 3, 3))
     return data
 
-def dump(f: h5py.File,
+def dump(f: Union[h5py.File, h5py.Group],
          folder: str,
          data: dict,
          set_size = 5000,
@@ -92,8 +94,8 @@ def dump(f: h5py.File,
 
     Parameters
     ----------
-    f : h5py.File
-        HDF5 file object
+    f : h5py.File or h5py.Group
+        HDF5 file or group object
     folder : str
         path in the HDF5 file
     data : dict
