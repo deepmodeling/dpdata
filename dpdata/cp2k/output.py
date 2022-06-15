@@ -3,7 +3,7 @@ import numpy as np
 import re
 from collections import OrderedDict
 
-from scipy.constants.constants import R
+from scipy.constants import R
 from .cell import cell_to_low_triangle
 from ..unit import EnergyConversion, LengthConversion, ForceConversion, PressureConversion
 
@@ -268,7 +268,7 @@ class Cp2kSystems(object):
         #info_dict['atom_types'] = np.asarray(atom_types_list)
         info_dict['coords'] = np.asarray([coords_list]).astype('float32')
         info_dict['energies'] = np.array([energy]).astype('float32')
-        info_dict['orig']=[0,0,0]
+        info_dict['orig'] = np.zeros(3)
         return info_dict
 
 #%%
