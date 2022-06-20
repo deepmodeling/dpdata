@@ -28,5 +28,19 @@ class TestCorr(unittest.TestCase, CompLabeledSys, IsPBC):
         self.f_places = 6
         self.v_places = 6
 
+
+class TestCorr(unittest.TestCase, CompLabeledSys, IsPBC):
+    """Make a test to get a correction of two MultiSystems."""
+    def setUp(self):
+        s_ll = dpdata.MultiSystems(dpdata.LabeledSystem("amber/corr/dp_ll", fmt="deepmd/npy"))
+        s_hl = dpdata.MultiSystems(dpdata.LabeledSystem("amber/corr/dp_hl", fmt="deepmd/npy"))
+        self.system_1 = tuple(s_ll.correction(s_hl).systems.values())[0]
+        self.system_2 = dpdata.LabeledSystem("amber/corr/dp_corr" ,fmt="deepmd/npy")
+        self.places = 5
+        self.e_places = 4
+        self.f_places = 6
+        self.v_places = 6
+
+
 if __name__ == '__main__':
     unittest.main()
