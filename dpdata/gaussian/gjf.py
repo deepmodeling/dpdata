@@ -151,7 +151,7 @@ def make_gaussian_input(
     """
     coordinates = sys_data['coords'][0]
     atom_names = sys_data['atom_names']
-    #atom_numbs = sys_data['atom_numbs']
+    atom_numbs = sys_data['atom_numbs']
     atom_types = sys_data['atom_types']
     # get atom symbols list
     symbols = [atom_names[atom_type] for atom_type in atom_types]
@@ -215,7 +215,9 @@ def make_gaussian_input(
         chkkeywords.append('%chk={}.chk'.format(str(uuid.uuid1())))
 
     nprockeywords = '%nproc={:d}'.format(nproc)
-    titlekeywords = 'dpdata'
+    # use formula as title
+    titlekeywords = ''.join(["{}{}".format(symbol,numb) for symbol,numb in
+            zip(atom_names, atom_numbs)])
     chargekeywords = '{} {}'.format(charge, multiplicity)
 
     buff = [*chkkeywords, nprockeywords, '#{}'.format(
