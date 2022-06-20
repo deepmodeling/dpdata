@@ -31,3 +31,39 @@ class TestGaussianDriver(unittest.TestCase, CompSys, IsNoPBC):
     def test_forces(self):
         forces = self.system_2['forces']
         np.testing.assert_allclose(forces, np.zeros_like(forces))
+
+
+class TestMakeGaussian(unittest.TestCase):
+    """This class will not check if the output is correct, but only see if there is any errors."""
+    def setUp(self):
+        self.system = dpdata.System(data={
+            "atom_names": ["H"],
+            "atom_numbs": [1],
+            "atom_types": np.zeros((1,), dtype=int),
+            "coords": np.zeros((1, 1, 3), dtype=np.float32),
+            "cells": np.zeros((1, 3, 3), dtype=np.float32),
+            "orig": np.zeros(3, dtype=np.float32),
+            "nopbc": True,
+        })
+
+    @unittest.skipIf(importlib.util.find_spec("openbabel") is None, "requires openbabel")
+    def test_make_fp_gaussian(self):
+        self.system.to_gaussian_gjf("test.gjf", keywords="wb97x/6-31g* force")
+
+    def test_make_fp_gaussian_multiplicity_one(self):
+        self.system.to_gaussian_gjf("test.gjf", keywords="wb97x/6-31g* force", multiplicity=1)
+
+    def test_detect_multiplicity(self):
+        # oxygen O2 3
+        self._check_multiplicity(['O', 'O'], 3)
+        # methane CH4 1
+        self._check_multiplicity(['C', 'H', 'H', 'H', 'H'], 1)
+        # CH3 2
+        self._check_multiplicity(['C', 'H', 'H', 'H'], 2)
+        # CH2 1
+        self._check_multiplicity(['C', 'H', 'H'], 1)
+        # CH 2
+        self._check_multiplicity(['C', 'H'], 2)
+
+    def _check_multiplicity(self, symbols, multiplicity):
+        self.assertEqual(dpdata.gaussian.gjf.detect_multiplicity(np.array(symbols)), multiplicity)

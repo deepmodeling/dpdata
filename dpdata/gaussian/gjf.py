@@ -79,12 +79,12 @@ def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
     return frag_numb, frag_index
 
 
-def detect_multiplicity(symbols: List[str]) -> int:
+def detect_multiplicity(symbols: np.ndarray) -> int:
     """Find the minimal multiplicity of the given molecules.
     
     Parameters
     ----------
-    symbols : list[str]
+    symbols : np.ndarray
         element symbols; virtual elements are not supported
 
     Returns
