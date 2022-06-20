@@ -4,3 +4,4 @@ import dpdata
 import dpdata.md.water
 import dpdata.md.msd
 import dpdata.system
+import dpdata.stat
