@@ -1294,6 +1294,45 @@ class MultiSystems:
             new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
         return new_sys
 
+    def correction(self, hl_sys: "MultiSystems"):
+        """Get energy and force correction between self (assumed low-level) and a high-level MultiSystems.
+        The self's coordinates will be kept, but energy and forces will be replaced by
+        the correction between these two systems.
+
+        Notes
+        -----
+        This method will not check whether coordinates and elements of two systems
+        are the same. The user should make sure by itself.
+
+        Parameters
+        ----------
+        hl_sys : MultiSystems
+            high-level MultiSystems
+
+        Returns
+        -------
+        corrected_sys : MultiSystems
+            Corrected MultiSystems
+
+        Examples
+        --------
+        Get correction between a low-level system and a high-level system:
+
+        >>> low_level = dpdata.MultiSystems().from_deepmd_hdf5("low_level.hdf5")
+        >>> high_level = dpdata.MultiSystems().from_deepmd_hdf5("high_level.hdf5")
+        >>> corr = low_level.correction(high_lebel)
+        >>> corr.to_deepmd_hdf5("corr.hdf5")
+        """
+        if not isinstance(hl_sys, MultiSystems):
+            raise RuntimeError("high_sys should be MultiSystems")
+        corrected_sys = MultiSystems(type_map=self.atom_names)
+        for nn in self.systems.keys():
+            ll_ss = self[nn]
+            hl_ss = hl_sys[nn]
+            corrected_sys.append(ll_ss.correction(hl_ss))
+        return corrected_sys
+
+
 def get_cls_name(cls: object) -> str:
     """Returns the fully qualified name of a class, such as `np.ndarray`.
     
