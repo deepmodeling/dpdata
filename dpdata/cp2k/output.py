@@ -120,7 +120,22 @@ class Cp2kSystems(object):
         print_level_flag = 0
         atomic_kinds_pattern = re.compile(r'\s+\d+\. Atomic kind:\s+(?P<akind>\S+)')
         atomic_kinds = [] 
+        stress_sign = 'STRESS'
+        stress_flag = 0
+        stress = []
+
         for line in lines:
+            if stress_flag == 3 :
+                if (line == '\n') :
+                    stress_flag = 0
+                else :
+                    stress.append(line.split()[1:4])
+            if stress_flag == 2 :
+                stress_flag = 3
+            if stress_flag == 1 :
+                stress_flag = 2
+            if (stress_sign in line):
+                stress_flag = 1
             if force_start_pattern.match(line):
                 force_flag=True
             if force_end_pattern.match(line):
@@ -214,7 +229,18 @@ class Cp2kSystems(object):
         #atom_names=list(element_dict.keys())
         atom_names=self.atomic_kinds
         atom_numbs=[]
-        
+
+        GPa = PressureConversion("eV/angstrom^3", "GPa").value()
+        if stress:
+            stress = np.array(stress)
+            stress = stress.astype('float32')
+            stress = stress[np.newaxis, :, :]
+            # stress to virial conversion, default unit in cp2k is GPa
+            # note the stress is virial = stress * volume
+            virial = stress * np.linalg.det(self.cell)/GPa
+            virial = virial.squeeze()
+        else:
+            virial = None
         for ii in element_dict.keys():
             atom_numbs.append(element_dict[ii][1])
         #print(atom_numbs)
@@ -225,6 +251,7 @@ class Cp2kSystems(object):
         info_dict['cells'] = np.asarray([self.cell]).astype('float32')
         info_dict['energies'] = np.asarray([energy]).astype('float32')
         info_dict['forces'] = np.asarray([forces_list]).astype('float32')
+        if(virial != None ): info_dict['virials'] = np.asarray([virial]).astype('float32')
         return info_dict
 
     def handle_single_xyz_frame(self, lines):
