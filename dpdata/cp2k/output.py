@@ -251,7 +251,7 @@ class Cp2kSystems(object):
         info_dict['cells'] = np.asarray([self.cell]).astype('float32')
         info_dict['energies'] = np.asarray([energy]).astype('float32')
         info_dict['forces'] = np.asarray([forces_list]).astype('float32')
-        if(virial != None ): info_dict['virials'] = np.asarray([virial]).astype('float32')
+        if(virial is not None ): info_dict['virials'] = np.asarray([virial]).astype('float32')
         return info_dict
 
     def handle_single_xyz_frame(self, lines):
