@@ -15,6 +15,15 @@ class TestCp2kAimdOutput(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 4
 
+class TestCp2kAimdStressOutput(unittest.TestCase, CompLabeledSys):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem('cp2k/aimd_stress',fmt='cp2k/aimd_output')
+        self.system_2 = dpdata.LabeledSystem('cp2k/aimd_stress/deepmd', fmt='deepmd/raw')
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
 #class TestCp2kAimdRestartOutput(unittest.TestCase, CompLabeledSys):
 #    def setUp(self):
 #        self.system_1 = dpdata.LabeledSystem('cp2k/restart_aimd',fmt='cp2k/aimd_output', restart=True)
