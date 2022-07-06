@@ -94,7 +94,7 @@ def make_sqm_in(data, fname=None, frame_idx=0, **kwargs):
     ret += "     verbosity=4\n"
     ret += " /\n"
     for ii in range(len(data['atom_types'])):
-        ret += "{:>4s}{:>6s}{:>14s}{:>14s}{:>14s}\n".format(
+        ret += "{:>4s}{:>6s}{:>16s}{:>16s}{:>16s}\n".format(
             str(atomic_numbers[ii]),
             str(symbols[ii]),
             f"{data['coords'][frame_idx][ii, 0]:.6f}",
