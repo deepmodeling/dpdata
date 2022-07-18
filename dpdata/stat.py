@@ -99,7 +99,7 @@ class Errors(ErrorsBase):
     --------
     Get errors between referenced system and predicted system:
 
-    >>> e = dpdata.errors.Errors(system_1, system_2)
+    >>> e = dpdata.stat.Errors(system_1, system_2)
     >>> print("%.4f %.4f %.4f %.4f" % (e.e_mae, e.e_rmse, e.f_mae, e.f_rmse))
     """
     SYSTEM_TYPE = LabeledSystem
@@ -131,7 +131,7 @@ class MultiErrors(ErrorsBase):
     --------
     Get errors between referenced system and predicted system:
 
-    >>> e = dpdata.errors.MultiErrors(system_1, system_2)
+    >>> e = dpdata.stat.MultiErrors(system_1, system_2)
     >>> print("%.4f %.4f %.4f %.4f" % (e.e_mae, e.e_rmse, e.f_mae, e.f_rmse))
     """
     SYSTEM_TYPE = MultiSystems
