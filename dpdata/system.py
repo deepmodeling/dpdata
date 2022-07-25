@@ -195,7 +195,8 @@ class System (MSONable) :
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required. 
-                - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required. 
+                - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required.
+                - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required. 
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``pwmat/atom.config``: pwmat atom.config
