@@ -198,7 +198,16 @@ def to_system_data(input_name, prefix, begin = 0, step = 1) :
                         begin = begin, 
                         step = step, 
                         convert = length_convert)
-        assert(csteps == tmp_steps), "the step key between files are not consistent"
+        if csteps != tmp_steps:
+            csteps.append(None)
+            tmp_steps.append(None)
+            for int_id in range(len(csteps)):
+                if csteps[int_id] != tmp_steps[int_id]:
+                    break
+            step_id = begin + int_id*step
+            raise RuntimeError(f"the step key between files are not consistent. "
+                               f"The difference locates at step: {step_id}, "
+                               f".pos is {csteps[int_id]}, .cel is {tmp_steps[int_id]}")
     except FileNotFoundError :
         data['cells'] = np.tile(cell, (data['coords'].shape[0], 1, 1))
     return data, csteps

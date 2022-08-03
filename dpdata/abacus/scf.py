@@ -33,7 +33,7 @@ def get_block (lines, keyword, skip = 0, nlines = None):
 def get_geometry_in(fname, inlines):
     geometry_path_in = os.path.join(fname, "STRU")
     for line in inlines:
-        if "atom_file" in line and "atom_file"==line.split()[0]:
+        if "stru_file" in line and "stru_file"==line.split()[0]:
            atom_file = line.split()[1]
            geometry_path_in = os.path.join(fname, atom_file)
            break
@@ -148,7 +148,6 @@ def get_frame (fname):
     
     geometry_path_in = get_geometry_in(fname, inlines) 
     path_out = get_path_out(fname, inlines) 
-    
     with open(geometry_path_in, 'r') as fp:
         geometry_inlines = fp.read().split('\n')
     with open(path_out, 'r') as fp:
@@ -233,7 +232,7 @@ def make_unlabeled_stru(data, frame_idx, pp_file=None, numerical_orbital=None, n
     for iele in range(len(data['atom_names'])):
         out += data['atom_names'][iele] + " "
         if mass is not None:
-            out += "%d "%mass[iele]
+            out += "%.3f "%mass[iele]
         else:
             out += "1 "
         if pp_file is not None:
