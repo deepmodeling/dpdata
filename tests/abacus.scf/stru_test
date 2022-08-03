@@ -1,6 +1,6 @@
 ATOMIC_SPECIES
-C 12 C.upf
-H 1 H.upf
+C 12.000 C.upf
+H 1.000 H.upf
 
 NUMERICAL_ORBITAL
 C.orb
