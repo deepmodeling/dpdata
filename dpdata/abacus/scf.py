@@ -33,7 +33,7 @@ def get_block (lines, keyword, skip = 0, nlines = None):
 def get_geometry_in(fname, inlines):
     geometry_path_in = os.path.join(fname, "STRU")
     for line in inlines:
-        if "atom_file" in line and "atom_file"==line.split()[0]:
+        if "stru_file" in line and "stru_file"==line.split()[0]:
            atom_file = line.split()[1]
            geometry_path_in = os.path.join(fname, atom_file)
            break
@@ -148,7 +148,6 @@ def get_frame (fname):
     
     geometry_path_in = get_geometry_in(fname, inlines) 
     path_out = get_path_out(fname, inlines) 
-    
     with open(geometry_path_in, 'r') as fp:
         geometry_inlines = fp.read().split('\n')
     with open(path_out, 'r') as fp:
