@@ -85,12 +85,32 @@ class TestABACUSMD:
         np.testing.assert_almost_equal(self.system_water.data['energies'], ref_energy)
         np.testing.assert_almost_equal(self.system_Si.data['energies'], ref_energy2)
 
+    def test_to_system(self):
+        pp_file=["H.upf","O.upf"]
+        numerical_orbital=["H.upf","O.upf"]
+        numerical_descriptor="jle.orb"
+        mass=[1.008,15.994]
+        self.system_water.to(file_name="abacus.md/water_stru",fmt='abacus/stru',pp_file=pp_file,\
+                numerical_orbital=numerical_orbital,numerical_descriptor=numerical_descriptor,\
+                mass=mass)
+        self.assertTrue(os.path.isfile('abacus.md/water_stru'))
+        if os.path.isfile('abacus.md/water_stru'):
+            with open('abacus.md/water_stru') as f:
+                iline=0
+                for iline,l in enumerate(f):
+                    iline += 1
+                self.assertEqual(iline,30)
+
 
 class TestABACUSMDLabeledOutput(unittest.TestCase, TestABACUSMD):
 
     def setUp(self):
         self.system_water = dpdata.LabeledSystem('abacus.md',fmt='abacus/md') # system with stress
         self.system_Si = dpdata.LabeledSystem('abacus.md.nostress',fmt='abacus/md') # system without stress
+
+    def tearDown(self):
+        if os.path.isfile('abacus.md/water_stru'):
+            os.remove('abacus.md/water_stru')
 
 if __name__ == '__main__':
     unittest.main()

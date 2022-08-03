@@ -233,7 +233,7 @@ def make_unlabeled_stru(data, frame_idx, pp_file=None, numerical_orbital=None, n
     for iele in range(len(data['atom_names'])):
         out += data['atom_names'][iele] + " "
         if mass is not None:
-            out += "%d "%mass[iele]
+            out += "%.3f "%mass[iele]
         else:
             out += "1 "
         if pp_file is not None:
