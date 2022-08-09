@@ -59,16 +59,17 @@ def get_coordtype_and_scalefactor(keys):
     key_su = ['xsu','ysu','zsu'] #scaled and unfolded,sf = lattice parameter
     lmp_coor_type = [key_pc,key_uc,key_s,key_su]
     sf = [0,0,1,1]
+    unwarp = [0, 1, 0, 1]
     for k in range(4):
         if all(i in keys for i in lmp_coor_type[k]):
-            return lmp_coor_type[k],sf[k]
+            return lmp_coor_type[k], sf[k], unwarp[k]
 
 def safe_get_posi(lines,cell,orig=np.zeros(3)) :
     blk, head = _get_block(lines, 'ATOMS')
     keys = head.split()
     coord_tp_and_sf = get_coordtype_and_scalefactor(keys)
     assert coord_tp_and_sf is not None, 'Dump file does not contain atomic coordinates!'
-    coordtype, sf = coord_tp_and_sf
+    coordtype, sf, unwarp = coord_tp_and_sf
     id_idx = keys.index('id') - 2
     xidx = keys.index(coordtype[0])-2
     yidx = keys.index(coordtype[1])-2
@@ -81,8 +82,11 @@ def safe_get_posi(lines,cell,orig=np.zeros(3)) :
     posis.sort()
     posis = np.array(posis)[:,1:4]
     if not sf:
-        posis = (posis-orig)@np.linalg.inv(cell)# Convert to scaled coordinates for unscaled coordinates
-    return (posis%1)@cell # Convert scaled coordinates back to Cartesien coordinates 
+        posis = (posis - orig) @ np.linalg.inv(cell)  # Convert to scaled coordinates for unscaled coordinates
+    if not unwarp:
+        return (posis % 1) @ cell  # Convert scaled coordinates back to Cartesien coordinates with warping at periodic boundary conditions
+    else:
+        return posis @ cell  # without warping at periodic boundary conditions
 
 def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
@@ -145,7 +149,7 @@ def load_file(fname, begin = 0, step = 1) :
                 cc += 1
             if cc >= begin and (cc - begin) % step == 0 :
                 buff.append(line)
-    
+
 
 def system_data(lines, type_map = None, type_idx_zero = True) :
     array_lines = split_traj(lines)
@@ -181,7 +185,7 @@ def split_traj(dump_lines) :
     marks = []
     for idx,ii in enumerate(dump_lines) :
         if 'ITEM: TIMESTEP' in ii :
-            marks.append(idx) 
+            marks.append(idx)
     if len(marks) == 0 :
         return None
     elif len(marks) == 1 :
@@ -191,9 +195,9 @@ def split_traj(dump_lines) :
         ret = []
         for ii in marks :
             ret.append(dump_lines[ii:ii+block_size])
-        # for ii in range(len(marks)-1): 
+        # for ii in range(len(marks)-1):
         #     assert(marks[ii+1] - marks[ii] == block_size)
-        return ret    
+        return ret
     return None
 
 
