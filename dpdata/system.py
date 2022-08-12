@@ -331,7 +331,7 @@ class System (MSONable) :
         dumpfn(self.as_dict(),filename,indent=indent)
 
 
-    def map_atom_types(self,type_map=None):
+    def map_atom_types(self, type_map=None) -> np.ndarray:
         """
         Map the atom types of the system
 
@@ -346,7 +346,7 @@ class System (MSONable) :
 
         Returns
         -------
-        new_atom_types : list
+        new_atom_types : np.ndarray
             The mapped atom types
         """
         if isinstance(type_map,dict) or type_map is None:
@@ -366,7 +366,7 @@ class System (MSONable) :
         atom_types_list=[]
         for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
             atom_types_list.extend([name]*numb)
-        new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
+        new_atom_types = np.array([type_map[ii] for ii in atom_types_list], dtype=int)
 
         return new_atom_types
 
