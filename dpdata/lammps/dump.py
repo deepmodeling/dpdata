@@ -5,6 +5,9 @@ import numpy as np
 lib_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(lib_path)
 import lmp
+import warnings
+warnings.simplefilter('once', UserWarning)
+
 
 def _get_block (lines, key) :
     for idx in range(len(lines)) :
@@ -59,7 +62,7 @@ def get_coordtype_and_scalefactor(keys):
     key_su = ['xsu','ysu','zsu'] #scaled and unfolded,sf = lattice parameter
     lmp_coor_type = [key_pc,key_uc,key_s,key_su]
     sf = [0,0,1,1]
-    uw = [0, 1, 0, 1]  # unwraped or not
+    uw = [0,1,0,1]  # unwraped or not
     for k in range(4):
         if all(i in keys for i in lmp_coor_type[k]):
             return lmp_coor_type[k], sf[k], uw[k]
@@ -86,6 +89,8 @@ def safe_get_posi(lines,cell,orig=np.zeros(3), unwrap=False) :
     if uw and unwrap:
         return posis @ cell  # convert scaled coordinates back to Cartesien coordinates unwrap at the periodic boundaries
     else:
+        if uw and not unwrap:
+            warnings.warn('Your dump file contains unwrapped coordinates, but you did not specify unwrapping (unwrap = True). The default is wrapping at periodic boundaries (unwrap = False).\n')
         return (posis % 1) @ cell  # Convert scaled coordinates back to Cartesien coordinates with wraping at periodic boundary conditions
 
 def get_dumpbox(lines) :
