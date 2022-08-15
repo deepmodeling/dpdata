@@ -6,7 +6,9 @@ lib_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(lib_path)
 import lmp
 import warnings
-warnings.simplefilter('once', UserWarning)
+class UnwrapWarning(UserWarning):
+    pass
+warnings.simplefilter('once', UnwrapWarning)
 
 
 def _get_block (lines, key) :
@@ -90,7 +92,7 @@ def safe_get_posi(lines,cell,orig=np.zeros(3), unwrap=False) :
         return posis @ cell  # convert scaled coordinates back to Cartesien coordinates unwrap at the periodic boundaries
     else:
         if uw and not unwrap:
-            warnings.warn('Your dump file contains unwrapped coordinates, but you did not specify unwrapping (unwrap = True). The default is wrapping at periodic boundaries (unwrap = False).\n')
+            warnings.warn(message='Your dump file contains unwrapped coordinates, but you did not specify unwrapping (unwrap = True). The default is wrapping at periodic boundaries (unwrap = False).\n',category=UnwrapWarning)
         return (posis % 1) @ cell  # Convert scaled coordinates back to Cartesien coordinates with wraping at periodic boundary conditions
 
 def get_dumpbox(lines) :
