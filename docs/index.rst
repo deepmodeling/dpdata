@@ -10,8 +10,10 @@ Welcome to dpdata's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   cli
    formats
    api/api
+   credits
 
 .. mdinclude:: ../README.md
 

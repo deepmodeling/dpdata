@@ -1,5 +1,6 @@
 import dpdata.abacus.scf
 import dpdata.abacus.md
+import dpdata.abacus.relax
 from dpdata.format import Format
 
 @Format.register("abacus/stru")
@@ -51,3 +52,11 @@ class AbacusMDFormat(Format):
     #@Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
         return dpdata.abacus.md.get_frame(file_name)
+
+@Format.register("abacus/relax")
+@Format.register("abacus/pw/relax")
+@Format.register("abacus/lcao/relax")
+class AbacusRelaxFormat(Format):
+    #@Format.post("rot_lower_triangular")
+    def from_labeled_system(self, file_name, **kwargs):
+        return dpdata.abacus.relax.get_frame(file_name)        

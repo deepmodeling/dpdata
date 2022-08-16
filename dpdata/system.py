@@ -195,7 +195,8 @@ class System (MSONable) :
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required. 
-                - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required. 
+                - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required.
+                - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required. 
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``pwmat/atom.config``: pwmat atom.config
@@ -330,7 +331,7 @@ class System (MSONable) :
         dumpfn(self.as_dict(),filename,indent=indent)
 
 
-    def map_atom_types(self,type_map=None):
+    def map_atom_types(self, type_map=None) -> np.ndarray:
         """
         Map the atom types of the system
 
@@ -345,7 +346,7 @@ class System (MSONable) :
 
         Returns
         -------
-        new_atom_types : list
+        new_atom_types : np.ndarray
             The mapped atom types
         """
         if isinstance(type_map,dict) or type_map is None:
@@ -365,7 +366,7 @@ class System (MSONable) :
         atom_types_list=[]
         for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
             atom_types_list.extend([name]*numb)
-        new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
+        new_atom_types = np.array([type_map[ii] for ii in atom_types_list], dtype=int)
 
         return new_atom_types
 
@@ -1340,6 +1341,45 @@ class MultiSystems:
         for ss in self:
             new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
         return new_sys
+
+    def correction(self, hl_sys: "MultiSystems"):
+        """Get energy and force correction between self (assumed low-level) and a high-level MultiSystems.
+        The self's coordinates will be kept, but energy and forces will be replaced by
+        the correction between these two systems.
+
+        Notes
+        -----
+        This method will not check whether coordinates and elements of two systems
+        are the same. The user should make sure by itself.
+
+        Parameters
+        ----------
+        hl_sys : MultiSystems
+            high-level MultiSystems
+
+        Returns
+        -------
+        corrected_sys : MultiSystems
+            Corrected MultiSystems
+
+        Examples
+        --------
+        Get correction between a low-level system and a high-level system:
+
+        >>> low_level = dpdata.MultiSystems().from_deepmd_hdf5("low_level.hdf5")
+        >>> high_level = dpdata.MultiSystems().from_deepmd_hdf5("high_level.hdf5")
+        >>> corr = low_level.correction(high_lebel)
+        >>> corr.to_deepmd_hdf5("corr.hdf5")
+        """
+        if not isinstance(hl_sys, MultiSystems):
+            raise RuntimeError("high_sys should be MultiSystems")
+        corrected_sys = MultiSystems(type_map=self.atom_names)
+        for nn in self.systems.keys():
+            ll_ss = self[nn]
+            hl_ss = hl_sys[nn]
+            corrected_sys.append(ll_ss.correction(hl_ss))
+        return corrected_sys
+
 
 def get_cls_name(cls: object) -> str:
     """Returns the fully qualified name of a class, such as `np.ndarray`.

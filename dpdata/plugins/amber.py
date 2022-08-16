@@ -68,7 +68,7 @@ class SQMINFormat(Format):
         ----------------
         **kwargs : dict
             valid parameters are:
-                theory : str, default=dftb3
+                qm_theory : str, default=dftb3
                     level of theory. Options includes AM1, RM1, MNDO, PM3-PDDG, MNDO-PDDG,
                     PM3-CARB1, MNDO/d, AM1/d, PM6, DFTB2, DFTB3
                 charge : int, default=0
@@ -96,6 +96,7 @@ class SQMDriver(Driver):
     Examples
     --------
     Use DFTB3 method to calculate potential energy:
+
     >>> labeled_system = system.predict(theory="DFTB3", driver="sqm")
     >>> labeled_system['energies'][0]
     -15.41111246
