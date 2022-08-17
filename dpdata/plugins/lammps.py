@@ -40,6 +40,7 @@ class LAMMPSDumpFormat(Format):
                     type_map=None,
                     begin=0,
                     step=1,
+                    unwrap=False,
                     **kwargs):
         lines = dpdata.lammps.dump.load_file(file_name, begin=begin, step=step)
-        return dpdata.lammps.dump.system_data(lines, type_map)
+        return dpdata.lammps.dump.system_data(lines, type_map, unwrap=unwrap)
