@@ -104,8 +104,8 @@ class Cp2kSystems(object):
         #  CONSERVED QUANTITY [hartree] =                              -0.279168013085E+04
         energy_pattern_2 = re.compile(r' POTENTIAL ENERGY\[hartree\]\s+=\s+(?P<number>\S+)')
         energy=None
-        cell_length_pattern = re.compile(r' INITIAL CELL LNTHS\[bohr\]\s+=\s+(?P<A>\S+)\s+(?P<B>\S+)\s+(?P<C>\S+)')
-        cell_angle_pattern = re.compile(r' INITIAL CELL ANGLS\[deg\]\s+=\s+(?P<alpha>\S+)\s+(?P<beta>\S+)\s+(?P<gamma>\S+)')
+        cell_length_pattern = re.compile(r' (INITIAL ){0,1}CELL LNTHS\[bohr\]\s+=\s+(?P<A>\S+)\s+(?P<B>\S+)\s+(?P<C>\S+)')
+        cell_angle_pattern = re.compile(r' (INITIAL ){0,1}CELL ANGLS\[deg\]\s+=\s+(?P<alpha>\S+)\s+(?P<beta>\S+)\s+(?P<gamma>\S+)')
         cell_A, cell_B, cell_C = (0,0,0,)
         cell_alpha, cell_beta, cell_gamma=(0,0,0,)
         cell_a_pattern = re.compile(r' CELL\| Vector a \[angstrom\]:\s+(?P<ax>\S+)\s+(?P<ay>\S+)\s+(?P<az>\S+)')
