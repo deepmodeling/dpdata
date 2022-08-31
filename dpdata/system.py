@@ -123,7 +123,7 @@ class DataType:
                 elif isinstance(data, list):
                     if len(shape) and shape[0] != len(data):
                         raise DataError("Length of %s is %d, but expected %d" % (self.name,
-                                len(shape), shape[0]))
+                                len(data), shape[0]))
                 else:
                     raise RuntimeError("Unsupported type to check shape")
         elif self.required:
