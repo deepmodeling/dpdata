@@ -122,7 +122,10 @@ def analyze_block(lines, ntot, nelm, ml = False):
                 cell.append([float(ss) 
                              for ss in tmp_l.replace('-',' -').split()[0:3]])
         elif viral_token[ml_index] in ii:
-            tmp_v = [float(ss) for ss in lines[idx+viral_index[ml_index]].split()[2:8]]
+            in_kB_index = viral_index[ml_index]
+            while lines[idx+in_kB_index].split()[0] != "in" :
+                in_kB_index += 1
+            tmp_v = [float(ss) for ss in lines[idx+in_kB_index].split()[2:8]]
             virial = np.zeros([3,3])
             virial[0][0] = tmp_v[0]
             virial[1][1] = tmp_v[1]
