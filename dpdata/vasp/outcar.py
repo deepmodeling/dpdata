@@ -101,8 +101,8 @@ def analyze_block(lines, ntot, nelm, ml = False):
     #select different searching tokens based on the ml label
     energy_token = ['free  energy   TOTEN', 'free  energy ML TOTEN']
     energy_index = [4, 5]
-    viral_token = ['FORCE on cell =-STRESS in cart. coord.  units', 'ML FORCE']
-    viral_index = [14, 4]
+    virial_token = ['FORCE on cell =-STRESS in cart. coord.  units', 'ML FORCE']
+    virial_index = [14, 4]
     cell_token = ['VOLUME and BASIS', 'ML FORCE']
     cell_index = [5, 12]
     ml_index = int(ml)
@@ -121,8 +121,12 @@ def analyze_block(lines, ntot, nelm, ml = False):
                 tmp_l = lines[idx+cell_index[ml_index]+dd]
                 cell.append([float(ss) 
                              for ss in tmp_l.replace('-',' -').split()[0:3]])
-        elif viral_token[ml_index] in ii:
-            tmp_v = [float(ss) for ss in lines[idx+viral_index[ml_index]].split()[2:8]]
+        elif virial_token[ml_index] in ii:
+            in_kB_index = virial_index[ml_index]
+            while idx+in_kB_index < len(lines) and (not lines[idx+in_kB_index].split()[0:2] == ["in", "kB"]) :
+                in_kB_index += 1
+            assert(idx+in_kB_index < len(lines)),'ERROR: "in kB" is not found in OUTCAR. Unable to extract virial.'
+            tmp_v = [float(ss) for ss in lines[idx+in_kB_index].split()[2:8]]
             virial = np.zeros([3,3])
             virial[0][0] = tmp_v[0]
             virial[1][1] = tmp_v[1]
