@@ -201,6 +201,8 @@ class System (MSONable) :
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``pwmat/atom.config``: pwmat atom.config
+                - ``pwmat/movement``: pwmat movement
+                - ``fhi_aims/output``: fhi_aims output
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
