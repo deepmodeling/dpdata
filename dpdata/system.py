@@ -176,7 +176,7 @@ class System (MSONable) :
                   begin = 0,
                   step = 1,
                   data = None,
-                  req_converged = True
+                  req_converged = True,
                   **kwargs) :
         """
         Constructor
