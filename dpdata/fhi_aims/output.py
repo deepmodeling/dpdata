@@ -1,5 +1,6 @@
 import numpy as np
 import re
+import warnings
 
 latt_patt="\|\s+([0-9]{1,}[.][0-9]*)\s+([0-9]{1,}[.][0-9]*)\s+([0-9]{1,}[.][0-9]*)"
 pos_patt_first="\|\s+[0-9]{1,}[:]\s\w+\s(\w+)(\s.*[-]?[0-9]{1,}[.][0-9]*)(\s+[-]?[0-9]{1,}[.][0-9]*)(\s+[-]?[0-9]{1,}[.][0-9]*)"
@@ -63,7 +64,7 @@ def get_fhi_aims_block(fp) :
             return blk
     return blk
 
-def get_frames (fname, md=True, begin = 0, step = 1) :
+def get_frames (fname, md=True, begin = 0, step = 1, req_converged=True) :
     fp = open(fname)
     blk = get_fhi_aims_block(fp)
     ret = get_info(blk, type_idx_zero = True)
@@ -78,6 +79,7 @@ def get_frames (fname, md=True, begin = 0, step = 1) :
     all_virials = []    
 
     cc = 0
+    rec_failed = []
     while len(blk) > 0 :
         if debug:
            with open(str(cc),'w') as f:
@@ -87,9 +89,9 @@ def get_frames (fname, md=True, begin = 0, step = 1) :
                 coord, _cell, energy, force, virial, is_converge = analyze_block(blk, first_blk=True, md=md)
             else:
                 coord, _cell, energy, force, virial, is_converge = analyze_block(blk, first_blk=False)
-            if is_converge : 
-                if len(coord) == 0:
-                    break
+            if len(coord) == 0:
+                break
+            if is_converge or not req_converged: 
                 all_coords.append(coord)
 
                 if _cell:
@@ -101,8 +103,15 @@ def get_frames (fname, md=True, begin = 0, step = 1) :
                 all_forces.append(force)
                 if virial is not None :
                     all_virials.append(virial)
+            if not is_converge:
+                rec_failed.append(cc+1)
+                
         blk = get_fhi_aims_block(fp)
         cc += 1
+        
+    if len(rec_failed) > 0 :
+        prt = "so they are not collected." if req_converged else "but they are still collected due to the requirement for ignoring convergence checks."
+        warnings.warn(f"The following structures were unconverged: {rec_failed}; "+prt)
         
     if len(all_virials) == 0 :
         all_virials = None
