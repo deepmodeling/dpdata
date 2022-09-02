@@ -21,7 +21,7 @@ class PwmatOutputFormat(Format):
             data['energies'], \
             data['forces'], \
             tmp_virial \
-            = dpdata.pwmat.movement.get_frames(file_name, begin=begin, step=step)
+            = dpdata.pwmat.movement.get_frames(file_name, begin=begin, step=step, req_converged=kwargs["converge"])
         if tmp_virial is not None:
             data['virials'] = tmp_virial
         # scale virial to the unit of eV
