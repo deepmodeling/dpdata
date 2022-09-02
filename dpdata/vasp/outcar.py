@@ -52,7 +52,7 @@ def get_outcar_block(fp, ml = False):
     return blk
 
 # we assume that the force is printed ...
-def get_frames(fname, begin = 0, step = 1, ml = False):
+def get_frames(fname, begin = 0, step = 1, ml = False, req_converged=True):
     fp = open(fname)
     blk = get_outcar_block(fp)
 
@@ -66,10 +66,11 @@ def get_frames(fname, begin = 0, step = 1, ml = False):
     all_virials = []    
 
     cc = 0
+    rec_failed = []
     while len(blk) > 0 :
         if cc >= begin and (cc - begin) % step == 0 :
             coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm, ml)
-            if is_converge : 
+            if is_converge or not req_converged: 
                 if len(coord) == 0:
                     break
                 all_coords.append(coord)
@@ -78,10 +79,16 @@ def get_frames(fname, begin = 0, step = 1, ml = False):
                 all_forces.append(force)
                 if virial is not None :
                     all_virials.append(virial)
+            else:
+                rec_failed.append(cc+1)
 
         blk = get_outcar_block(fp, ml)
         cc += 1
-
+    
+    if len(rec_failed) > 0 :
+        prt = ".\n So they are not collected." if req_converged else ".\n But they were also collected"
+        print("The following structures were unconverged:\n", rec_failed, prt)            
+        
     if len(all_virials) == 0 :
         all_virials = None
     else :
