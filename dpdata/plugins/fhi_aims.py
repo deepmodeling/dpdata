@@ -14,7 +14,7 @@ class FhiMDFormat(Format):
             data['energies'], \
             data['forces'], \
             tmp_virial, \
-            = dpdata.fhi_aims.output.get_frames(file_name, md = md, begin = begin, step = step)
+            = dpdata.fhi_aims.output.get_frames(file_name, md = md, begin = begin, step = step, req_converged=kwargs["converge"])
         if tmp_virial is not None :
             data['virials'] = tmp_virial
         return data
