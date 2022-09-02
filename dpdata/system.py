@@ -176,6 +176,7 @@ class System (MSONable) :
                   begin = 0,
                   step = 1,
                   data = None,
+                  req_converged = True
                   **kwargs) :
         """
         Constructor
@@ -208,7 +209,9 @@ class System (MSONable) :
         step : int
             The number of skipped frames when loading MD trajectory.
         data : dict
-             The raw data of System class.
+            The raw data of System class.
+        req_converged : boolean
+            Whether to request a convergence check.
         """
         self.data = {}
         self.data['atom_numbs'] = []
