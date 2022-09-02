@@ -1,5 +1,6 @@
 import numpy as np
 from ..periodic_table import ELEMENTS
+import warnings
 
 def system_info (lines, type_idx_zero = False) :
     atom_names = []
@@ -49,7 +50,7 @@ def get_movement_block(fp) :
     return blk
 
 # we assume that the force is printed ...
-def get_frames (fname, begin = 0, step = 1) :
+def get_frames (fname, begin = 0, step = 1, req_converged=True) :
     fp = open(fname)
     blk = get_movement_block(fp)
 
@@ -64,20 +65,28 @@ def get_frames (fname, begin = 0, step = 1) :
     all_virials = []    
 
     cc = 0
+    rec_failed = []
     while len(blk) > 0 :
         if cc >= begin and (cc - begin) % step == 0 :
             coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm)
-            if is_converge : 
-                if len(coord) == 0:
-                    break
+            if len(coord) == 0:
+                break
+            if is_converge or not req_converged:
                 all_coords.append(coord)
                 all_cells.append(cell)
                 all_energies.append(energy)
                 all_forces.append(force)
                 if virial is not None :
                     all_virials.append(virial)
+            if not is_converge:
+                rec_failed.append(cc+1)
+        
         blk = get_movement_block(fp)
         cc += 1
+    
+    if len(rec_failed) > 0 :
+        prt = "so they are not collected." if req_converged else "but they are still collected due to the requirement for ignoring convergence checks."
+        warnings.warn(f"The following structures were unconverged: {rec_failed}; "+prt)
         
     if len(all_virials) == 0 :
         all_virials = None
