@@ -55,6 +55,7 @@ class VASPStringFormat(Format):
 class VASPOutcarFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
+        print("kwargs:", kwargs)
         data = {}
         ml = kwargs.get("ml", False)
         data['atom_names'], \
