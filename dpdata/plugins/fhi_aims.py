@@ -5,6 +5,8 @@ from dpdata.format import Format
 @Format.register("fhi_aims/output")
 class FhiMDFormat(Format):
     def from_labeled_system(self, file_name, md=True, begin = 0, step = 1, **kwargs):
+        if "converge" not in kwargs.keys():
+            kwargs["converge"] = True
         data = {}
         data['atom_names'], \
             data['atom_numbs'], \
