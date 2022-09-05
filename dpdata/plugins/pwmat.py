@@ -11,8 +11,7 @@ from dpdata.format import Format
 @Format.register("pwmat/output")
 class PwmatOutputFormat(Format):
     @Format.post("rot_lower_triangular")
-    def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
-        kwargs.setdefault("converge", True)
+    def from_labeled_system(self, file_name, begin=0, step=1, converge, **kwargs):
         data = {}
         data['atom_names'], \
             data['atom_numbs'], \
@@ -22,7 +21,7 @@ class PwmatOutputFormat(Format):
             data['energies'], \
             data['forces'], \
             tmp_virial \
-            = dpdata.pwmat.movement.get_frames(file_name, begin=begin, step=step, req_converged=kwargs["converge"])
+            = dpdata.pwmat.movement.get_frames(file_name, begin=begin, step=step, req_converged=converge)
         if tmp_virial is not None:
             data['virials'] = tmp_virial
         # scale virial to the unit of eV
