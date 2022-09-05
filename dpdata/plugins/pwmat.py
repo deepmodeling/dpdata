@@ -12,8 +12,7 @@ from dpdata.format import Format
 class PwmatOutputFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
-        if "converge" not in kwargs.keys():
-            kwargs["converge"] = True
+        kwargs.setdefault("converge", True)
         data = {}
         data['atom_names'], \
             data['atom_numbs'], \
