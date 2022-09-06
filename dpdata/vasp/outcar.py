@@ -53,7 +53,7 @@ def get_outcar_block(fp, ml = False):
     return blk
 
 # we assume that the force is printed ...
-def get_frames(fname, begin = 0, step = 1, ml = False, req_converged=True):
+def get_frames(fname, begin = 0, step = 1, ml = False, convergence_check=True):
     fp = open(fname)
     blk = get_outcar_block(fp)
 
@@ -73,7 +73,7 @@ def get_frames(fname, begin = 0, step = 1, ml = False, req_converged=True):
             coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm, ml)
             if len(coord) == 0:
                 break
-            if is_converge or not req_converged: 
+            if is_converge or not convergence_check: 
                 all_coords.append(coord)
                 all_cells.append(cell)
                 all_energies.append(energy)
