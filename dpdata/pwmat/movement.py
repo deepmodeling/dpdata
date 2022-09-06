@@ -50,7 +50,7 @@ def get_movement_block(fp) :
     return blk
 
 # we assume that the force is printed ...
-def get_frames (fname, begin = 0, step = 1, req_converged=True) :
+def get_frames (fname, begin = 0, step = 1, convergence_check=True) :
     fp = open(fname)
     blk = get_movement_block(fp)
 
@@ -71,7 +71,7 @@ def get_frames (fname, begin = 0, step = 1, req_converged=True) :
             coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm)
             if len(coord) == 0:
                 break
-            if is_converge or not req_converged:
+            if is_converge or not convergence_check:
                 all_coords.append(coord)
                 all_cells.append(cell)
                 all_energies.append(energy)
@@ -85,7 +85,7 @@ def get_frames (fname, begin = 0, step = 1, req_converged=True) :
         cc += 1
     
     if len(rec_failed) > 0 :
-        prt = "so they are not collected." if req_converged else "but they are still collected due to the requirement for ignoring convergence checks."
+        prt = "so they are not collected." if convergence_check else "but they are still collected due to the requirement for ignoring convergence checks."
         warnings.warn(f"The following structures were unconverged: {rec_failed}; "+prt)
         
     if len(all_virials) == 0 :
