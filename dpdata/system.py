@@ -176,7 +176,7 @@ class System (MSONable) :
                   begin = 0,
                   step = 1,
                   data = None,
-                  converge = True,
+                  convergence_check = True,
                   **kwargs) :
         """
         Constructor
@@ -245,7 +245,7 @@ class System (MSONable) :
             The number of skipped frames when loading MD trajectory.
         data : dict
             The raw data of System class.
-        converge : boolean
+        convergence_check : boolean
             Whether to request a convergence check.
         """
         self.data = {}
@@ -262,7 +262,7 @@ class System (MSONable) :
             return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, converge=converge, **kwargs)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, convergence_check=convergence_check, **kwargs)
 
         if type_map is not None:
             self.apply_type_map(type_map)
