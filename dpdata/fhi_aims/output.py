@@ -64,7 +64,7 @@ def get_fhi_aims_block(fp) :
             return blk
     return blk
 
-def get_frames (fname, md=True, begin = 0, step = 1, req_converged=True) :
+def get_frames (fname, md=True, begin = 0, step = 1, convergence_check=True) :
     fp = open(fname)
     blk = get_fhi_aims_block(fp)
     ret = get_info(blk, type_idx_zero = True)
@@ -91,7 +91,7 @@ def get_frames (fname, md=True, begin = 0, step = 1, req_converged=True) :
                 coord, _cell, energy, force, virial, is_converge = analyze_block(blk, first_blk=False)
             if len(coord) == 0:
                 break
-            if is_converge or not req_converged: 
+            if is_converge or not convergence_check: 
                 all_coords.append(coord)
 
                 if _cell:
@@ -110,7 +110,7 @@ def get_frames (fname, md=True, begin = 0, step = 1, req_converged=True) :
         cc += 1
         
     if len(rec_failed) > 0 :
-        prt = "so they are not collected." if req_converged else "but they are still collected due to the requirement for ignoring convergence checks."
+        prt = "so they are not collected." if convergence_check else "but they are still collected due to the requirement for ignoring convergence checks."
         warnings.warn(f"The following structures were unconverged: {rec_failed}; "+prt)
         
     if len(all_virials) == 0 :
