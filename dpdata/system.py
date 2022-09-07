@@ -176,6 +176,7 @@ class System (MSONable) :
                   begin = 0,
                   step = 1,
                   data = None,
+                  convergence_check = True,
                   **kwargs) :
         """
         Constructor
@@ -192,14 +193,49 @@ class System (MSONable) :
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
+                - ``vasp/contcar``: vasp contcar
+                - ``vasp/string``: vasp string
+                - ``vasp/outcar``: vasp outcar
+                - ``vasp/xml``: vasp xml
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required. 
                 - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required.
-                - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required. 
+                - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required.
+                - ``abacus/stru``: abacus stru
+                - ``abacus/lcao/scf``: abacus lcao scf
+                - ``abacus/pw/scf``: abacus pw scf
+                - ``abacus/lcao/md``: abacus lcao md
+                - ``abacus/pw/md``: abacus pw md
+                - ``abacus/lcao/relax``: abacus lcao relax
+                - ``abacus/pw/relax``: abacus pw relax
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``pwmat/atom.config``: pwmat atom.config
+                - ``pwmat/movement``: pwmat movement
+                - ``pwmat/output``: pwmat output
+                - ``pwmat/mlmd``: pwmat mlmd
+                - ``pwmat/final.config``: pwmat final.config
+                - ``quip/gap/xyz_file``: quip gap xyz_file
+                - ``quip/gap/xyz``: quip gap xyz
+                - ``fhi_aims/output``: fhi_aims output
+                - ``fhi_aims/md``: fhi_aims md
+                - ``fhi_aims/scf``: fhi_aims scf
+                - ``pymatgen/structure``: pymatgen structure
+                - ``pymatgen/molecule``: pymatgen molecule
+                - ``pymatgen/computedstructureentry``: pymatgen computedstructureentry
+                - ``amber/md``: amber md
+                - ``sqm/out``: sqm out
+                - ``sqm/in``: sqm in
+                - ``ase/structure``: ase structure
+                - ``gaussian/log``: gaussian log
+                - ``gaussian/md``: gaussian md
+                - ``gaussian/gjf``: gaussian gjf
+                - ``deepmd/comp``: deepmd comp
+                - ``deepmd/hdf5``: deepmd hdf5
+                - ``gromacs/gro``: gromacs gro
+                - ``cp2k/aimd_output``: cp2k aimd_output
+                - ``cp2k/output``: cp2k output
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
@@ -208,7 +244,9 @@ class System (MSONable) :
         step : int
             The number of skipped frames when loading MD trajectory.
         data : dict
-             The raw data of System class.
+            The raw data of System class.
+        convergence_check : boolean
+            Whether to request a convergence check.
         """
         self.data = {}
         self.data['atom_numbs'] = []
@@ -224,7 +262,7 @@ class System (MSONable) :
             return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, convergence_check=convergence_check, **kwargs)
 
         if type_map is not None:
             self.apply_type_map(type_map)

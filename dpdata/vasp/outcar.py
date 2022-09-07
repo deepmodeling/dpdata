@@ -1,5 +1,6 @@
 import numpy as np
 import re
+import warnings
 
 def system_info(lines, type_idx_zero = False):
     atom_names = []
@@ -52,7 +53,7 @@ def get_outcar_block(fp, ml = False):
     return blk
 
 # we assume that the force is printed ...
-def get_frames(fname, begin = 0, step = 1, ml = False):
+def get_frames(fname, begin = 0, step = 1, ml = False, convergence_check=True):
     fp = open(fname)
     blk = get_outcar_block(fp)
 
@@ -66,22 +67,29 @@ def get_frames(fname, begin = 0, step = 1, ml = False):
     all_virials = []    
 
     cc = 0
+    rec_failed = []
     while len(blk) > 0 :
         if cc >= begin and (cc - begin) % step == 0 :
             coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm, ml)
-            if is_converge : 
-                if len(coord) == 0:
-                    break
+            if len(coord) == 0:
+                break
+            if is_converge or not convergence_check: 
                 all_coords.append(coord)
                 all_cells.append(cell)
                 all_energies.append(energy)
                 all_forces.append(force)
                 if virial is not None :
                     all_virials.append(virial)
+            if not is_converge:
+                rec_failed.append(cc+1)
 
         blk = get_outcar_block(fp, ml)
         cc += 1
-
+    
+    if len(rec_failed) > 0 :
+        prt = "so they are not collected." if convergence_check else "but they are still collected due to the requirement for ignoring convergence checks."
+        warnings.warn(f"The following structures were unconverged: {rec_failed}; "+prt)
+        
     if len(all_virials) == 0 :
         all_virials = None
     else :
