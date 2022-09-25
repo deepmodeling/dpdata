@@ -16,6 +16,6 @@ class AmberMDFormat(Format):
         xyz = coord_to_xyz(data['coords'][f_idx], types)
         viewer = py3Dmol.view(width=300, height=300)
         viewer.addModel(xyz, 'xyz')
-        viewer.setStyle({"stick": {}})
+        viewer.setStyle({"stick":{}, "sphere":{"radius":0.4}})
         viewer.zoomTo()
         return viewer
