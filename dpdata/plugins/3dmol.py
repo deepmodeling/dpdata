@@ -16,5 +16,6 @@ class AmberMDFormat(Format):
         xyz = coord_to_xyz(data['coords'][f_idx], types)
         viewer = py3Dmol.view(width=300, height=300)
         viewer.addModel(xyz, 'xyz')
+        viewer.setStyle({"stick": {}})
         viewer.zoomTo()
         return viewer
