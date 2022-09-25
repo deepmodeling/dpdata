@@ -1,3 +1,5 @@
+import numpy as np
+
 from dpdata.format import Format
 from dpdata.xyz.xyz import coord_to_xyz
 
