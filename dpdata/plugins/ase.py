@@ -46,6 +46,7 @@ class ASEStructureFormat(Format):
             'cells': np.array([cells]).astype('float32'),
             'coords': np.array([coords]).astype('float32'),
             'orig': np.zeros(3),
+            'nopbc': not np.any(atoms.get_pbc()),
         }
         return info_dict
 
