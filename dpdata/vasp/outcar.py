@@ -1,5 +1,6 @@
 import numpy as np
 import re
+import warnings
 
 def system_info(lines, type_idx_zero = False):
     atom_names = []
@@ -52,7 +53,7 @@ def get_outcar_block(fp, ml = False):
     return blk
 
 # we assume that the force is printed ...
-def get_frames(fname, begin = 0, step = 1, ml = False):
+def get_frames(fname, begin = 0, step = 1, ml = False, convergence_check=True):
     fp = open(fname)
     blk = get_outcar_block(fp)
 
@@ -66,22 +67,29 @@ def get_frames(fname, begin = 0, step = 1, ml = False):
     all_virials = []    
 
     cc = 0
+    rec_failed = []
     while len(blk) > 0 :
         if cc >= begin and (cc - begin) % step == 0 :
             coord, cell, energy, force, virial, is_converge = analyze_block(blk, ntot, nelm, ml)
-            if is_converge : 
-                if len(coord) == 0:
-                    break
+            if len(coord) == 0:
+                break
+            if is_converge or not convergence_check: 
                 all_coords.append(coord)
                 all_cells.append(cell)
                 all_energies.append(energy)
                 all_forces.append(force)
                 if virial is not None :
                     all_virials.append(virial)
+            if not is_converge:
+                rec_failed.append(cc+1)
 
         blk = get_outcar_block(fp, ml)
         cc += 1
-
+    
+    if len(rec_failed) > 0 :
+        prt = "so they are not collected." if convergence_check else "but they are still collected due to the requirement for ignoring convergence checks."
+        warnings.warn(f"The following structures were unconverged: {rec_failed}; "+prt)
+        
     if len(all_virials) == 0 :
         all_virials = None
     else :
@@ -101,8 +109,8 @@ def analyze_block(lines, ntot, nelm, ml = False):
     #select different searching tokens based on the ml label
     energy_token = ['free  energy   TOTEN', 'free  energy ML TOTEN']
     energy_index = [4, 5]
-    viral_token = ['FORCE on cell =-STRESS in cart. coord.  units', 'ML FORCE']
-    viral_index = [14, 4]
+    virial_token = ['FORCE on cell =-STRESS in cart. coord.  units', 'ML FORCE']
+    virial_index = [14, 4]
     cell_token = ['VOLUME and BASIS', 'ML FORCE']
     cell_index = [5, 12]
     ml_index = int(ml)
@@ -121,8 +129,12 @@ def analyze_block(lines, ntot, nelm, ml = False):
                 tmp_l = lines[idx+cell_index[ml_index]+dd]
                 cell.append([float(ss) 
                              for ss in tmp_l.replace('-',' -').split()[0:3]])
-        elif viral_token[ml_index] in ii:
-            tmp_v = [float(ss) for ss in lines[idx+viral_index[ml_index]].split()[2:8]]
+        elif virial_token[ml_index] in ii:
+            in_kB_index = virial_index[ml_index]
+            while idx+in_kB_index < len(lines) and (not lines[idx+in_kB_index].split()[0:2] == ["in", "kB"]) :
+                in_kB_index += 1
+            assert(idx+in_kB_index < len(lines)),'ERROR: "in kB" is not found in OUTCAR. Unable to extract virial.'
+            tmp_v = [float(ss) for ss in lines[idx+in_kB_index].split()[2:8]]
             virial = np.zeros([3,3])
             virial[0][0] = tmp_v[0]
             virial[1][1] = tmp_v[1]
