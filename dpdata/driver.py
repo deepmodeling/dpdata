@@ -3,8 +3,6 @@ from typing import Callable, List, Union, TYPE_CHECKING
 from .plugin import Plugin
 from abc import ABC, abstractmethod
 
-import dpdata
-
 if TYPE_CHECKING:
     import ase
 
