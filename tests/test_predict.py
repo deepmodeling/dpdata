@@ -98,8 +98,9 @@ class TestMinimize(unittest.TestCase, CompLabeledSys, IsPBC):
         ori_sys = dpdata.LabeledSystem('poscars/deepmd.h2o.md', 
                                         fmt = 'deepmd/raw', 
                                         type_map = ['O', 'H'])
-        self.system_1 = ori_sys.predict(driver="zero")
-        self.system_2 = ori_sys.minimize(driver="zero")
+        zero_driver = ZeroDriver()
+        self.system_1 = ori_sys.predict(driver=zero_driver)
+        self.system_2 = ori_sys.minimize(driver=zero_driver, minimizer="ase")
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -113,8 +114,9 @@ class TestMinimizeMultiSystems(unittest.TestCase, CompLabeledSys, IsPBC):
                                         fmt = 'deepmd/raw', 
                                         type_map = ['O', 'H'])
         multi_sys = dpdata.MultiSystems(ori_sys)
-        self.system_1 = list(multi_sys.predict(driver="zero").systems.values())[0]
-        self.system_2 = list(multi_sys.minimize(driver="zero").systems.values())[0]
+        zero_driver = ZeroDriver()
+        self.system_1 = list(multi_sys.predict(driver=zero_driver).systems.values())[0]
+        self.system_2 = list(multi_sys.minimize(driver=zero_driver, minimizer="ase").systems.values())[0]
         self.places = 6
         self.e_places = 6
         self.f_places = 6

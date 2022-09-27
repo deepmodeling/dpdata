@@ -17,7 +17,7 @@ import dpdata
 import dpdata.plugins
 from dpdata.plugin import Plugin
 from dpdata.format import Format
-from dpdata.driver import Driver
+from dpdata.driver import Driver, Minimizer
 
 from dpdata.utils import (
     elements_index_map,
@@ -869,26 +869,26 @@ class System (MSONable) :
         data = driver.label(self.data.copy())
         return LabeledSystem(data=data)
 
-    def minimize(self, *args: Any, driver: Union[str, Driver], **kwargs: Any) -> "LabeledSystem":
+    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "LabeledSystem":
         """Minimize the geometry.
         
         Parameters
         ----------
         *args : iterable
-            Arguments passing to the driver
-        driver : str or Driver
-            The assigned driver
+            Arguments passing to the minimizer
+        minimizer : str or Minimizer
+            The assigned minimizer
         **kwargs : dict
-            Other arguments passing to the driver
+            Other arguments passing to the minimizer
 
         Returns
         -------
         labeled_sys : LabeledSystem
             A new labeled system.
         """
-        if not isinstance(driver, Driver):
-            driver = Driver.get_driver(driver)(*args, **kwargs)
-        data = driver.minimize(self.data.copy())
+        if not isinstance(minimizer, Minimizer):
+            minimizer = Minimizer.get_minimizer(minimizer)(*args, **kwargs)
+        data = minimizer.minimize(self.data.copy())
         return LabeledSystem(data=data)
 
     def pick_atom_idx(self, idx, nopbc=None):
@@ -1335,29 +1335,29 @@ class MultiSystems:
             new_multisystems.append(ss.predict(*args, driver=driver, **kwargs))
         return new_multisystems
 
-    def minimize(self, *args: Any, driver: Union[str, Driver], **kwargs: Any) -> "MultiSystems":
+    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "MultiSystems":
         """
-        Minimize geometry by a driver.
+        Minimize geometry by a minimizer.
 
         Parameters
         ----------
         *args : iterable
-            Arguments passing to the driver
-        driver : str or Driver
-            The assigned driver
+            Arguments passing to the minimizer
+        minimizer : str or Minimizer
+            The assigned minimizer
         **kwargs : dict
-            Other arguments passing to the driver
+            Other arguments passing to the minimizer
 
         Returns
         -------
         MultiSystems
             A new labeled MultiSystems.
         """
-        if not isinstance(driver, Driver):
-            driver = Driver.get_driver(driver)(*args, **kwargs)
+        if not isinstance(minimizer, Minimizer):
+            minimizer = Minimizer.get_minimizer(minimizer)(*args, **kwargs)
         new_multisystems = dpdata.MultiSystems(type_map=self.atom_names)
         for ss in self:
-            new_multisystems.append(ss.minimize(*args, driver=driver, **kwargs))
+            new_multisystems.append(ss.minimize(*args, minimizer=minimizer, **kwargs))
         return new_multisystems
     
     def pick_atom_idx(self, idx, nopbc=None):
