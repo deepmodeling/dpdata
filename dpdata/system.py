@@ -1352,6 +1352,14 @@ class MultiSystems:
         -------
         MultiSystems
             A new labeled MultiSystems.
+
+        Examples
+        --------
+        Minimize a system using ASE BFGS along with a DP driver:
+        >>> from dpdata.driver import Driver
+        >>> from ase.optimize import BFGS
+        >>> driver = driver.get_driver("dp")("some_model.pb")
+        >>> some_system.minimize(minimizer="ase", driver=driver, optimizer=BFGS, fmax=1e-5)
         """
         if not isinstance(minimizer, Minimizer):
             minimizer = Minimizer.get_minimizer(minimizer)(*args, **kwargs)
