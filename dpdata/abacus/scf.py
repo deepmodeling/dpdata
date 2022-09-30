@@ -104,15 +104,11 @@ def get_energy(outlines):
             Etot = float(line.split()[1]) # in eV
             break
     if not Etot:
-        not_converge = False
-        for line in outlines:
-            if "convergence has NOT been achieved!" in line:
-                not_converge = True
-                raise RuntimeError("convergence has NOT been achieved in scf!")
-                break
-        if not not_converge:
-            raise RuntimeError("Final total energy cannot be found in output. Unknown problem.")
-    return Etot
+       raise RuntimeError("Final total energy cannot be found in output. Unknown problem.")
+    for line in outlines:
+        if "convergence has NOT been achieved!" in line:
+            return Etot,False
+    return Etot,True
 
 def get_force (outlines, natoms):
     force = []
@@ -156,7 +152,15 @@ def get_frame (fname):
     celldm, cell = get_cell(geometry_inlines) 
     atom_names, natoms, types, coords = get_coords(celldm, cell, geometry_inlines, inlines) 
     
-    energy = get_energy(outlines) 
+    energy,converge = get_energy(outlines) 
+    if not converge:
+        return {'atom_names':atom_names,\
+                'atom_numbs':natoms,\
+                'atom_types':types,\
+                'cells':[],\
+                'coords':[],\
+                'energies':[],\
+                'forces':[]}
     force = get_force (outlines, natoms) 
     stress = get_stress(outlines) 
     if stress is not None:

@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import unittest
+import unittest,shutil
 from context import dpdata
 from dpdata.unit import LengthConversion
 
@@ -112,9 +112,30 @@ class TestABACUSSinglePointEnergy:
 class TestABACUSLabeledOutput(unittest.TestCase, TestABACUSSinglePointEnergy):
 
     def setUp(self):
+        shutil.copy('abacus.scf/INPUT.ok','abacus.scf/INPUT')
         self.system_ch4 = dpdata.LabeledSystem('abacus.scf',fmt='abacus/scf')
         # self.system_h2o = dpdata.LabeledSystem('qe.scf/02.out',fmt='qe/pw/scf')
         self.system_ch4_unlabeled = dpdata.System('abacus.scf/STRU.ch4', fmt='abacus/stru')
+    def tearDown(self):
+        if os.path.isfile("abacus.scf/INPUT"):
+            os.remove("abacus.scf/INPUT")
+
+
+class TestABACUSLabeledOutputFail(unittest.TestCase):
+
+    def setUp(self):
+        shutil.copy('abacus.scf/INPUT.fail','abacus.scf/INPUT')
+        self.system_ch4 = dpdata.LabeledSystem('abacus.scf',fmt='abacus/scf')
+        # self.system_h2o = dpdata.LabeledSystem('qe.scf/02.out',fmt='qe/pw/scf')
+        self.system_ch4_unlabeled = dpdata.System('abacus.scf/STRU.ch4', fmt='abacus/stru')
+    def tearDown(self):
+        if os.path.isfile("abacus.scf/INPUT"):
+            os.remove("abacus.scf/INPUT")
+    def test_return_zero(self):
+        self.assertEqual(len(self.system_ch4),0)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
