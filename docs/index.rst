@@ -13,6 +13,7 @@ Welcome to dpdata's documentation!
    cli
    formats
    api/api
+   credits
 
 .. mdinclude:: ../README.md
 

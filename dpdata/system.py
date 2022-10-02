@@ -6,7 +6,7 @@ import numpy as np
 import dpdata.md.pbc
 from copy import deepcopy
 from enum import Enum, unique
-from typing import Any, Tuple
+from typing import Any, Tuple, Union
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
@@ -17,7 +17,7 @@ import dpdata
 import dpdata.plugins
 from dpdata.plugin import Plugin
 from dpdata.format import Format
-from dpdata.driver import Driver
+from dpdata.driver import Driver, Minimizer
 
 from dpdata.utils import (
     elements_index_map,
@@ -123,7 +123,7 @@ class DataType:
                 elif isinstance(data, list):
                     if len(shape) and shape[0] != len(data):
                         raise DataError("Length of %s is %d, but expected %d" % (self.name,
-                                len(shape), shape[0]))
+                                len(data), shape[0]))
                 else:
                     raise RuntimeError("Unsupported type to check shape")
         elif self.required:
@@ -176,6 +176,7 @@ class System (MSONable) :
                   begin = 0,
                   step = 1,
                   data = None,
+                  convergence_check = True,
                   **kwargs) :
         """
         Constructor
@@ -192,14 +193,49 @@ class System (MSONable) :
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
+                - ``vasp/contcar``: vasp contcar
+                - ``vasp/string``: vasp string
+                - ``vasp/outcar``: vasp outcar
+                - ``vasp/xml``: vasp xml
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required. 
                 - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required.
-                - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required. 
+                - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required.
+                - ``abacus/stru``: abacus stru
+                - ``abacus/lcao/scf``: abacus lcao scf
+                - ``abacus/pw/scf``: abacus pw scf
+                - ``abacus/lcao/md``: abacus lcao md
+                - ``abacus/pw/md``: abacus pw md
+                - ``abacus/lcao/relax``: abacus lcao relax
+                - ``abacus/pw/relax``: abacus pw relax
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``pwmat/atom.config``: pwmat atom.config
+                - ``pwmat/movement``: pwmat movement
+                - ``pwmat/output``: pwmat output
+                - ``pwmat/mlmd``: pwmat mlmd
+                - ``pwmat/final.config``: pwmat final.config
+                - ``quip/gap/xyz_file``: quip gap xyz_file
+                - ``quip/gap/xyz``: quip gap xyz
+                - ``fhi_aims/output``: fhi_aims output
+                - ``fhi_aims/md``: fhi_aims md
+                - ``fhi_aims/scf``: fhi_aims scf
+                - ``pymatgen/structure``: pymatgen structure
+                - ``pymatgen/molecule``: pymatgen molecule
+                - ``pymatgen/computedstructureentry``: pymatgen computedstructureentry
+                - ``amber/md``: amber md
+                - ``sqm/out``: sqm out
+                - ``sqm/in``: sqm in
+                - ``ase/structure``: ase structure
+                - ``gaussian/log``: gaussian log
+                - ``gaussian/md``: gaussian md
+                - ``gaussian/gjf``: gaussian gjf
+                - ``deepmd/comp``: deepmd comp
+                - ``deepmd/hdf5``: deepmd hdf5
+                - ``gromacs/gro``: gromacs gro
+                - ``cp2k/aimd_output``: cp2k aimd_output
+                - ``cp2k/output``: cp2k output
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
@@ -208,7 +244,9 @@ class System (MSONable) :
         step : int
             The number of skipped frames when loading MD trajectory.
         data : dict
-             The raw data of System class.
+            The raw data of System class.
+        convergence_check : boolean
+            Whether to request a convergence check.
         """
         self.data = {}
         self.data['atom_numbs'] = []
@@ -224,7 +262,7 @@ class System (MSONable) :
             return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, convergence_check=convergence_check, **kwargs)
 
         if type_map is not None:
             self.apply_type_map(type_map)
@@ -331,7 +369,7 @@ class System (MSONable) :
         dumpfn(self.as_dict(),filename,indent=indent)
 
 
-    def map_atom_types(self,type_map=None):
+    def map_atom_types(self, type_map=None) -> np.ndarray:
         """
         Map the atom types of the system
 
@@ -346,7 +384,7 @@ class System (MSONable) :
 
         Returns
         -------
-        new_atom_types : list
+        new_atom_types : np.ndarray
             The mapped atom types
         """
         if isinstance(type_map,dict) or type_map is None:
@@ -366,7 +404,7 @@ class System (MSONable) :
         atom_types_list=[]
         for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
             atom_types_list.extend([name]*numb)
-        new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
+        new_atom_types = np.array([type_map[ii] for ii in atom_types_list], dtype=int)
 
         return new_atom_types
 
@@ -831,6 +869,28 @@ class System (MSONable) :
         data = driver.label(self.data.copy())
         return LabeledSystem(data=data)
 
+    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "LabeledSystem":
+        """Minimize the geometry.
+        
+        Parameters
+        ----------
+        *args : iterable
+            Arguments passing to the minimizer
+        minimizer : str or Minimizer
+            The assigned minimizer
+        **kwargs : dict
+            Other arguments passing to the minimizer
+
+        Returns
+        -------
+        labeled_sys : LabeledSystem
+            A new labeled system.
+        """
+        if not isinstance(minimizer, Minimizer):
+            minimizer = Minimizer.get_minimizer(minimizer)(*args, **kwargs)
+        data = minimizer.minimize(self.data.copy())
+        return LabeledSystem(data=data)
+
     def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
         
@@ -1270,9 +1330,42 @@ class MultiSystems:
         """
         if not isinstance(driver, Driver):
             driver = Driver.get_driver(driver)(*args, **kwargs)
-        new_multisystems = dpdata.MultiSystems()
+        new_multisystems = dpdata.MultiSystems(type_map=self.atom_names)
         for ss in self:
             new_multisystems.append(ss.predict(*args, driver=driver, **kwargs))
+        return new_multisystems
+
+    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "MultiSystems":
+        """
+        Minimize geometry by a minimizer.
+
+        Parameters
+        ----------
+        *args : iterable
+            Arguments passing to the minimizer
+        minimizer : str or Minimizer
+            The assigned minimizer
+        **kwargs : dict
+            Other arguments passing to the minimizer
+
+        Returns
+        -------
+        MultiSystems
+            A new labeled MultiSystems.
+
+        Examples
+        --------
+        Minimize a system using ASE BFGS along with a DP driver:
+        >>> from dpdata.driver import Driver
+        >>> from ase.optimize import BFGS
+        >>> driver = driver.get_driver("dp")("some_model.pb")
+        >>> some_system.minimize(minimizer="ase", driver=driver, optimizer=BFGS, fmax=1e-5)
+        """
+        if not isinstance(minimizer, Minimizer):
+            minimizer = Minimizer.get_minimizer(minimizer)(*args, **kwargs)
+        new_multisystems = dpdata.MultiSystems(type_map=self.atom_names)
+        for ss in self:
+            new_multisystems.append(ss.minimize(*args, minimizer=minimizer, **kwargs))
         return new_multisystems
     
     def pick_atom_idx(self, idx, nopbc=None):

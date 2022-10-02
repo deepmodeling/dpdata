@@ -147,3 +147,74 @@ class HybridDriver(Driver):
                 labeled_data['energies'] += lb_data ['energies']
                 labeled_data['forces'] += lb_data ['forces']
         return labeled_data
+
+
+class Minimizer(ABC):
+    """The base class for a minimizer plugin. A minimizer can
+    minimize geometry.
+    """
+    __MinimizerPlugin = Plugin()
+
+    @staticmethod
+    def register(key: str) -> Callable:
+        """Register a minimizer plugin. Used as decorators.
+        
+        Parameter
+        ---------
+        key: str
+            key of the plugin.
+        
+        Returns
+        -------
+        Callable
+            decorator of a class
+
+        Examples
+        --------
+        >>> @Minimizer.register("some_minimizer")
+        ... class SomeMinimizer(Minimizer):
+        ...     pass
+        """
+        return Minimizer.__MinimizerPlugin.register(key)
+
+    @staticmethod
+    def get_minimizer(key: str) -> "Minimizer":
+        """Get a minimizer plugin.
+        
+        Parameter
+        ---------
+        key: str
+            key of the plugin.
+        
+        Returns
+        -------
+        Minimizer
+            the specific minimizer class
+        
+        Raises
+        ------
+        RuntimeError
+            if the requested minimizer is not implemented
+        """
+        try:
+            return Minimizer.__MinimizerPlugin.plugins[key]
+        except KeyError as e:
+            raise RuntimeError('Unknown minimizer: ' + key) from e
+
+    def __init__(self, *args, **kwargs) -> None:
+        """Setup the minimizer."""
+
+    @abstractmethod
+    def minimize(self, data: dict) -> dict:
+        """Minimize the geometry.
+
+        Parameters
+        ----------
+        data : dict
+            data with coordinates and atom types
+        
+        Returns
+        -------
+        dict
+            labeled data with minimized coordinates, energies, and forces
+        """

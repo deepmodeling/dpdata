@@ -68,6 +68,7 @@ def get_coords_from_log(loglines,natoms):
             else:
                 cells.append(cells[-1])
 
+            coords[-1] = np.array(coords[-1])
             if direct_coord:
                 coords[-1] = coords[-1].dot(cells[-1])
 
