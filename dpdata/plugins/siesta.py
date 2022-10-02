@@ -34,7 +34,7 @@ class SiestaOutputFormat(Format):
 
 @Format.register("siesta/aimd_output")
 @Format.register_from("from_siesta_aiMD_output")
-class SiestaOutputFormat(Format):
+class SiestaAIMDOutputFormat(Format):
     def from_system(self, file_name, **kwargs):
         data = {}
         data['atom_names'], \

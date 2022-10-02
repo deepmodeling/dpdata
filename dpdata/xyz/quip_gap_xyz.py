@@ -129,5 +129,5 @@ class QuipGapxyzSystems(object):
         info_dict['forces'] = np.array([force_array]).astype('float32')
         if virials is not None:
             info_dict['virials'] = virials
-        info_dict['orig'] = [0,0,0]
+        info_dict['orig'] = np.zeros(3)
         return info_dict

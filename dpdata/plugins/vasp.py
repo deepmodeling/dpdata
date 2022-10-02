@@ -3,7 +3,7 @@ import dpdata.vasp.xml
 import dpdata.vasp.outcar
 import numpy as np
 from dpdata.format import Format
-
+from dpdata.utils import sort_atom_names, uniq_atom_names
 
 @Format.register("poscar")
 @Format.register("contcar")
@@ -14,7 +14,9 @@ class VASPPoscarFormat(Format):
     def from_system(self, file_name, **kwargs):
         with open(file_name) as fp:
             lines = [line.rstrip('\n') for line in fp]
-        return dpdata.vasp.poscar.to_system_data(lines)
+        data = dpdata.vasp.poscar.to_system_data(lines)
+        data = uniq_atom_names(data)
+        return data
 
     def to_system(self, data, file_name, frame_idx=0, **kwargs):
         """
@@ -54,6 +56,7 @@ class VASPOutcarFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
         data = {}
+        ml = kwargs.get("ml", False)
         data['atom_names'], \
             data['atom_numbs'], \
             data['atom_types'], \
@@ -62,7 +65,7 @@ class VASPOutcarFormat(Format):
             data['energies'], \
             data['forces'], \
             tmp_virial, \
-            = dpdata.vasp.outcar.get_frames(file_name, begin=begin, step=step)
+            = dpdata.vasp.outcar.get_frames(file_name, begin=begin, step=step, ml=ml)
         if tmp_virial is not None:
             data['virials'] = tmp_virial
         # scale virial to the unit of eV
@@ -71,6 +74,7 @@ class VASPOutcarFormat(Format):
             for ii in range(data['cells'].shape[0]):
                 vol = np.linalg.det(np.reshape(data['cells'][ii], [3, 3]))
                 data['virials'][ii] *= v_pref * vol
+        data = uniq_atom_names(data)
         return data
 
 
@@ -102,4 +106,6 @@ class VASPXMLFormat(Format):
         for ii in range(data['cells'].shape[0]):
             vol = np.linalg.det(np.reshape(data['cells'][ii], [3, 3]))
             data['virials'][ii] *= v_pref * vol
+        data = uniq_atom_names(data)
         return data
+        

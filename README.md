@@ -82,6 +82,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | Gromacs | gro         | True         | False   | System        | 'gromacs/gro'        |
 | ABACUS  | STRU        | False        | True    | LabeledSystem | 'abacus/scf'         |
 | ABACUS  | cif         | True         | True    | LabeledSystem | 'abacus/md'          |
+| ABACUS  | STRU        | True         | True    | LabeledSystem | 'abacus/relax'       |
 | ase     | structure   | True         | True    | MultiSystems  | 'ase/structure'      |
 
 

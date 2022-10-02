@@ -35,7 +35,7 @@ def check_unit(unit):
                 raise RuntimeError(f"Invaild unit: {unit}")
             if lunit not in lconvs.keys():
                 raise RuntimeError(f"Invalid unit: {unit}")
-        except:
+        except Exception:
             raise RuntimeError(f"Invalid unit: {unit}")
 
 class Conversion(ABC):
@@ -84,7 +84,7 @@ class EnergyConversion(Conversion):
 
         Examples
         --------
-        >>> conv = LengthConversion("eV", "kcal_mol")
+        >>> conv = EnergyConversion("eV", "kcal_mol")
         >>> conv.value()
         23.06054783061903
         """

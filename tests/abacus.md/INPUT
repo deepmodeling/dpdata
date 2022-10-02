@@ -1,30 +1,43 @@
 INPUT_PARAMETERS
-#Parameters	(General)
-suffix          autotest
-pseudo_dir		./
-ntype			1	
-nbands			8
-calculation     md
-read_file_dir   ./
+#Parameters (1.General)
+suffix                  abacus
+calculation             md
+ntype                   2
+nbands                  6
+symmetry                0
 
-#Parameters (Accuracy)
-ecutwfc			20
-niter			20
+#Parameters (2.Iteration)
+ecutwfc                 50
+scf_thr                     1e-2
+scf_nmax                   50
 
-basis_type		pw
-nstep           21 # number of MD/relaxation steps
+#Parameters (3.Basis)
+basis_type              lcao 
+gamma_only              1
 
-stress          1
-stress_thr      1e-6
-force           1
-force_thr_ev    1.0e-3
+#Parameters (4.Smearing)
+smearing_method                gaussian
+smearing_sigma                   0.02
 
-ks_solver       cg
-mixing_type     pulay
-mixing_beta     0.7
+#Parameters (5.Mixing)
+mixing_type             pulay
+mixing_beta             0.4
 
-md_mdtype        1 # 0 for NVE; 1 for NVT with Nose Hoover; 2 for NVT with velocity rescaling
-md_tfirst        10 # temperature, unit: K
-md_dt            1 # unit: fs
-md_rstmd         0 # 1 for restart
-md_dumpmdfred    5 
+#Parameters (6.Deepks)
+#cal_force			1
+#test_force			1
+#deepks_out_labels          1
+#deepks_descriptor_lmax			2
+#deepks_scf	1
+#deepks_model	model.ptg
+
+md_type          1
+md_dt              0.1
+md_tfirst          300
+md_tfreq           0.1
+md_restart           0
+md_dumpfreq          5
+md_nstep               20
+out_level           m
+
+cal_stress 1

@@ -3,6 +3,7 @@ import numpy as np
 import unittest
 from context import dpdata
 from comp_sys import CompLabeledSys, IsPBC
+from dpdata.utils import uniq_atom_names
 
 class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
@@ -51,6 +52,49 @@ class TestVaspOUTCARVdw(unittest.TestCase, CompLabeledSys, IsPBC):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 6
+
+
+class TestDuplicatedAtomNames(unittest.TestCase):
+    def test(self):
+        system = dpdata.LabeledSystem('poscars/6362_OUTCAR', fmt = 'vasp/outcar')
+        expected_types = [0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1]
+        self.assertEqual(list(system['atom_types']), expected_types)
+        self.assertEqual(system['atom_names'], ['B', 'O'])
+        self.assertEqual(system['atom_numbs'], [8, 6])
+
+    def test_type_map(self):
+        system = dpdata.LabeledSystem('poscars/6362_OUTCAR', fmt = 'vasp/outcar', type_map = ['O', 'B'])
+        expected_types = [1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0]
+        self.assertEqual(list(system['atom_types']), expected_types)
+        self.assertEqual(system['atom_names'], ['O', 'B'])
+        self.assertEqual(system['atom_numbs'], [6, 8])
+
+
+class TestUniqAtomNames(unittest.TestCase):
+    def test(self):
+        data = {}
+        data['atom_names'] = ['O', 'H', 'O', 'H']
+        data['atom_types'] = np.array([0, 1, 2, 3, 3, 2, 1], dtype=int)
+        
+        data = uniq_atom_names(data)
+        self.assertEqual(list(data['atom_types']),
+                         [0, 1, 0, 1, 1, 0, 1])
+        self.assertEqual(list(data['atom_names']),
+                         ['O', 'H'])
+        self.assertEqual(list(data['atom_numbs']),
+                         [3, 4])
+
+class TestVaspOUTCARML(unittest.TestCase):
+    def test(self):
+        system1 = dpdata.LabeledSystem('poscars/OUTCAR.ch4.ml', fmt = 'vasp/outcar',ml=True)
+        system2 = dpdata.LabeledSystem('poscars/OUTCAR.ch4.ml', fmt = 'vasp/outcar',ml=False)
+        expected_types = [0, 0, 0, 0, 1]
+        self.assertEqual(list(system1['atom_types']), expected_types)
+        self.assertEqual(system1['atom_names'], ['H', 'C'])
+        self.assertEqual(len(system1['energies']), 10)
+        self.assertEqual(list(system2['atom_types']), expected_types)
+        self.assertEqual(system2['atom_names'], ['H', 'C'])
+        self.assertEqual(len(system2['energies']), 4)
 
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@
 #
 import os
 import sys
+import subprocess as sp
 from datetime import date
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -21,7 +22,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'dpdata'
-copyright = '2019-%d, Deep Modeling ' % date.today().year
+copyright = '2019-%d, DeepModeling ' % date.today().year
 author = 'Han Wang'
 
 # The short X.Y version
@@ -40,12 +41,14 @@ release = '0.0.0-rc'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'deepmodeling_sphinx',
     'sphinx_rtd_theme',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'numpydoc',
     'm2r2',
+    'sphinxarg.ext',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -170,11 +173,18 @@ def run_apidoc(_):
     module = os.path.join(cur_dir, "..", "dpdata")
     main(['-M', '--tocfile', 'api', '-H', 'API documentation', '-o', os.path.join(cur_dir, "api"), module, '--force'])
 
+def run_formats(_):
+    sp.check_output([sys.executable, "make_format.py"])
+
 def setup(app):
     app.connect('builder-inited', run_apidoc)
+    app.connect('builder-inited', run_formats)
 
 
 intersphinx_mapping = {
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "python": ("https://docs.python.org/", None),
+    "ase": ("https://wiki.fysik.dtu.dk/ase/", None),
+    "monty": ("https://guide.materialsvirtuallab.org/monty/", None),
+    "h5py": ("https://docs.h5py.org/en/stable/", None),
 }

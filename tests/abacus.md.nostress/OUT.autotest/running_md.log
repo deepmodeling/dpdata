@@ -1,0 +1,527 @@
+                                                                                     
+                             WELCOME TO ABACUS                                       
+                                                                                     
+               'Atomic-orbital Based Ab-initio Computation at UStc'                  
+                                                                                     
+                     Website: http://abacus.ustc.edu.cn/                             
+                                                                                     
+    Version: Parallel, in development
+    Processor Number is 1
+    Start Time is Thu Jun  9 13:13:06 2022
+                                                                                     
+ ------------------------------------------------------------------------------------
+
+ READING GENERAL INFORMATION
+                           global_out_dir = OUT.autotest/
+                           global_in_card = INPUT
+                               pseudo_dir = 
+                              orbital_dir = 
+                              pseudo_type = auto
+                                    DRANK = 1
+                                    DSIZE = 1
+                                   DCOLOR = 1
+                                    GRANK = 1
+                                    GSIZE = 1
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading atom information in unitcell:                              |
+ | From the input file and the structure file we know the number of   |
+ | different elments in this unitcell, then we list the detail        |
+ | information for each element, especially the zeta and polar atomic |
+ | orbital number for each element. The total atom number is counted. |
+ | We calculate the nearest atom distance for each atom and show the  |
+ | Cartesian and Direct coordinates for each atom. We list the file   |
+ | address for atomic orbitals. The volume and the lattice vectors    |
+ | in real and reciprocal space is also shown.                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+ READING UNITCELL INFORMATION
+                                    ntype = 1
+                 atom label for species 1 = Si
+                  lattice constant (Bohr) = 10.2
+              lattice constant (Angstrom) = 5.39761
+
+ READING ATOM TYPE 1
+                               atom label = Si
+                      L=0, number of zeta = 1
+                      L=1, number of zeta = 1
+                      L=2, number of zeta = 1
+             number of atom for this type = 2
+                      start magnetization = FALSE
+                      start magnetization = FALSE
+
+                        TOTAL ATOM NUMBER = 2
+
+ CARTESIAN COORDINATES ( UNIT = 10.2 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+     tauc_Si1                   0                   0                   0                   0                  -0                   0                   0
+     tauc_Si2               0.241               0.255      0.250999999999                   0                   0                  -0                  -0
+
+
+                          Volume (Bohr^3) = 265.302
+                             Volume (A^3) = 39.3136533177
+
+ Lattice vectors: (Cartesian coordinate: in unit of a_0)
+                 +0.5                +0.5                  +0
+                 +0.5                  +0                +0.5
+                   +0                +0.5                +0.5
+ Reciprocal vectors: (Cartesian coordinate: in unit of 2 pi/a_0)
+                   +1                  +1                  -1
+                   +1                  -1                  +1
+                   -1                  +1                  +1
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading pseudopotentials files:                                    |
+ | The pseudopotential file is in UPF format. The 'NC' indicates that |
+ | the type of pseudopotential is 'norm conserving'. Functional of    |
+ | exchange and correlation is decided by 4 given parameters in UPF   |
+ | file.  We also read in the 'core correction' if there exists.      |
+ | Also we can read the valence electrons number and the maximal      |
+ | angular momentum used in this pseudopotential. We also read in the |
+ | trail wave function, trail atomic density and local-pseudopotential|
+ | on logrithmic grid. The non-local pseudopotential projector is also|
+ | read in if there is any.                                           |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+                PAO radial cut off (Bohr) = 15
+
+ Read in pseudopotential file is ../tools/PP_ORB/Si_ONCV_PBE-1.0.upf
+                     pseudopotential type = NC
+          exchange-correlation functional = PBE
+                 nonlocal core correction = 0
+                        valence electrons = 4
+                                     lmax = 1
+                           number of zeta = 0
+                     number of projectors = 4
+                           L of projector = 0
+                           L of projector = 0
+                           L of projector = 1
+                           L of projector = 1
+     initial pseudo atomic orbital number = 0
+                                   NLOCAL = 18
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves of charge/potential:                             |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT. The number of plane waves    |
+ | is 'npw' in each processor.                                        |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP THE PLANE WAVE BASIS
+ energy cutoff for charge/potential (unit:Ry) = 80
+ use input fft dimensions for wave functions.
+          [fft grid for charge/potential] = 24, 24, 24
+                      [fft grid division] = 1, 1, 1
+      [big fft grid for charge/potential] = 24, 24, 24
+                                     nbxx = 13824
+                                     nrxx = 13824
+
+ SETUP PLANE WAVES FOR CHARGE/POTENTIAL
+                    number of plane waves = 3143
+                         number of sticks = 283
+
+ PARALLEL PW FOR CHARGE/POTENTIAL
+     PROC   COLUMNS(POT)             PW
+        1            283           3143
+ --------------- sum -------------------
+        1            283           3143
+                            number of |g| = 72
+                                  max |g| = 208
+                                  min |g| = 0
+
+ SETUP THE ELECTRONS NUMBER
+            electron number of element Si = 4
+      total electron number of element Si = 8
+                           occupied bands = 4
+                                   NBANDS = 8
+ DONE : SETUP UNITCELL Time : 0.0560910534114 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup K-points                                                     |
+ | We setup the k-points according to input parameters.               |
+ | The reduced k-points are set according to symmetry operations.     |
+ | We treat the spin as another set of k-points.                      |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP K-POINTS
+                                    nspin = 1
+                   Input type of k points = Monkhorst-Pack(Gamma)
+                                   nkstot = 8
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0               0.125
+        2                 0.5                   0                   0               0.125
+        3                   0                 0.5                   0               0.125
+        4                 0.5                 0.5                   0               0.125
+        5                   0                   0                 0.5               0.125
+        6                 0.5                   0                 0.5               0.125
+        7                   0                 0.5                 0.5               0.125
+        8                 0.5                 0.5                 0.5               0.125
+
+           k-point number in this process = 8
+       minimum distributed K point number = 8
+
+  KPOINTS         CARTESIAN_X         CARTESIAN_Y         CARTESIAN_Z              WEIGHT
+        1                   0                   0                   0                0.25
+        2                 0.5                 0.5                -0.5                0.25
+        3                 0.5                -0.5                 0.5                0.25
+        4                   1                   0                   0                0.25
+        5                -0.5                 0.5                 0.5                0.25
+        6                   0                   1                   0                0.25
+        7                   0                   0                   1                0.25
+        8                 0.5                 0.5                 0.5                0.25
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0                0.25
+        2                 0.5                   0                   0                0.25
+        3                   0                 0.5                   0                0.25
+        4                 0.5                 0.5                   0                0.25
+        5                   0                   0                 0.5                0.25
+        6                 0.5                   0                 0.5                0.25
+        7                   0                 0.5                 0.5                0.25
+        8                 0.5                 0.5                 0.5                0.25
+ DONE : INIT K-POINTS Time : 0.0567067414522 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves of wave functions:                               |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT. The number of plane wave of  |
+ | each k-point is 'npwk[ik]' in each processor                       |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP PLANE WAVES FOR WAVE FUNCTIONS
+     energy cutoff for wavefunc (unit:Ry) = 20
+            [fft grid for wave functions] = 24, 24, 24
+                    number of plane waves = 609
+                         number of sticks = 91
+
+ PARALLEL PW FOR WAVE FUNCTIONS
+     PROC   COLUMNS(POT)             PW
+        1             91            609
+ --------------- sum -------------------
+        1             91            609
+ DONE : INIT PLANEWAVE Time : 0.0586343016475 (SEC)
+
+ DONE : INIT CHARGE Time : 0.0770398713648 (SEC)
+
+                                     npwx = 411
+
+ SETUP NONLOCAL PSEUDOPOTENTIALS IN PLANE WAVE BASIS
+ Si non-local projectors:
+ projector 1 L=0
+ projector 2 L=0
+ projector 3 L=1
+ projector 4 L=1
+      TOTAL NUMBER OF NONLOCAL PROJECTORS = 16
+ DONE : LOCAL POTENTIAL Time : 0.0790216308087 (SEC)
+
+
+ Init Non-Local PseudoPotential table : 
+ Init Non-Local-Pseudopotential done.
+ DONE : NON-LOCAL POTENTIAL Time : 0.0908586103469 (SEC)
+
+                                 init_chg = atomic
+ DONE : INIT POTENTIAL Time : 0.119327 (SEC)
+
+
+ Make real space PAO into reciprocal space.
+       max mesh points in Pseudopotential = 601
+     dq(describe PAO in reciprocal space) = 0.01
+                                    max q = 542
+
+ number of pseudo atomic orbitals for Si is 0
+ DONE : INIT BASIS Time : 0.188532 (SEC)
+
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 0
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   1--------------------------------
+
+ Density error is 0.108050977159
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   2--------------------------------
+
+ Density error is 0.00433478793135
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   3--------------------------------
+
+ Density error is 0.000134739737693
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   4--------------------------------
+
+ Density error is 1.46497067882e-05
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   5--------------------------------
+
+ Density error is 5.9940961597e-07
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   6--------------------------------
+
+ Density error is 4.85331534904e-08
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   7--------------------------------
+
+ Density error is 2.82302502273e-09
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   8--------------------------------
+
+ Density error is 6.09165139828e-11
+
+ charge density convergence is achieved
+ final etot is -211.771846025 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+      Si1    -0.88536267    +0.50046739    +0.15023961
+      Si2    +0.88536267    -0.50046739    -0.15023961
+
+
+ ------------------------------------------------------------------------------------------------
+ Energy              Potential           Kinetic             Temperature         
+ -7.782469           -7.782469           0                   0                   
+ ------------------------------------------------------------------------------------------------
+
+
+ LARGEST GRAD (eV/A)  : 0.88536273
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 1
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=2     ELEC=1   --------------------------------
+ Notice: Threshold on eigenvalues was too large.
+ hsover_error=0.08 > DRHO=9.38864e-06
+ Origin diag_ethr = 0.01
+ New    diag_ethr = 1.17358e-07
+
+ Density error is 2.53667694344e-06
+
+ PW ALGORITHM --------------- ION=2     ELEC=2   --------------------------------
+
+ Density error is 2.28596275709e-07
+
+ PW ALGORITHM --------------- ION=2     ELEC=3   --------------------------------
+
+ Density error is 1.09611454258e-09
+
+ PW ALGORITHM --------------- ION=2     ELEC=4   --------------------------------
+
+ Density error is 1.16027364188e-10
+
+ charge density convergence is achieved
+ final etot is -211.781119663 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.72880473    +0.40857872    +0.10704247    
+ Si2     +0.72880473    -0.40857872    -0.10704247    
+
+
+ ------------------------------------------------------------------------------------------------
+ Energy              Potential           Kinetic             Temperature         
+ -7.7824997          -7.7828098          0.0003100856        65.278113           
+ ------------------------------------------------------------------------------------------------
+
+
+ LARGEST GRAD (eV/A)  : 0.72880478
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 2
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=3     ELEC=1   --------------------------------
+ Notice: Threshold on eigenvalues was too large.
+ hsover_error=0.08 > DRHO=5.29133e-05
+ Origin diag_ethr = 0.01
+ New    diag_ethr = 6.61416e-07
+
+ Density error is 1.76079784755e-05
+
+ PW ALGORITHM --------------- ION=3     ELEC=2   --------------------------------
+
+ Density error is 1.54869752683e-06
+
+ PW ALGORITHM --------------- ION=3     ELEC=3   --------------------------------
+
+ Density error is 5.21746321277e-09
+
+ PW ALGORITHM --------------- ION=3     ELEC=4   --------------------------------
+
+ Density error is 6.06706894933e-10
+
+ charge density convergence is achieved
+ final etot is -211.796816626 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     -0.31603885    +0.17161348    +0.01480266    
+ Si2     +0.31603885    -0.17161348    -0.01480266    
+
+
+ ------------------------------------------------------------------------------------------------
+ Energy              Potential           Kinetic             Temperature         
+ -7.7825506          -7.7833867          0.00083609165       176.01103           
+ ------------------------------------------------------------------------------------------------
+
+
+ LARGEST GRAD (eV/A)  : 0.31603887
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 3
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=4     ELEC=1   --------------------------------
+ Notice: Threshold on eigenvalues was too large.
+ hsover_error=0.08 > DRHO=8.44133e-05
+ Origin diag_ethr = 0.01
+ New    diag_ethr = 1.05517e-06
+
+ Density error is 2.78326201367e-05
+
+ PW ALGORITHM --------------- ION=4     ELEC=2   --------------------------------
+
+ Density error is 2.45782918146e-06
+
+ PW ALGORITHM --------------- ION=4     ELEC=3   --------------------------------
+
+ Density error is 7.86601506443e-09
+
+ PW ALGORITHM --------------- ION=4     ELEC=4   --------------------------------
+
+ Density error is 9.90158000398e-10
+
+ charge density convergence is achieved
+ final etot is -211.798755244 eV
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ atom    x              y              z              
+ Si1     +0.20432445    -0.11739811    -0.05295552    
+ Si2     -0.20432445    +0.11739811    +0.05295552    
+
+
+ ------------------------------------------------------------------------------------------------
+ Energy              Potential           Kinetic             Temperature         
+ -7.7825562          -7.7834579          0.00090165915       189.81406           
+ ------------------------------------------------------------------------------------------------
+
+
+ LARGEST GRAD (eV/A)  : 0.20432447
+
+
+ --------------------------------------------
+ !FINAL_ETOT_IS -211.7987552435292 eV
+ --------------------------------------------
+
+
+
+
+
+
+  |CLASS_NAME---------|NAME---------------|TIME(Sec)-----|CALLS----|AVG------|PER%-------
+                       total               2.7171         17        0.16      1e+02     %
+   Run_pw              plane_wave_line     2.7017         1         2.7       99        %
+   PW_Basis            gathers_scatterp    1.3404         3580      0.00037   49        %
+   Potential           v_of_rho            0.25409        24        0.011     9.4       %
+   XC_Functional       v_xc                0.27163        28        0.0097    10        %
+   PW_Basis            gatherp_scatters    1.3094         3249      0.0004    48        %
+   Hamilt_PW           h_psi               1.7435         5100      0.00034   64        %
+   Hamilt_PW           vloc                1.563          5100      0.00031   58        %
+   PW_Basis_K          recip2real          0.78296        7012      0.00011   29        %
+   PW_Basis_K          real2recip          1.3247         3138      0.00042   49        %
+   Hamilt_PW           vnl                 0.14363        5100      2.8e-05   5.3       %
+   Run_MD_PW           md_cells_pw         2.5221         1         2.5       93        %
+   Run_MD_PW           md_ions_pw          2.5221         1         2.5       93        %
+   FIRE                setup               0.94517        1         0.95      35        %
+   MD_func             force_stress        1.5034         2         0.75      55        %
+   ESolver_KS_PW       Run                 2.3747         4         0.59      87        %
+   DiagoCG             diag                1.4984         184       0.0081    55        %
+   DiagoIterAssist     diagH_subspace      0.36157        160       0.0023    13        %
+   MD_func             md_force_stress     1.0426         2         0.52      38        %
+ ----------------------------------------------------------------------------------------
+
+ CLASS_NAME---------|NAME---------------|MEMORY(MB)--------
+                                         4.003
+ ----------------------------------------------------------
+
+ Start  Time  : Thu Jun  9 13:13:06 2022
+ Finish Time  : Thu Jun  9 13:13:08 2022
+ Total  Time  : 0 h 0 mins 2 secs 

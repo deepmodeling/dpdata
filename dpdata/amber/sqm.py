@@ -5,7 +5,6 @@ from dpdata.unit import EnergyConversion
 kcal2ev = EnergyConversion("kcal_mol", "eV").value()
 
 START = 0
-READ_ENERGY = 1
 READ_CHARGE = 2
 READ_COORDS_START = 3
 READ_COORDS = 6
@@ -25,19 +24,19 @@ def parse_sqm_out(fname):
         flag = START
         for line in f:
             if line.startswith(" Total SCF energy"):
-                flag = READ_ENERGY
+                energy = float(line.strip().split()[-2])
+                energies = [energy]
             elif line.startswith("  Atom    Element       Mulliken Charge"):
                 flag = READ_CHARGE
+                charges = []
             elif line.startswith(" Total Mulliken Charge"):
                 flag = START
             elif line.startswith(" Final Structure"):
                 flag = READ_COORDS_START
+                coords = []
             elif line.startswith("QMMM: Forces on QM atoms"):
                 flag = READ_FORCES
-            elif flag == READ_ENERGY:
-                energy = float(line.strip().split()[-2])
-                energies.append(energy)
-                flag = START
+                forces = []
             elif flag == READ_CHARGE:
                 ls = line.strip().split()
                 atom_symbols.append(ls[-2])
@@ -50,6 +49,9 @@ def parse_sqm_out(fname):
                     flag = START
             elif flag == READ_FORCES:
                 ll = line.strip()
+                if not ll.startswith("QMMM: Atm "):
+                    flag = START
+                    continue
                 forces.append([float(ll[-60:-40]), float(ll[-40:-20]), float(ll[-20:])])
                 if len(forces) == len(charges):
                     flag = START
@@ -65,7 +67,7 @@ def parse_sqm_out(fname):
     data['coords'] = np.array([coords])
 
     energies = np.array(energies)
-    forces = np.array([forces], dtype=np.float32) * kcal2ev
+    forces = -np.array([forces], dtype=np.float64) * kcal2ev
     if len(forces) > 0:
         data['energies'] = energies
         data['forces'] = forces
@@ -92,12 +94,12 @@ def make_sqm_in(data, fname=None, frame_idx=0, **kwargs):
     ret += "     verbosity=4\n"
     ret += " /\n"
     for ii in range(len(data['atom_types'])):
-        ret += "{:>4s}{:>6s}{:>14s}{:>14s}{:>14s}\n".format(
+        ret += "{:>4s}{:>6s}{:>16s}{:>16s}{:>16s}\n".format(
             str(atomic_numbers[ii]),
             str(symbols[ii]),
-            f"{data['coords'][frame_idx][ii, 0]:.4f}",
-            f"{data['coords'][frame_idx][ii, 1]:.4f}",
-            f"{data['coords'][frame_idx][ii, 2]:.4f}"
+            f"{data['coords'][frame_idx][ii, 0]:.6f}",
+            f"{data['coords'][frame_idx][ii, 1]:.6f}",
+            f"{data['coords'][frame_idx][ii, 2]:.6f}"
         )
     if fname is not None:
         with open(fname, 'w') as fp:

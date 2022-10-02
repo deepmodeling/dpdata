@@ -6,7 +6,7 @@ from comp_sys import CompSys, IsPBC
 try:
    from pymatgen import  Structure
    exist_module=True
-except:
+except Exception:
    exist_module=False
 
 @unittest.skipIf(not exist_module,"skip pymatgen")

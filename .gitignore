@@ -22,3 +22,6 @@ _version.py
 !tests/cp2k/aimd/cp2k.log
 !tests/cp2k/restart_aimd/ch4.log
 __pycache__
+docs/_build
+docs/formats.csv
+docs/api/
