@@ -14,6 +14,6 @@ for module_file in Path(__file__).parent.glob("*.py"):
         importlib.import_module(module_name, PACKAGE_BASE)
 
 # https://setuptools.readthedocs.io/en/latest/userguide/entry_point.html
-eps = metadata.entry_points().get('dpdata.plugins', [])
+eps = metadata.entry_points(group='dpdata.plugins')
 for ep in eps:
     plugin = ep.load()
