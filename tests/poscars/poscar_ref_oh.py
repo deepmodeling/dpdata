@@ -27,8 +27,12 @@ class TestPOSCARoh :
                                        places = 6,
                                        msg = 'cell[%d][%d] failed' % (ii,jj))
 
-    def test_frame(self): 
-        ovito_posis = np.array([[0, 0, 0],
+    def test_frame(self):
+        if hasattr(self, "unwrap") and self.unwrap is True:
+            ovito_posis = np.array([[5.0739861, 2.7916155, 2.2254033],
+                [6.3361717, 3.4934183, 2.7767918]])
+        else:
+            ovito_posis = np.array([[0, 0, 0],
                                 [1.2621856, 0.7018028, 0.5513885]])
         for ii in range(2) :
             for jj in range(3) :

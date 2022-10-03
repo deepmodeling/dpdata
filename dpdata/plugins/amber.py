@@ -5,7 +5,7 @@ import subprocess as sp
 import dpdata.amber.md
 import dpdata.amber.sqm
 from dpdata.format import Format
-from dpdata.driver import Driver
+from dpdata.driver import Driver, Minimizer
 
 
 @Format.register("amber/md")
@@ -122,3 +122,21 @@ class SQMDriver(Driver):
                             ) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="sqm/out"))
         return labeled_system.data
+
+
+@Minimizer.register("sqm")
+class SQMMinimizer(Minimizer):
+    """SQM minimizer.
+    
+    Parameters
+    ----------
+    maxcyc : int, default=1000
+        maximun cycle to minimize
+    """
+    def __init__(self, maxcyc=1000, *args, **kwargs) -> None:
+        assert maxcyc > 0, "maxcyc should be more than 0 to minimize"
+        self.driver = SQMDriver(maxcyc=maxcyc, **kwargs)
+
+    def minimize(self, data: dict) -> dict:
+        # sqm has minimize feature
+        return self.driver.label(data)

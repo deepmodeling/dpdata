@@ -5,6 +5,11 @@ import numpy as np
 lib_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(lib_path)
 import lmp
+import warnings
+class UnwrapWarning(UserWarning):
+    pass
+warnings.simplefilter('once', UnwrapWarning)
+
 
 def _get_block (lines, key) :
     for idx in range(len(lines)) :
@@ -59,16 +64,17 @@ def get_coordtype_and_scalefactor(keys):
     key_su = ['xsu','ysu','zsu'] #scaled and unfolded,sf = lattice parameter
     lmp_coor_type = [key_pc,key_uc,key_s,key_su]
     sf = [0,0,1,1]
+    uw = [0,1,0,1]  # unwraped or not
     for k in range(4):
         if all(i in keys for i in lmp_coor_type[k]):
-            return lmp_coor_type[k],sf[k]
+            return lmp_coor_type[k], sf[k], uw[k]
 
-def safe_get_posi(lines,cell,orig=np.zeros(3)) :
+def safe_get_posi(lines,cell,orig=np.zeros(3), unwrap=False) :
     blk, head = _get_block(lines, 'ATOMS')
     keys = head.split()
     coord_tp_and_sf = get_coordtype_and_scalefactor(keys)
     assert coord_tp_and_sf is not None, 'Dump file does not contain atomic coordinates!'
-    coordtype, sf = coord_tp_and_sf
+    coordtype, sf, uw = coord_tp_and_sf
     id_idx = keys.index('id') - 2
     xidx = keys.index(coordtype[0])-2
     yidx = keys.index(coordtype[1])-2
@@ -81,8 +87,13 @@ def safe_get_posi(lines,cell,orig=np.zeros(3)) :
     posis.sort()
     posis = np.array(posis)[:,1:4]
     if not sf:
-        posis = (posis-orig)@np.linalg.inv(cell)# Convert to scaled coordinates for unscaled coordinates
-    return (posis%1)@cell # Convert scaled coordinates back to Cartesien coordinates 
+        posis = (posis - orig) @ np.linalg.inv(cell)  # Convert to scaled coordinates for unscaled coordinates
+    if uw and unwrap:
+        return posis @ cell  # convert scaled coordinates back to Cartesien coordinates unwrap at the periodic boundaries
+    else:
+        if uw and not unwrap:
+            warnings.warn(message='Your dump file contains unwrapped coordinates, but you did not specify unwrapping (unwrap = True). The default is wrapping at periodic boundaries (unwrap = False).\n',category=UnwrapWarning)
+        return (posis % 1) @ cell  # Convert scaled coordinates back to Cartesien coordinates with wraping at periodic boundary conditions
 
 def get_dumpbox(lines) :
     blk, h = _get_block(lines, 'BOX BOUNDS')
@@ -145,9 +156,9 @@ def load_file(fname, begin = 0, step = 1) :
                 cc += 1
             if cc >= begin and (cc - begin) % step == 0 :
                 buff.append(line)
-    
 
-def system_data(lines, type_map = None, type_idx_zero = True) :
+
+def system_data(lines, type_map = None, type_idx_zero = True, unwrap=False) :
     array_lines = split_traj(lines)
     lines = array_lines[0]
     system = {}
@@ -166,12 +177,12 @@ def system_data(lines, type_map = None, type_idx_zero = True) :
     system['cells'] = [np.array(cell)]
     natoms = sum(system['atom_numbs'])
     system['atom_types'] = get_atype(lines, type_idx_zero = type_idx_zero)
-    system['coords'] = [safe_get_posi(lines, cell, np.array(orig))]
+    system['coords'] = [safe_get_posi(lines, cell, np.array(orig), unwrap)]
     for ii in range(1, len(array_lines)) :
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
         system['cells'].append(cell)
-        system['coords'].append(safe_get_posi(array_lines[ii], cell, np.array(orig)))
+        system['coords'].append(safe_get_posi(array_lines[ii], cell, np.array(orig), unwrap))
     system['cells'] = np.array(system['cells'])
     system['coords'] = np.array(system['coords'])
     return system
@@ -181,7 +192,7 @@ def split_traj(dump_lines) :
     marks = []
     for idx,ii in enumerate(dump_lines) :
         if 'ITEM: TIMESTEP' in ii :
-            marks.append(idx) 
+            marks.append(idx)
     if len(marks) == 0 :
         return None
     elif len(marks) == 1 :
@@ -191,9 +202,9 @@ def split_traj(dump_lines) :
         ret = []
         for ii in marks :
             ret.append(dump_lines[ii:ii+block_size])
-        # for ii in range(len(marks)-1): 
+        # for ii in range(len(marks)-1):
         #     assert(marks[ii+1] - marks[ii] == block_size)
-        return ret    
+        return ret
     return None
 
 
