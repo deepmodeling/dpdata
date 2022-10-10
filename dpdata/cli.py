@@ -5,14 +5,13 @@ from . import __version__
 from .system import System, LabeledSystem, MultiSystems
 
 
-def dpdata_cli():
-    """dpdata cli.
+def dpdata_parser() -> argparse.ArgumentParser:
+    """Returns dpdata cli parser.
 
-    Examples
-    --------
-    .. code-block:: bash
-
-        $ dpdata -iposcar POSCAR -odeepmd/npy -O data -n
+    Returns
+    -------
+    argparse.ArgumentParser
+        dpdata cli parser
     """
     parser = argparse.ArgumentParser(
         description="dpdata: Manipulating multiple atomic simulation data formats",
@@ -28,7 +27,19 @@ def dpdata_cli():
     parser.add_argument("--type-map", "-t", type=str, nargs="+", help="type map")
 
     parser.add_argument('--version', action='version', version='dpdata v%s' % __version__)
+    return parser
 
+
+def dpdata_cli():
+    """dpdata cli.
+
+    Examples
+    --------
+    .. code-block:: bash
+
+        $ dpdata -iposcar POSCAR -odeepmd/npy -O data -n
+    """
+    parser = dpdata_parser()
     parsed_args = parser.parse_args()
     convert(**vars(parsed_args))
 

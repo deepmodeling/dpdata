@@ -33,8 +33,17 @@ def get_coord_dump_freq(inlines):
 def get_coords_from_dump(dumplines, natoms):
     nlines = len(dumplines)
     total_natoms = sum(natoms)
-    nframes_dump = int(nlines/(total_natoms + 13))
-    
+    calc_stress = False
+    if "VIRIAL" in dumplines[6]:
+        calc_stress = True
+    else:
+        assert("POSITIONS" in dumplines[6] and "FORCE" in dumplines[6]), "keywords 'POSITIONS' and 'FORCE' cannot be found in the 6th line. Please check."
+    nframes_dump = -1
+    if calc_stress:
+        nframes_dump = int(nlines/(total_natoms + 13))
+    else:
+        nframes_dump = int(nlines/(total_natoms + 9))
+    assert(nframes_dump > 0), "Number of lines in MD_dump file = %d. Number of atoms = %d. The MD_dump file is incomplete."%(nlines, total_natoms)
     cells = np.zeros([nframes_dump, 3, 3])
     stresses = np.zeros([nframes_dump, 3, 3])
     forces = np.zeros([nframes_dump, total_natoms, 3])
@@ -47,12 +56,17 @@ def get_coords_from_dump(dumplines, natoms):
             # read in LATTICE_VECTORS
             for ix in range(3):
                 cells[iframe, ix] = np.array([float(i) for i in re.split('\s+', dumplines[iline+3+ix])[-3:]]) * celldm
-                stresses[iframe, ix] = np.array([float(i) for i in re.split('\s+', dumplines[iline+7+ix])[-3:]])
+                if calc_stress:
+                    stresses[iframe, ix] = np.array([float(i) for i in re.split('\s+', dumplines[iline+7+ix])[-3:]])
             for iat in range(total_natoms):
-                coords[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+11+iat])[-6:-3]])*celldm
-                forces[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+11+iat])[-3:]])
+                if calc_stress:
+                    coords[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+11+iat])[-6:-3]])*celldm
+                    forces[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+11+iat])[-3:]])
+                else:
+                    coords[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+7+iat])[-6:-3]])*celldm
+                    forces[iframe, iat] = np.array([float(i) for i in re.split('\s+', dumplines[iline+7+iat])[-3:]])
             iframe += 1
-    assert(iframe == nframes_dump)
+    assert(iframe == nframes_dump), "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."%(iframe, nframes_dump)
     cells *= bohr2ang
     coords *= bohr2ang
     stresses *= kbar2evperang3
@@ -66,7 +80,7 @@ def get_energy(outlines, ndump, dump_freq):
             if nenergy%dump_freq == 0:
                 energy.append(float(line.split()[-2]))
             nenergy+=1
-    assert(ndump == len(energy))
+    assert(ndump == len(energy)), "Number of total energies in running_md.log = %d. Number of frames in MD_dump = %d. Please check."%(len(energy), ndump)
     energy = np.array(energy)
     return energy
 

@@ -5,7 +5,8 @@ import inspect
 import numpy as np
 import dpdata.md.pbc
 from copy import deepcopy
-from typing import Any
+from enum import Enum, unique
+from typing import Any, Tuple, Union
 from monty.json import MSONable
 from monty.serialization import loadfn,dumpfn
 from dpdata.periodic_table import Element
@@ -16,7 +17,7 @@ import dpdata
 import dpdata.plugins
 from dpdata.plugin import Plugin
 from dpdata.format import Format
-from dpdata.driver import Driver
+from dpdata.driver import Driver, Minimizer
 
 from dpdata.utils import (
     elements_index_map,
@@ -34,6 +35,99 @@ def load_format(fmt):
         "Unsupported data format %s. Supported formats: %s" % (
             fmt, " ".join(formats)
         ))
+
+@unique
+class Axis(Enum):
+    """Data axis."""
+    NFRAMES = "nframes"
+    NATOMS = "natoms"
+    NTYPES = "ntypes"
+    NBONDS = "nbonds"
+
+
+class DataError(Exception):
+    """Data is not correct."""
+
+
+class DataType:
+    """DataType represents a type of data, like coordinates, energies, etc.
+
+    Parameters
+    ----------
+    name : str
+        name of data
+    dtype : type or tuple[type]
+        data type, e.g. np.ndarray
+    shape : tuple[int], optional
+        shape of data. Used when data is list or np.ndarray. Use Axis to
+        represents numbers
+    required : bool, default=True
+        whether this data is required
+    """
+    def __init__(self, name: str, dtype: type, shape: Tuple[int, Axis]=None, required: bool=True) -> None:
+        self.name = name
+        self.dtype = dtype
+        self.shape = shape
+        self.required = required
+
+    def real_shape(self, system: "System") -> Tuple[int]:
+        """Returns expected real shape of a system."""
+        shape = []
+        for ii in self.shape:
+            if ii is Axis.NFRAMES:
+                shape.append(system.get_nframes())
+            elif ii is Axis.NTYPES:
+                shape.append(system.get_ntypes())
+            elif ii is Axis.NATOMS:
+                shape.append(system.get_natoms())
+            elif ii is Axis.NBONDS:
+                # BondOrderSystem
+                shape.append(system.get_nbonds())
+            elif isinstance(ii, int):
+                shape.append(ii)
+            else:
+                raise RuntimeError("Shape is not an int!")
+        return tuple(shape)
+
+    def check(self, system: "System"):
+        """Check if a system has correct data of this type.
+        
+        Parameters
+        ----------
+        system : System
+            checked system
+        
+        Raises
+        ------
+        DataError
+            type or shape of data is not correct
+        """
+        # check if exists
+        if self.name in system.data:
+            data = system.data[self.name]
+            # check dtype
+            # allow list for empty np.ndarray
+            if isinstance(data, list) and not len(data):
+                pass
+            elif not isinstance(data, self.dtype):
+                raise DataError("Type of %s is %s, but expected %s" % (self.name,
+                                type(data).__name__, self.dtype.__name__))
+            # check shape
+            if self.shape is not None:
+                shape = self.real_shape(system)
+                # skip checking empty list of np.ndarray
+                if isinstance(data, np.ndarray):
+                    if data.size and shape != data.shape:
+                        raise DataError("Shape of %s is %s, but expected %s" % (self.name,
+                                data.shape, shape))
+                elif isinstance(data, list):
+                    if len(shape) and shape[0] != len(data):
+                        raise DataError("Length of %s is %d, but expected %d" % (self.name,
+                                len(data), shape[0]))
+                else:
+                    raise RuntimeError("Unsupported type to check shape")
+        elif self.required:
+            raise DataError("%s not found in data" % self.name)
 
 
 class System (MSONable) :
@@ -59,7 +153,21 @@ class System (MSONable) :
     Restrictions:
         - `d_example['orig']` is always [0, 0, 0]
         - `d_example['cells'][ii]` is always lower triangular (lammps cell tensor convention)
+    
+    Attributes
+    ----------
+    DTYPES : tuple[DataType]
+        data types of this class
     '''
+    DTYPES = (
+        DataType("atom_numbs", list, (Axis.NTYPES,)),
+        DataType("atom_names", list, (Axis.NTYPES,)),
+        DataType("atom_types", np.ndarray, (Axis.NATOMS,)),
+        DataType("orig", np.ndarray, (3,)),
+        DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
+        DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("nopbc", bool, required=False),
+    )
 
     def __init__ (self,
                   file_name = None,
@@ -68,6 +176,7 @@ class System (MSONable) :
                   begin = 0,
                   step = 1,
                   data = None,
+                  convergence_check = True,
                   **kwargs) :
         """
         Constructor
@@ -84,13 +193,49 @@ class System (MSONable) :
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
+                - ``vasp/contcar``: vasp contcar
+                - ``vasp/string``: vasp string
+                - ``vasp/outcar``: vasp outcar
+                - ``vasp/xml``: vasp xml
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required. 
-                - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required. 
+                - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required.
+                - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required.
+                - ``abacus/stru``: abacus stru
+                - ``abacus/lcao/scf``: abacus lcao scf
+                - ``abacus/pw/scf``: abacus pw scf
+                - ``abacus/lcao/md``: abacus lcao md
+                - ``abacus/pw/md``: abacus pw md
+                - ``abacus/lcao/relax``: abacus lcao relax
+                - ``abacus/pw/relax``: abacus pw relax
                 - ``siesta/output``: siesta SCF output file
                 - ``siesta/aimd_output``: siesta aimd output file
                 - ``pwmat/atom.config``: pwmat atom.config
+                - ``pwmat/movement``: pwmat movement
+                - ``pwmat/output``: pwmat output
+                - ``pwmat/mlmd``: pwmat mlmd
+                - ``pwmat/final.config``: pwmat final.config
+                - ``quip/gap/xyz_file``: quip gap xyz_file
+                - ``quip/gap/xyz``: quip gap xyz
+                - ``fhi_aims/output``: fhi_aims output
+                - ``fhi_aims/md``: fhi_aims md
+                - ``fhi_aims/scf``: fhi_aims scf
+                - ``pymatgen/structure``: pymatgen structure
+                - ``pymatgen/molecule``: pymatgen molecule
+                - ``pymatgen/computedstructureentry``: pymatgen computedstructureentry
+                - ``amber/md``: amber md
+                - ``sqm/out``: sqm out
+                - ``sqm/in``: sqm in
+                - ``ase/structure``: ase structure
+                - ``gaussian/log``: gaussian log
+                - ``gaussian/md``: gaussian md
+                - ``gaussian/gjf``: gaussian gjf
+                - ``deepmd/comp``: deepmd comp
+                - ``deepmd/hdf5``: deepmd hdf5
+                - ``gromacs/gro``: gromacs gro
+                - ``cp2k/aimd_output``: cp2k aimd_output
+                - ``cp2k/output``: cp2k output
         type_map : list of str
             Needed by formats lammps/lmp and lammps/dump. Maps atom type to name. The atom with type `ii` is mapped to `type_map[ii]`.
             If not provided the atom names are assigned to `'Type_1'`, `'Type_2'`, `'Type_3'`...
@@ -99,7 +244,9 @@ class System (MSONable) :
         step : int
             The number of skipped frames when loading MD trajectory.
         data : dict
-             The raw data of System class.
+            The raw data of System class.
+        convergence_check : boolean
+            Whether to request a convergence check.
         """
         self.data = {}
         self.data['atom_numbs'] = []
@@ -110,15 +257,30 @@ class System (MSONable) :
         self.data['coords'] = []
 
         if data:
-            check_System(data)
             self.data=data
+            self.check_data()
             return
         if file_name is None :
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
+        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, convergence_check=convergence_check, **kwargs)
 
         if type_map is not None:
             self.apply_type_map(type_map)
+
+    def check_data(self):
+        """Check if data is correct.
+        
+        Raises
+        ------
+        DataError
+            if data is not correct
+        """
+        if not isinstance(self.data, dict):
+            raise DataError("data is not a dict!")
+        for dd in self.DTYPES:
+            dd.check(self)
+        if sum(self.get_atom_numbs()) != self.get_natoms():
+            raise DataError("Sum of atom_numbs (%d) is not equal to natoms (%d)." % (sum(self.get_atom_numbs()), self.get_natoms()))
 
     post_funcs = Plugin()
 
@@ -136,6 +298,7 @@ class System (MSONable) :
                     self.append(System(data=dd))
             else:
                 self.data = {**self.data, **data}
+                self.check_data()
             if hasattr(fmtobj.from_system, 'post_func'):
                 for post_f in fmtobj.from_system.post_func:
                     self.post_funcs.get_plugin(post_f)(self)
@@ -206,7 +369,7 @@ class System (MSONable) :
         dumpfn(self.as_dict(),filename,indent=indent)
 
 
-    def map_atom_types(self,type_map=None):
+    def map_atom_types(self, type_map=None) -> np.ndarray:
         """
         Map the atom types of the system
 
@@ -221,7 +384,7 @@ class System (MSONable) :
 
         Returns
         -------
-        new_atom_types : list
+        new_atom_types : np.ndarray
             The mapped atom types
         """
         if isinstance(type_map,dict) or type_map is None:
@@ -241,7 +404,7 @@ class System (MSONable) :
         atom_types_list=[]
         for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
             atom_types_list.extend([name]*numb)
-        new_atom_types=np.array([type_map[ii] for ii in atom_types_list],dtype=np.int)
+        new_atom_types = np.array([type_map[ii] for ii in atom_types_list], dtype=int)
 
         return new_atom_types
 
@@ -283,6 +446,9 @@ class System (MSONable) :
         """Returns total number of atoms in the system"""
         return len(self.data['atom_types'])
 
+    def get_ntypes(self) -> int:
+        """Returns total number of atom types in the system."""
+        return len(self.data['atom_names'])
 
     def copy(self):
         """Returns a copy of the system.  """
@@ -303,14 +469,22 @@ class System (MSONable) :
         sub_system : System
             The subsystem
         """
-        tmp = System()
-        for ii in ['atom_numbs', 'atom_names', 'atom_types', 'orig'] :
-            tmp.data[ii] = self.data[ii]
-        
-        tmp.data['cells'] = self.data['cells'][f_idx].reshape(-1, 3, 3)
-        tmp.data['coords'] = self.data['coords'][f_idx].reshape(-1, self.data['coords'].shape[1], 3)
-        tmp.data['nopbc'] = self.nopbc
-        
+        tmp = self.__class__()
+        # convert int to array_like
+        if isinstance(f_idx, (int, np.int64)):
+            f_idx = np.array([f_idx])
+        for tt in self.DTYPES:
+            if tt.name not in self.data:
+                # skip optional data
+                continue
+            if tt.shape is not None and Axis.NFRAMES in tt.shape:
+                axis_nframes = tt.shape.index(Axis.NFRAMES)
+                new_shape = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape[axis_nframes] = f_idx
+                tmp.data[tt.name] = self.data[tt.name][tuple(new_shape)]
+            else:
+                # keep the original data
+                tmp.data[tt.name] = self.data[tt.name]
         return tmp
 
 
@@ -345,8 +519,19 @@ class System (MSONable) :
         for ii in ['atom_types','orig'] :
             eq = [v1==v2 for v1,v2 in zip(system.data[ii], self.data[ii])]
             assert(all(eq))
-        for ii in ['coords', 'cells'] :
-            self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
+        for tt in self.DTYPES:
+            # check if the first shape is nframes
+            if tt.shape is not None and Axis.NFRAMES in tt.shape:
+                if tt.name not in self.data and tt.name in system.data:
+                    raise RuntimeError('system has %s, but this does not' % tt.name)
+                elif tt.name in self.data and tt.name not in system.data:
+                    raise RuntimeError('this has %s, but system does not' % tt.name)
+                elif tt.name not in self.data and tt.name not in system.data:
+                    # skip if both not exist
+                    continue
+                # concat any data in nframes axis
+                axis_nframes = tt.shape.index(Axis.NFRAMES)
+                self.data[tt.name] = np.concatenate((self.data[tt.name], system[tt.name]), axis=axis_nframes)
         if self.nopbc and not system.nopbc:
             # appended system uses PBC, cancel nopbc
             self.data['nopbc'] = False
@@ -384,10 +569,24 @@ class System (MSONable) :
         else:
             raise RuntimeError('invalid type map, cannot be applied')
 
-    def sort_atom_types(self):
+    def sort_atom_types(self) -> np.ndarray:
+        """Sort atom types.
+        
+        Returns
+        -------
+        idx : np.ndarray
+            new atom index in the Axis.NATOMS
+        """
         idx = np.argsort(self.data['atom_types'])
-        self.data['atom_types'] = self.data['atom_types'][idx]
-        self.data['coords'] = self.data['coords'][:, idx]
+        for tt in self.DTYPES:
+            if tt.name not in self.data:
+                # skip optional data
+                continue
+            if tt.shape is not None and Axis.NATOMS in tt.shape:
+                axis_natoms = tt.shape.index(Axis.NATOMS)
+                new_shape = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape[axis_natoms] = idx
+                self.data[tt.name] = self.data[tt.name][tuple(new_shape)]
         return idx
 
     @property
@@ -639,8 +838,7 @@ class System (MSONable) :
     def shuffle(self):
         """Shuffle frames randomly."""
         idx = np.random.permutation(self.get_nframes())
-        for ii in ['cells', 'coords']:
-            self.data[ii] = self.data[ii][idx]
+        self.data = self.sub_system(idx).data
         return idx
 
     def predict(self, *args: Any, driver: str="dp", **kwargs: Any) -> "LabeledSystem":
@@ -671,6 +869,28 @@ class System (MSONable) :
         data = driver.label(self.data.copy())
         return LabeledSystem(data=data)
 
+    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "LabeledSystem":
+        """Minimize the geometry.
+        
+        Parameters
+        ----------
+        *args : iterable
+            Arguments passing to the minimizer
+        minimizer : str or Minimizer
+            The assigned minimizer
+        **kwargs : dict
+            Other arguments passing to the minimizer
+
+        Returns
+        -------
+        labeled_sys : LabeledSystem
+            A new labeled system.
+        """
+        if not isinstance(minimizer, Minimizer):
+            minimizer = Minimizer.get_minimizer(minimizer)(*args, **kwargs)
+        data = minimizer.minimize(self.data.copy())
+        return LabeledSystem(data=data)
+
     def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
         
@@ -687,8 +907,17 @@ class System (MSONable) :
             new system
         """
         new_sys = self.copy()
-        new_sys.data['coords'] = self.data['coords'][:, idx, :]
-        new_sys.data['atom_types'] = self.data['atom_types'][idx]
+        if isinstance(idx, (int, np.int64)):
+            idx = np.array([idx])
+        for tt in self.DTYPES:
+            if tt.name not in self.data:
+                # skip optional data
+                continue
+            if tt.shape is not None and Axis.NATOMS in tt.shape:
+                axis_natoms = tt.shape.index(Axis.NATOMS)
+                new_shape = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape[axis_natoms] = idx
+                new_sys.data[tt.name] = self.data[tt.name][tuple(new_shape)]
         # recalculate atom_numbs according to atom_types
         atom_numbs = np.bincount(new_sys.data['atom_types'], minlength=len(self.get_atom_names()))
         new_sys.data['atom_numbs'] = list(atom_numbs)
@@ -799,18 +1028,6 @@ class LabeledSystem (System):
     It is noted that
         - The order of frames stored in `'energies'`, `'forces'` and `'virials'` should be consistent with `'atom_types'`, `'cells'` and `'coords'`.
         - The order of atoms in **every** frame of `'forces'` should be consistent with `'coords'` and `'atom_types'`.
-    '''
-
-    def __init__ (self,
-                  file_name = None,
-                  fmt = 'auto',
-                  type_map = None,
-                  begin = 0,
-                  step = 1,
-                  data=None,
-                  **kwargs) :
-        """
-        Constructor
 
         Parameters
         ----------
@@ -841,19 +1058,14 @@ class LabeledSystem (System):
             The beginning frame when loading MD trajectory.
         step : int
             The number of skipped frames when loading MD trajectory.
-        """
+    '''
 
-        System.__init__(self)
-
-        if data:
-           check_LabeledSystem(data)
-           self.data=data
-           return
-        if file_name is None :
-            return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, **kwargs)
-        if type_map is not None:
-            self.apply_type_map(type_map)
+    DTYPES = System.DTYPES + (
+        DataType("energies", np.ndarray, (Axis.NFRAMES,)),
+        DataType("forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("virials", np.ndarray, (Axis.NFRAMES, 3, 3), required=False),
+        DataType("atom_pref", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False),
+    )
 
     post_funcs = Plugin() + System.post_funcs
 
@@ -865,6 +1077,7 @@ class LabeledSystem (System):
                     self.append(LabeledSystem(data=dd))
             else:
                 self.data = {**self.data, **data}
+                self.check_data()
             if hasattr(fmtobj.from_labeled_system, 'post_func'):
                 for post_f in fmtobj.from_labeled_system.post_func:
                     self.post_funcs.get_plugin(post_f)(self)
@@ -872,9 +1085,6 @@ class LabeledSystem (System):
 
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
         return fmtobj.to_labeled_system(self.data, *args, **kwargs)
-
-    def __repr__(self):
-        return self.__str__()
 
     def __str__(self):
         ret="Data Summary"
@@ -925,68 +1135,6 @@ class LabeledSystem (System):
         self.affine_map_fv(trans, f_idx = f_idx)
         return trans
 
-    def sub_system(self, f_idx) :
-        """
-        Construct a subsystem from the system
-
-        Parameters
-        ----------
-        f_idx : int or index
-            Which frame to use in the subsystem
-
-        Returns
-        -------
-        sub_system : LabeledSystem
-            The subsystem
-        """
-        tmp_sys = LabeledSystem()
-        tmp_sys.data = System.sub_system(self, f_idx).data
-        tmp_sys.data['energies'] = np.atleast_1d(self.data['energies'][f_idx])
-        tmp_sys.data['forces'] = self.data['forces'][f_idx].reshape(-1, self.data['forces'].shape[1], 3)
-        if 'virials' in self.data:
-            tmp_sys.data['virials'] = self.data['virials'][f_idx].reshape(-1, 3, 3)
-        return tmp_sys
-
-    def append(self, system):
-        """
-        Append a system to this system
-
-        Parameters
-        ----------
-        system : System
-            The system to append
-        """
-        if not System.append(self, system):
-            # skip if this system or the system to append is non-converged
-            return
-        tgt = ['energies', 'forces']
-        for ii in ['atom_pref']:
-            if ii in self.data:
-                tgt.append(ii)
-        if ('virials' in system.data) and ('virials' not in self.data):
-            raise RuntimeError('system has virial, but this does not')
-        if ('virials' not in system.data) and ('virials' in self.data):
-            raise RuntimeError('this has virial, but system does not')
-        if 'virials' in system.data :
-            tgt.append('virials')
-        for ii in tgt:
-            self.data[ii] = np.concatenate((self.data[ii], system[ii]), axis = 0)
-
-    def sort_atom_types(self):
-        idx = System.sort_atom_types(self)
-        self.data['forces'] = self.data['forces'][:, idx]
-        for ii in ['atom_pref']:
-            if ii in self.data:
-                self.data[ii] = self.data[ii][:, idx]
-
-    def shuffle(self):
-        """Also shuffle labeled data e.g. energies and forces."""
-        idx = System.shuffle(self)
-        for ii in ['energies', 'forces', 'virials', 'atom_pref']:
-            if ii in self.data:
-                self.data[ii] = self.data[ii][idx]
-        return idx
-
     def correction(self, hl_sys):
         """Get energy and force correction between self and a high-level LabeledSystem.
         The self's coordinates will be kept, but energy and forces will be replaced by
@@ -1013,26 +1161,6 @@ class LabeledSystem (System):
         if 'virials' in self.data and 'virials' in hl_sys.data:
             corrected_sys.data['virials'] = hl_sys.data['virials'] - self.data['virials']
         return corrected_sys
-
-    def pick_atom_idx(self, idx, nopbc=None):
-        """Pick atom index
-        
-        Parameters
-        ----------
-        idx: int or list or slice
-            atom index
-        nopbc: Boolen (default: None)
-            If nopbc is True or False, set nopbc
-
-        Returns
-        -------
-        new_sys: LabeledSystem
-            new system
-        """
-        new_sys = System.pick_atom_idx(self, idx, nopbc=nopbc)
-        # forces
-        new_sys.data['forces'] = self.data['forces'][:, idx, :]
-        return new_sys
 
 
 class MultiSystems:
@@ -1204,9 +1332,42 @@ class MultiSystems:
         """
         if not isinstance(driver, Driver):
             driver = Driver.get_driver(driver)(*args, **kwargs)
-        new_multisystems = dpdata.MultiSystems()
+        new_multisystems = dpdata.MultiSystems(type_map=self.atom_names)
         for ss in self:
             new_multisystems.append(ss.predict(*args, driver=driver, **kwargs))
+        return new_multisystems
+
+    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "MultiSystems":
+        """
+        Minimize geometry by a minimizer.
+
+        Parameters
+        ----------
+        *args : iterable
+            Arguments passing to the minimizer
+        minimizer : str or Minimizer
+            The assigned minimizer
+        **kwargs : dict
+            Other arguments passing to the minimizer
+
+        Returns
+        -------
+        MultiSystems
+            A new labeled MultiSystems.
+
+        Examples
+        --------
+        Minimize a system using ASE BFGS along with a DP driver:
+        >>> from dpdata.driver import Driver
+        >>> from ase.optimize import BFGS
+        >>> driver = driver.get_driver("dp")("some_model.pb")
+        >>> some_system.minimize(minimizer="ase", driver=driver, optimizer=BFGS, fmax=1e-5)
+        """
+        if not isinstance(minimizer, Minimizer):
+            minimizer = Minimizer.get_minimizer(minimizer)(*args, **kwargs)
+        new_multisystems = dpdata.MultiSystems(type_map=self.atom_names)
+        for ss in self:
+            new_multisystems.append(ss.minimize(*args, minimizer=minimizer, **kwargs))
         return new_multisystems
     
     def pick_atom_idx(self, idx, nopbc=None):
@@ -1228,6 +1389,45 @@ class MultiSystems:
         for ss in self:
             new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
         return new_sys
+
+    def correction(self, hl_sys: "MultiSystems"):
+        """Get energy and force correction between self (assumed low-level) and a high-level MultiSystems.
+        The self's coordinates will be kept, but energy and forces will be replaced by
+        the correction between these two systems.
+
+        Notes
+        -----
+        This method will not check whether coordinates and elements of two systems
+        are the same. The user should make sure by itself.
+
+        Parameters
+        ----------
+        hl_sys : MultiSystems
+            high-level MultiSystems
+
+        Returns
+        -------
+        corrected_sys : MultiSystems
+            Corrected MultiSystems
+
+        Examples
+        --------
+        Get correction between a low-level system and a high-level system:
+
+        >>> low_level = dpdata.MultiSystems().from_deepmd_hdf5("low_level.hdf5")
+        >>> high_level = dpdata.MultiSystems().from_deepmd_hdf5("high_level.hdf5")
+        >>> corr = low_level.correction(high_lebel)
+        >>> corr.to_deepmd_hdf5("corr.hdf5")
+        """
+        if not isinstance(hl_sys, MultiSystems):
+            raise RuntimeError("high_sys should be MultiSystems")
+        corrected_sys = MultiSystems(type_map=self.atom_names)
+        for nn in self.systems.keys():
+            ll_ss = self[nn]
+            hl_ss = hl_sys[nn]
+            corrected_sys.append(ll_ss.correction(hl_ss))
+        return corrected_sys
+
 
 def get_cls_name(cls: object) -> str:
     """Returns the fully qualified name of a class, such as `np.ndarray`.
@@ -1284,33 +1484,3 @@ def add_format_methods():
         setattr(MultiSystems, method, get_func(formatcls))
 
 add_format_methods()
-
-def check_System(data):
-    keys={'atom_names','atom_numbs','cells','coords','orig','atom_types'}
-    assert( isinstance(data,dict) )
-    assert( keys.issubset(set(data.keys())) )
-    if len(data['coords']) > 0 :
-        assert( len(data['coords'][0])==len(data['atom_types'])==sum(data['atom_numbs']) )
-    else :
-        assert( len(data['atom_types'])==sum(data['atom_numbs']) )
-    assert( len(data['cells']) == len(data['coords']) )
-    assert( len(data['atom_names'])==len(data['atom_numbs']) )
-
-def check_LabeledSystem(data):
-    keys={'atom_names', 'atom_numbs', 'atom_types', 'cells', 'coords', 'energies',
-           'forces', 'orig'}
-
-    assert( keys.issubset(set(data.keys())) )
-    assert( isinstance(data,dict) )
-    assert( len(data['atom_names'])==len(data['atom_numbs']) )
-
-    if len(data['coords']) > 0 :
-        assert( len(data['coords'][0])==len(data['atom_types']) ==sum(data['atom_numbs'])  )
-    else:
-        assert( len(data['atom_types']) ==sum(data['atom_numbs'])  )
-    if 'virials' in data:
-        assert( len(data['cells']) == len(data['coords']) == len(data['virials']) == len(data['energies']) )
-    else:
-        assert( len(data['cells']) == len(data['coords']) == len(data['energies']) )
-
-

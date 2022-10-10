@@ -104,8 +104,8 @@ class Cp2kSystems(object):
         #  CONSERVED QUANTITY [hartree] =                              -0.279168013085E+04
         energy_pattern_2 = re.compile(r' POTENTIAL ENERGY\[hartree\]\s+=\s+(?P<number>\S+)')
         energy=None
-        cell_length_pattern = re.compile(r' INITIAL CELL LNTHS\[bohr\]\s+=\s+(?P<A>\S+)\s+(?P<B>\S+)\s+(?P<C>\S+)')
-        cell_angle_pattern = re.compile(r' INITIAL CELL ANGLS\[deg\]\s+=\s+(?P<alpha>\S+)\s+(?P<beta>\S+)\s+(?P<gamma>\S+)')
+        cell_length_pattern = re.compile(r' (INITIAL ){0,1}CELL LNTHS\[bohr\]\s+=\s+(?P<A>\S+)\s+(?P<B>\S+)\s+(?P<C>\S+)')
+        cell_angle_pattern = re.compile(r' (INITIAL ){0,1}CELL ANGLS\[deg\]\s+=\s+(?P<alpha>\S+)\s+(?P<beta>\S+)\s+(?P<gamma>\S+)')
         cell_A, cell_B, cell_C = (0,0,0,)
         cell_alpha, cell_beta, cell_gamma=(0,0,0,)
         cell_a_pattern = re.compile(r' CELL\| Vector a \[angstrom\]:\s+(?P<ax>\S+)\s+(?P<ay>\S+)\s+(?P<az>\S+)')
@@ -120,7 +120,22 @@ class Cp2kSystems(object):
         print_level_flag = 0
         atomic_kinds_pattern = re.compile(r'\s+\d+\. Atomic kind:\s+(?P<akind>\S+)')
         atomic_kinds = [] 
+        stress_sign = 'STRESS'
+        stress_flag = 0
+        stress = []
+
         for line in lines:
+            if stress_flag == 3 :
+                if (line == '\n') :
+                    stress_flag = 0
+                else :
+                    stress.append(line.split()[1:4])
+            if stress_flag == 2 :
+                stress_flag = 3
+            if stress_flag == 1 :
+                stress_flag = 2
+            if (stress_sign in line):
+                stress_flag = 1
             if force_start_pattern.match(line):
                 force_flag=True
             if force_end_pattern.match(line):
@@ -214,7 +229,18 @@ class Cp2kSystems(object):
         #atom_names=list(element_dict.keys())
         atom_names=self.atomic_kinds
         atom_numbs=[]
-        
+
+        GPa = PressureConversion("eV/angstrom^3", "GPa").value()
+        if stress:
+            stress = np.array(stress)
+            stress = stress.astype('float32')
+            stress = stress[np.newaxis, :, :]
+            # stress to virial conversion, default unit in cp2k is GPa
+            # note the stress is virial = stress * volume
+            virial = stress * np.linalg.det(self.cell)/GPa
+            virial = virial.squeeze()
+        else:
+            virial = None
         for ii in element_dict.keys():
             atom_numbs.append(element_dict[ii][1])
         #print(atom_numbs)
@@ -225,6 +251,8 @@ class Cp2kSystems(object):
         info_dict['cells'] = np.asarray([self.cell]).astype('float32')
         info_dict['energies'] = np.asarray([energy]).astype('float32')
         info_dict['forces'] = np.asarray([forces_list]).astype('float32')
+        if(virial is not None ): 
+            info_dict['virials'] = np.asarray([virial]).astype('float32')
         return info_dict
 
     def handle_single_xyz_frame(self, lines):
@@ -268,7 +296,7 @@ class Cp2kSystems(object):
         #info_dict['atom_types'] = np.asarray(atom_types_list)
         info_dict['coords'] = np.asarray([coords_list]).astype('float32')
         info_dict['energies'] = np.array([energy]).astype('float32')
-        info_dict['orig']=[0,0,0]
+        info_dict['orig'] = np.zeros(3)
         return info_dict
 
 #%%

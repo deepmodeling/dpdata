@@ -54,6 +54,10 @@ class CompSys :
     def test_nopbc(self):
         self.assertEqual(self.system_1.nopbc, self.system_2.nopbc)
 
+    def test_data_check(self):
+        self.system_1.check_data()
+        self.system_2.check_data()
+
 
 class CompLabeledSys (CompSys) :
     def test_energy(self) :

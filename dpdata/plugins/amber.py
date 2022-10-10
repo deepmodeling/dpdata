@@ -5,7 +5,7 @@ import subprocess as sp
 import dpdata.amber.md
 import dpdata.amber.sqm
 from dpdata.format import Format
-from dpdata.driver import Driver
+from dpdata.driver import Driver, Minimizer
 
 
 @Format.register("amber/md")
@@ -68,7 +68,7 @@ class SQMINFormat(Format):
         ----------------
         **kwargs : dict
             valid parameters are:
-                theory : str, default=dftb3
+                qm_theory : str, default=dftb3
                     level of theory. Options includes AM1, RM1, MNDO, PM3-PDDG, MNDO-PDDG,
                     PM3-CARB1, MNDO/d, AM1/d, PM6, DFTB2, DFTB3
                 charge : int, default=0
@@ -96,6 +96,7 @@ class SQMDriver(Driver):
     Examples
     --------
     Use DFTB3 method to calculate potential energy:
+
     >>> labeled_system = system.predict(theory="DFTB3", driver="sqm")
     >>> labeled_system['energies'][0]
     -15.41111246
@@ -121,3 +122,21 @@ class SQMDriver(Driver):
                             ) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="sqm/out"))
         return labeled_system.data
+
+
+@Minimizer.register("sqm")
+class SQMMinimizer(Minimizer):
+    """SQM minimizer.
+    
+    Parameters
+    ----------
+    maxcyc : int, default=1000
+        maximun cycle to minimize
+    """
+    def __init__(self, maxcyc=1000, *args, **kwargs) -> None:
+        assert maxcyc > 0, "maxcyc should be more than 0 to minimize"
+        self.driver = SQMDriver(maxcyc=maxcyc, **kwargs)
+
+    def minimize(self, data: dict) -> dict:
+        # sqm has minimize feature
+        return self.driver.label(data)

@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING, Type
+from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 import numpy as np
+import dpdata
 try:
     import ase.io
     from ase.calculators.calculator import PropertyNotImplementedError
+    if TYPE_CHECKING:
+        from ase.optimize.optimize import Optimizer
 except ImportError:
     pass
 
@@ -43,7 +48,8 @@ class ASEStructureFormat(Format):
             'atom_types': atom_types,
             'cells': np.array([cells]).astype('float32'),
             'coords': np.array([coords]).astype('float32'),
-            'orig': [0,0,0],
+            'orig': np.zeros(3),
+            'nopbc': not np.any(atoms.get_pbc()),
         }
         return info_dict
 
@@ -162,3 +168,100 @@ class ASEStructureFormat(Format):
             structures.append(structure)
 
         return structures
+
+
+@Driver.register("ase")
+class ASEDriver(Driver):
+    """ASE Driver.
+    
+    Parameters
+    ----------
+    calculator : ase.calculators.calculator.Calculato
+        ASE calculator
+    """
+
+    def __init__(self, calculator: "ase.calculators.calculator.Calculator") -> None:
+        """Setup the driver."""
+        self.calculator = calculator
+
+    def label(self, data: dict) -> dict:
+        """Label a system data. Returns new data with energy, forces, and virials.
+        
+        Parameters
+        ----------
+        data : dict
+            data with coordinates and atom types
+        
+        Returns
+        -------
+        dict
+            labeled data with energies and forces
+        """
+        # convert data to ase data
+        system = dpdata.System(data=data)
+        # list[Atoms]
+        structures = system.to_ase_structure()
+        labeled_system = dpdata.LabeledSystem()
+        for atoms in structures:
+            atoms.calc = self.calculator
+            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
+            labeled_system.append(ls)
+        return labeled_system.data
+
+
+@Minimizer.register("ase")
+class ASEMinimizer(Minimizer):
+    """ASE minimizer.
+
+    Parameters
+    ----------
+    driver : Driver
+        dpdata driver
+    optimizer : type, optional
+        ase optimizer class
+    fmax : float, optional, default=5e-3
+        force convergence criterion
+    optimizer_kwargs : dict, optional
+        other parameters for optimizer
+    """
+    def __init__(self,
+                 driver: Driver,
+                 optimizer: Type["Optimizer"] = None,
+                 fmax: float = 5e-3,
+                 optimizer_kwargs: dict = {}) -> None:
+        self.calculator = driver.ase_calculator
+        if optimizer is None:
+            from ase.optimize import LBFGS
+            self.optimizer = LBFGS
+        else:
+            self.optimizer = optimizer
+        self.optimizer_kwargs = {
+            "logfile": None,
+            **optimizer_kwargs.copy(),
+        }
+        self.fmax = fmax
+
+    def minimize(self, data: dict) -> dict:
+        """Minimize the geometry.
+
+        Parameters
+        ----------
+        data : dict
+            data with coordinates and atom types
+        
+        Returns
+        -------
+        dict
+            labeled data with minimized coordinates, energies, and forces
+        """
+        system = dpdata.System(data=data)
+        # list[Atoms]
+        structures = system.to_ase_structure()
+        labeled_system = dpdata.LabeledSystem()
+        for atoms in structures:
+            atoms.calc = self.calculator
+            dyn = self.optimizer(atoms, **self.optimizer_kwargs)
+            dyn.run(fmax=self.fmax)
+            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
+            labeled_system.append(ls)
+        return labeled_system.data
