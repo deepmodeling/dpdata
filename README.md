@@ -259,11 +259,8 @@ If a valence of 3 is detected on carbon, the formal charge will be assigned to -
 
 # Plugins
 
-One can follow [a simple example](plugin_example/) to add their own format by creating and installing plugins. It's critical to add the [Format](dpdata/format.py) class to `entry_points['dpdata.plugins']` in `setup.py`:
-```py
-    entry_points={
-        'dpdata.plugins': [
-            'random=dpdata_random:RandomFormat'
-        ]
-    },
+One can follow [a simple example](plugin_example/) to add their own format by creating and installing plugins. It's critical to add the [Format](dpdata/format.py) class to `entry_points['dpdata.plugins']` in [`pyproject.toml`](plugin_example/pyproject.toml):
+```toml
+[project.entry-points.'dpdata.plugins']
+random = "dpdata_random:RandomFormat"
 ```
