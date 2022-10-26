@@ -3,6 +3,7 @@ import os,sys
 import numpy as np
 from .scf import ry2ev, bohr2ang, kbar2evperang3, get_block, get_geometry_in, get_cell, get_coords
 import re
+import warnings
 
 # Read in geometries from an ABACUS MD trajectory.
 # The atomic coordinates are read in from generated files in OUT.XXXX.
@@ -80,6 +81,10 @@ def get_energy(outlines, ndump, dump_freq):
             if nenergy%dump_freq == 0:
                 energy.append(float(line.split()[-2]))
             nenergy+=1
+        elif "!! convergence has not been achieved" in line:
+            if nenergy%dump_freq == 0:
+                energy.append(0)
+            nenergy+=1
     assert(ndump == len(energy)), "Number of total energies in running_md.log = %d. Number of frames in MD_dump = %d. Please check."%(len(energy), ndump)
     energy = np.array(energy)
     return energy
@@ -113,6 +118,17 @@ def get_frame (fname):
     with open(os.path.join(path_out, "running_md.log"), 'r') as fp:
         outlines = fp.read().split('\n')
     energy = get_energy(outlines, ndump, dump_freq)
+
+    for i,iene in enumerate(energy):
+        if iene == 0:
+            coords = np.delete(coords,i-ndump,axis=0)
+            cells = np.delete(cells,i-ndump,axis=0)
+            force = np.delete(force,i-ndump,axis=0)
+            stress = np.delete(stress,i-ndump,axis=0)
+            energy = np.delete(energy,i-ndump,axis=0) 
+            warnings.warn(f"Structure %d is unconverged, is not collected!" % (i))
+    ndump = len(energy)   
+
     for iframe in range(ndump):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))
     if np.sum(np.abs(stress[0])) < 1e-10:
