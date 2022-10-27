@@ -83,7 +83,7 @@ def get_energy(outlines, ndump, dump_freq):
             nenergy+=1
         elif "!! convergence has not been achieved" in line:
             if nenergy%dump_freq == 0:
-                energy.append(0)
+                energy.append(None)
             nenergy+=1
     assert(ndump == len(energy)), "Number of total energies in running_md.log = %d. Number of frames in MD_dump = %d. Please check."%(len(energy), ndump)
     energy = np.array(energy)
@@ -120,7 +120,7 @@ def get_frame (fname):
     energy = get_energy(outlines, ndump, dump_freq)
 
     for i,iene in enumerate(energy):
-        if iene == 0:
+        if iene == None:
             coords = np.delete(coords,i-ndump,axis=0)
             cells = np.delete(cells,i-ndump,axis=0)
             force = np.delete(force,i-ndump,axis=0)
