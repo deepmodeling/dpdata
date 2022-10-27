@@ -119,6 +119,7 @@ def get_frame (fname):
         outlines = fp.read().split('\n')
     energy = get_energy(outlines, ndump, dump_freq)
 
+    unconv_stru = ''
     for i,iene in enumerate(energy):
         if iene == None:
             coords = np.delete(coords,i-ndump,axis=0)
@@ -126,8 +127,10 @@ def get_frame (fname):
             force = np.delete(force,i-ndump,axis=0)
             stress = np.delete(stress,i-ndump,axis=0)
             energy = np.delete(energy,i-ndump,axis=0) 
-            warnings.warn(f"Structure %d is unconverged, is not collected!" % (i))
-    ndump = len(energy)   
+            unconv_stru += "%d " % i
+    ndump = len(energy)
+    if unconv_stru != '':
+        warnings.warn(f"Structure %s is unconverged, is not collected!" % unconv_stru)  
 
     for iframe in range(ndump):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))
