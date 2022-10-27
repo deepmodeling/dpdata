@@ -130,7 +130,7 @@ def get_frame (fname):
             unconv_stru += "%d " % i
     ndump = len(energy)
     if unconv_stru != '':
-        warnings.warn(f"Structure %s is unconverged, is not collected!" % unconv_stru)  
+        warnings.warn(f"Structure %s are unconverged and not collected!" % unconv_stru)  
 
     for iframe in range(ndump):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))
