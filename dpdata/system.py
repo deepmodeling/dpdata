@@ -1125,11 +1125,6 @@ class LabeledSystem (System):
         if self.has_virial():
             self.data['virials'][f_idx] = np.matmul(trans.T, np.matmul(self.data['virials'][f_idx], trans))
 
-    @post_funcs.register("rot_lower_triangular")
-    def rot_lower_triangular(self) :
-        for ii in range(self.get_nframes()) :
-            self.rot_frame_lower_triangular(ii)
-
     def rot_frame_lower_triangular(self, f_idx = 0) :
         trans = System.rot_frame_lower_triangular(self, f_idx = f_idx)
         self.affine_map_fv(trans, f_idx = f_idx)
