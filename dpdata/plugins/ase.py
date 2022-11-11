@@ -265,7 +265,7 @@ class ASEMinimizer(Minimizer):
         for atoms in structures:
             atoms.calc = self.calculator
             dyn = self.optimizer(atoms, **self.optimizer_kwargs)
-            dyn.run(fmax=self.fmax, max_steps=self.max_steps)
+            dyn.run(fmax=self.fmax, steps=self.max_steps)
             ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
             labeled_system.append(ls)
         return labeled_system.data
