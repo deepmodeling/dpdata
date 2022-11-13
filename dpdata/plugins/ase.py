@@ -221,6 +221,8 @@ class ASEMinimizer(Minimizer):
         ase optimizer class
     fmax : float, optional, default=5e-3
         force convergence criterion
+    max_steps : int, optional
+        max steps to optimize
     optimizer_kwargs : dict, optional
         other parameters for optimizer
     """
@@ -228,6 +230,7 @@ class ASEMinimizer(Minimizer):
                  driver: Driver,
                  optimizer: Type["Optimizer"] = None,
                  fmax: float = 5e-3,
+                 max_steps: int = None,
                  optimizer_kwargs: dict = {}) -> None:
         self.calculator = driver.ase_calculator
         if optimizer is None:
@@ -240,6 +243,7 @@ class ASEMinimizer(Minimizer):
             **optimizer_kwargs.copy(),
         }
         self.fmax = fmax
+        self.max_steps = max_steps
 
     def minimize(self, data: dict) -> dict:
         """Minimize the geometry.
@@ -261,7 +265,7 @@ class ASEMinimizer(Minimizer):
         for atoms in structures:
             atoms.calc = self.calculator
             dyn = self.optimizer(atoms, **self.optimizer_kwargs)
-            dyn.run(fmax=self.fmax)
+            dyn.run(fmax=self.fmax, steps=self.max_steps)
             ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
             labeled_system.append(ls)
         return labeled_system.data
