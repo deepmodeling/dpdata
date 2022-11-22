@@ -6,22 +6,10 @@ lib_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(lib_path)
 import lmp
 import warnings
-from functools import cmp_to_key
 class UnwrapWarning(UserWarning):
     pass
 warnings.simplefilter('once', UnwrapWarning)
 
-def _sort_tid_comparator(item1, item2):
-    # sort with tid first
-    if item1[1] < item2[1]:
-        return -1
-    elif item1[1] > item2[1]:
-        return 1
-    elif item1[1] == item2[1]:
-        # sort with id if tids are equal
-        return -1 if item1[0] < item2[0] else 1
-    
-    
 def _get_block (lines, key) :
     for idx in range(len(lines)) :
         if ('ITEM: ' + key) in lines[idx] :
@@ -42,10 +30,11 @@ def get_atype(lines, type_idx_zero = False) :
     tidx = keys.index('type') - 2
     atype = []
     for ii in blk :
-        atype.append([int(ii.split()[id_idx]), int(ii.split()[tidx])])
+        atype.append([int(ii.split()[tidx]), int(ii.split()[id_idx])])
     # sort with type id
-    atype.sort(key=cmp_to_key(_sort_tid_comparator))
+    atype.sort()
     atype = np.array(atype, dtype = int)    
+    atype = atype[:, ::-1]
     if type_idx_zero :
         return atype[:,1] - 1
     else :
@@ -96,8 +85,8 @@ def safe_get_posi(lines,cell,orig=np.zeros(3), unwrap=False) :
     posis = []
     for ii in blk :
         words = ii.split()
-        posis.append([float(words[id_idx]), float(words[tidx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
-    posis.sort(key=cmp_to_key(_sort_tid_comparator))
+        posis.append([float(words[tidx]), float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
+    posis.sort()
     posis = np.array(posis)[:,2:5]
     if not sf:
         posis = (posis - orig) @ np.linalg.inv(cell)  # Convert to scaled coordinates for unscaled coordinates
