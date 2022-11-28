@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type
+from typing import Optional, TYPE_CHECKING, Type
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 import numpy as np
@@ -93,7 +93,7 @@ class ASEStructureFormat(Format):
             info_dict['virials'] = virials
         return info_dict
 
-    def from_multi_systems(self, file_name: str, begin: int=None, end: int=None, step: int=None, ase_fmt: str=None, **kwargs) -> "ase.Atoms":
+    def from_multi_systems(self, file_name: str, begin: Optional[int] = None, end: Optional[int] = None, step: Optional[int] = None, ase_fmt: Optional[str] = None, **kwargs) -> "ase.Atoms":
         """Convert a ASE supported file to ASE Atoms.
 
         It will finally be converted to MultiSystems.
@@ -228,9 +228,9 @@ class ASEMinimizer(Minimizer):
     """
     def __init__(self,
                  driver: Driver,
-                 optimizer: Type["Optimizer"] = None,
+                 optimizer: Optional[Type["Optimizer"]] = None,
                  fmax: float = 5e-3,
-                 max_steps: int = None,
+                 max_steps: Optional[int] = None,
                  optimizer_kwargs: dict = {}) -> None:
         self.calculator = driver.ase_calculator
         if optimizer is None:

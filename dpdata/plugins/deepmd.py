@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Optional, Union, List
 
 import dpdata
 import dpdata.deepmd.raw
@@ -108,7 +108,7 @@ class DeePMDHDF5Format(Format):
 
     def from_system(self,
                     file_name: Union[str, h5py.Group, h5py.File],
-                    type_map: List[str]=None,
+                    type_map: Optional[List[str]] = None,
                     **kwargs) -> dict:
         """Convert HDF5 file to System data.
 
@@ -134,7 +134,7 @@ class DeePMDHDF5Format(Format):
 
     def from_labeled_system(self,
                             file_name: Union[str, h5py.Group, h5py.File],
-                            type_map: List[str]=None,
+                            type_map: Optional[List[str]] = None,
                             **kwargs) -> dict:
         """Convert HDF5 file to LabeledSystem data.
 
