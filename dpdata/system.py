@@ -810,7 +810,7 @@ class System (MSONable) :
         perturbed_system : System
             The perturbed_system. It contains `pert_num` * frame_num of the input system frames.
         """
-        perturbed_system = System()
+        perturbed_system = type(self)()
         nframes = self.get_nframes()
         for ii in range(nframes):
             for jj in range(pert_num):
