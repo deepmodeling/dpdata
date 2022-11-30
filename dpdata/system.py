@@ -810,7 +810,12 @@ class System (MSONable) :
         perturbed_system : System
             The perturbed_system. It contains `pert_num` * frame_num of the input system frames.
         """
-        perturbed_system = type(self)()
+        if type(self) is not dpdata.System:
+            raise RuntimeError(
+                f'Using method perturb() of an instance of {type(self)}. '
+                f'Must use method perturb() of the instance of class dpdata.System.'
+            )
+        perturbed_system = System()
         nframes = self.get_nframes()
         for ii in range(nframes):
             for jj in range(pert_num):
