@@ -10,7 +10,7 @@ Welcome to dpdata's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Overall <self>
+   Overview <self>
    cli
    formats
    api/api
