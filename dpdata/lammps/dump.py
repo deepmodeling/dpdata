@@ -32,8 +32,8 @@ def get_atype(lines, type_idx_zero = False) :
     atype = []
     for ii in blk :
         atype.append([int(ii.split()[tidx]), int(ii.split()[id_idx])])
+    atype.sort()
     atype = np.array(atype, dtype = int)    
-    atype = atype[:, ::-1]
     if type_idx_zero :
         return atype[:,1] - 1
     else :
