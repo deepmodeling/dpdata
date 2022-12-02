@@ -1,5 +1,5 @@
 **dpdata** is a python package for manipulating data formats of software in computational science, including DeePMD-kit, VASP, LAMMPS, GROMACS, Gaussian.
-dpdata only works with python 3.x.
+dpdata only works with python 3.7 or above.
 
 
 # Installation

@@ -10,6 +10,7 @@ class TestLmpReadFromTrajsWithRandomTypeId(unittest.TestCase):
             dpdata.System(os.path.join('lammps', 'traj_with_random_type_id.dump'), fmt = 'lammps/dump', type_map = ["Ta","Nb","W","Mo","V","Al"])
     
     def test_nframes (self) :
+        self.system.sort_atom_types()
         atype = self.system['atom_types'].tolist()
         self.assertTrue(atype == [1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5])
         
