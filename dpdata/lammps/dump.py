@@ -31,7 +31,7 @@ def get_atype(lines, type_idx_zero = False) :
     tidx = keys.index('type') - 2
     atype = []
     for ii in blk :
-        atype.append([int(ii.split()[tidx]), int(ii.split()[id_idx])])
+        atype.append([int(ii.split()[id_idx]), int(ii.split()[tidx])])
     atype.sort()
     atype = np.array(atype, dtype = int)    
     if type_idx_zero :
