@@ -31,11 +31,9 @@ def get_atype(lines, type_idx_zero = False) :
     tidx = keys.index('type') - 2
     atype = []
     for ii in blk :
-        atype.append([int(ii.split()[tidx]), int(ii.split()[id_idx])])
-    # sort with type id
+        atype.append([int(ii.split()[id_idx]), int(ii.split()[tidx])])
     atype.sort()
     atype = np.array(atype, dtype = int)    
-    atype = atype[:, ::-1]
     if type_idx_zero :
         return atype[:,1] - 1
     else :
@@ -78,17 +76,15 @@ def safe_get_posi(lines,cell,orig=np.zeros(3), unwrap=False) :
     assert coord_tp_and_sf is not None, 'Dump file does not contain atomic coordinates!'
     coordtype, sf, uw = coord_tp_and_sf
     id_idx = keys.index('id') - 2
-    tidx = keys.index('type') - 2
     xidx = keys.index(coordtype[0])-2
     yidx = keys.index(coordtype[1])-2
     zidx = keys.index(coordtype[2])-2
-    sel = (xidx, yidx, zidx)
     posis = []
     for ii in blk :
         words = ii.split()
-        posis.append([float(words[tidx]), float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
+        posis.append([float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
     posis.sort()
-    posis = np.array(posis)[:,2:5]
+    posis = np.array(posis)[:,1:4]
     if not sf:
         posis = (posis - orig) @ np.linalg.inv(cell)  # Convert to scaled coordinates for unscaled coordinates
     if uw and unwrap:
@@ -178,14 +174,16 @@ def system_data(lines, type_map = None, type_idx_zero = True, unwrap=False) :
     orig, cell = dumpbox2box(bounds, tilt)
     system['orig'] = np.array(orig) - np.array(orig)
     system['cells'] = [np.array(cell)]
-    natoms = sum(system['atom_numbs'])
     system['atom_types'] = get_atype(lines, type_idx_zero = type_idx_zero)
     system['coords'] = [safe_get_posi(lines, cell, np.array(orig), unwrap)]
     for ii in range(1, len(array_lines)) :
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
         system['cells'].append(cell)
-        system['coords'].append(safe_get_posi(array_lines[ii], cell, np.array(orig), unwrap))
+        atype = get_atype(array_lines[ii], type_idx_zero = type_idx_zero)
+        # map atom type; a[as[a][as[as[b]]]] = b[as[b][as^{-1}[b]]] = b[id]
+        idx = np.argsort(atype)[np.argsort(np.argsort(system['atom_types']))]
+        system['coords'].append(safe_get_posi(array_lines[ii], cell, np.array(orig), unwrap)[idx])
     system['cells'] = np.array(system['cells'])
     system['coords'] = np.array(system['coords'])
     return system
