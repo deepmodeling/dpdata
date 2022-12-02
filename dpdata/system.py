@@ -810,6 +810,11 @@ class System (MSONable) :
         perturbed_system : System
             The perturbed_system. It contains `pert_num` * frame_num of the input system frames.
         """
+        if type(self) is not dpdata.System:
+            raise RuntimeError(
+                f'Using method perturb() of an instance of {type(self)}. '
+                f'Must use method perturb() of the instance of class dpdata.System.'
+            )
         perturbed_system = System()
         nframes = self.get_nframes()
         for ii in range(nframes):
@@ -1124,11 +1129,6 @@ class LabeledSystem (System):
         self.data['forces'][f_idx] = np.matmul(self.data['forces'][f_idx], trans)
         if self.has_virial():
             self.data['virials'][f_idx] = np.matmul(trans.T, np.matmul(self.data['virials'][f_idx], trans))
-
-    @post_funcs.register("rot_lower_triangular")
-    def rot_lower_triangular(self) :
-        for ii in range(self.get_nframes()) :
-            self.rot_frame_lower_triangular(ii)
 
     def rot_frame_lower_triangular(self, f_idx = 0) :
         trans = System.rot_frame_lower_triangular(self, f_idx = f_idx)

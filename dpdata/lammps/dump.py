@@ -31,9 +31,11 @@ def get_atype(lines, type_idx_zero = False) :
     tidx = keys.index('type') - 2
     atype = []
     for ii in blk :
-        atype.append([int(ii.split()[id_idx]), int(ii.split()[tidx])])
+        atype.append([int(ii.split()[tidx]), int(ii.split()[id_idx])])
+    # sort with type id
     atype.sort()
     atype = np.array(atype, dtype = int)    
+    atype = atype[:, ::-1]
     if type_idx_zero :
         return atype[:,1] - 1
     else :
@@ -76,6 +78,7 @@ def safe_get_posi(lines,cell,orig=np.zeros(3), unwrap=False) :
     assert coord_tp_and_sf is not None, 'Dump file does not contain atomic coordinates!'
     coordtype, sf, uw = coord_tp_and_sf
     id_idx = keys.index('id') - 2
+    tidx = keys.index('type') - 2
     xidx = keys.index(coordtype[0])-2
     yidx = keys.index(coordtype[1])-2
     zidx = keys.index(coordtype[2])-2
@@ -83,9 +86,9 @@ def safe_get_posi(lines,cell,orig=np.zeros(3), unwrap=False) :
     posis = []
     for ii in blk :
         words = ii.split()
-        posis.append([float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
+        posis.append([float(words[tidx]), float(words[id_idx]), float(words[xidx]), float(words[yidx]), float(words[zidx])])
     posis.sort()
-    posis = np.array(posis)[:,1:4]
+    posis = np.array(posis)[:,2:5]
     if not sf:
         posis = (posis - orig) @ np.linalg.inv(cell)  # Convert to scaled coordinates for unscaled coordinates
     if uw and unwrap:

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=45"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dpdata_random"
+version = "0.0.0"
+description = "An example for dpdata plugin"
+dependencies = [
+    'numpy',
+    'dpdata',
+]
+readme = "README.md"
+
+[project.entry-points.'dpdata.plugins']
+random = "dpdata_random:RandomFormat"
