@@ -1,5 +1,5 @@
 """Utils for deepmd/hdf5 format."""
-from typing import Union
+from typing import Optional, Union
 
 import h5py
 import numpy as np
@@ -11,7 +11,7 @@ __all__ = ['to_system_data', 'dump']
 
 def to_system_data(f: Union[h5py.File, h5py.Group],
                    folder: str, 
-                   type_map: list = None,
+                   type_map: Optional[list] = None,
                    labels: bool = True) :
     """Load a HDF5 file.
 

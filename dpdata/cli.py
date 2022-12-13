@@ -1,5 +1,6 @@
 """Command line interface for dpdata."""
 import argparse
+from typing import Optional
 
 from . import __version__
 from .system import System, LabeledSystem, MultiSystems
@@ -47,11 +48,11 @@ def dpdata_cli():
 def convert(*,
             from_file: str,
             from_format: str = "auto",
-            to_file: str = None,
-            to_format: str = None,
+            to_file: Optional[str] = None,
+            to_format: Optional[str] = None,
             no_labeled: bool = False,
             multi: bool = False,
-            type_map: list = None,
+            type_map: Optional[list] = None,
             **kwargs):
     """Convert files from one format to another one.
     

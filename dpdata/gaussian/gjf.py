@@ -3,7 +3,7 @@
 # under LGPL 3.0 license
 """Generate Gaussian input file."""
 
-from typing import List, Tuple, Union
+from typing import Optional, List, Tuple, Union
 import uuid
 import itertools
 import warnings
@@ -107,8 +107,8 @@ def make_gaussian_input(
         multiplicity: Union[str ,int] = "auto",
         charge: int = 0,
         fragment_guesses: bool = False,
-        basis_set: str = None,
-        keywords_high_multiplicity: str = None,
+        basis_set: Optional[str] = None,
+        keywords_high_multiplicity: Optional[str] = None,
         nproc: int = 1,
         ) -> str:
     """Make gaussian input file.

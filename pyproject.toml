@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=61", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -12,7 +12,11 @@ authors = [
 ]
 license = {file = "LICENSE"}
 classifiers = [
-    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
 ]
 dependencies = [
@@ -23,7 +27,7 @@ dependencies = [
     'wcmatch',
     'importlib_metadata>=1.4; python_version < "3.8"',
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 readme = "README.md"
 keywords = ["lammps", "vasp", "deepmd-kit"]
 

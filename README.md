@@ -1,5 +1,5 @@
 **dpdata** is a python package for manipulating data formats of software in computational science, including DeePMD-kit, VASP, LAMMPS, GROMACS, Gaussian.
-dpdata only works with python 3.x.
+dpdata only works with python 3.7 or above.
 
 
 # Installation
@@ -80,6 +80,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
 | Amber/sqm | sqm.out   | False        | False   | System        | 'sqm/out'            |
 | Gromacs | gro         | True         | False   | System        | 'gromacs/gro'        |
+| ABACUS  | STRU        | False        | False   | System        | 'abacus/stru'         |
 | ABACUS  | STRU        | False        | True    | LabeledSystem | 'abacus/scf'         |
 | ABACUS  | cif         | True         | True    | LabeledSystem | 'abacus/md'          |
 | ABACUS  | STRU        | True         | True    | LabeledSystem | 'abacus/relax'       |
