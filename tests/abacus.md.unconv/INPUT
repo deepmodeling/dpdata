@@ -1,6 +1,5 @@
 INPUT_PARAMETERS
 calculation 	md
-ntype 		2
 nbands 		8
 
 ecutwfc 	50.000000

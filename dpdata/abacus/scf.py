@@ -59,7 +59,7 @@ def get_cell(geometry_inlines):
     cell = celldm*np.array(cell)
     return celldm, cell
 
-def get_coords(celldm, cell, geometry_inlines, inlines):
+def get_coords(celldm, cell, geometry_inlines, inlines=None):
     coords_lines = get_block(geometry_inlines, "ATOMIC_POSITIONS", skip=0)
     # assuming that ATOMIC_POSITIONS is at the bottom of the STRU file
     coord_type = coords_lines[0].split()[0].lower() # cartisan or direct
@@ -67,13 +67,7 @@ def get_coords(celldm, cell, geometry_inlines, inlines):
     atom_types = [] # index of atom_names of each atom in the geometry
     atom_numbs = [] # of atoms for each element
     coords = [] # coordinations of atoms
-    ntype = 0
-    for line in inlines:
-        if "ntype" in line and "ntype"==line.split()[0]:
-            ntype = int(line.split()[1])
-            break
-    if ntype <= 0:
-        raise RuntimeError('ntype cannot be found in INPUT file.')
+    ntype = get_nele_from_stru(geometry_inlines)
     line_idx = 1 # starting line of first element
     for it in range(ntype):
         atom_names.append(coords_lines[line_idx].split()[0])

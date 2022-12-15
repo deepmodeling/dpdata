@@ -4,7 +4,6 @@ suffix 			ch4fail
 stru_file 	        STRU.ch4 #the filename of file containing atom positions
 kpoint_file        	KPT.ch4 #the name of file containing k points
 pseudo_dir		./
-ntype			2
 nbands		  	8
 #Parameters (Accuracy)
 ecutwfc			100
