@@ -78,6 +78,7 @@ def to_system_data(file_name, md=False):
         forces_t = forces_t[-1:]
         energy_t = energy_t[-1:]
         coords_t = coords_t[-1:]
+        cells_t = cells_t[-1:]
     data['forces'] = np.array(forces_t) * force_convert
     data['energies'] = np.array(energy_t) * energy_convert
     data['coords'] = np.array(coords_t)
