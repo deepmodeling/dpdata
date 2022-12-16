@@ -16,6 +16,8 @@ def to_system_data(file_name, md=False):
     coords_t = []
     atom_symbols = []
     forces_t = []
+    cells_t = []
+    nopbc = True
 
     with open(file_name) as fp:
         for line in fp:
@@ -29,6 +31,7 @@ def to_system_data(file_name, md=False):
                 flag = 5
                 coords = []
                 atom_symbols = []
+                cells = []
 
             if 1 <= flag <= 3 or 5 <= flag <= 9:
                 flag += 1
@@ -38,18 +41,31 @@ def to_system_data(file_name, md=False):
                     forces_t.append(forces)
                     energy_t.append(energy)
                     coords_t.append(coords)
+                    if cells:
+                        nopbc = False
+                        cells_t.append(cells)
+                    else:
+                        cells_t.append([[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]])
                     flag = 0
                 else:
                     s = line.split()
-                    forces.append([float(line[23:38]), float(line[38:53]), float(line[53:68])])
+                    if line[14:16] == "-2":
+                        # PBC
+                        pass
+                    else:
+                        forces.append([float(line[23:38]), float(line[38:53]), float(line[53:68])])
             elif flag == 10:
                 # atom_symbols and coords
                 if line.startswith(" -------"):
                     flag = 0
                 else:
                     s = line.split()
-                    coords.append([float(x) for x in s[3:6]])
-                    atom_symbols.append(symbols[int(s[1])])
+                    if int(s[1]) == -2:
+                        # PBC cells, see https://gaussian.com/pbc/
+                        cells.append([float(x) for x in s[3:6]])
+                    else:
+                        coords.append([float(x) for x in s[3:6]])
+                        atom_symbols.append(symbols[int(s[1])])
 
     assert(coords_t), "cannot find coords"
     assert(energy_t), "cannot find energies"
@@ -66,6 +82,6 @@ def to_system_data(file_name, md=False):
     data['energies'] = np.array(energy_t) * energy_convert
     data['coords'] = np.array(coords_t)
     data['orig'] = np.array([0, 0, 0])
-    data['cells'] = np.array([[[100., 0., 0.], [0., 100., 0.], [0., 0., 100.]] for _ in energy_t])
-    data['nopbc'] = True
+    data['cells'] = np.array(cells_t)
+    data['nopbc'] = nopbc
     return data
