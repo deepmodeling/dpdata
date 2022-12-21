@@ -10,5 +10,5 @@ class TestGaussianGJF(unittest.TestCase):
                                              fmt = 'vasp/outcar')
     
     def test_dump_gaussian_gjf(self):
-        self.system.to_gaussian_gjf('tmp.gjf')
+        self.system.to_gaussian_gjf('tmp.gjf', keywords="force b3lyp/6-31g*")
         os.remove('tmp.deepmd.hdf5')
