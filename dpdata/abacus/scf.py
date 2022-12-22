@@ -98,7 +98,7 @@ def get_energy(outlines):
             Etot = float(line.split()[1]) # in eV
             break
     if not Etot:
-       raise RuntimeError("Final total energy cannot be found in output. Unknown problem.")
+        return Etot,False
     for line in outlines:
         if "convergence has NOT been achieved!" in line:
             return Etot,False

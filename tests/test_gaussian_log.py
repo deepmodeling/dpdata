@@ -74,5 +74,23 @@ class TestNonCoveragedGaussianLoadLog(unittest.TestCase, TestGaussianLog):
     def test_virials(self) :
         self.assertFalse('virials' in self.system.data)
 
+
+class TestGaussianLoadPBCLog(unittest.TestCase, TestGaussianLog):
+    """PBC."""
+    def setUp (self) :
+        self.system = dpdata.LabeledSystem('gaussian/h2pbc.gaussianlog', 
+                                           fmt = 'gaussian/log')
+        self.atom_names = ['H']
+        self.atom_numbs = [2]
+        self.nframes = 1
+        self.atom_types = [0, 0]
+        self.cells = (np.eye(3) * 10.0).reshape(1, 3, 3)
+
+    def test_cells(self) :
+        self.assertTrue(np.allclose(self.system.data['cells'], self.cells))
+
+    def test_nopbc(self):
+        self.assertEqual(self.system.nopbc, False)
+
 if __name__ == '__main__':
     unittest.main()

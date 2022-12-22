@@ -229,6 +229,12 @@ def make_gaussian_input(
                         (symbol, frag_index[ii] + 1, *coordinate))
         else:
             buff.append("%s %f %f %f" % (symbol, *coordinate))
+    if not sys_data.get('nopbc', False):
+        # PBC condition
+        cell = sys_data['cells'][0]
+        for ii in range(3):
+            # use TV as atomic symbol, see https://gaussian.com/pbc/
+            buff.append('TV %f %f %f' % (*cell[ii],))
     if basis_set is not None:
         # custom basis set
         buff.extend(['', basis_set, ''])
