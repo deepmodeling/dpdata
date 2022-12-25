@@ -7,15 +7,15 @@ One can download the source code of dpdata by
 ```bash
 git clone https://github.com/deepmodeling/dpdata.git dpdata
 ```
-then use `setup.py` to install the module
+then use `pip` to install the module from source
 ```bash
 cd dpdata
-python setup.py install
+pip install .
 ```
 
-`dpdata` can also by install via pip
+`dpdata` can also by install via pip without source
 ```bash
-pip3 install dpdata
+pip install dpdata
 ```
 
 
