@@ -6,6 +6,12 @@ bohr2ang = LengthConversion("bohr", "angstrom").value()
 ry2ev = EnergyConversion("rydberg", "eV").value()
 kbar2evperang3 = PressureConversion("kbar", "eV/angstrom^3").value()
 
+def CheckFile(ifile):
+    if not os.path.isfile(ifile):
+        print("Can not find file %s" % ifile)
+        return False
+    return True
+
 def get_block (lines, keyword, skip = 0, nlines = None):
     ret = []
     found = False
@@ -108,7 +114,8 @@ def get_force (outlines, natoms):
     force = []
     force_inlines = get_block (outlines, "TOTAL-FORCE (eV/Angstrom)", skip = 4, nlines=np.sum(natoms))
     if force_inlines is None:
-        raise RuntimeError("TOTAL-FORCE (eV/Angstrom) is not found in running_scf.log. Please check.")
+        print("TOTAL-FORCE (eV/Angstrom) is not found in OUT.XXX/running_scf.log. May be you haven't set 'cal_force 1' in the INPUT.")
+        return [[]]
     for line in force_inlines:
         force.append([float(f) for f in line.split()[1:4]])
     force = np.array(force)
@@ -127,17 +134,32 @@ def get_stress(outlines):
 
 
 def get_frame (fname):
+    data = {'atom_names':[],\
+            'atom_numbs':[],\
+            'atom_types':[],\
+            'cells':[],\
+            'coords':[],\
+            'energies':[],\
+            'forces':[]}
+    
     if type(fname) == str:
         # if the input parameter is only one string, it is assumed that it is the 
         # base directory containing INPUT file;
         path_in = os.path.join(fname, "INPUT")
     else:
         raise RuntimeError('invalid input')    
+    
+    if not CheckFile(path_in):
+        return data
+     
     with open(path_in, 'r') as fp:
         inlines = fp.read().split('\n')
     
     geometry_path_in = get_geometry_in(fname, inlines) 
     path_out = get_path_out(fname, inlines) 
+    if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
+        return data
+    
     with open(geometry_path_in, 'r') as fp:
         geometry_inlines = fp.read().split('\n')
     with open(path_out, 'r') as fp:
@@ -145,25 +167,18 @@ def get_frame (fname):
 
     celldm, cell = get_cell(geometry_inlines) 
     atom_names, natoms, types, coords = get_coords(celldm, cell, geometry_inlines, inlines) 
+    data['atom_names'] = atom_names
+    data['atom_numbs'] = natoms
+    data['atom_types'] = types
     
     energy,converge = get_energy(outlines) 
     if not converge:
-        return {'atom_names':atom_names,\
-                'atom_numbs':natoms,\
-                'atom_types':types,\
-                'cells':[],\
-                'coords':[],\
-                'energies':[],\
-                'forces':[]}
+        return data
     force = get_force (outlines, natoms) 
     stress = get_stress(outlines) 
     if stress is not None:
         stress *= np.abs(np.linalg.det(cell)) 
     
-    data = {}
-    data['atom_names'] = atom_names
-    data['atom_numbs'] = natoms
-    data['atom_types'] = types
     data['cells'] = cell[np.newaxis, :, :]
     data['coords'] = coords[np.newaxis, :, :]
     data['energies'] = np.array(energy)[np.newaxis]
