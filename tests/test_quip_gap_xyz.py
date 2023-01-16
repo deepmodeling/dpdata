@@ -7,7 +7,7 @@ from comp_sys import CompLabeledSys, IsPBC
 class TestQuipGapxyz1(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.multi_systems = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','quip/gap/xyz')
-        self.system_1 = self.multi_systems.systems['B1C9']
+        self.system_1 = self.multi_systems.systems['B1C9_virials']
         self.system_2 = dpdata.LabeledSystem('xyz/B1C9', fmt='deepmd')
         self.places = 6
         self.e_places = 6
@@ -17,11 +17,11 @@ class TestQuipGapxyz1(unittest.TestCase, CompLabeledSys, IsPBC):
 class TestQuipGapxyz2(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.system_temp0 = dpdata.MultiSystems.from_file(file_name='xyz/xyz_unittest.xyz', fmt='quip/gap/xyz')
-        self.system_1 = self.system_temp0.systems['B5C7'] # .sort_atom_types()
+        self.system_1 = self.system_temp0.systems['B5C7_virials'] # .sort_atom_types()
         self.system_temp1 = dpdata.LabeledSystem('xyz/B1C9', fmt='deepmd')
         self.system_temp2 = dpdata.LabeledSystem('xyz/B5C7', fmt='deepmd')
         self.system_temp3 = dpdata.MultiSystems(self.system_temp2, self.system_temp1)
-        self.system_2 = self.system_temp3.systems['B5C7']
+        self.system_2 = self.system_temp3.systems['B5C7_virials']
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -30,10 +30,10 @@ class TestQuipGapxyz2(unittest.TestCase, CompLabeledSys, IsPBC):
 class TestQuipGapxyzsort1(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.multi_systems_1 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.sort.xyz','quip/gap/xyz')
-        self.system_1 = self.multi_systems_1.systems['B5C7']
+        self.system_1 = self.multi_systems_1.systems['B5C7_virials']
         self.system_1.sort_atom_types()
         self.multi_systems_2 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','quip/gap/xyz')
-        self.system_2 = self.multi_systems_2.systems['B5C7']
+        self.system_2 = self.multi_systems_2.systems['B5C7_virials']
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -42,10 +42,10 @@ class TestQuipGapxyzsort1(unittest.TestCase, CompLabeledSys, IsPBC):
 class TestQuipGapxyzsort2(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.multi_systems_1 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.sort.xyz','quip/gap/xyz')
-        self.system_1 = self.multi_systems_1.systems['B1C9']
+        self.system_1 = self.multi_systems_1.systems['B1C9_virials']
         self.system_1.sort_atom_types()
         self.multi_systems_2 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','quip/gap/xyz')
-        self.system_2 = self.multi_systems_2.systems['B1C9']
+        self.system_2 = self.multi_systems_2.systems['B1C9_virials']
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -54,10 +54,10 @@ class TestQuipGapxyzsort2(unittest.TestCase, CompLabeledSys, IsPBC):
 class TestQuipGapxyzfield(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.multi_systems_1 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.field.xyz','quip/gap/xyz')
-        self.system_1 = self.multi_systems_1.systems['B1C9']
+        self.system_1 = self.multi_systems_1.systems['B1C9_virials']
         self.system_1.sort_atom_types()
         self.multi_systems_2 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','quip/gap/xyz')
-        self.system_2 = self.multi_systems_2.systems['B1C9']
+        self.system_2 = self.multi_systems_2.systems['B1C9_virials']
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -66,10 +66,10 @@ class TestQuipGapxyzfield(unittest.TestCase, CompLabeledSys, IsPBC):
 class TestQuipGapxyzfield2(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp (self) :
         self.multi_systems_1 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.field.xyz','quip/gap/xyz')
-        self.system_1 = self.multi_systems_1.systems['B5C7']
+        self.system_1 = self.multi_systems_1.systems['B5C7_virials']
         self.system_1.sort_atom_types()
         self.multi_systems_2 = dpdata.MultiSystems.from_file('xyz/xyz_unittest.xyz','quip/gap/xyz')
-        self.system_2 = self.multi_systems_2.systems['B5C7']
+        self.system_2 = self.multi_systems_2.systems['B5C7_virials']
         self.places = 6
         self.e_places = 6
         self.f_places = 6
