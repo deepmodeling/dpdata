@@ -1,4 +1,4 @@
-import os
+import os,shutil
 import numpy as np
 import unittest
 from context import dpdata
@@ -6,7 +6,14 @@ from dpdata.unit import LengthConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
 
-class TestABACUSRelax:
+class TestABACUSRelaxLabeledOutput(unittest.TestCase):
+
+    def setUp(self):
+        shutil.copy('abacus.relax/OUT.abacus/running_cell-relax.log.normal','abacus.relax/OUT.abacus/running_cell-relax.log')
+        self.system = dpdata.LabeledSystem('abacus.relax',fmt='abacus/relax') 
+    def tearDown(self):
+        if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
+            os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
 
     def test_atom_names(self) :
         self.assertEqual(self.system.data['atom_names'], ['H','O'])
@@ -65,11 +72,25 @@ class TestABACUSRelax:
        -465.81235433])
         np.testing.assert_almost_equal(self.system.data['energies'], ref_energy)
 
-
-class TestABACUSMDLabeledOutput(unittest.TestCase, TestABACUSRelax):
+class TestABACUSRelaxLabeledOutputAbnormal(unittest.TestCase):
 
     def setUp(self):
-        self.system = dpdata.LabeledSystem('abacus.relax',fmt='abacus/relax') 
+        shutil.copy('abacus.relax/OUT.abacus/running_cell-relax.log.abnormal','abacus.relax/OUT.abacus/running_cell-relax.log')
+        self.system = dpdata.LabeledSystem('abacus.relax',fmt='abacus/relax')
+        
+    def  test_result(self):
+        data = self.system.data
+        self.assertEqual(len(data['coords']),4)
+        self.assertEqual(len(data['energies']),len(data['coords']))
+        self.assertEqual(len(data['cells']),len(data['coords']))
+        self.assertEqual(len(data['forces']),len(data['coords']))
+        self.assertEqual(len(data['stress']),len(data['coords']))
+        self.assertEqual(len(data['virials']),len(data['coords']))
+        np.testing.assert_almost_equal(data['energies'][3],-465.81235433)
+        
+    def tearDown(self):
+        if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
+            os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
 
 if __name__ == '__main__':
     unittest.main()
