@@ -18,6 +18,12 @@ def get_log_file(fname, inlines):
 def get_coords_from_log(loglines,natoms):
     '''
     NOTICE: unit of coords and cells is Angstrom
+    order:
+        coordinate
+        cell (no output if cell is not changed)
+        energy (no output, if SCF is not converged)
+        force (no output, if cal_force is not setted or abnormal ending)
+        stress (no output, if set cal_stress is not setted or abnormal ending)
     '''
     natoms_log = 0
     for line in loglines:
@@ -31,47 +37,43 @@ def get_coords_from_log(loglines,natoms):
     coords = []
     force = []
     stress = []
+    coord_direct = []  #if the coordinate is direct type or not
 
     for i in range(len(loglines)):
         line = loglines[i]
         if line[18:41] == "lattice constant (Bohr)": 
             a0 = float(line.split()[-1])
         elif len(loglines[i].split()) >=2 and loglines[i].split()[1] == 'COORDINATES':
+            #read coordinate information
             coords.append([])
             direct_coord = False
             if loglines[i].split()[0] == 'DIRECT':
-                direct_coord = True
+                coord_direct.append(True)
                 for k in range(2,2+natoms):
                     coords[-1].append(list(map(lambda x: float(x),loglines[i+k].split()[1:4])))
             elif loglines[i].split()[0] == 'CARTESIAN':
+                coord_direct.append(False)
                 for k in range(2,2+natoms):
                     coords[-1].append(list(map(lambda x: float(x)*a0,loglines[i+k].split()[1:4])))  
             else:
                 assert(False),"Unrecongnized coordinate type, %s, line:%d" % (loglines[i].split()[0],i)
+                
+        elif loglines[i][1:56] == "Lattice vectors: (Cartesian coordinate: in unit of a_0)":
+            #add the cell information for previous structures
+            while len(cells) < len(coords) - 1:
+                cells.append(cells[-1])           
+            #get current cell information    
+            cells.append([])
+            for k in range(1,4):
+                cells[-1].append(list(map(lambda x:float(x)*a0,loglines[i+k].split()[0:3])))                
 
-            converg = True
-            for j in range(i):
-                if loglines[i-j-1][1:36] == 'Ion relaxation is not converged yet':
-                    converg = False
-                    break
-                elif loglines[i-j-1][1:29] == 'Ion relaxation is converged!':
-                    converg = True
-                    break
-
-            if converg:
-                for j in range(i+1,len(loglines)):
-                    if loglines[j][1:56] == "Lattice vectors: (Cartesian coordinate: in unit of a_0)":
-                        cells.append([])
-                        for k in range(1,4):
-                            cells[-1].append(list(map(lambda x:float(x)*a0,loglines[j+k].split()[0:3]))) 
-                        break
-            else:
-                cells.append(cells[-1])
-
-            coords[-1] = np.array(coords[-1])
-            if direct_coord:
-                coords[-1] = coords[-1].dot(cells[-1])
-
+        elif line[1:14] == "final etot is":
+            #add the energy for previous structures whose SCF is not converged
+            while len(energy) < len(coords) - 1:
+                energy.append(np.nan)
+            #get the energy of current structure
+            energy.append(float(line.split()[-2]))
+            
         elif line[4:15] == "TOTAL-FORCE":
             force.append([])
             for j in range(5,5+natoms):
@@ -80,18 +82,58 @@ def get_coords_from_log(loglines,natoms):
             stress.append([])
             for j in range(4,7):
                 stress[-1].append(list(map(lambda x:float(x),loglines[i+j].split()[0:3])))
-        elif line[1:14] == "final etot is":
-            energy.append(float(line.split()[-2]))
 
-    assert(len(cells) == len(coords) or len(cells)+1 == len(coords)),"ERROR: detected %d coordinates and %d cells" % (len(coords),len(cells))
-    if len(cells)+1 == len(coords): del(coords[-1])
-
+    #delete last structures which has no energy
+    while len(energy) < len(coords):
+        del coords[-1]
+        del coord_direct[-1]
+    
+    #add cells for last structures whose cell is not changed 
+    while len(cells) < len(coords):
+        cells.append(cells[-1])
+        
+    #only keep structures that have all of coord, force and stress
+    if len(stress) == 0 and len(force) == 0:
+        minl = len(coords)
+    elif len(stress) == 0:
+        minl = min(len(coords),len(force))
+        force = force[:minl]
+    elif len(force) == 0:
+        minl = min(len(coords),len(stress))
+        stress = stress[:minl]
+    else:
+        minl = min(len(coords),len(force),len(stress))
+        force = force[:minl]
+        stress = stress[:minl]
+        
+    coords = coords[:minl]
+    energy = energy[:minl]
+    cells = cells[:minl]
+  
+    #delete structures whose energy is np.nan
+    for i in range(minl):
+        if np.isnan(energy[i-minl]):
+            del energy[i-minl]
+            del coords[i-minl]
+            del cells[i-minl]
+            del coord_direct[i-minl]
+            if len(force) > 0:
+                del force[i-minl]
+            if len(stress) > 0:
+                del stress[i-minl]
+    
     energy = np.array(energy)
     cells = np.array(cells)
     coords = np.array(coords)
     stress = np.array(stress)
     force = np.array(force)
 
+    #transfer direct coordinate to cartessian type
+    for i in range(len(coords)):
+        if coord_direct[i]:
+            coords[i] = coords[i].dot(cells[i])
+
+    #transfer bohrium to angstrom
     cells *= bohr2ang
     coords *= bohr2ang
 
