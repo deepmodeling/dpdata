@@ -13,16 +13,17 @@ def get_formats() -> dict:
         formats[ff].append(kk)
     return formats
 
+
 def detect_overridden(cls: Format, method: str) -> bool:
     """Check whether a method is override
-    
+
     Parameters
     ----------
     cls : Format
         a format
     method : str
         method name
-    
+
     Returns
     -------
     bool
@@ -30,37 +31,44 @@ def detect_overridden(cls: Format, method: str) -> bool:
     """
     return method in cls.__dict__
 
+
 def get_cls_link(cls: object) -> str:
     """Returns class link.
-    
+
     Parameters
     ----------
     cls : object
         the class
-    
+
     Returns
     -------
     str
         the link of a class
     """
-    return ':class:`%s <%s>`' % (cls.__name__, ".".join([cls.__module__, cls.__name__]))
+    return ":class:`%s <%s>`" % (cls.__name__, ".".join([cls.__module__, cls.__name__]))
+
 
 def check_supported(fmt: Format):
     methods = set()
     for mtd in [
-        'from_system', 'to_system',
-        'from_labeled_system', 'to_labeled_system',
-        'from_bond_order_system', 'to_bond_order_system',
-        'from_multi_systems', 'to_multi_systems',
-        ]:
+        "from_system",
+        "to_system",
+        "from_labeled_system",
+        "to_labeled_system",
+        "from_bond_order_system",
+        "to_bond_order_system",
+        "from_multi_systems",
+        "to_multi_systems",
+    ]:
         if detect_overridden(fmt, mtd):
             methods.add(mtd)
-            if mtd == 'to_system':
-                methods.add('to_labeled_system')
+            if mtd == "to_system":
+                methods.add("to_labeled_system")
     if fmt.MultiMode != fmt.MultiModes.NotImplemented:
-        methods.add('from_multi_systems')
-        methods.add('to_multi_systems')
+        methods.add("from_multi_systems")
+        methods.add("to_multi_systems")
     return methods
+
 
 method_links = {
     "from_system": ":func:`System() <dpdata.system.System>`",
@@ -75,16 +83,22 @@ method_links = {
 
 if __name__ == "__main__":
     formats = get_formats()
-    with open('formats.csv', 'w', newline='') as csvfile:
+    with open("formats.csv", "w", newline="") as csvfile:
         fieldnames = [
-            'Class', 'Alias', 'Supported Functions',
-            ]
+            "Class",
+            "Alias",
+            "Supported Functions",
+        ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
         for kk, vv in formats.items():
-            writer.writerow({
-                'Class': get_cls_link(kk),
-                'Alias': '\n'.join(('``%s``' % vvv for vvv in vv)),
-                'Supported Functions': '\n'.join(method_links[mtd] for mtd in check_supported(kk)),
-            })
+            writer.writerow(
+                {
+                    "Class": get_cls_link(kk),
+                    "Alias": "\n".join(("``%s``" % vvv for vvv in vv)),
+                    "Supported Functions": "\n".join(
+                        method_links[mtd] for mtd in check_supported(kk)
+                    ),
+                }
+            )

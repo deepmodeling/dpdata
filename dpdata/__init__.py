@@ -14,11 +14,10 @@ except ImportError:
 try:
     # prevent conflict with dpdata.rdkit
     import rdkit as _
+
     USE_RDKIT = True
 except ModuleNotFoundError:
     USE_RDKIT = False
 
 if USE_RDKIT:
     from .bond_order_system import BondOrderSystem
-
-

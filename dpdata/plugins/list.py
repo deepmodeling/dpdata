@@ -8,7 +8,8 @@ class ListFormat(Format):
         convert system to list, usefull for data collection
         """
         from dpdata import System, LabeledSystem
-        if 'forces' in data:
+
+        if "forces" in data:
             system = LabeledSystem(data=data)
         else:
             system = System(data=data)

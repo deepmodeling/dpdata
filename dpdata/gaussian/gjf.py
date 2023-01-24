@@ -10,6 +10,7 @@ import warnings
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components
+
 try:
     from openbabel import openbabel
 except ImportError:
@@ -20,10 +21,9 @@ except ImportError:
 from dpdata.periodic_table import Element
 
 
-
 def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
     """Detect fragments from coordinates.
-    
+
     Parameters
     ----------
     symbols : list[str]
@@ -52,7 +52,9 @@ def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
         if Open Babel is not installed
     """
     if openbabel is None:
-        raise ImportError("Open Babel (Python interface) should be installed to detect fragmentation!")
+        raise ImportError(
+            "Open Babel (Python interface) should be installed to detect fragmentation!"
+        )
     atomnumber = len(symbols)
     # Use openbabel to connect atoms
     mol = openbabel.OBMol()
@@ -74,14 +76,15 @@ def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
         bonds.extend([[a, b, bo], [b, a, bo]])
     bonds = np.array(bonds, ndmin=2).reshape((-1, 3))
     graph = csr_matrix(
-        (bonds[:, 2], (bonds[:, 0], bonds[:, 1])), shape=(atomnumber, atomnumber))
+        (bonds[:, 2], (bonds[:, 0], bonds[:, 1])), shape=(atomnumber, atomnumber)
+    )
     frag_numb, frag_index = connected_components(graph, 0)
     return frag_numb, frag_index
 
 
 def detect_multiplicity(symbols: np.ndarray) -> int:
     """Find the minimal multiplicity of the given molecules.
-    
+
     Parameters
     ----------
     symbols : np.ndarray
@@ -102,15 +105,15 @@ def detect_multiplicity(symbols: np.ndarray) -> int:
 
 
 def make_gaussian_input(
-        sys_data: dict,
-        keywords: Union[str, List[str]],
-        multiplicity: Union[str ,int] = "auto",
-        charge: int = 0,
-        fragment_guesses: bool = False,
-        basis_set: Optional[str] = None,
-        keywords_high_multiplicity: Optional[str] = None,
-        nproc: int = 1,
-        ) -> str:
+    sys_data: dict,
+    keywords: Union[str, List[str]],
+    multiplicity: Union[str, int] = "auto",
+    charge: int = 0,
+    fragment_guesses: bool = False,
+    basis_set: Optional[str] = None,
+    keywords_high_multiplicity: Optional[str] = None,
+    nproc: int = 1,
+) -> str:
     """Make gaussian input file.
 
     Parameters
@@ -149,21 +152,21 @@ def make_gaussian_input(
     str
         gjf output string
     """
-    coordinates = sys_data['coords'][0]
-    atom_names = sys_data['atom_names']
-    atom_numbs = sys_data['atom_numbs']
-    atom_types = sys_data['atom_types']
+    coordinates = sys_data["coords"][0]
+    atom_names = sys_data["atom_names"]
+    atom_numbs = sys_data["atom_numbs"]
+    atom_types = sys_data["atom_types"]
     # get atom symbols list
     symbols = [atom_names[atom_type] for atom_type in atom_types]
 
     # assume default charge is zero and default spin multiplicity is 1
-    if 'charge' in sys_data.keys():
-        charge = sys_data['charge']
-        
+    if "charge" in sys_data.keys():
+        charge = sys_data["charge"]
+
     use_fragment_guesses = False
     if isinstance(multiplicity, int):
         mult_auto = False
-    elif multiplicity == 'auto':
+    elif multiplicity == "auto":
         mult_auto = True
     else:
         raise RuntimeError('The keyword "multiplicity" is illegal.')
@@ -186,16 +189,22 @@ def make_gaussian_input(
             mult_frags.append(detect_multiplicity(np.array(symbols)[idx]))
         if use_fragment_guesses:
             multiplicity = sum(mult_frags) - frag_numb + 1 - charge % 2
-            chargekeywords_frag = "%d %d" % (charge, multiplicity) + \
-                ''.join([' %d %d' % (charge, mult_frag)
-                         for mult_frag in mult_frags])
+            chargekeywords_frag = "%d %d" % (charge, multiplicity) + "".join(
+                [" %d %d" % (charge, mult_frag) for mult_frag in mult_frags]
+            )
         else:
             multi_frags = np.array(mult_frags)
-            multiplicity = 1 + \
-                np.count_nonzero(multi_frags == 2) % 2 + \
-                np.count_nonzero(multi_frags == 3) * 2 - charge % 2
+            multiplicity = (
+                1
+                + np.count_nonzero(multi_frags == 2) % 2
+                + np.count_nonzero(multi_frags == 3) * 2
+                - charge % 2
+            )
 
-        if keywords_high_multiplicity is not None and np.count_nonzero(multi_frags == 2) >= 2:
+        if (
+            keywords_high_multiplicity is not None
+            and np.count_nonzero(multi_frags == 2) >= 2
+        ):
             # at least 2 radicals
             keywords = keywords_high_multiplicity
 
@@ -207,39 +216,58 @@ def make_gaussian_input(
     buff = []
     # keywords, e.g., force b3lyp/6-31g**
     if use_fragment_guesses:
-        keywords[0] = '{} guess=fragment={}'.format(
-            keywords[0], frag_numb)
+        keywords[0] = "{} guess=fragment={}".format(keywords[0], frag_numb)
 
     chkkeywords = []
-    if len(keywords)>1:
-        chkkeywords.append('%chk={}.chk'.format(str(uuid.uuid1())))
+    if len(keywords) > 1:
+        chkkeywords.append("%chk={}.chk".format(str(uuid.uuid1())))
 
-    nprockeywords = '%nproc={:d}'.format(nproc)
+    nprockeywords = "%nproc={:d}".format(nproc)
     # use formula as title
-    titlekeywords = ''.join(["{}{}".format(symbol,numb) for symbol,numb in
-            zip(atom_names, atom_numbs)])
-    chargekeywords = '{} {}'.format(charge, multiplicity)
+    titlekeywords = "".join(
+        ["{}{}".format(symbol, numb) for symbol, numb in zip(atom_names, atom_numbs)]
+    )
+    chargekeywords = "{} {}".format(charge, multiplicity)
 
-    buff = [*chkkeywords, nprockeywords, '#{}'.format(
-        keywords[0]), '', titlekeywords, '', (chargekeywords_frag if use_fragment_guesses else chargekeywords)]
+    buff = [
+        *chkkeywords,
+        nprockeywords,
+        "#{}".format(keywords[0]),
+        "",
+        titlekeywords,
+        "",
+        (chargekeywords_frag if use_fragment_guesses else chargekeywords),
+    ]
 
     for ii, (symbol, coordinate) in enumerate(zip(symbols, coordinates)):
         if use_fragment_guesses:
-            buff.append("%s(Fragment=%d) %f %f %f" %
-                        (symbol, frag_index[ii] + 1, *coordinate))
+            buff.append(
+                "%s(Fragment=%d) %f %f %f" % (symbol, frag_index[ii] + 1, *coordinate)
+            )
         else:
             buff.append("%s %f %f %f" % (symbol, *coordinate))
-    if not sys_data.get('nopbc', False):
+    if not sys_data.get("nopbc", False):
         # PBC condition
-        cell = sys_data['cells'][0]
+        cell = sys_data["cells"][0]
         for ii in range(3):
             # use TV as atomic symbol, see https://gaussian.com/pbc/
-            buff.append('TV %f %f %f' % (*cell[ii],))
+            buff.append("TV %f %f %f" % (*cell[ii],))
     if basis_set is not None:
         # custom basis set
-        buff.extend(['', basis_set, ''])
+        buff.extend(["", basis_set, ""])
     for kw in itertools.islice(keywords, 1, None):
-        buff.extend(['\n--link1--', *chkkeywords, nprockeywords,
-                    '#{}'.format(kw), '', titlekeywords, '', chargekeywords, ''])
-    buff.append('\n')
-    return '\n'.join(buff)
+        buff.extend(
+            [
+                "\n--link1--",
+                *chkkeywords,
+                nprockeywords,
+                "#{}".format(kw),
+                "",
+                titlekeywords,
+                "",
+                chargekeywords,
+                "",
+            ]
+        )
+    buff.append("\n")
+    return "\n".join(buff)
