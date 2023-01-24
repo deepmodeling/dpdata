@@ -18,4 +18,3 @@ repos:
     -   id: black-jupyter
 ci:
   autoupdate_branch: devel
-
