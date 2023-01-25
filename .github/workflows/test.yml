@@ -15,16 +15,24 @@ jobs:
     - uses: actions/checkout@v2
     # set up conda
     - name: Set up Python ${{ matrix.python-version }}
-      uses: conda-incubator/setup-miniconda@v2
+      uses: actions/setup-python@v4
       with:
-        auto-activate-base: true
-        activate-environment: ""
+        python-version: ${{ matrix.python-version }}
     # install rdkit and openbabel
     - name: Install rdkit
-      run: conda create -c conda-forge -n my-rdkit-env python=${{ matrix.python-version }} rdkit openbabel;
+      run: python -m pip install rdkit openbabel-wheel
     - name: Install dependencies
-      run: source $CONDA/bin/activate my-rdkit-env && pip install .[amber,ase,pymatgen] coverage codecov
+      run: python -m pip install .[amber,ase,pymatgen] coverage
     - name: Test
-      run: source $CONDA/bin/activate my-rdkit-env && cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
+      run: cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
     - name: Run codecov
-      run: source $CONDA/bin/activate my-rdkit-env && codecov
+      uses: codecov/codecov-action@v3
+  pass:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@release/v1
+      with:
+        jobs: ${{ toJSON(needs) }}

@@ -1,21 +1,21 @@
 **dpdata** is a python package for manipulating data formats of software in computational science, including DeePMD-kit, VASP, LAMMPS, GROMACS, Gaussian.
-dpdata only works with python 3.x.
+dpdata only works with python 3.7 or above.
 
 
 # Installation
-One can download the source code of dpdata by 
+One can download the source code of dpdata by
 ```bash
 git clone https://github.com/deepmodeling/dpdata.git dpdata
 ```
-then use `setup.py` to install the module
+then use `pip` to install the module from source
 ```bash
 cd dpdata
-python setup.py install
+pip install .
 ```
 
-`dpdata` can also by install via pip
+`dpdata` can also by install via pip without source
 ```bash
-pip3 install dpdata
+pip install dpdata
 ```
 
 
@@ -25,10 +25,10 @@ This section gives some examples on how dpdata works. Firstly one needs to impor
 ```python
 import dpdata
 ```
-The typicall workflow of `dpdata` is 
+The typicall workflow of `dpdata` is
 
 1. Load data from vasp or lammps or deepmd-kit data files.
-2. Manipulate data 
+2. Manipulate data
 3. Dump data to in a desired format
 
 
@@ -41,9 +41,9 @@ or let dpdata infer the format (`vasp/poscar`) of the file from the file name ex
 d_poscar = dpdata.System('my.POSCAR')
 ```
 The number of atoms, atom types, coordinates are loaded from the `POSCAR` and stored to a data `System` called `d_poscar`.
-A data `System` (a concept used by [deepmd-kit](https://github.com/deepmodeling/deepmd-kit)) contains frames that has the same number of atoms of the same type. The order of the atoms should be consistent among the frames in one `System`. 
+A data `System` (a concept used by [deepmd-kit](https://github.com/deepmodeling/deepmd-kit)) contains frames that has the same number of atoms of the same type. The order of the atoms should be consistent among the frames in one `System`.
 It is noted that `POSCAR` only contains one frame.
-If the multiple frames stored in, for example, a `OUTCAR` is wanted, 
+If the multiple frames stored in, for example, a `OUTCAR` is wanted,
 ```python
 d_outcar = dpdata.LabeledSystem('OUTCAR')
 ```
@@ -53,9 +53,9 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 
 | Software| format | multi frames | labeled | class	    | format key    |
 | ------- | :---   | :---:        | :---:   | :---          | :---          |
-| vasp	  | poscar | False        | False   | System	    | 'vasp/poscar' | 
-| vasp    | outcar | True         | True    | LabeledSystem | 'vasp/outcar' |	
-| vasp    | xml    | True         | True    | LabeledSystem | 'vasp/xml'    |	
+| vasp	  | poscar | False        | False   | System	    | 'vasp/poscar' |
+| vasp    | outcar | True         | True    | LabeledSystem | 'vasp/outcar' |
+| vasp    | xml    | True         | True    | LabeledSystem | 'vasp/xml'    |
 | lammps  | lmp    | False        | False   | System        | 'lammps/lmp'  |
 | lammps  | dump   | True         | False   | System        | 'lammps/dump' |
 | deepmd  | raw    | True         | False   | System	    | 'deepmd/raw'  |
@@ -80,14 +80,16 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
 | Amber/sqm | sqm.out   | False        | False   | System        | 'sqm/out'            |
 | Gromacs | gro         | True         | False   | System        | 'gromacs/gro'        |
+| ABACUS  | STRU        | False        | False   | System        | 'abacus/stru'         |
 | ABACUS  | STRU        | False        | True    | LabeledSystem | 'abacus/scf'         |
 | ABACUS  | cif         | True         | True    | LabeledSystem | 'abacus/md'          |
+| ABACUS  | STRU        | True         | True    | LabeledSystem | 'abacus/relax'       |
 | ase     | structure   | True         | True    | MultiSystems  | 'ase/structure'      |
 
 
 The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
 
-Use `dpdata.MultiSystems.from_dir` to read from a  directory, `dpdata.MultiSystems` will walk in the directory 
+Use `dpdata.MultiSystems.from_dir` to read from a  directory, `dpdata.MultiSystems` will walk in the directory
 Recursively  and  find all file with specific file_name. Supports all the file formats that `dpdata.LabeledSystem` supports.
 
 Use  `dpdata.MultiSystems.from_file` to read from single file. Single-file support is available for the `quip/gap/xyz` and `ase/structure` formats.
@@ -146,7 +148,7 @@ coords = d_outcar['coords']
 ```
 Available properties are (nframe: number of frames in the system, natoms: total number of atoms in the system)
 
-| key		|  type		| dimension		| are labels	| description 
+| key		|  type		| dimension		| are labels	| description
 | ---		| ---		| ---			| ---		| ---
 | 'atom_names'	| list of str	| ntypes		| False		| The name of each atom type
 | 'atom_numbs'	| list of int	| ntypes		| False		| The number of atoms of each atom type
@@ -184,7 +186,7 @@ dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to('deepmd/raw', 'dpmd_raw')
 by which only the first and last frames are dumped to `dpmd_raw`.
 
 
-## replicate 
+## replicate
 dpdata will create a super cell of the current atom configuration.
 ```python
 dpdata.System('./POSCAR').replicate((1,2,3,) )
@@ -195,9 +197,9 @@ tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in
 ## perturb
 By the following example, each frame of the original system (`dpdata.System('./POSCAR')`) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. `atom_pert_style` indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to `atom_pert_style` are`uniform` (uniform in a ball), and `const` (uniform on a sphere).
 ```python
-perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3, 
-    cell_pert_fraction=0.05, 
-    atom_pert_distance=0.6, 
+perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3,
+    cell_pert_fraction=0.05,
+    atom_pert_distance=0.6,
     atom_pert_style='normal')
 print(perturbed_system.data)
 ```
@@ -211,7 +213,7 @@ s.to_vasp_poscar('POSCAR.P42nmc.replace')
 ```
 
 # BondOrderSystem
-A new class `BondOrderSystem` which inherits from class `System` is introduced in dpdata. This new class contains information of chemical bonds and formal charges (stored in `BondOrderSystem.data['bonds']`, `BondOrderSystem.data['formal_charges']`). Now BondOrderSystem can only read from .mol/.sdf formats, because of its dependency on rdkit (which means rdkit must be installed if you want to use this function). Other formats, such as pdb, must be converted to .mol/.sdf format (maybe with software like open babel). 
+A new class `BondOrderSystem` which inherits from class `System` is introduced in dpdata. This new class contains information of chemical bonds and formal charges (stored in `BondOrderSystem.data['bonds']`, `BondOrderSystem.data['formal_charges']`). Now BondOrderSystem can only read from .mol/.sdf formats, because of its dependency on rdkit (which means rdkit must be installed if you want to use this function). Other formats, such as pdb, must be converted to .mol/.sdf format (maybe with software like open babel).
 ```python
 import dpdata
 system_1 = dpdata.BondOrderSystem("tests/bond_order/CH3OH.mol", fmt="mol") # read from .mol file
@@ -240,7 +242,7 @@ According to our test, our sanitization procedure can successfully read 4852 sma
 
 ```python
 import dpdata
-    
+
 for sdf_file in glob.glob("bond_order/refined-set-ligands/obabel/*sdf"):
     syst = dpdata.BondOrderSystem(sdf_file, sanitize_level='high', verbose=False)
 ```
@@ -258,11 +260,8 @@ If a valence of 3 is detected on carbon, the formal charge will be assigned to -
 
 # Plugins
 
-One can follow [a simple example](plugin_example/) to add their own format by creating and installing plugins. It's critical to add the [Format](dpdata/format.py) class to `entry_points['dpdata.plugins']` in `setup.py`:
-```py
-    entry_points={
-        'dpdata.plugins': [
-            'random=dpdata_random:RandomFormat'
-        ]
-    },
+One can follow [a simple example](plugin_example/) to add their own format by creating and installing plugins. It's critical to add the [Format](dpdata/format.py) class to `entry_points['dpdata.plugins']` in [`pyproject.toml`](plugin_example/pyproject.toml):
+```toml
+[project.entry-points.'dpdata.plugins']
+random = "dpdata_random:RandomFormat"
 ```
