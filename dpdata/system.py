@@ -8,7 +8,7 @@ from copy import deepcopy
 from enum import Enum, unique
 from typing import Any, Tuple, Union
 from monty.json import MSONable
-from monty.serialization import loadfn,dumpfn
+from monty.serialization import loadfn, dumpfn
 from dpdata.periodic_table import Element
 from dpdata.amber.mask import pick_by_amber_mask, load_param_file
 import dpdata
@@ -26,19 +26,21 @@ from dpdata.utils import (
     add_atom_names,
 )
 
+
 def load_format(fmt):
     fmt = fmt.lower()
     formats = Format.get_formats()
     if fmt in formats:
         return formats[fmt]()
     raise NotImplementedError(
-        "Unsupported data format %s. Supported formats: %s" % (
-            fmt, " ".join(formats)
-        ))
+        "Unsupported data format %s. Supported formats: %s" % (fmt, " ".join(formats))
+    )
+
 
 @unique
 class Axis(Enum):
     """Data axis."""
+
     NFRAMES = "nframes"
     NATOMS = "natoms"
     NTYPES = "ntypes"
@@ -64,7 +66,14 @@ class DataType:
     required : bool, default=True
         whether this data is required
     """
-    def __init__(self, name: str, dtype: type, shape: Tuple[int, Axis]=None, required: bool=True) -> None:
+
+    def __init__(
+        self,
+        name: str,
+        dtype: type,
+        shape: Tuple[int, Axis] = None,
+        required: bool = True,
+    ) -> None:
         self.name = name
         self.dtype = dtype
         self.shape = shape
@@ -91,12 +100,12 @@ class DataType:
 
     def check(self, system: "System"):
         """Check if a system has correct data of this type.
-        
+
         Parameters
         ----------
         system : System
             checked system
-        
+
         Raises
         ------
         DataError
@@ -110,28 +119,34 @@ class DataType:
             if isinstance(data, list) and not len(data):
                 pass
             elif not isinstance(data, self.dtype):
-                raise DataError("Type of %s is %s, but expected %s" % (self.name,
-                                type(data).__name__, self.dtype.__name__))
+                raise DataError(
+                    "Type of %s is %s, but expected %s"
+                    % (self.name, type(data).__name__, self.dtype.__name__)
+                )
             # check shape
             if self.shape is not None:
                 shape = self.real_shape(system)
                 # skip checking empty list of np.ndarray
                 if isinstance(data, np.ndarray):
                     if data.size and shape != data.shape:
-                        raise DataError("Shape of %s is %s, but expected %s" % (self.name,
-                                data.shape, shape))
+                        raise DataError(
+                            "Shape of %s is %s, but expected %s"
+                            % (self.name, data.shape, shape)
+                        )
                 elif isinstance(data, list):
                     if len(shape) and shape[0] != len(data):
-                        raise DataError("Length of %s is %d, but expected %d" % (self.name,
-                                len(data), shape[0]))
+                        raise DataError(
+                            "Length of %s is %d, but expected %d"
+                            % (self.name, len(data), shape[0])
+                        )
                 else:
                     raise RuntimeError("Unsupported type to check shape")
         elif self.required:
             raise DataError("%s not found in data" % self.name)
 
 
-class System (MSONable) :
-    '''
+class System(MSONable):
+    """
     The data System
 
     A data System (a concept used by `deepmd-kit <https://github.com/deepmodeling/deepmd-kit>`_)
@@ -153,12 +168,13 @@ class System (MSONable) :
     Restrictions:
         - `d_example['orig']` is always [0, 0, 0]
         - `d_example['cells'][ii]` is always lower triangular (lammps cell tensor convention)
-    
+
     Attributes
     ----------
     DTYPES : tuple[DataType]
         data types of this class
-    '''
+    """
+
     DTYPES = (
         DataType("atom_numbs", list, (Axis.NTYPES,)),
         DataType("atom_names", list, (Axis.NTYPES,)),
@@ -169,15 +185,17 @@ class System (MSONable) :
         DataType("nopbc", bool, required=False),
     )
 
-    def __init__ (self,
-                  file_name = None,
-                  fmt = 'auto',
-                  type_map = None,
-                  begin = 0,
-                  step = 1,
-                  data = None,
-                  convergence_check = True,
-                  **kwargs) :
+    def __init__(
+        self,
+        file_name=None,
+        fmt="auto",
+        type_map=None,
+        begin=0,
+        step=1,
+        data=None,
+        convergence_check=True,
+        **kwargs,
+    ):
         """
         Constructor
 
@@ -199,7 +217,7 @@ class System (MSONable) :
                 - ``vasp/xml``: vasp xml
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in' and file_name+'.pos'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
-                - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required. 
+                - ``abacus/scf``: ABACUS pw/lcao scf. The directory containing INPUT file is required.
                 - ``abacus/md``: ABACUS pw/lcao MD. The directory containing INPUT file is required.
                 - ``abacus/relax``: ABACUS pw/lcao relax or cell-relax. The directory containing INPUT file is required.
                 - ``abacus/stru``: abacus stru
@@ -249,27 +267,35 @@ class System (MSONable) :
             Whether to request a convergence check.
         """
         self.data = {}
-        self.data['atom_numbs'] = []
-        self.data['atom_names'] = []
-        self.data['atom_types'] = []
-        self.data['orig'] = np.array([0, 0, 0])
-        self.data['cells'] = []
-        self.data['coords'] = []
+        self.data["atom_numbs"] = []
+        self.data["atom_names"] = []
+        self.data["atom_types"] = []
+        self.data["orig"] = np.array([0, 0, 0])
+        self.data["cells"] = []
+        self.data["coords"] = []
 
         if data:
-            self.data=data
+            self.data = data
             self.check_data()
             return
-        if file_name is None :
+        if file_name is None:
             return
-        self.from_fmt(file_name, fmt, type_map=type_map, begin= begin, step=step, convergence_check=convergence_check, **kwargs)
+        self.from_fmt(
+            file_name,
+            fmt,
+            type_map=type_map,
+            begin=begin,
+            step=step,
+            convergence_check=convergence_check,
+            **kwargs,
+        )
 
         if type_map is not None:
             self.apply_type_map(type_map)
 
     def check_data(self):
         """Check if data is correct.
-        
+
         Raises
         ------
         DataError
@@ -280,16 +306,19 @@ class System (MSONable) :
         for dd in self.DTYPES:
             dd.check(self)
         if sum(self.get_atom_numbs()) != self.get_natoms():
-            raise DataError("Sum of atom_numbs (%d) is not equal to natoms (%d)." % (sum(self.get_atom_numbs()), self.get_natoms()))
+            raise DataError(
+                "Sum of atom_numbs (%d) is not equal to natoms (%d)."
+                % (sum(self.get_atom_numbs()), self.get_natoms())
+            )
 
     post_funcs = Plugin()
 
-    def from_fmt(self, file_name, fmt='auto', **kwargs):
+    def from_fmt(self, file_name, fmt="auto", **kwargs):
         fmt = fmt.lower()
-        if fmt == 'auto':
-            fmt = os.path.basename(file_name).split('.')[-1].lower()
+        if fmt == "auto":
+            fmt = os.path.basename(file_name).split(".")[-1].lower()
         return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
-    
+
     def from_fmt_obj(self, fmtobj, file_name, **kwargs):
         data = fmtobj.from_system(file_name, **kwargs)
         if data:
@@ -299,26 +328,26 @@ class System (MSONable) :
             else:
                 self.data = {**self.data, **data}
                 self.check_data()
-            if hasattr(fmtobj.from_system, 'post_func'):
+            if hasattr(fmtobj.from_system, "post_func"):
                 for post_f in fmtobj.from_system.post_func:
                     self.post_funcs.get_plugin(post_f)(self)
         return self
 
-    def to(self, fmt: str, *args, **kwargs) -> 'System':
+    def to(self, fmt: str, *args, **kwargs) -> "System":
         """Dump systems to the specific format.
-        
+
         Parameters
         ----------
         fmt : str
             format
-        
+
         Returns
         -------
         System
             self
         """
         return self.to_fmt_obj(load_format(fmt), *args, **kwargs)
-    
+
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
         return fmtobj.to_system(self.data, *args, **kwargs)
 
@@ -326,15 +355,15 @@ class System (MSONable) :
         return self.__str__()
 
     def __str__(self):
-        ret="Data Summary"
-        ret+="\nUnlabeled System"
-        ret+="\n-------------------"
-        ret+="\nFrame Numbers     : %d"%self.get_nframes()
-        ret+="\nAtom Numbers      : %d"%self.get_natoms()
-        ret+="\nElement List      :"
-        ret+="\n-------------------"
-        ret+="\n"+"  ".join(map(str,self.get_atom_names()))
-        ret+="\n"+"  ".join(map(str,self.get_atom_numbs()))
+        ret = "Data Summary"
+        ret += "\nUnlabeled System"
+        ret += "\n-------------------"
+        ret += "\nFrame Numbers     : %d" % self.get_nframes()
+        ret += "\nAtom Numbers      : %d" % self.get_natoms()
+        ret += "\nElement List      :"
+        ret += "\n-------------------"
+        ret += "\n" + "  ".join(map(str, self.get_atom_names()))
+        ret += "\n" + "  ".join(map(str, self.get_atom_numbs()))
         return ret
 
     def __getitem__(self, key):
@@ -343,31 +372,28 @@ class System (MSONable) :
             return self.sub_system(key)
         return self.data[key]
 
-    def __len__(self) :
+    def __len__(self):
         """Returns number of frames in the system"""
         return self.get_nframes()
 
+    def __add__(self, others):
+        """magic method "+" operation"""
+        self_copy = self.copy()
+        if isinstance(others, System):
+            other_copy = others.copy()
+            self_copy.append(other_copy)
+        elif isinstance(others, list):
+            for ii in others:
+                assert isinstance(ii, System)
+                ii_copy = ii.copy()
+                self_copy.append(ii_copy)
+        else:
+            raise RuntimeError("Unspported data structure")
+        return self.__class__.from_dict({"data": self_copy.data})
 
-    def __add__(self,others) :
-       """magic method "+" operation """
-       self_copy=self.copy()
-       if isinstance(others,System):
-          other_copy=others.copy()
-          self_copy.append(other_copy)
-       elif isinstance(others, list):
-          for ii in others:
-              assert(isinstance(ii,System))
-              ii_copy=ii.copy()
-              self_copy.append(ii_copy)
-       else:
-          raise RuntimeError("Unspported data structure")
-       return self.__class__.from_dict({'data':self_copy.data})
-
-
-    def dump(self,filename,indent=4):
-        """dump .json or .yaml file """
-        dumpfn(self.as_dict(),filename,indent=indent)
-
+    def dump(self, filename, indent=4):
+        """dump .json or .yaml file"""
+        dumpfn(self.as_dict(), filename, indent=indent)
 
     def map_atom_types(self, type_map=None) -> np.ndarray:
         """
@@ -387,75 +413,70 @@ class System (MSONable) :
         new_atom_types : np.ndarray
             The mapped atom types
         """
-        if isinstance(type_map,dict) or type_map is None:
-           pass
-        elif isinstance(type_map,list):
-           type_map=dict(zip(type_map,range(len(type_map))))
+        if isinstance(type_map, dict) or type_map is None:
+            pass
+        elif isinstance(type_map, list):
+            type_map = dict(zip(type_map, range(len(type_map))))
         else:
-           raise RuntimeError("Unknown format")
+            raise RuntimeError("Unknown format")
 
         if type_map is None:
-           type_map=elements_index_map(self.get_atom_names().copy(),standard=True)
+            type_map = elements_index_map(self.get_atom_names().copy(), standard=True)
 
-        _set1=set(self.get_atom_names())
-        _set2=set(list(type_map.keys()))
+        _set1 = set(self.get_atom_names())
+        _set2 = set(list(type_map.keys()))
         assert _set1.issubset(_set2)
 
-        atom_types_list=[]
-        for name, numb  in  zip(self.get_atom_names(), self.get_atom_numbs()):
-            atom_types_list.extend([name]*numb)
+        atom_types_list = []
+        for name, numb in zip(self.get_atom_names(), self.get_atom_numbs()):
+            atom_types_list.extend([name] * numb)
         new_atom_types = np.array([type_map[ii] for ii in atom_types_list], dtype=int)
 
         return new_atom_types
 
     @staticmethod
     def load(filename):
-        """rebuild System obj. from .json or .yaml file """
+        """rebuild System obj. from .json or .yaml file"""
         return loadfn(filename)
 
     def as_dict(self):
         """Returns data dict of System instance"""
-        d={"@module": self.__class__.__module__,
-             "@class": self.__class__.__name__,
-             "data": self.data
-          }
+        d = {
+            "@module": self.__class__.__module__,
+            "@class": self.__class__.__name__,
+            "data": self.data,
+        }
         return d
 
-
     def get_atom_names(self):
-        """Returns name of atoms """
-        return  self.data['atom_names']
-
+        """Returns name of atoms"""
+        return self.data["atom_names"]
 
     def get_atom_types(self):
-        """Returns type of atoms """
-        return self.data['atom_types']
-
+        """Returns type of atoms"""
+        return self.data["atom_types"]
 
     def get_atom_numbs(self):
-        """Returns number of atoms """
-        return self.data['atom_numbs']
+        """Returns number of atoms"""
+        return self.data["atom_numbs"]
 
-
-    def get_nframes(self) :
+    def get_nframes(self):
         """Returns number of frames in the system"""
-        return len(self.data['cells'])
+        return len(self.data["cells"])
 
-
-    def get_natoms(self) :
+    def get_natoms(self):
         """Returns total number of atoms in the system"""
-        return len(self.data['atom_types'])
+        return len(self.data["atom_types"])
 
     def get_ntypes(self) -> int:
         """Returns total number of atom types in the system."""
-        return len(self.data['atom_names'])
+        return len(self.data["atom_names"])
 
     def copy(self):
-        """Returns a copy of the system.  """
-        return self.__class__.from_dict({'data':deepcopy(self.data)})
+        """Returns a copy of the system."""
+        return self.__class__.from_dict({"data": deepcopy(self.data)})
 
-
-    def sub_system(self, f_idx) :
+    def sub_system(self, f_idx):
         """
         Construct a subsystem from the system
 
@@ -487,8 +508,7 @@ class System (MSONable) :
                 tmp.data[tt.name] = self.data[tt.name]
         return tmp
 
-
-    def append(self, system) :
+    def append(self, system):
         """
         Append a system to this system
 
@@ -497,44 +517,49 @@ class System (MSONable) :
         system : System
             The system to append
         """
-        if not len(system.data['atom_numbs']):
+        if not len(system.data["atom_numbs"]):
             # skip if the system to append is non-converged
             return False
-        elif not len(self.data['atom_numbs']):
+        elif not len(self.data["atom_numbs"]):
             # this system is non-converged but the system to append is converged
             self.data = system.data
             return False
         if system.uniq_formula != self.uniq_formula:
-            raise RuntimeError('systems with inconsistent formula could not be append: %s v.s. %s' % (self.uniq_formula, system.uniq_formula))
-        if system.data['atom_names'] != self.data['atom_names']:
+            raise RuntimeError(
+                "systems with inconsistent formula could not be append: %s v.s. %s"
+                % (self.uniq_formula, system.uniq_formula)
+            )
+        if system.data["atom_names"] != self.data["atom_names"]:
             # allow to append a system with different atom_names order
             system.sort_atom_names()
             self.sort_atom_names()
-        if (system.data['atom_types'] != self.data['atom_types']).any():
+        if (system.data["atom_types"] != self.data["atom_types"]).any():
             # allow to append a system with different atom_types order
             system.sort_atom_types()
             self.sort_atom_types()
-        for ii in ['atom_numbs', 'atom_names'] :
-            assert(system.data[ii] == self.data[ii])
-        for ii in ['atom_types','orig'] :
-            eq = [v1==v2 for v1,v2 in zip(system.data[ii], self.data[ii])]
-            assert(all(eq))
+        for ii in ["atom_numbs", "atom_names"]:
+            assert system.data[ii] == self.data[ii]
+        for ii in ["atom_types", "orig"]:
+            eq = [v1 == v2 for v1, v2 in zip(system.data[ii], self.data[ii])]
+            assert all(eq)
         for tt in self.DTYPES:
             # check if the first shape is nframes
             if tt.shape is not None and Axis.NFRAMES in tt.shape:
                 if tt.name not in self.data and tt.name in system.data:
-                    raise RuntimeError('system has %s, but this does not' % tt.name)
+                    raise RuntimeError("system has %s, but this does not" % tt.name)
                 elif tt.name in self.data and tt.name not in system.data:
-                    raise RuntimeError('this has %s, but system does not' % tt.name)
+                    raise RuntimeError("this has %s, but system does not" % tt.name)
                 elif tt.name not in self.data and tt.name not in system.data:
                     # skip if both not exist
                     continue
                 # concat any data in nframes axis
                 axis_nframes = tt.shape.index(Axis.NFRAMES)
-                self.data[tt.name] = np.concatenate((self.data[tt.name], system[tt.name]), axis=axis_nframes)
+                self.data[tt.name] = np.concatenate(
+                    (self.data[tt.name], system[tt.name]), axis=axis_nframes
+                )
         if self.nopbc and not system.nopbc:
             # appended system uses PBC, cancel nopbc
-            self.data['nopbc'] = False
+            self.data["nopbc"] = False
         return True
 
     def sort_atom_names(self, type_map=None):
@@ -560,24 +585,24 @@ class System (MSONable) :
         type_map : list
             type_map
         """
-        if type_map is not None and type_map != self.data['atom_names']:
+        if type_map is not None and type_map != self.data["atom_names"]:
             self.sort_atom_names(type_map=type_map)
 
-    def apply_type_map(self, type_map) :
+    def apply_type_map(self, type_map):
         if type_map is not None and type(type_map) is list:
             self.check_type_map(type_map)
         else:
-            raise RuntimeError('invalid type map, cannot be applied')
+            raise RuntimeError("invalid type map, cannot be applied")
 
     def sort_atom_types(self) -> np.ndarray:
         """Sort atom types.
-        
+
         Returns
         -------
         idx : np.ndarray
             new atom index in the Axis.NATOMS
         """
-        idx = np.argsort(self.data['atom_types'])
+        idx = np.argsort(self.data["atom_types"])
         for tt in self.DTYPES:
             if tt.name not in self.data:
                 # skip optional data
@@ -594,8 +619,14 @@ class System (MSONable) :
         """
         Return the formula of this system, like C3H5O2
         """
-        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in
-            zip(self.data['atom_names'], self.data['atom_numbs'])])
+        return "".join(
+            [
+                "{}{}".format(symbol, numb)
+                for symbol, numb in zip(
+                    self.data["atom_names"], self.data["atom_numbs"]
+                )
+            ]
+        )
 
     @property
     def uniq_formula(self):
@@ -604,9 +635,14 @@ class System (MSONable) :
         The uniq_formula sort the elements in formula by names.
         Systems with the same uniq_formula can be append together.
         """
-        return ''.join(["{}{}".format(symbol,numb) for symbol,numb in sorted(
-            zip(self.data['atom_names'], self.data['atom_numbs']))])
-
+        return "".join(
+            [
+                "{}{}".format(symbol, numb)
+                for symbol, numb in sorted(
+                    zip(self.data["atom_names"], self.data["atom_numbs"])
+                )
+            ]
+        )
 
     def extend(self, systems):
         """
@@ -621,18 +657,16 @@ class System (MSONable) :
         for system in systems:
             self.append(system.copy())
 
-    
-    def apply_pbc(self) :
+    def apply_pbc(self):
         """
         Append periodic boundary condition
         """
-        ncoord = dpdata.md.pbc.dir_coord(self.data['coords'], self.data['cells'])
+        ncoord = dpdata.md.pbc.dir_coord(self.data["coords"], self.data["cells"])
         ncoord = ncoord % 1
-        self.data['coords'] = np.matmul(ncoord, self.data['cells'])
-
+        self.data["coords"] = np.matmul(ncoord, self.data["cells"])
 
     @post_funcs.register("remove_pbc")
-    def remove_pbc(self, protect_layer = 9):
+    def remove_pbc(self, protect_layer=9):
         """
         This method does NOT delete the definition of the cells, it
         (1) revises the cell to a cubic cell and ensures that the cell
@@ -645,46 +679,43 @@ class System (MSONable) :
         protect_layer : the protect layer between the atoms and the cell
                         boundary
         """
-        assert(protect_layer >= 0), "the protect_layer should be no less than 0"
+        assert protect_layer >= 0, "the protect_layer should be no less than 0"
         remove_pbc(self.data, protect_layer)
 
-    def affine_map(self, trans, f_idx = 0) :
-        assert(np.linalg.det(trans) != 0)
-        self.data['cells'][f_idx] = np.matmul(self.data['cells'][f_idx], trans)
-        self.data['coords'][f_idx] = np.matmul(self.data['coords'][f_idx], trans)
-
+    def affine_map(self, trans, f_idx=0):
+        assert np.linalg.det(trans) != 0
+        self.data["cells"][f_idx] = np.matmul(self.data["cells"][f_idx], trans)
+        self.data["coords"][f_idx] = np.matmul(self.data["coords"][f_idx], trans)
 
     @post_funcs.register("shift_orig_zero")
-    def _shift_orig_zero(self) :
-        for ff in self.data['coords'] :
-            for ii in ff :
-                ii = ii - self.data['orig']
-        self.data['orig'] = self.data['orig'] - self.data['orig']
-        assert((np.zeros([3]) == self.data['orig']).all())
+    def _shift_orig_zero(self):
+        for ff in self.data["coords"]:
+            for ii in ff:
+                ii = ii - self.data["orig"]
+        self.data["orig"] = self.data["orig"] - self.data["orig"]
+        assert (np.zeros([3]) == self.data["orig"]).all()
 
     @post_funcs.register("rot_lower_triangular")
-    def rot_lower_triangular(self) :
-        for ii in range(self.get_nframes()) :
+    def rot_lower_triangular(self):
+        for ii in range(self.get_nframes()):
             self.rot_frame_lower_triangular(ii)
 
-
-    def rot_frame_lower_triangular(self, f_idx = 0) :
-        qq, rr = np.linalg.qr(self.data['cells'][f_idx].T)
-        if np.linalg.det(qq) < 0 :
+    def rot_frame_lower_triangular(self, f_idx=0):
+        qq, rr = np.linalg.qr(self.data["cells"][f_idx].T)
+        if np.linalg.det(qq) < 0:
             qq = -qq
             rr = -rr
-        self.affine_map(qq, f_idx = f_idx)
+        self.affine_map(qq, f_idx=f_idx)
         rot = np.eye(3)
-        if self.data['cells'][f_idx][0][0] < 0 :
+        if self.data["cells"][f_idx][0][0] < 0:
             rot[0][0] = -1
-        if self.data['cells'][f_idx][1][1] < 0 :
+        if self.data["cells"][f_idx][1][1] < 0:
             rot[1][1] = -1
-        if self.data['cells'][f_idx][2][2] < 0 :
+        if self.data["cells"][f_idx][2][2] < 0:
             rot[2][2] = -1
-        assert(np.linalg.det(rot) == 1)
-        self.affine_map(rot, f_idx = f_idx)
+        assert np.linalg.det(rot) == 1
+        self.affine_map(rot, f_idx=f_idx)
         return np.matmul(qq, rot)
-
 
     def add_atom_names(self, atom_names):
         """
@@ -711,71 +742,99 @@ class System (MSONable) :
         tmp : System
             The system after replication.
         """
-        if len(ncopy) !=3:
-            raise RuntimeError('ncopy must be a list or tuple with 3 int')
+        if len(ncopy) != 3:
+            raise RuntimeError("ncopy must be a list or tuple with 3 int")
         for ii in ncopy:
             if type(ii) is not int:
-                raise RuntimeError('ncopy must be a list or tuple must with 3 int')
+                raise RuntimeError("ncopy must be a list or tuple must with 3 int")
 
         tmp = System()
         nframes = self.get_nframes()
         data = self.data
-        tmp.data['atom_names'] = list(np.copy(data['atom_names']))
-        tmp.data['atom_numbs'] = list(np.array(np.copy(data['atom_numbs'])) * np.prod(ncopy))
-        tmp.data['atom_types'] = np.sort(np.tile(np.copy(data['atom_types']),np.prod(ncopy)))
-        tmp.data['cells'] = np.copy(data['cells'])
+        tmp.data["atom_names"] = list(np.copy(data["atom_names"]))
+        tmp.data["atom_numbs"] = list(
+            np.array(np.copy(data["atom_numbs"])) * np.prod(ncopy)
+        )
+        tmp.data["atom_types"] = np.sort(
+            np.tile(np.copy(data["atom_types"]), np.prod(ncopy))
+        )
+        tmp.data["cells"] = np.copy(data["cells"])
         for ii in range(3):
-            tmp.data['cells'][:,ii,:] *= ncopy[ii]
-        tmp.data['coords'] = np.tile(np.copy(data['coords']),tuple(ncopy)+(1,1,1))
+            tmp.data["cells"][:, ii, :] *= ncopy[ii]
+        tmp.data["coords"] = np.tile(np.copy(data["coords"]), tuple(ncopy) + (1, 1, 1))
 
         for xx in range(ncopy[0]):
             for yy in range(ncopy[1]):
                 for zz in range(ncopy[2]):
-                    tmp.data['coords'][xx,yy,zz,:,:,:] += xx * np.reshape(data['cells'][:,0,:], [-1,1,3])\
-                                                + yy * np.reshape(data['cells'][:,1,:], [-1,1,3])\
-                                                + zz * np.reshape(data['cells'][:,2,:], [-1,1,3])
-        tmp.data['coords'] = np.reshape(np.transpose(tmp.data['coords'], [3,4,0,1,2,5]), (nframes, -1 , 3))
+                    tmp.data["coords"][xx, yy, zz, :, :, :] += (
+                        xx * np.reshape(data["cells"][:, 0, :], [-1, 1, 3])
+                        + yy * np.reshape(data["cells"][:, 1, :], [-1, 1, 3])
+                        + zz * np.reshape(data["cells"][:, 2, :], [-1, 1, 3])
+                    )
+        tmp.data["coords"] = np.reshape(
+            np.transpose(tmp.data["coords"], [3, 4, 0, 1, 2, 5]), (nframes, -1, 3)
+        )
         return tmp
 
     def replace(self, initial_atom_type, end_atom_type, replace_num):
         if type(self) is not dpdata.System:
-            raise RuntimeError('Must use method replace() of the instance of class dpdata.System')
+            raise RuntimeError(
+                "Must use method replace() of the instance of class dpdata.System"
+            )
         if type(replace_num) is not int:
-            raise ValueError("replace_num must be a integer. Now is {replace_num}".format(replace_num=replace_num))
+            raise ValueError(
+                "replace_num must be a integer. Now is {replace_num}".format(
+                    replace_num=replace_num
+                )
+            )
         if replace_num <= 0:
-            raise ValueError("replace_num must be larger than 0.Now is {replace_num}".format(replace_num=replace_num))
+            raise ValueError(
+                "replace_num must be larger than 0.Now is {replace_num}".format(
+                    replace_num=replace_num
+                )
+            )
 
         try:
-            initial_atom_index = self.data['atom_names'].index(initial_atom_type)
+            initial_atom_index = self.data["atom_names"].index(initial_atom_type)
         except ValueError as e:
-            raise ValueError("atom_type  {initial_atom_type}   not in {atom_names}"
-                    .format(initial_atom_type=initial_atom_type, atom_names=self.data['atom_names']))
-        max_replace_num = self.data['atom_numbs'][initial_atom_index]
+            raise ValueError(
+                "atom_type  {initial_atom_type}   not in {atom_names}".format(
+                    initial_atom_type=initial_atom_type,
+                    atom_names=self.data["atom_names"],
+                )
+            )
+        max_replace_num = self.data["atom_numbs"][initial_atom_index]
 
         if replace_num > max_replace_num:
-            raise RuntimeError("not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check."
-                    .format(initial_atom_type=initial_atom_type,max_replace_num=max_replace_num, replace_num=replace_num))
+            raise RuntimeError(
+                "not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check.".format(
+                    initial_atom_type=initial_atom_type,
+                    max_replace_num=max_replace_num,
+                    replace_num=replace_num,
+                )
+            )
 
-        may_replace_indices = [i for i, x in enumerate(self.data['atom_types']) if x == initial_atom_index]
-        to_replace_indices = np.random.choice(may_replace_indices, size=replace_num, replace=False)
+        may_replace_indices = [
+            i for i, x in enumerate(self.data["atom_types"]) if x == initial_atom_index
+        ]
+        to_replace_indices = np.random.choice(
+            may_replace_indices, size=replace_num, replace=False
+        )
 
-        if  end_atom_type not in self.data['atom_names']: 
-            self.data['atom_names'].append(end_atom_type)
-            self.data['atom_numbs'].append(0)
+        if end_atom_type not in self.data["atom_names"]:
+            self.data["atom_names"].append(end_atom_type)
+            self.data["atom_numbs"].append(0)
 
-        end_atom_index = self.data['atom_names'].index(end_atom_type)
+        end_atom_index = self.data["atom_names"].index(end_atom_type)
         for ii in to_replace_indices:
-            self.data['atom_types'][ii] = end_atom_index
-        self.data['atom_numbs'][initial_atom_index] -= replace_num
-        self.data['atom_numbs'][end_atom_index] += replace_num 
+            self.data["atom_types"][ii] = end_atom_index
+        self.data["atom_numbs"][initial_atom_index] -= replace_num
+        self.data["atom_numbs"][end_atom_index] += replace_num
         self.sort_atom_types()
-        
 
-    def perturb(self,
-        pert_num,
-        cell_pert_fraction,
-        atom_pert_distance,
-        atom_pert_style='normal'):
+    def perturb(
+        self, pert_num, cell_pert_fraction, atom_pert_distance, atom_pert_style="normal"
+    ):
         """
         Perturb each frame in the system randomly.
         The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
@@ -812,8 +871,8 @@ class System (MSONable) :
         """
         if type(self) is not dpdata.System:
             raise RuntimeError(
-                f'Using method perturb() of an instance of {type(self)}. '
-                f'Must use method perturb() of the instance of class dpdata.System.'
+                f"Using method perturb() of an instance of {type(self)}. "
+                f"Must use method perturb() of the instance of class dpdata.System."
             )
         perturbed_system = System()
         nframes = self.get_nframes()
@@ -821,11 +880,17 @@ class System (MSONable) :
             for jj in range(pert_num):
                 tmp_system = self[ii].copy()
                 cell_perturb_matrix = get_cell_perturb_matrix(cell_pert_fraction)
-                tmp_system.data['cells'][0] = np.matmul(tmp_system.data['cells'][0],cell_perturb_matrix)
-                tmp_system.data['coords'][0] = np.matmul(tmp_system.data['coords'][0],cell_perturb_matrix)
-                for kk in range(len(tmp_system.data['coords'][0])):
-                    atom_perturb_vector = get_atom_perturb_vector(atom_pert_distance, atom_pert_style)
-                    tmp_system.data['coords'][0][kk] += atom_perturb_vector
+                tmp_system.data["cells"][0] = np.matmul(
+                    tmp_system.data["cells"][0], cell_perturb_matrix
+                )
+                tmp_system.data["coords"][0] = np.matmul(
+                    tmp_system.data["coords"][0], cell_perturb_matrix
+                )
+                for kk in range(len(tmp_system.data["coords"][0])):
+                    atom_perturb_vector = get_atom_perturb_vector(
+                        atom_pert_distance, atom_pert_style
+                    )
+                    tmp_system.data["coords"][0][kk] += atom_perturb_vector
                 tmp_system.rot_lower_triangular()
                 perturbed_system.append(tmp_system)
         return perturbed_system
@@ -838,7 +903,7 @@ class System (MSONable) :
 
     @nopbc.setter
     def nopbc(self, value):
-        self.data['nopbc'] = value
+        self.data["nopbc"] = value
 
     def shuffle(self):
         """Shuffle frames randomly."""
@@ -846,7 +911,7 @@ class System (MSONable) :
         self.data = self.sub_system(idx).data
         return idx
 
-    def predict(self, *args: Any, driver: str="dp", **kwargs: Any) -> "LabeledSystem":
+    def predict(self, *args: Any, driver: str = "dp", **kwargs: Any) -> "LabeledSystem":
         """
         Predict energies and forces by a driver.
 
@@ -874,9 +939,11 @@ class System (MSONable) :
         data = driver.label(self.data.copy())
         return LabeledSystem(data=data)
 
-    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "LabeledSystem":
+    def minimize(
+        self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any
+    ) -> "LabeledSystem":
         """Minimize the geometry.
-        
+
         Parameters
         ----------
         *args : iterable
@@ -898,7 +965,7 @@ class System (MSONable) :
 
     def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
-        
+
         Parameters
         ----------
         idx: int or list or slice
@@ -924,8 +991,10 @@ class System (MSONable) :
                 new_shape[axis_natoms] = idx
                 new_sys.data[tt.name] = self.data[tt.name][tuple(new_shape)]
         # recalculate atom_numbs according to atom_types
-        atom_numbs = np.bincount(new_sys.data['atom_types'], minlength=len(self.get_atom_names()))
-        new_sys.data['atom_numbs'] = list(atom_numbs)
+        atom_numbs = np.bincount(
+            new_sys.data["atom_types"], minlength=len(self.get_atom_names())
+        )
+        new_sys.data["atom_numbs"] = list(atom_numbs)
         if nopbc is True or nopbc is False:
             new_sys.nopbc = nopbc
         return new_sys
@@ -933,30 +1002,32 @@ class System (MSONable) :
     def remove_atom_names(self, atom_names):
         """Remove atom names and all such atoms.
         For example, you may not remove EP atoms in TIP4P/Ew water, which
-        is not a real atom. 
+        is not a real atom.
         """
         if isinstance(atom_names, str):
             atom_names = [atom_names]
         removed_atom_idx = []
         for an in atom_names:
             # get atom name idx
-            idx = self.data['atom_names'].index(an)
-            atom_idx = self.data['atom_types'] == idx
+            idx = self.data["atom_names"].index(an)
+            atom_idx = self.data["atom_types"] == idx
             removed_atom_idx.append(atom_idx)
         picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
         new_sys = self.pick_atom_idx(picked_atom_idx)
         # let's remove atom_names
         # firstly, rearrange atom_names and put these atom_names in the end
-        new_atom_names = list([xx for xx in new_sys.data['atom_names'] if xx not in atom_names])
+        new_atom_names = list(
+            [xx for xx in new_sys.data["atom_names"] if xx not in atom_names]
+        )
         new_sys.sort_atom_names(type_map=new_atom_names + atom_names)
         # remove atom_names and atom_numbs
-        new_sys.data['atom_names'] = new_atom_names
-        new_sys.data['atom_numbs'] = new_sys.data['atom_numbs'][:len(new_atom_names)]
+        new_sys.data["atom_names"] = new_atom_names
+        new_sys.data["atom_numbs"] = new_sys.data["atom_numbs"][: len(new_atom_names)]
         return new_sys
 
     def pick_by_amber_mask(self, param, maskstr, pass_coords=False, nopbc=None):
         """Pick atoms by amber mask
-        
+
         Parameters
         ----------
         param: str or parmed.Structure
@@ -964,7 +1035,7 @@ class System (MSONable) :
         maskstr: str
           Amber masks
         pass_coords: Boolen (default: False)
-            If pass_coords is true, the function will pass coordinates and 
+            If pass_coords is true, the function will pass coordinates and
             return a MultiSystem. Otherwise, the result is
             coordinate-independent, and the function will return System or
             LabeledSystem.
@@ -976,53 +1047,60 @@ class System (MSONable) :
             ms = MultiSystems()
             for sub_s in self:
                 # TODO: this can computed in pararrel
-                idx = pick_by_amber_mask(parm, maskstr, sub_s['coords'][0])
+                idx = pick_by_amber_mask(parm, maskstr, sub_s["coords"][0])
                 ms.append(sub_s.pick_atom_idx(idx, nopbc=nopbc))
             return ms
         else:
             idx = pick_by_amber_mask(parm, maskstr)
             return self.pick_atom_idx(idx, nopbc=nopbc)
 
+
 def get_cell_perturb_matrix(cell_pert_fraction):
-    if cell_pert_fraction<0:
-        raise RuntimeError('cell_pert_fraction can not be negative')
+    if cell_pert_fraction < 0:
+        raise RuntimeError("cell_pert_fraction can not be negative")
     e0 = np.random.rand(6)
-    e = e0 * 2 *cell_pert_fraction - cell_pert_fraction
+    e = e0 * 2 * cell_pert_fraction - cell_pert_fraction
     cell_pert_matrix = np.array(
-        [[1+e[0], 0.5 * e[5], 0.5 * e[4]],
-         [0.5 * e[5], 1+e[1], 0.5 * e[3]],
-         [0.5 * e[4], 0.5 * e[3], 1+e[2]]]
+        [
+            [1 + e[0], 0.5 * e[5], 0.5 * e[4]],
+            [0.5 * e[5], 1 + e[1], 0.5 * e[3]],
+            [0.5 * e[4], 0.5 * e[3], 1 + e[2]],
+        ]
     )
     return cell_pert_matrix
 
-def get_atom_perturb_vector(atom_pert_distance, atom_pert_style='normal'):
+
+def get_atom_perturb_vector(atom_pert_distance, atom_pert_style="normal"):
     random_vector = None
     if atom_pert_distance < 0:
-        raise RuntimeError('atom_pert_distance can not be negative')
+        raise RuntimeError("atom_pert_distance can not be negative")
 
-    if atom_pert_style == 'normal':
+    if atom_pert_style == "normal":
         e = np.random.randn(3)
-        random_vector=(atom_pert_distance/np.sqrt(3))*e
-    elif atom_pert_style == 'uniform':
+        random_vector = (atom_pert_distance / np.sqrt(3)) * e
+    elif atom_pert_style == "uniform":
         e = np.random.randn(3)
         while np.linalg.norm(e) < 0.1:
             e = np.random.randn(3)
-        random_unit_vector = e/np.linalg.norm(e)
+        random_unit_vector = e / np.linalg.norm(e)
         v0 = np.random.rand(1)
-        v = np.power(v0,1/3)
-        random_vector = atom_pert_distance*v*random_unit_vector
-    elif atom_pert_style == 'const' :
+        v = np.power(v0, 1 / 3)
+        random_vector = atom_pert_distance * v * random_unit_vector
+    elif atom_pert_style == "const":
         e = np.random.randn(3)
         while np.linalg.norm(e) < 0.1:
             e = np.random.randn(3)
-        random_unit_vector = e/np.linalg.norm(e)
-        random_vector = atom_pert_distance*random_unit_vector
+        random_unit_vector = e / np.linalg.norm(e)
+        random_vector = atom_pert_distance * random_unit_vector
     else:
-        raise RuntimeError('unsupported options atom_pert_style={}'.format(atom_pert_style))
+        raise RuntimeError(
+            "unsupported options atom_pert_style={}".format(atom_pert_style)
+        )
     return random_vector
 
-class LabeledSystem (System):
-    '''
+
+class LabeledSystem(System):
+    """
     The labeled data System
 
     For example, a labeled water system named `d_example` has two molecules (6 atoms) and `nframes` frames. The labels can be accessed by
@@ -1063,7 +1141,7 @@ class LabeledSystem (System):
             The beginning frame when loading MD trajectory.
         step : int
             The number of skipped frames when loading MD trajectory.
-    '''
+    """
 
     DTYPES = System.DTYPES + (
         DataType("energies", np.ndarray, (Axis.NFRAMES,)),
@@ -1083,7 +1161,7 @@ class LabeledSystem (System):
             else:
                 self.data = {**self.data, **data}
                 self.check_data()
-            if hasattr(fmtobj.from_labeled_system, 'post_func'):
+            if hasattr(fmtobj.from_labeled_system, "post_func"):
                 for post_f in fmtobj.from_labeled_system.post_func:
                     self.post_funcs.get_plugin(post_f)(self)
         return self
@@ -1092,47 +1170,49 @@ class LabeledSystem (System):
         return fmtobj.to_labeled_system(self.data, *args, **kwargs)
 
     def __str__(self):
-        ret="Data Summary"
-        ret+="\nLabeled System"
-        ret+="\n-------------------"
-        ret+="\nFrame Numbers      : %d"%self.get_nframes()
-        ret+="\nAtom Numbers       : %d"%self.get_natoms()
-        status= "Yes" if self.has_virial() else "No"
-        ret+="\nIncluding Virials  : %s"% status
-        ret+="\nElement List       :"
-        ret+="\n-------------------"
-        ret+="\n"+"  ".join(map(str,self.get_atom_names()))
-        ret+="\n"+"  ".join(map(str,self.get_atom_numbs()))
+        ret = "Data Summary"
+        ret += "\nLabeled System"
+        ret += "\n-------------------"
+        ret += "\nFrame Numbers      : %d" % self.get_nframes()
+        ret += "\nAtom Numbers       : %d" % self.get_natoms()
+        status = "Yes" if self.has_virial() else "No"
+        ret += "\nIncluding Virials  : %s" % status
+        ret += "\nElement List       :"
+        ret += "\n-------------------"
+        ret += "\n" + "  ".join(map(str, self.get_atom_names()))
+        ret += "\n" + "  ".join(map(str, self.get_atom_numbs()))
         return ret
 
-    def __add__(self,others) :
-       """magic method "+" operation """
-       self_copy=self.copy()
-       if isinstance(others,LabeledSystem):
-          other_copy=others.copy()
-          self_copy.append(other_copy)
-       elif isinstance(others, list):
-          for ii in others:
-              assert(isinstance(ii,LabeledSystem))
-              ii_copy=ii.copy()
-              self_copy.append(ii_copy)
-       else:
-          raise RuntimeError("Unspported data structure")
-       return self.__class__.from_dict({'data':self_copy.data})
+    def __add__(self, others):
+        """magic method "+" operation"""
+        self_copy = self.copy()
+        if isinstance(others, LabeledSystem):
+            other_copy = others.copy()
+            self_copy.append(other_copy)
+        elif isinstance(others, list):
+            for ii in others:
+                assert isinstance(ii, LabeledSystem)
+                ii_copy = ii.copy()
+                self_copy.append(ii_copy)
+        else:
+            raise RuntimeError("Unspported data structure")
+        return self.__class__.from_dict({"data": self_copy.data})
 
-    def has_virial(self) :
+    def has_virial(self):
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
-        return ('virials' in self.data)
+        return "virials" in self.data
 
-    def affine_map_fv(self, trans, f_idx) :
-        assert(np.linalg.det(trans) != 0)
-        self.data['forces'][f_idx] = np.matmul(self.data['forces'][f_idx], trans)
+    def affine_map_fv(self, trans, f_idx):
+        assert np.linalg.det(trans) != 0
+        self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
         if self.has_virial():
-            self.data['virials'][f_idx] = np.matmul(trans.T, np.matmul(self.data['virials'][f_idx], trans))
+            self.data["virials"][f_idx] = np.matmul(
+                trans.T, np.matmul(self.data["virials"][f_idx], trans)
+            )
 
-    def rot_frame_lower_triangular(self, f_idx = 0) :
-        trans = System.rot_frame_lower_triangular(self, f_idx = f_idx)
-        self.affine_map_fv(trans, f_idx = f_idx)
+    def rot_frame_lower_triangular(self, f_idx=0):
+        trans = System.rot_frame_lower_triangular(self, f_idx=f_idx)
+        self.affine_map_fv(trans, f_idx=f_idx)
         return trans
 
     def correction(self, hl_sys):
@@ -1156,17 +1236,19 @@ class LabeledSystem (System):
         if not isinstance(hl_sys, LabeledSystem):
             raise RuntimeError("high_sys should be LabeledSystem")
         corrected_sys = self.copy()
-        corrected_sys.data['energies'] = hl_sys.data['energies'] - self.data['energies']
-        corrected_sys.data['forces'] = hl_sys.data['forces'] - self.data['forces']
-        if 'virials' in self.data and 'virials' in hl_sys.data:
-            corrected_sys.data['virials'] = hl_sys.data['virials'] - self.data['virials']
+        corrected_sys.data["energies"] = hl_sys.data["energies"] - self.data["energies"]
+        corrected_sys.data["forces"] = hl_sys.data["forces"] - self.data["forces"]
+        if "virials" in self.data and "virials" in hl_sys.data:
+            corrected_sys.data["virials"] = (
+                hl_sys.data["virials"] - self.data["virials"]
+            )
         return corrected_sys
 
 
 class MultiSystems:
-    '''A set containing several systems.'''
+    """A set containing several systems."""
 
-    def __init__(self, *systems,type_map=None):
+    def __init__(self, *systems, type_map=None):
         """
         Parameters
         ----------
@@ -1193,18 +1275,21 @@ class MultiSystems:
         return self
 
     def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
-        for fn, ss in zip(fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs), self.systems.values()):
+        for fn, ss in zip(
+            fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs),
+            self.systems.values(),
+        ):
             ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
         return self
-    
+
     def to(self, fmt: str, *args, **kwargs) -> "MultiSystems":
         """Dump systems to the specific format.
-        
+
         Parameters
         ----------
         fmt : str
             format
-        
+
         Returns
         -------
         MultiSystems
@@ -1225,41 +1310,46 @@ class MultiSystems:
         return self.__str__()
 
     def __str__(self):
-        return 'MultiSystems ({} systems containing {} frames)'.format(len(self.systems), self.get_nframes())
+        return "MultiSystems ({} systems containing {} frames)".format(
+            len(self.systems), self.get_nframes()
+        )
 
-    def __add__(self, others) :
-       """magic method "+" operation """
-       self_copy = deepcopy(self)
-       if isinstance(others, System) or isinstance(others, MultiSystems):
-          return self.__class__(self, others)
-       elif isinstance(others, list):
-          return self.__class__(self, *others)
-       raise RuntimeError("Unspported data structure")
+    def __add__(self, others):
+        """magic method "+" operation"""
+        self_copy = deepcopy(self)
+        if isinstance(others, System) or isinstance(others, MultiSystems):
+            return self.__class__(self, others)
+        elif isinstance(others, list):
+            return self.__class__(self, *others)
+        raise RuntimeError("Unspported data structure")
 
     @classmethod
-    def from_file(cls,file_name,fmt, **kwargs):
+    def from_file(cls, file_name, fmt, **kwargs):
         multi_systems = cls()
-        multi_systems.load_systems_from_file(file_name=file_name,fmt=fmt, **kwargs)
+        multi_systems.load_systems_from_file(file_name=file_name, fmt=fmt, **kwargs)
         return multi_systems
 
     @classmethod
-    def from_dir(cls,dir_name, file_name, fmt='auto', type_map=None):
+    def from_dir(cls, dir_name, file_name, fmt="auto", type_map=None):
         multi_systems = cls()
-        target_file_list = sorted(glob.glob('./{}/**/{}'.format(dir_name, file_name), recursive=True))
+        target_file_list = sorted(
+            glob.glob("./{}/**/{}".format(dir_name, file_name), recursive=True)
+        )
         for target_file in target_file_list:
-            multi_systems.append(LabeledSystem(file_name=target_file, fmt=fmt, type_map=type_map))
+            multi_systems.append(
+                LabeledSystem(file_name=target_file, fmt=fmt, type_map=type_map)
+            )
         return multi_systems
-
 
     def load_systems_from_file(self, file_name=None, fmt=None, **kwargs):
         fmt = fmt.lower()
         return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
 
-    def get_nframes(self) :
+    def get_nframes(self):
         """Returns number of frames in all systems"""
         return sum(len(system) for system in self.systems.values())
 
-    def append(self, *systems) :
+    def append(self, *systems):
         """
         Append systems or MultiSystems to systems
 
@@ -1335,7 +1425,9 @@ class MultiSystems:
             new_multisystems.append(ss.predict(*args, driver=driver, **kwargs))
         return new_multisystems
 
-    def minimize(self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any) -> "MultiSystems":
+    def minimize(
+        self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any
+    ) -> "MultiSystems":
         """
         Minimize geometry by a minimizer.
 
@@ -1367,10 +1459,10 @@ class MultiSystems:
         for ss in self:
             new_multisystems.append(ss.minimize(*args, minimizer=minimizer, **kwargs))
         return new_multisystems
-    
+
     def pick_atom_idx(self, idx, nopbc=None):
         """Pick atom index
-        
+
         Parameters
         ----------
         idx: int or list or slice
@@ -1429,18 +1521,19 @@ class MultiSystems:
 
 def get_cls_name(cls: object) -> str:
     """Returns the fully qualified name of a class, such as `np.ndarray`.
-    
+
     Parameters
     ----------
     cls : object
         the class
-    
+
     Returns
     -------
     str
         the fully qualified name of a class
     """
     return ".".join([cls.__module__, cls.__name__])
+
 
 def add_format_methods():
     """Add format methods to System, LabeledSystem, and MultiSystems.
@@ -1459,11 +1552,15 @@ def add_format_methods():
         Format.register_to(to_func_name)(formatcls)
 
     for method, formatcls in Format.get_from_methods().items():
+
         def get_func(ff):
             # ff is not initized when defining from_format so cannot be polluted
             def from_format(self, file_name, **kwargs):
                 return self.from_fmt_obj(ff(), file_name, **kwargs)
-            from_format.__doc__ = "Read data from :class:`%s` format." % (get_cls_name(ff))
+
+            from_format.__doc__ = "Read data from :class:`%s` format." % (
+                get_cls_name(ff)
+            )
             return from_format
 
         setattr(System, method, get_func(formatcls))
@@ -1471,14 +1568,17 @@ def add_format_methods():
         setattr(MultiSystems, method, get_func(formatcls))
 
     for method, formatcls in Format.get_to_methods().items():
+
         def get_func(ff):
             def to_format(self, *args, **kwargs):
                 return self.to_fmt_obj(ff(), *args, **kwargs)
+
             to_format.__doc__ = "Dump data to :class:`%s` format." % (get_cls_name(ff))
             return to_format
 
         setattr(System, method, get_func(formatcls))
         setattr(LabeledSystem, method, get_func(formatcls))
         setattr(MultiSystems, method, get_func(formatcls))
+
 
 add_format_methods()

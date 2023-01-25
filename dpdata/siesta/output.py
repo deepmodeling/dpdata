@@ -1,4 +1,4 @@
-#!/usr/bin/python3 
+#!/usr/bin/python3
 
 import numpy as np
 
@@ -8,7 +8,7 @@ ang2ang = 1
 
 #############################read output#####################################
 def get_single_line_tail(fin, keyword, num=1):
-    file = open(fin, 'r')
+    file = open(fin, "r")
     res = []
     for value in file:
         if keyword in value:
@@ -23,7 +23,7 @@ def get_single_line_tail(fin, keyword, num=1):
 ## begin_column: begin column num
 ## column_num: read column num
 def extract_keyword(fout, keyword, down_line_num, begin_column, column_num):
-    file = open(fout, 'r')
+    file = open(fout, "r")
     ret = []
     flag = 0
     idx = 0
@@ -53,23 +53,27 @@ def extract_keyword(fout, keyword, down_line_num, begin_column, column_num):
 
 
 def get_atom_types(fout, atomnums):
-    covert_type = extract_keyword(fout, 'outcoor: Atomic coordinates (Ang):', atomnums, 3, 4)
+    covert_type = extract_keyword(
+        fout, "outcoor: Atomic coordinates (Ang):", atomnums, 3, 4
+    )
     atomtype = []
     for i in range(0, len(covert_type)):
         atomtype.append(int(covert_type[i]) - 1)
     return atomtype
 
+
 def get_atom_name(fout):
-    file = open(fout, 'r')
+    file = open(fout, "r")
     ret = []
     for value in file:
-        if 'Species number:' in value:
+        if "Species number:" in value:
             for j in range(len(value.split())):
-                if value.split()[j] == 'Label:':
-                    ret.append(value.split()[j+1])
-                    break              
+                if value.split()[j] == "Label:":
+                    ret.append(value.split()[j + 1])
+                    break
     file.close()
     return ret
+
 
 def get_atom_numbs(atomtypes):
     atom_numbs = []
@@ -83,7 +87,7 @@ def get_virial(fout, cells):
     for ii in cells:
         ### calucate vol
         vols.append(np.linalg.det(ii.reshape([3, 3])))
-    ret = extract_keyword(fout, 'siesta: Stress tensor (static) (eV/Ang**3):', 3, 1, 4)
+    ret = extract_keyword(fout, "siesta: Stress tensor (static) (eV/Ang**3):", 3, 1, 4)
     ret = np.array([ret])
     for idx, ii in enumerate(ret):
         ## siesta: 1eV/A^3= 1.60217*10^11 Pa ,  ---> qe: kBar=10^8Pa
@@ -93,16 +97,20 @@ def get_virial(fout, cells):
 
 
 def obtain_frame(fname):
-    NumberOfSpecies = int(get_single_line_tail(fname, 'redata: Number of Atomic Species')[0])
+    NumberOfSpecies = int(
+        get_single_line_tail(fname, "redata: Number of Atomic Species")[0]
+    )
     atom_names = get_atom_name(fname)
-    tot_natoms = int(get_single_line_tail(fname, 'Number of atoms', 3)[0])
+    tot_natoms = int(get_single_line_tail(fname, "Number of atoms", 3)[0])
     atom_types = get_atom_types(fname, tot_natoms)
     atom_numbs = get_atom_numbs(atom_types)
-    assert (max(atom_types) + 1 == NumberOfSpecies)
-    cell = extract_keyword(fname, 'outcell: Unit cell vectors (Ang):', 3, 0, 3)
-    coord = extract_keyword(fname, 'outcoor: Atomic coordinates (Ang):', tot_natoms, 0, 3)
-    energy = get_single_line_tail(fname, 'siesta: E_KS(eV) =')
-    force = extract_keyword(fname, 'siesta: Atomic forces (eV/Ang):', tot_natoms, 1, 4)
+    assert max(atom_types) + 1 == NumberOfSpecies
+    cell = extract_keyword(fname, "outcell: Unit cell vectors (Ang):", 3, 0, 3)
+    coord = extract_keyword(
+        fname, "outcoor: Atomic coordinates (Ang):", tot_natoms, 0, 3
+    )
+    energy = get_single_line_tail(fname, "siesta: E_KS(eV) =")
+    force = extract_keyword(fname, "siesta: Atomic forces (eV/Ang):", tot_natoms, 1, 4)
     virial = get_virial(fname, np.array([cell]))
 
     cell = np.array(cell).reshape(3, 3)
@@ -121,6 +129,13 @@ def obtain_frame(fname):
     # data['forces'] = np.array([force])
     # data['virials'] = virial
     # return data
-    return atom_names, atom_numbs, np.array(atom_types), np.array([cell]), np.array([coord]), \
-           np.array(energy), np.array([force]), np.array([virial])
-
+    return (
+        atom_names,
+        atom_numbs,
+        np.array(atom_types),
+        np.array([cell]),
+        np.array([coord]),
+        np.array(energy),
+        np.array([force]),
+        np.array([virial]),
+    )

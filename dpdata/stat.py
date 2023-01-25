@@ -40,7 +40,7 @@ def rmse(errors: np.ndarray) -> np.float64:
 
 class ErrorsBase(metaclass=ABCMeta):
     """Compute errors (deviations) between two systems. The type of system is assigned by SYSTEM_TYPE.
-    
+
     Parameters
     ----------
     system_1 : object
@@ -48,11 +48,16 @@ class ErrorsBase(metaclass=ABCMeta):
     system_2 : object
         system 2
     """
+
     SYSTEM_TYPE = object
 
     def __init__(self, system_1: SYSTEM_TYPE, system_2: SYSTEM_TYPE) -> None:
-        assert isinstance(system_1, self.SYSTEM_TYPE), "system_1 should be %s" % self.SYSTEM_TYPE.__name__
-        assert isinstance(system_2, self.SYSTEM_TYPE), "system_2 should be %s" % self.SYSTEM_TYPE.__name__
+        assert isinstance(system_1, self.SYSTEM_TYPE), (
+            "system_1 should be %s" % self.SYSTEM_TYPE.__name__
+        )
+        assert isinstance(system_2, self.SYSTEM_TYPE), (
+            "system_2 should be %s" % self.SYSTEM_TYPE.__name__
+        )
         self.system_1 = system_1
         self.system_2 = system_2
 
@@ -78,7 +83,7 @@ class ErrorsBase(metaclass=ABCMeta):
     def f_mae(self) -> np.float64:
         """Force MAE."""
         return mae(self.f_errors)
-    
+
     @property
     def f_rmse(self) -> np.float64:
         """Force RMSE."""
@@ -102,19 +107,20 @@ class Errors(ErrorsBase):
     >>> e = dpdata.stat.Errors(system_1, system_2)
     >>> print("%.4f %.4f %.4f %.4f" % (e.e_mae, e.e_rmse, e.f_mae, e.f_rmse))
     """
+
     SYSTEM_TYPE = LabeledSystem
 
     @property
     @lru_cache()
     def e_errors(self) -> np.ndarray:
         """Energy errors."""
-        return self.system_1['energies'] - self.system_2['energies']
+        return self.system_1["energies"] - self.system_2["energies"]
 
     @property
     @lru_cache()
     def f_errors(self) -> np.ndarray:
         """Force errors."""
-        return (self.system_1['forces'] - self.system_2['forces']).ravel()
+        return (self.system_1["forces"] - self.system_2["forces"]).ravel()
 
 
 class MultiErrors(ErrorsBase):
@@ -134,6 +140,7 @@ class MultiErrors(ErrorsBase):
     >>> e = dpdata.stat.MultiErrors(system_1, system_2)
     >>> print("%.4f %.4f %.4f %.4f" % (e.e_mae, e.e_rmse, e.f_mae, e.f_rmse))
     """
+
     SYSTEM_TYPE = MultiSystems
 
     @property

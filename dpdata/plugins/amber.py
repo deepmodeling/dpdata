@@ -10,15 +10,37 @@ from dpdata.driver import Driver, Minimizer
 
 @Format.register("amber/md")
 class AmberMDFormat(Format):
-    def from_system(self, file_name=None, parm7_file=None, nc_file=None, use_element_symbols=None, **kwargs):
+    def from_system(
+        self,
+        file_name=None,
+        parm7_file=None,
+        nc_file=None,
+        use_element_symbols=None,
+        **kwargs,
+    ):
         # assume the prefix is the same if the spefic name is not given
         if parm7_file is None:
             parm7_file = file_name + ".parm7"
         if nc_file is None:
             nc_file = file_name + ".nc"
-        return dpdata.amber.md.read_amber_traj(parm7_file=parm7_file, nc_file=nc_file, use_element_symbols=use_element_symbols, labeled=False)
+        return dpdata.amber.md.read_amber_traj(
+            parm7_file=parm7_file,
+            nc_file=nc_file,
+            use_element_symbols=use_element_symbols,
+            labeled=False,
+        )
 
-    def from_labeled_system(self, file_name=None, parm7_file=None, nc_file=None, mdfrc_file=None, mden_file=None, mdout_file=None, use_element_symbols=None, **kwargs):
+    def from_labeled_system(
+        self,
+        file_name=None,
+        parm7_file=None,
+        nc_file=None,
+        mdfrc_file=None,
+        mden_file=None,
+        mdout_file=None,
+        use_element_symbols=None,
+        **kwargs,
+    ):
         # assume the prefix is the same if the spefic name is not given
         if parm7_file is None:
             parm7_file = file_name + ".parm7"
@@ -30,24 +52,27 @@ class AmberMDFormat(Format):
             mden_file = file_name + ".mden"
         if mdout_file is None:
             mdout_file = file_name + ".mdout"
-        return dpdata.amber.md.read_amber_traj(parm7_file, nc_file, mdfrc_file, mden_file, mdout_file, use_element_symbols)
+        return dpdata.amber.md.read_amber_traj(
+            parm7_file, nc_file, mdfrc_file, mden_file, mdout_file, use_element_symbols
+        )
 
 
 @Format.register("sqm/out")
 class SQMOutFormat(Format):
     def from_system(self, fname, **kwargs):
-        '''
+        """
         Read from ambertools sqm.out
-        '''
+        """
         return dpdata.amber.sqm.parse_sqm_out(fname)
-    
+
     def from_labeled_system(self, fname, **kwargs):
-        '''
+        """
         Read from ambertools sqm.out
-        '''
+        """
         data = dpdata.amber.sqm.parse_sqm_out(fname)
         assert "forces" in list(data.keys()), f"No forces in {fname}"
         return data
+
 
 @Format.register("sqm/in")
 class SQMINFormat(Format):
@@ -85,14 +110,14 @@ class SQMINFormat(Format):
 @Driver.register("sqm")
 class SQMDriver(Driver):
     """AMBER sqm program driver.
-    
+
     Parameters
     ----------
     sqm_exec : str, default=sqm
         path to sqm program
     **kwargs : dict
         other arguments to make input files. See :class:`SQMINFormat`
-    
+
     Examples
     --------
     Use DFTB3 method to calculate potential energy:
@@ -101,7 +126,8 @@ class SQMDriver(Driver):
     >>> labeled_system['energies'][0]
     -15.41111246
     """
-    def __init__(self, sqm_exec: str="sqm", **kwargs: dict) -> None:
+
+    def __init__(self, sqm_exec: str = "sqm", **kwargs: dict) -> None:
         self.sqm_exec = sqm_exec
         self.kwargs = kwargs
 
@@ -114,12 +140,14 @@ class SQMDriver(Driver):
                 out_fn = os.path.join(d, "%d.out" % ii)
                 ss.to("sqm/in", inp_fn, **self.kwargs)
                 try:
-                    sp.check_output([*self.sqm_exec.split(), "-O", "-i", inp_fn, "-o", out_fn])
+                    sp.check_output(
+                        [*self.sqm_exec.split(), "-O", "-i", inp_fn, "-o", out_fn]
+                    )
                 except sp.CalledProcessError as e:
                     with open(out_fn) as f:
                         raise RuntimeError(
                             "Run sqm failed! Output:\n" + f.read()
-                            ) from e
+                        ) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="sqm/out"))
         return labeled_system.data
 
@@ -127,12 +155,13 @@ class SQMDriver(Driver):
 @Minimizer.register("sqm")
 class SQMMinimizer(Minimizer):
     """SQM minimizer.
-    
+
     Parameters
     ----------
     maxcyc : int, default=1000
         maximun cycle to minimize
     """
+
     def __init__(self, maxcyc=1000, *args, **kwargs) -> None:
         assert maxcyc > 0, "maxcyc should be more than 0 to minimize"
         self.driver = SQMDriver(maxcyc=maxcyc, **kwargs)
