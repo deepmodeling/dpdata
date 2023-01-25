@@ -34,18 +34,18 @@ The typicall workflow of `dpdata` is
 
 ## Load data
 ```python
-d_poscar = dpdata.System('POSCAR', fmt = 'vasp/poscar')
+d_poscar = dpdata.System("POSCAR", fmt="vasp/poscar")
 ```
 or let dpdata infer the format (`vasp/poscar`) of the file from the file name extension
 ```python
-d_poscar = dpdata.System('my.POSCAR')
+d_poscar = dpdata.System("my.POSCAR")
 ```
 The number of atoms, atom types, coordinates are loaded from the `POSCAR` and stored to a data `System` called `d_poscar`.
 A data `System` (a concept used by [deepmd-kit](https://github.com/deepmodeling/deepmd-kit)) contains frames that has the same number of atoms of the same type. The order of the atoms should be consistent among the frames in one `System`.
 It is noted that `POSCAR` only contains one frame.
 If the multiple frames stored in, for example, a `OUTCAR` is wanted,
 ```python
-d_outcar = dpdata.LabeledSystem('OUTCAR')
+d_outcar = dpdata.LabeledSystem("OUTCAR")
 ```
 The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any), are loaded by `LabeledSystem`. It is noted that the forces of atoms are always assumed to exist. `LabeledSystem` is a derived class of `System`.
 
@@ -100,51 +100,58 @@ The following commands relating to `Class dpdata.MultiSystems` may be useful.
 ```python
 # load data
 
-xyz_multi_systems = dpdata.MultiSystems.from_file(file_name='tests/xyz/xyz_unittest.xyz',fmt='quip/gap/xyz')
-vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='OUTCAR', fmt='vasp/outcar')
+xyz_multi_systems = dpdata.MultiSystems.from_file(
+    file_name="tests/xyz/xyz_unittest.xyz", fmt="quip/gap/xyz"
+)
+vasp_multi_systems = dpdata.MultiSystems.from_dir(
+    dir_name="./mgal_outcar", file_name="OUTCAR", fmt="vasp/outcar"
+)
 
 # use wildcard
-vasp_multi_systems = dpdata.MultiSystems.from_dir(dir_name='./mgal_outcar', file_name='*OUTCAR', fmt='vasp/outcar')
+vasp_multi_systems = dpdata.MultiSystems.from_dir(
+    dir_name="./mgal_outcar", file_name="*OUTCAR", fmt="vasp/outcar"
+)
 
 # print the multi_system infomation
 print(xyz_multi_systems)
-print(xyz_multi_systems.systems) # return a dictionaries
+print(xyz_multi_systems.systems)  # return a dictionaries
 
 # print the system infomation
-print(xyz_multi_systems.systems['B1C9'].data)
+print(xyz_multi_systems.systems["B1C9"].data)
 
 # dump a system's data to ./my_work_dir/B1C9_raw folder
-xyz_multi_systems.systems['B1C9'].to_deepmd_raw('./my_work_dir/B1C9_raw')
+xyz_multi_systems.systems["B1C9"].to_deepmd_raw("./my_work_dir/B1C9_raw")
 
 # dump all systems
-xyz_multi_systems.to_deepmd_raw('./my_deepmd_data/')
+xyz_multi_systems.to_deepmd_raw("./my_deepmd_data/")
 ```
 
 You may also use the following code to parse muti-system:
 ```python
-from dpdata import LabeledSystem,MultiSystems
+from dpdata import LabeledSystem, MultiSystems
 from glob import glob
+
 """
 process multi systems
 """
-fs=glob('./*/OUTCAR')  # remeber to change here !!!
-ms=MultiSystems()
+fs = glob("./*/OUTCAR")  # remeber to change here !!!
+ms = MultiSystems()
 for f in fs:
     try:
-        ls=LabeledSystem(f)
+        ls = LabeledSystem(f)
     except:
         print(f)
-    if len(ls)>0:
+    if len(ls) > 0:
         ms.append(ls)
 
-ms.to_deepmd_raw('deepmd')
-ms.to_deepmd_npy('deepmd')
+ms.to_deepmd_raw("deepmd")
+ms.to_deepmd_npy("deepmd")
 ```
 
 ## Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
 ```python
-coords = d_outcar['coords']
+coords = d_outcar["coords"]
 ```
 Available properties are (nframe: number of frames in the system, natoms: total number of atoms in the system)
 
@@ -163,25 +170,25 @@ Available properties are (nframe: number of frames in the system, natoms: total 
 ## Dump data
 The data stored in `System` or `LabeledSystem` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
 ```python
-d_outcar.to('lammps/lmp', 'conf.lmp', frame_idx=0)
+d_outcar.to("lammps/lmp", "conf.lmp", frame_idx=0)
 ```
 The first frames of `d_outcar` will be dumped to 'conf.lmp'
 ```python
-d_outcar.to('vasp/poscar', 'POSCAR', frame_idx=-1)
+d_outcar.to("vasp/poscar", "POSCAR", frame_idx=-1)
 ```
 The last frames of `d_outcar` will be dumped to 'POSCAR'.
 
 The data stored in `LabeledSystem` can be dumped to deepmd-kit raw format, for example
 ```python
-d_outcar.to('deepmd/raw', 'dpmd_raw')
+d_outcar.to("deepmd/raw", "dpmd_raw")
 ```
 Or a simpler command:
 ```python
-dpdata.LabeledSystem('OUTCAR').to('deepmd/raw', 'dpmd_raw')
+dpdata.LabeledSystem("OUTCAR").to("deepmd/raw", "dpmd_raw")
 ```
 Frame selection can be implemented by
 ```python
-dpdata.LabeledSystem('OUTCAR').sub_system([0,-1]).to('deepmd/raw', 'dpmd_raw')
+dpdata.LabeledSystem("OUTCAR").sub_system([0, -1]).to("deepmd/raw", "dpmd_raw")
 ```
 by which only the first and last frames are dumped to `dpmd_raw`.
 
@@ -189,7 +196,13 @@ by which only the first and last frames are dumped to `dpmd_raw`.
 ## replicate
 dpdata will create a super cell of the current atom configuration.
 ```python
-dpdata.System('./POSCAR').replicate((1,2,3,) )
+dpdata.System("./POSCAR").replicate(
+    (
+        1,
+        2,
+        3,
+    )
+)
 ```
 tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.
 
@@ -197,27 +210,34 @@ tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in
 ## perturb
 By the following example, each frame of the original system (`dpdata.System('./POSCAR')`) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. `atom_pert_style` indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to `atom_pert_style` are`uniform` (uniform in a ball), and `const` (uniform on a sphere).
 ```python
-perturbed_system = dpdata.System('./POSCAR').perturb(pert_num=3,
+perturbed_system = dpdata.System("./POSCAR").perturb(
+    pert_num=3,
     cell_pert_fraction=0.05,
     atom_pert_distance=0.6,
-    atom_pert_style='normal')
+    atom_pert_style="normal",
+)
 print(perturbed_system.data)
 ```
 
 ## replace
 By the following example, Random 8 Hf atoms in the system will be replaced by Zr atoms with the atom postion unchanged.
 ```python
-s=dpdata.System('tests/poscars/POSCAR.P42nmc',fmt='vasp/poscar')
-s.replace('Hf', 'Zr', 8)
-s.to_vasp_poscar('POSCAR.P42nmc.replace')
+s = dpdata.System("tests/poscars/POSCAR.P42nmc", fmt="vasp/poscar")
+s.replace("Hf", "Zr", 8)
+s.to_vasp_poscar("POSCAR.P42nmc.replace")
 ```
 
 # BondOrderSystem
 A new class `BondOrderSystem` which inherits from class `System` is introduced in dpdata. This new class contains information of chemical bonds and formal charges (stored in `BondOrderSystem.data['bonds']`, `BondOrderSystem.data['formal_charges']`). Now BondOrderSystem can only read from .mol/.sdf formats, because of its dependency on rdkit (which means rdkit must be installed if you want to use this function). Other formats, such as pdb, must be converted to .mol/.sdf format (maybe with software like open babel).
 ```python
 import dpdata
-system_1 = dpdata.BondOrderSystem("tests/bond_order/CH3OH.mol", fmt="mol") # read from .mol file
-system_2 = dpdata.BondOrderSystem("tests/bond_order/methane.sdf", fmt="sdf") # read from .sdf file
+
+system_1 = dpdata.BondOrderSystem(
+    "tests/bond_order/CH3OH.mol", fmt="mol"
+)  # read from .mol file
+system_2 = dpdata.BondOrderSystem(
+    "tests/bond_order/methane.sdf", fmt="sdf"
+)  # read from .sdf file
 ```
 In sdf file, all molecules must be of the same topology (i.e. conformers of the same molecular configuration).
 `BondOrderSystem` also supports initialize from a `rdkit.Chem.rdchem.Mol` object directly.
@@ -244,16 +264,16 @@ According to our test, our sanitization procedure can successfully read 4852 sma
 import dpdata
 
 for sdf_file in glob.glob("bond_order/refined-set-ligands/obabel/*sdf"):
-    syst = dpdata.BondOrderSystem(sdf_file, sanitize_level='high', verbose=False)
+    syst = dpdata.BondOrderSystem(sdf_file, sanitize_level="high", verbose=False)
 ```
 ## Formal Charge Assignment
 BondOrderSystem implement a method to assign formal charge for each atom based on the 8-electron rule (see below). Note that it only supports common elements in bio-system: B,C,N,O,P,S,As
 ```python
 import dpdata
 
-syst = dpdata.BondOrderSystem("tests/bond_order/CH3NH3+.mol", fmt='mol')
-print(syst.get_formal_charges()) # return the formal charge on each atom
-print(syst.get_charge()) # return the total charge of the system
+syst = dpdata.BondOrderSystem("tests/bond_order/CH3NH3+.mol", fmt="mol")
+print(syst.get_formal_charges())  # return the formal charge on each atom
+print(syst.get_charge())  # return the total charge of the system
 ```
 
 If a valence of 3 is detected on carbon, the formal charge will be assigned to -1. Because for most cases (in alkynyl anion, isonitrile, cyclopentadienyl anion), the formal charge on 3-valence carbon is -1, and this is also consisent with the 8-electron rule.
