@@ -59,7 +59,7 @@ class GaussianDriver(Driver):
     gaussian_exec : str, default=g16
         path to gaussian program
     **kwargs : dict
-        other arguments to make input files. See :class:`SQMINFormat`
+        other arguments to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
 
     Examples
     --------
