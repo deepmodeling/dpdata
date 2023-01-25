@@ -86,6 +86,7 @@ def read_amber_traj(
                 cells[:, ii, ii] = cell_lengths[:, ii]
         else:
             from ase.geometry import cellpar_to_cell
+
             for ii in range(cell_lengths.shape[0]):
                 cells[ii, :, :] = cellpar_to_cell([*cell_lengths[ii], *cell_angles[ii]])
 
