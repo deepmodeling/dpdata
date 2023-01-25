@@ -21,5 +21,10 @@ repos:
     rev: 22.12.0
     hooks:
     -   id: black-jupyter
+# Python inside docs
+-   repo: https://github.com/asottile/blacken-docs
+    rev: 1.13.0
+    hooks:
+    -   id: blacken-docs
 ci:
   autoupdate_branch: devel
