@@ -1532,7 +1532,7 @@ def get_cls_name(cls: object) -> str:
     str
         the fully qualified name of a class
     """
-    return ".".join([cls.__module__, cls.__name__])
+    return ".".join([cls.__module__, cls.__name__]) # type: ignore
 
 
 def add_format_methods():
@@ -1553,7 +1553,7 @@ def add_format_methods():
 
     for method, formatcls in Format.get_from_methods().items():
 
-        def get_func(ff):
+        def get_func(ff):  # type: ignore
             # ff is not initized when defining from_format so cannot be polluted
             def from_format(self, file_name, **kwargs):
                 return self.from_fmt_obj(ff(), file_name, **kwargs)
