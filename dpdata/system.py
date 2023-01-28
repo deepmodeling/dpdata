@@ -1532,7 +1532,7 @@ def get_cls_name(cls: object) -> str:
     str
         the fully qualified name of a class
     """
-    return ".".join([cls.__module__, cls.__name__]) # type: ignore
+    return ".".join([cls.__module__, cls.__name__])  # type: ignore
 
 
 def add_format_methods():
