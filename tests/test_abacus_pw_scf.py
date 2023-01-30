@@ -19,7 +19,7 @@ class TestABACUSLabeledOutput(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("abacus.scf/INPUT"):
             os.remove("abacus.scf/INPUT")
-            
+
     def test_atom_names(self):
         self.assertEqual(self.system_ch4.data["atom_names"], ["C", "H"])
         # self.assertEqual(self.system_h2o.data['atom_names'], ['O','H'])

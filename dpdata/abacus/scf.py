@@ -111,14 +111,14 @@ def get_energy(outlines):
     Etot = None
     for line in reversed(outlines):
         if "final etot is" in line:
-            Etot = float(line.split()[-2]) # in eV
-            return Etot,True
+            Etot = float(line.split()[-2])  # in eV
+            return Etot, True
         elif "convergence has NOT been achieved!" in line:
-            return Etot,False
+            return Etot, False
         elif "convergence has not been achieved" in line:
-            return Etot,False
+            return Etot, False
 
-    return Etot,False
+    return Etot, False
 
 
 def get_force(outlines, natoms):
