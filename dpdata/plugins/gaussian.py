@@ -14,11 +14,7 @@ class GaussianLogFormat(Format):
         try:
             return dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
-            return {
-                'energies': [],
-                'forces': [],
-                'nopbc': True
-            }
+            return {"energies": [], "forces": [], "nopbc": True}
 
 
 @Format.register("gaussian/md")
@@ -30,6 +26,7 @@ class GaussianMDFormat(Format):
 @Format.register("gaussian/gjf")
 class GaussiaGJFFormat(Format):
     """Gaussian input file"""
+
     def to_system(self, data: dict, file_name: str, **kwargs):
         """Generate Gaussian input file.
 
@@ -43,7 +40,7 @@ class GaussiaGJFFormat(Format):
             Other parameters to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
         """
         text = dpdata.gaussian.gjf.make_gaussian_input(data, **kwargs)
-        with open(file_name, 'w') as fp:
+        with open(file_name, "w") as fp:
             fp.write(text)
 
 
@@ -59,7 +56,7 @@ class GaussianDriver(Driver):
     gaussian_exec : str, default=g16
         path to gaussian program
     **kwargs : dict
-        other arguments to make input files. See :class:`SQMINFormat`
+        other arguments to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
 
     Examples
     --------
@@ -69,18 +66,19 @@ class GaussianDriver(Driver):
     >>> labeled_system['energies'][0]
     -1102.714590995794
     """
-    def __init__(self, gaussian_exec: str="g16", **kwargs: dict) -> None:
+
+    def __init__(self, gaussian_exec: str = "g16", **kwargs: dict) -> None:
         self.gaussian_exec = gaussian_exec
         self.kwargs = kwargs
 
     def label(self, data: dict) -> dict:
         """Label a system data. Returns new data with energy, forces, and virials.
-        
+
         Parameters
         ----------
         data : dict
             data with coordinates and atom types
-        
+
         Returns
         -------
         dict
@@ -98,8 +96,6 @@ class GaussianDriver(Driver):
                 except sp.CalledProcessError as e:
                     with open(out_fn) as f:
                         out = f.read()
-                    raise RuntimeError(
-                        "Run gaussian failed! Output:\n" + out
-                        ) from e
+                    raise RuntimeError("Run gaussian failed! Output:\n" + out) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="gaussian/log"))
         return labeled_system.data

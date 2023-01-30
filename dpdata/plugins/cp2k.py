@@ -16,15 +16,16 @@ class CP2KAIMDOutputFormat(Format):
 class CP2KOutputFormat(Format):
     def from_labeled_system(self, file_name, restart=False, **kwargs):
         data = {}
-        data['atom_names'], \
-            data['atom_numbs'], \
-            data['atom_types'], \
-            data['cells'], \
-            data['coords'], \
-            data['energies'], \
-            data['forces'], \
-            tmp_virial \
-            = dpdata.cp2k.output.get_frames(file_name)
+        (
+            data["atom_names"],
+            data["atom_numbs"],
+            data["atom_types"],
+            data["cells"],
+            data["coords"],
+            data["energies"],
+            data["forces"],
+            tmp_virial,
+        ) = dpdata.cp2k.output.get_frames(file_name)
         if tmp_virial is not None:
-            data['virials'] = tmp_virial
+            data["virials"] = tmp_virial
         return data

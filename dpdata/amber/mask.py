@@ -4,9 +4,10 @@ try:
 except ImportError:
     pass
 
+
 def pick_by_amber_mask(param, maskstr, coords=None):
     """Pick atoms by amber masks
-    
+
     Parameters
     ----------
     param: str or parmed.Structure
@@ -22,9 +23,12 @@ def pick_by_amber_mask(param, maskstr, coords=None):
     sele = []
     if len(maskstr) > 0:
         newmaskstr = maskstr.replace("@0", "!@*")
-        sele = [parm.atoms[i].idx for i in parmed.amber.mask.AmberMask(
-            parm, newmaskstr).Selected()]
+        sele = [
+            parm.atoms[i].idx
+            for i in parmed.amber.mask.AmberMask(parm, newmaskstr).Selected()
+        ]
     return sele
+
 
 def load_param_file(param_file):
     if isinstance(param_file, str):

@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 if TYPE_CHECKING:
     import ase
 
+
 class Driver(ABC):
     """The base class for a driver plugin. A driver can
     label a pure System to generate the LabeledSystem.
@@ -14,17 +15,18 @@ class Driver(ABC):
     --------
     dpdata.plugins.deepmd.DPDriver : an example of Driver
     """
+
     __DriverPlugin = Plugin()
 
     @staticmethod
     def register(key: str) -> Callable:
         """Register a driver plugin. Used as decorators.
-        
+
         Parameter
         ---------
         key: str
             key of the plugin.
-        
+
         Returns
         -------
         Callable
@@ -41,17 +43,17 @@ class Driver(ABC):
     @staticmethod
     def get_driver(key: str) -> "Driver":
         """Get a driver plugin.
-        
+
         Parameter
         ---------
         key: str
             key of the plugin.
-        
+
         Returns
         -------
         Driver
             the specific driver class
-        
+
         Raises
         ------
         RuntimeError
@@ -60,20 +62,20 @@ class Driver(ABC):
         try:
             return Driver.__DriverPlugin.plugins[key]
         except KeyError as e:
-            raise RuntimeError('Unknown driver: ' + key) from e
-    
+            raise RuntimeError("Unknown driver: " + key) from e
+
     def __init__(self, *args, **kwargs) -> None:
         """Setup the driver."""
 
     @abstractmethod
     def label(self, data: dict) -> dict:
         """Label a system data. Returns new data with energy, forces, and virials.
-        
+
         Parameters
         ----------
         data : dict
             data with coordinates and atom types
-        
+
         Returns
         -------
         dict
@@ -85,6 +87,7 @@ class Driver(ABC):
     def ase_calculator(self) -> "ase.calculators.calculator.Calculator":
         """Returns an ase calculator based on this driver."""
         from .ase_calculator import DPDataCalculator
+
         return DPDataCalculator(self)
 
 
@@ -112,6 +115,7 @@ class HybridDriver(Driver):
     ... ])
     This driver is the hybrid of SQM and DP.
     """
+
     def __init__(self, drivers: List[Union[dict, Driver]]) -> None:
         self.drivers = []
         for driver in drivers:
@@ -128,12 +132,12 @@ class HybridDriver(Driver):
         """Label a system data.
 
         Energies and forces are the sum of those of each driver.
-        
+
         Parameters
         ----------
         data : dict
             data with coordinates and atom types
-        
+
         Returns
         -------
         dict
@@ -144,8 +148,8 @@ class HybridDriver(Driver):
             if ii == 0:
                 labeled_data = lb_data.copy()
             else:
-                labeled_data['energies'] += lb_data ['energies']
-                labeled_data['forces'] += lb_data ['forces']
+                labeled_data["energies"] += lb_data["energies"]
+                labeled_data["forces"] += lb_data["forces"]
         return labeled_data
 
 
@@ -153,17 +157,18 @@ class Minimizer(ABC):
     """The base class for a minimizer plugin. A minimizer can
     minimize geometry.
     """
+
     __MinimizerPlugin = Plugin()
 
     @staticmethod
     def register(key: str) -> Callable:
         """Register a minimizer plugin. Used as decorators.
-        
+
         Parameter
         ---------
         key: str
             key of the plugin.
-        
+
         Returns
         -------
         Callable
@@ -180,17 +185,17 @@ class Minimizer(ABC):
     @staticmethod
     def get_minimizer(key: str) -> "Minimizer":
         """Get a minimizer plugin.
-        
+
         Parameter
         ---------
         key: str
             key of the plugin.
-        
+
         Returns
         -------
         Minimizer
             the specific minimizer class
-        
+
         Raises
         ------
         RuntimeError
@@ -199,7 +204,7 @@ class Minimizer(ABC):
         try:
             return Minimizer.__MinimizerPlugin.plugins[key]
         except KeyError as e:
-            raise RuntimeError('Unknown minimizer: ' + key) from e
+            raise RuntimeError("Unknown minimizer: " + key) from e
 
     def __init__(self, *args, **kwargs) -> None:
         """Setup the minimizer."""
@@ -212,7 +217,7 @@ class Minimizer(ABC):
         ----------
         data : dict
             data with coordinates and atom types
-        
+
         Returns
         -------
         dict

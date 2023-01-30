@@ -41,7 +41,10 @@ dpdata = "dpdata.cli:dpdata_cli"
 
 [project.optional-dependencies]
 ase = ['ase']
-amber = ['parmed']
+amber = [
+    'parmed; python_version >= "3.8"',
+    'parmed<4; python_version < "3.8"',
+]
 pymatgen = ['pymatgen']
 docs = [
     'sphinx',

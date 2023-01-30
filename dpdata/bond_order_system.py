@@ -6,38 +6,42 @@ import dpdata.rdkit.utils
 from dpdata.rdkit.sanitize import Sanitizer, SanitizeError
 from copy import deepcopy
 from rdkit.Chem import Conformer
+
 # import dpdata.rdkit.mol2
 
-    
+
 class BondOrderSystem(System):
-    '''
+    """
     The system with chemical bond and formal charges information
 
     For example, a labeled methane system named `d_example` has one molecule (5 atoms, 4 bonds) and `n_frames` frames. The bond order and formal charge information can be accessed by
         - `d_example['bonds']` : a numpy array of size 4 x 3, and
                                     the first column represents the index of begin atom,
-                                    the second column represents the index of end atom, 
+                                    the second column represents the index of end atom,
                                     the third columen represents the bond order:
                                         1 - single bond, 2 - double bond, 3 - triple bond, 1.5 - aromatic bond
         - `d_example['formal_charges']` : a numpy array of size 5 x 1
-    '''
+    """
+
     DTYPES = System.DTYPES + (
         DataType("bonds", np.ndarray, (Axis.NBONDS, 3)),
         DataType("formal_charges", np.ndarray, (Axis.NATOMS,)),
     )
 
-    def __init__(self,
-                 file_name = None,
-                 fmt = 'auto',
-                 type_map = None,
-                 begin = 0,
-                 step = 1,
-                 data = None,
-                 rdkit_mol = None,
-                 sanitize_level = "medium",
-                 raise_errors = True,
-                 verbose = False,
-                 **kwargs):
+    def __init__(
+        self,
+        file_name=None,
+        fmt="auto",
+        type_map=None,
+        begin=0,
+        step=1,
+        data=None,
+        rdkit_mol=None,
+        sanitize_level="medium",
+        raise_errors=True,
+        verbose=False,
+        **kwargs,
+    ):
         """
         Constructor
 
@@ -76,12 +80,9 @@ class BondOrderSystem(System):
             mol = dpdata.rdkit.utils.system_data_to_mol(data)
             self.from_rdkit_mol(mol)
         if file_name:
-            self.from_fmt(file_name, 
-                          fmt,
-                          type_map=type_map,
-                          begin=begin, 
-                          step=step,
-                          **kwargs)
+            self.from_fmt(
+                file_name, fmt, type_map=type_map, begin=begin, step=step, **kwargs
+            )
         elif rdkit_mol:
             self.from_rdkit_mol(rdkit_mol)
         else:
@@ -94,7 +95,7 @@ class BondOrderSystem(System):
     def from_fmt_obj(self, fmtobj, file_name, **kwargs):
         mol = fmtobj.from_bond_order_system(file_name, **kwargs)
         self.from_rdkit_mol(mol)
-        if hasattr(fmtobj.from_bond_order_system, 'post_func'):
+        if hasattr(fmtobj.from_bond_order_system, "post_func"):
             for post_f in fmtobj.from_bond_order_system.post_func:
                 self.post_funcs.get_plugin(post_f)(self)
         return self
@@ -109,9 +110,9 @@ class BondOrderSystem(System):
         return fmtobj.to_bond_order_system(self.data, self.rdkit_mol, *args, **kwargs)
 
     def __str__(self):
-        '''
-            A brief summary of the system
-        '''
+        """
+        A brief summary of the system
+        """
         ret = "Data Summary"
         ret += "\nBondOrder System"
         ret += "\n-------------------"
@@ -120,47 +121,49 @@ class BondOrderSystem(System):
         ret += f"\nBond Numbers       : {self.get_nbonds()}"
         ret += "\nElement List       :"
         ret += "\n-------------------"
-        ret += "\n"+"  ".join(map(str,self.get_atom_names()))
-        ret += "\n"+"  ".join(map(str,self.get_atom_numbs()))
+        ret += "\n" + "  ".join(map(str, self.get_atom_names()))
+        ret += "\n" + "  ".join(map(str, self.get_atom_numbs()))
         return ret
 
     def get_nbonds(self):
-        '''
-            Return the number of bonds
-        '''
-        return len(self.data['bonds'])
-    
+        """
+        Return the number of bonds
+        """
+        return len(self.data["bonds"])
+
     def get_charge(self):
-        '''
-            Return the total formal charge of the moleclue
-        '''
-        return sum(self.data['formal_charges'])
-    
+        """
+        Return the total formal charge of the moleclue
+        """
+        return sum(self.data["formal_charges"])
+
     def get_mol(self):
-        '''
-            Return the rdkit.Mol object
-        '''
+        """
+        Return the rdkit.Mol object
+        """
         return self.rdkit_mol
-    
+
     def get_bond_order(self, begin_atom_idx, end_atom_idx):
-        '''
-            Return the bond order between given atoms
-        '''
-        return self.data['bond_dict'][f'{int(begin_atom_idx)}-{int(end_atom_idx)}']
-    
+        """
+        Return the bond order between given atoms
+        """
+        return self.data["bond_dict"][f"{int(begin_atom_idx)}-{int(end_atom_idx)}"]
+
     def get_formal_charges(self):
-        '''
-            Return the formal charges on each atom
-        '''
-        return self.data['formal_charges']
-    
+        """
+        Return the formal charges on each atom
+        """
+        return self.data["formal_charges"]
+
     def copy(self):
         new_mol = deepcopy(self.rdkit_mol)
-        self.__class__(data=deepcopy(self.data),
-                       rdkit_mol=new_mol)
-    
+        self.__class__(data=deepcopy(self.data), rdkit_mol=new_mol)
+
     def __add__(self, other):
-        raise NotImplementedError("magic method '+' has not been implemented on BondOrderSystem")
+        raise NotImplementedError(
+            "magic method '+' has not been implemented on BondOrderSystem"
+        )
+
     #     '''
     #         magic method "+" operation
     #     '''
@@ -173,10 +176,12 @@ class BondOrderSystem(System):
     #         raise RuntimeError(f"Unsupported data structure: {type(other)}")
 
     def from_rdkit_mol(self, rdkit_mol):
-        '''
-            Initialize from a rdkit.Chem.rdchem.Mol object
-        '''
+        """
+        Initialize from a rdkit.Chem.rdchem.Mol object
+        """
         rdkit_mol = self.sanitizer.sanitize(rdkit_mol)
         self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
-        self.data['bond_dict'] = dict([(f'{int(bond[0])}-{int(bond[1])}', bond[2]) for bond in self.data['bonds']])
+        self.data["bond_dict"] = dict(
+            [(f"{int(bond[0])}-{int(bond[1])}", bond[2]) for bond in self.data["bonds"]]
+        )
         self.rdkit_mol = rdkit_mol

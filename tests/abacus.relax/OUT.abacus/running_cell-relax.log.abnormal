@@ -1,0 +1,1186 @@
+                                                                                     
+                             WELCOME TO ABACUS                                       
+                                                                                     
+               'Atomic-orbital Based Ab-initio Computation at UStc'                  
+                                                                                     
+                     Website: http://abacus.ustc.edu.cn/                             
+                                                                                     
+    Version: Parallel, in development
+    Processor Number is 2
+    Start Time is Mon Jul 25 11:30:20 2022
+                                                                                     
+ ------------------------------------------------------------------------------------
+
+ READING GENERAL INFORMATION
+                           global_out_dir = OUT.abacus/
+                           global_in_card = INPUT
+                               pseudo_dir = 
+                              orbital_dir = 
+                              pseudo_type = auto
+                                    DRANK = 1
+                                    DSIZE = 2
+                                   DCOLOR = 1
+                                    GRANK = 1
+                                    GSIZE = 1
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading atom information in unitcell:                              |
+ | From the input file and the structure file we know the number of   |
+ | different elments in this unitcell, then we list the detail        |
+ | information for each element, especially the zeta and polar atomic |
+ | orbital number for each element. The total atom number is counted. |
+ | We calculate the nearest atom distance for each atom and show the  |
+ | Cartesian and Direct coordinates for each atom. We list the file   |
+ | address for atomic orbitals. The volume and the lattice vectors    |
+ | in real and reciprocal space is also shown.                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+ READING UNITCELL INFORMATION
+                                    ntype = 2
+                 atom label for species 1 = H
+                 atom label for species 2 = O
+                  lattice constant (Bohr) = 1
+              lattice constant (Angstrom) = 0.529177
+
+ READING ATOM TYPE 1
+                               atom label = H
+                      L=0, number of zeta = 1
+                      L=1, number of zeta = 1
+                      L=2, number of zeta = 1
+             number of atom for this type = 2
+                      start magnetization = FALSE
+                      start magnetization = FALSE
+
+ READING ATOM TYPE 2
+                               atom label = O
+                      L=0, number of zeta = 1
+                      L=1, number of zeta = 1
+                      L=2, number of zeta = 1
+             number of atom for this type = 1
+                      start magnetization = FALSE
+
+                        TOTAL ATOM NUMBER = 3
+
+ CARTESIAN COORDINATES ( UNIT = 1 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+      tauc_H1       15.9532129411       18.7655861467       8.39524747132                   0                   0                   0                   0
+      tauc_H2       13.7711312041       20.6154930027       7.61198952454                   0                   0                   0                   0
+      tauc_O1       14.5132108826       19.6841922084       8.95832135273                   0                   0                   0                   0
+
+
+                          Volume (Bohr^3) = 21952
+                             Volume (A^3) = 3252.94689686
+
+ Lattice vectors: (Cartesian coordinate: in unit of a_0)
+                  +28                  +0                  +0
+                   +0                 +28                  +0
+                   +0                  +0                 +28
+ Reciprocal vectors: (Cartesian coordinate: in unit of 2 pi/a_0)
+     +0.0357142857143                  -0                  +0
+                   +0    +0.0357142857143                  -0
+                   +0                  -0    +0.0357142857143
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading pseudopotentials files:                                    |
+ | The pseudopotential file is in UPF format. The 'NC' indicates that |
+ | the type of pseudopotential is 'norm conserving'. Functional of    |
+ | exchange and correlation is decided by 4 given parameters in UPF   |
+ | file.  We also read in the 'core correction' if there exists.      |
+ | Also we can read the valence electrons number and the maximal      |
+ | angular momentum used in this pseudopotential. We also read in the |
+ | trail wave function, trail atomic density and local-pseudopotential|
+ | on logrithmic grid. The non-local pseudopotential projector is also|
+ | read in if there is any.                                           |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+                PAO radial cut off (Bohr) = 15
+
+ Read in pseudopotential file is ../potential/H_ONCV_PBE-1.0.upf
+                     pseudopotential type = NC
+          exchange-correlation functional = PBE
+                 nonlocal core correction = 0
+                        valence electrons = 1
+                                     lmax = 0
+                           number of zeta = 0
+                     number of projectors = 2
+                           L of projector = 0
+                           L of projector = 0
+                PAO radial cut off (Bohr) = 15
+
+ Read in pseudopotential file is ../potential/O_ONCV_PBE-1.0.upf
+                     pseudopotential type = NC
+          exchange-correlation functional = PBE
+                 nonlocal core correction = 0
+                        valence electrons = 6
+                                     lmax = 1
+                           number of zeta = 0
+                     number of projectors = 4
+                           L of projector = 0
+                           L of projector = 0
+                           L of projector = 1
+                           L of projector = 1
+     initial pseudo atomic orbital number = 0
+                                   NLOCAL = 27
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves of charge/potential:                             |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT. The number of plane waves    |
+ | is 'npw' in each processor.                                        |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP THE PLANE WAVE BASIS
+ energy cutoff for charge/potential (unit:Ry) = 200
+          [fft grid for charge/potential] = 128, 128, 128
+                      [fft grid division] = 1, 1, 1
+      [big fft grid for charge/potential] = 128, 128, 128
+                                     nbxx = 1048576
+                                     nrxx = 1048576
+
+ SETUP PLANE WAVES FOR CHARGE/POTENTIAL
+                    number of plane waves = 1048171
+                         number of sticks = 12469
+
+ PARALLEL PW FOR CHARGE/POTENTIAL
+     PROC   COLUMNS(POT)             PW
+        1           6235         524087
+        2           6234         524084
+ --------------- sum -------------------
+        2          12469        1048171
+                            number of |g| = 3312
+                                  max |g| = 5.06505102041
+                                  min |g| = 0
+
+ SETUP THE ELECTRONS NUMBER
+             electron number of element H = 1
+       total electron number of element H = 2
+             electron number of element O = 6
+       total electron number of element O = 6
+                           occupied bands = 4
+                                   NBANDS = 6
+ DONE : SETUP UNITCELL Time : 0.128108929377 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Doing symmetry analysis:                                           |
+ | We calculate the norm of 3 vectors and the angles between them,    |
+ | the type of Bravais lattice is given. We can judge if the unticell |
+ | is a primitive cell. Finally we give the point group operation for |
+ | this unitcell. We we use the point group operations to do symmetry |
+ | analysis on given k-point mesh and the charge density.             |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+ LATTICE VECTORS: (CARTESIAN COORDINATE: IN UNIT OF A0)
+                  +28                  +0                  +0
+                   +0                 +28                  +0
+                   +0                  +0                 +28
+                       right hand lattice = 1
+                                   NORM_A = 28
+                                   NORM_B = 28
+                                   NORM_C = 28
+                           ALPHA (DEGREE) = 90
+                           BETA  (DEGREE) = 90
+                           GAMMA (DEGREE) = 90
+                             BRAVAIS TYPE = 1
+                     BRAVAIS LATTICE NAME = 01. Cubic P (simple)
+                                    IBRAV = 1
+                                  BRAVAIS = SIMPLE CUBIC
+                       LATTICE CONSTANT A = 122.049170419
+                                    ibrav = 1
+                        ROTATION MATRICES = 48
+              PURE POINT GROUP OPERATIONS = 1
+                   SPACE GROUP OPERATIONS = 1
+                              POINT GROUP = C_1
+Warning : If the optimal symmetric configuration is not the input configuration, 
+you have to manually change configurations, ABACUS would only calculate the input structure!
+ DONE : SYMMETRY Time : 0.155216244515 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup K-points                                                     |
+ | We setup the k-points according to input parameters.               |
+ | The reduced k-points are set according to symmetry operations.     |
+ | We treat the spin as another set of k-points.                      |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP K-POINTS
+                                    nspin = 1
+                   Input type of k points = Monkhorst-Pack(Gamma)
+                                   nkstot = 1
+                               nkstot_ibz = 1
+      IBZ             DirectX             DirectY             DirectZ              Weight    ibz2bz
+        1                   0                   0                   0                   1         0
+                               nkstot now = 1
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0                   1
+
+           k-point number in this process = 1
+       minimum distributed K point number = 1
+
+  KPOINTS         CARTESIAN_X         CARTESIAN_Y         CARTESIAN_Z              WEIGHT
+        1                   0                   0                   0                   2
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0                   2
+ DONE : INIT K-POINTS Time : 0.155574926175 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves of wave functions:                               |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT. The number of plane wave of  |
+ | each k-point is 'npwk[ik]' in each processor                       |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP PLANE WAVES FOR WAVE FUNCTIONS
+     energy cutoff for wavefunc (unit:Ry) = 50
+            [fft grid for wave functions] = 128, 128, 128
+                    number of plane waves = 131155
+                         number of sticks = 3125
+
+ PARALLEL PW FOR WAVE FUNCTIONS
+     PROC   COLUMNS(POT)             PW
+        1           1562          65576
+        2           1563          65579
+ --------------- sum -------------------
+        2           3125         131155
+ DONE : INIT PLANEWAVE Time : 0.174154018052 (SEC)
+
+ DONE : INIT CHARGE Time : 0.259490167722 (SEC)
+
+                                     npwx = 65576
+
+ SETUP NONLOCAL PSEUDOPOTENTIALS IN PLANE WAVE BASIS
+ H non-local projectors:
+ projector 1 L=0
+ projector 2 L=0
+ O non-local projectors:
+ projector 1 L=0
+ projector 2 L=0
+ projector 3 L=1
+ projector 4 L=1
+      TOTAL NUMBER OF NONLOCAL PROJECTORS = 12
+ DONE : LOCAL POTENTIAL Time : 0.320586761925 (SEC)
+
+
+ Init Non-Local PseudoPotential table : 
+ Init Non-Local-Pseudopotential done.
+ DONE : NON-LOCAL POTENTIAL Time : 0.331188020762 (SEC)
+
+                                 init_chg = atomic
+ DONE : INIT POTENTIAL Time : 0.953154 (SEC)
+
+
+ Make real space PAO into reciprocal space.
+       max mesh points in Pseudopotential = 601
+     dq(describe PAO in reciprocal space) = 0.01
+                                    max q = 854
+
+ number of pseudo atomic orbitals for H is 0
+
+ number of pseudo atomic orbitals for O is 0
+ DONE : INIT BASIS Time : 0.953302 (SEC)
+
+
+ -------------------------------------------
+ RELAX CELL : 1
+ RELAX IONS : 1 (in total: 1)
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   1--------------------------------
+
+ Density error is 0.417176464796
+                          Error Threshold = 0.01
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.1543953066                -464.694387914
+     E_Harris                -34.3635778924                -467.540463003
+      E_Fermi               -0.520811172492                -7.08599952795
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   2--------------------------------
+
+ Density error is 0.0243970602606
+                          Error Threshold = 0.00521470580995
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.2350427506                -465.791652681
+     E_Harris                -34.2396178942                -465.853900704
+      E_Fermi               -0.445620982249                -6.06298450694
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   3--------------------------------
+
+ Density error is 0.0106666914925
+                          Error Threshold = 0.000304963253257
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.2334330467                -465.769751537
+     E_Harris                -34.2371193473                -465.819906229
+      E_Fermi               -0.461726538377                -6.28211183974
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   4--------------------------------
+
+ Density error is 0.000502675170383
+                          Error Threshold = 0.000133333643656
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.2339527078                -465.776821889
+     E_Harris                -34.2341613373                -465.779660439
+      E_Fermi               -0.200209037333                -2.72398369882
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   5--------------------------------
+
+ Density error is 0.00013515778285
+                          Error Threshold = 6.28343962979e-06
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.2339755848                -465.777133147
+     E_Harris                -34.2340600257                -465.778282024
+      E_Fermi                 -0.1998556995                -2.71917629098
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   6--------------------------------
+
+ Density error is 4.49530417282e-06
+                          Error Threshold = 1.68947228562e-06
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.2340060994                -465.777548319
+     E_Harris                -34.2340025802                -465.777500437
+      E_Fermi               -0.198059680486                -2.69474019867
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   7--------------------------------
+
+ Density error is 8.77501268413e-06
+                          Error Threshold = 5.61913021602e-08
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.2340033243                -465.777510561
+     E_Harris                -34.2340088507                -465.777585752
+      E_Fermi               -0.197734942978                -2.69032191821
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   8--------------------------------
+
+ Density error is 8.67497506757e-08
+                          Error Threshold = 5.61913021602e-08
+
+       Energy                       Rydberg                            eV
+   E_KohnSham                -34.2340048296                -465.777531042
+     E_Harris                 -34.234005046                -465.777533987
+       E_band                -8.10804363451                -110.315593062
+   E_one_elec                -69.5144554731                -945.792687802
+    E_Hartree                  +36.17757886                +492.221212341
+         E_xc                -8.44392246259                -114.885458961
+      E_Ewald                 +7.5467942461                +102.679403381
+      E_demet            -3.01469596081e-24            -4.10170428046e-23
+      E_descf                            +0                            +0
+     E_efield                            +0                            +0
+        E_exx                            +0                            +0
+      E_Fermi               -0.197510647395                -2.68727022024
+
+ charge density convergence is achieved
+ final etot is -465.777531042 eV
+
+ STATE ENERGY(eV) AND OCCUPATIONS    NSPIN == 1
+ 1/1 kpoint (Cartesian) = 0 0 0 (65576 pws)
+       1       -25.4315        2.00000
+       2       -13.5818        2.00000
+       3       -8.97266        2.00000
+       4       -7.17178        2.00000
+       5      -0.769414        0.00000
+       6      0.0954287        0.00000
+
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.40678204    -0.13991970    -0.61593726
+       H2    +0.05888465    +0.16630779    -0.76223540
+       O1    -0.46566669    -0.02638809    +1.37817266
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -2.153904      -0.330883      -0.070536
+       -0.330883      -2.338728      -0.128010
+       -0.070536      -0.128010      -1.978256
+ TOTAL-PRESSURE: -2.156963 KBAR
+
+ Ion relaxation is not converged yet (threshold is +0.025711)
+
+ CARTESIAN COORDINATES ( UNIT = +1.000000 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+      tauc_H1    +16.065287158181    +18.727036287001     +8.225548029745     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_H2    +13.787354759370    +20.661313156171     +7.401982872047     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_O1    +14.384913110258    +19.676921914754     +9.338027446795     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+
+ Setup the structure factor in plane wave basis.
+ Setup the extrapolated charge.
+ NEW-OLD atomic charge density approx. for the potential !
+ Setup the Vl+Vh+Vxc according to new structure factor and new charge.
+ Setup the new wave functions?
+
+ -------------------------------------------
+ RELAX CELL : 1
+ RELAX IONS : 2 (in total: 2)
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=  +2  ELEC=  +1--------------------------------
+
+ Density error is +4.306406951178
+                          Error Threshold = +0.010000000000
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -33.984845752223             -462.387547881332
+     E_Harris              -36.146219524498             -491.794546692019
+      E_Fermi               -0.197995181756               -2.693862648432
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   2--------------------------------
+
+ Density error is 0.524139822667
+                          Error Threshold = 0.010000000000
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.028968257734             -462.987865366314
+     E_Harris              -34.358907885553             -467.476924300648
+      E_Fermi               -0.181612940365               -2.470970819494
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   3--------------------------------
+
+ Density error is 0.008603629609
+                          Error Threshold = 0.006551747783
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.126866845044             -464.319843979885
+     E_Harris              -34.126456524090             -464.314261276898
+      E_Fermi               -0.297352672177               -4.045690657129
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   4--------------------------------
+
+ Density error is 0.002218320093
+                          Error Threshold = 0.000107545370
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129390206695             -464.354176076454
+     E_Harris              -34.129193594956             -464.351501036512
+      E_Fermi               -0.416104088025               -5.661386558240
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   5--------------------------------
+
+ Density error is 0.001468898398
+                          Error Threshold = 0.000027729001
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129256085952             -464.352351270125
+     E_Harris              -34.130075919228             -464.363505674089
+      E_Fermi               -0.418170511223               -5.689501688208
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   6--------------------------------
+
+ Density error is 0.000129882152
+                          Error Threshold = 0.000018361230
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129606602018             -464.357120285860
+     E_Harris              -34.129674949307             -464.358050198437
+      E_Fermi               -0.300798600818               -4.092574921552
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   7--------------------------------
+
+ Density error is 0.000010859629
+                          Error Threshold = 0.000001623527
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129637781039             -464.357544498211
+     E_Harris              -34.129643192740             -464.357618128180
+      E_Fermi               -0.318223545585               -4.329653457719
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   8--------------------------------
+
+ Density error is 0.000000556298
+                          Error Threshold = 0.000000135745
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129640373324             -464.357579768059
+     E_Harris              -34.129641983060             -464.357601669637
+      E_Fermi               -0.318727582976               -4.336511238241
+
+ PW ALGORITHM --------------- ION=   2  ELEC=   9--------------------------------
+
+ Density error is 0.000000121833
+                          Error Threshold = 0.000000006954
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129640005864             -464.357574768506
+     E_Harris              -34.129640436568             -464.357580628526
+      E_Fermi               -0.318641075078               -4.335334237908
+
+ PW ALGORITHM --------------- ION=   2  ELEC=  10--------------------------------
+
+ Density error is 0.000000186810
+                          Error Threshold = 0.000000001523
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129640196409             -464.357577360995
+     E_Harris              -34.129640113063             -464.357576227022
+      E_Fermi               -0.318550723465               -4.334104941148
+
+ PW ALGORITHM --------------- ION=   2  ELEC=  11--------------------------------
+
+ Density error is 0.000000001485
+                          Error Threshold = 0.000000001523
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.129640061126             -464.357575520378
+     E_Harris              -34.129640228306             -464.357577794985
+       E_band               -7.520787696202             -102.325566116640
+   E_one_elec              -64.823282231884             -881.966001415785
+    E_Hartree              +33.884562763382             +461.023127820625
+         E_xc               -8.077485864562             -109.899833272499
+      E_Ewald               +4.886565271938              +66.485131347281
+      E_demet               -0.000000000000               -0.000000000000
+      E_descf               +0.000000000000               +0.000000000000
+     E_efield               +0.000000000000               +0.000000000000
+        E_exx               +0.000000000000               +0.000000000000
+      E_Fermi               -0.318592256747               -4.334670030437
+
+ charge density convergence is achieved
+ final etot is -464.357575520378 eV
+
+ STATE ENERGY(eV) AND OCCUPATIONS    NSPIN == 1
+ 1/1 kpoint (Cartesian) = 0.00000 0.00000 0.00000 (65576 pws)
+       1     -23.732691       2.000000
+       2     -10.717782       2.000000
+       3      -9.827251       2.000000
+       4      -6.885060       2.000000
+       5      -1.826406       0.000000
+       6      -0.276841       0.000000
+
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -3.43125048    +1.80114652    +2.82460187
+       H2    +0.90733216    -1.89495640    +4.43921704
+       O1    +2.52391832    +0.09380988    -7.26381891
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -4.009216      +0.908593      +0.503260
+       +0.908593      -3.391991      +0.372926
+       +0.503260      +0.372926      -5.317856
+ TOTAL-PRESSURE: -4.239688 KBAR
+
+ Ion relaxation is not converged yet (threshold is +0.025711)
+
+ CARTESIAN COORDINATES ( UNIT = +1.000000 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+      tauc_H1    +15.970368922751    +18.759685051002     +8.369270394915     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_H2    +13.773614656790    +20.622507013014     +7.579842342394     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_O1    +14.493571448267    +19.683079293910     +9.016445611278     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+
+ Setup the structure factor in plane wave basis.
+ Setup the extrapolated charge.
+ NEW-OLD atomic charge density approx. for the potential !
+ Setup the Vl+Vh+Vxc according to new structure factor and new charge.
+ Setup the new wave functions?
+
+ -------------------------------------------
+ RELAX CELL : 1
+ RELAX IONS : 3 (in total: 3)
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=  +3  ELEC=  +1--------------------------------
+
+ Density error is +2.863901623074
+                          Error Threshold = +0.010000000000
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.163066102874             -464.812360149745
+     E_Harris              -35.594866834916             -484.293008506088
+      E_Fermi               -0.455725359897               -6.200461617704
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   2--------------------------------
+
+ Density error is 0.410367630415
+                          Error Threshold = 0.010000000000
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.147651136624             -464.602628774257
+     E_Harris              -34.409877454265             -468.170400859739
+      E_Fermi               -0.502269645612               -6.833729112759
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   3--------------------------------
+
+ Density error is 0.016431897145
+                          Error Threshold = 0.005129595380
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.231884315653             -465.748679969711
+     E_Harris              -34.237205015345             -465.821071802865
+      E_Fermi               -0.163677941108               -2.226952635976
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   4--------------------------------
+
+ Density error is 0.003339586249
+                          Error Threshold = 0.000205398714
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.234286271013             -465.781360248946
+     E_Harris              -34.234645115958             -465.786242584902
+      E_Fermi               -0.419282058198               -5.704625060666
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   5--------------------------------
+
+ Density error is 0.007193242746
+                          Error Threshold = 0.000041744828
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.233965842505             -465.777000595434
+     E_Harris              -34.237258750651             -465.821802909220
+      E_Fermi               -0.445575876230               -6.062370808069
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   6--------------------------------
+
+ Density error is 0.000071123739
+                          Error Threshold = 0.000041744828
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235105030292             -465.792500040429
+     E_Harris              -34.235135970645             -465.792921005526
+      E_Fermi               -0.195917059478               -2.665588344306
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   7--------------------------------
+
+ Density error is 0.000003025816
+                          Error Threshold = 0.000000889047
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235144953777             -465.793043227315
+     E_Harris              -34.235146413266             -465.793063084684
+      E_Fermi               -0.195891623194               -2.665242265913
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   8--------------------------------
+
+ Density error is 0.000014047622
+                          Error Threshold = 0.000000037823
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235144028617             -465.793030639864
+     E_Harris              -34.235149064326             -465.793099154201
+      E_Fermi               -0.195695384814               -2.662572305769
+
+ PW ALGORITHM --------------- ION=   3  ELEC=   9--------------------------------
+
+ Density error is 0.000000380301
+                          Error Threshold = 0.000000037823
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235146948037             -465.793070360619
+     E_Harris              -34.235147173255             -465.793073424855
+      E_Fermi               -0.195885679726               -2.665161400881
+
+ PW ALGORITHM --------------- ION=   3  ELEC=  10--------------------------------
+
+ Density error is 0.000000003456
+                          Error Threshold = 0.000000004754
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235147175798             -465.793073459458
+     E_Harris              -34.235147030585             -465.793071483737
+       E_band               -8.005203857309             -108.916386110984
+   E_one_elec              -68.764358752319             -935.587098347715
+    E_Hartree              +35.812701320327             +487.256798728570
+         E_xc               -8.382702179786             -114.052514282117
+      E_Ewald               +7.099212435981              +96.589740441803
+      E_demet               -0.000000000000               -0.000000000000
+      E_descf               +0.000000000000               +0.000000000000
+     E_efield               +0.000000000000               +0.000000000000
+        E_exx               +0.000000000000               +0.000000000000
+      E_Fermi               -0.195843647331               -2.664589520805
+
+ charge density convergence is achieved
+ final etot is -465.793073459458 eV
+
+ STATE ENERGY(eV) AND OCCUPATIONS    NSPIN == 1
+ 1/1 kpoint (Cartesian) = 0.00000 0.00000 0.00000 (65576 pws)
+       1     -25.151687       2.000000
+       2     -13.061167       2.000000
+       3      -9.128130       2.000000
+       4      -7.117209       2.000000
+       5      -0.875259       0.000000
+       6       0.081372       0.000000
+
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.74519674    +0.51685204    +0.05757714
+       H2    +0.52845057    -0.57175572    +0.56392399
+       O1    +0.21674617    +0.05490368    -0.62150113
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -2.676771      +0.070442      -0.080953
+       +0.070442      -2.674219      +0.037379
+       -0.080953      +0.037379      -2.531715
+ TOTAL-PRESSURE: -2.627568 KBAR
+
+ Ion relaxation is not converged yet (threshold is +0.025711)
+
+ CARTESIAN COORDINATES ( UNIT = +1.000000 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+      tauc_H1    +15.963906084978    +18.761908055509     +8.379056231391     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_H2    +13.772679114178    +20.619864761958     +7.591952522256     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_O1    +14.500969828653    +19.683498540459     +8.994549594941     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+
+ Setup the structure factor in plane wave basis.
+ Setup the extrapolated charge.
+ NEW-OLD atomic charge density approx. for the potential !
+ Setup the Vl+Vh+Vxc according to new structure factor and new charge.
+ Setup the new wave functions?
+
+ -------------------------------------------
+ RELAX CELL : 1
+ RELAX IONS : 4 (in total: 4)
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=  +4  ELEC=  +1--------------------------------
+ Notice: Threshold on eigenvalues was too large.
+ hsover_error=+0.080000 > DRHO=+0.009754
+ Origin diag_ethr = +0.010000
+ New    diag_ethr = +0.000122
+
+ Density error is +0.013008603075
+                          Error Threshold = +0.000121928257
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235665065186             -465.800119706069
+     E_Harris              -34.242123145811             -465.887986400714
+      E_Fermi               -0.201851572452               -2.746331535609
+
+ PW ALGORITHM --------------- ION=   4  ELEC=   2--------------------------------
+
+ Density error is 0.002090692286
+                          Error Threshold = 0.000162607538
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235132150914             -465.792869035430
+     E_Harris              -34.236530970810             -465.811900956494
+      E_Fermi               -0.198476768045               -2.700414966033
+
+ PW ALGORITHM --------------- ION=   4  ELEC=   3--------------------------------
+
+ Density error is 0.000052460392
+                          Error Threshold = 0.000026133654
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235682052400             -465.800350828976
+     E_Harris              -34.235704411445             -465.800655039388
+      E_Fermi               -0.196153271944               -2.668802179785
+
+ PW ALGORITHM --------------- ION=   4  ELEC=   4--------------------------------
+
+ Density error is 0.000009658088
+                          Error Threshold = 0.000000655755
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235696222774             -465.800543626804
+     E_Harris              -34.235698393982             -465.800573167609
+      E_Fermi               -0.196616103423               -2.675099325104
+
+ PW ALGORITHM --------------- ION=   4  ELEC=   5--------------------------------
+
+ Density error is 0.000000187065
+                          Error Threshold = 0.000000120726
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235697732989             -465.800564174335
+     E_Harris              -34.235697255523             -465.800557678071
+      E_Fermi               -0.196471698719               -2.673134598311
+
+ PW ALGORITHM --------------- ION=   4  ELEC=   6--------------------------------
+
+ Density error is 0.000000075160
+                          Error Threshold = 0.000000002338
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.235698022205             -465.800568109314
+     E_Harris              -34.235697872683             -465.800566074967
+       E_band               -8.042398038358             -109.422438905691
+   E_one_elec              -69.045489549154             -939.412079067952
+    E_Hartree              +35.948698866316             +489.107140268040
+         E_xc               -8.405372202565             -114.360955765699
+      E_Ewald               +7.266464863199              +98.865326456297
+      E_demet               -0.000000000000               -0.000000000000
+      E_descf               +0.000000000000               +0.000000000000
+     E_efield               +0.000000000000               +0.000000000000
+        E_exx               +0.000000000000               +0.000000000000
+      E_Fermi               -0.196459651857               -2.672970692356
+
+ convergence has NOT been achieved!
+
+ STATE ENERGY(eV) AND OCCUPATIONS    NSPIN == 1
+ 1/1 kpoint (Cartesian) = 0.00000 0.00000 0.00000 (65576 pws)
+       1     -25.255180       2.000000
+       2     -13.252315       2.000000
+       3      -9.068312       2.000000
+       4      -7.135412       2.000000
+       5      -0.833001       0.000000
+       6       0.086578       0.000000
+
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.34425976    +0.29101536    -0.19310908
+       H2    +0.37384222    -0.31991297    +0.09092313
+       O1    -0.02958246    +0.02889761    +0.10218595
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -2.495529      -0.069759      -0.084163
+       -0.069759      -2.561022      -0.020268
+       -0.084163      -0.020268      -2.324147
+ TOTAL-PRESSURE: -2.460232 KBAR
+
+ Ion relaxation is not converged yet (threshold is +0.025711)
+
+ CARTESIAN COORDINATES ( UNIT = +1.000000 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+      tauc_H1    +15.946191313792    +18.778838846668     +8.361024276793     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_H2    +13.796717055281    +20.601372573983     +7.590351723874     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+      tauc_O1    +14.494646658736    +19.685059937275     +9.014182347920     +0.000000000000     +0.000000000000     +0.000000000000     +0.000000000000
+
+ Setup the structure factor in plane wave basis.
+ Setup the extrapolated charge.
+ NEW-OLD atomic charge density approx. for the potential !
+ Setup the Vl+Vh+Vxc according to new structure factor and new charge.
+ Setup the new wave functions?
+
+ -------------------------------------------
+ RELAX CELL : 1
+ RELAX IONS : 5 (in total: 5)
+ -------------------------------------------
+
+ PW ALGORITHM --------------- ION=  +5  ELEC=  +1--------------------------------
+ Notice: Threshold on eigenvalues was too large.
+ hsover_error=+0.080000 > DRHO=+0.005280
+ Origin diag_ethr = +0.010000
+ New    diag_ethr = +0.000066
+
+ Density error is +0.008353549675
+                          Error Threshold = +0.000065997708
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236235736125             -465.807884082530
+     E_Harris              -34.240337321619             -465.863689016079
+      E_Fermi               -0.438351093885               -5.964072601368
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   2--------------------------------
+
+ Density error is 0.001090032164
+                          Error Threshold = 0.000104419371
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236307152675             -465.808855754541
+     E_Harris              -34.236930505462             -465.817336904304
+      E_Fermi               -0.196029016571               -2.667111598704
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   3--------------------------------
+
+ Density error is 0.000082249260
+                          Error Threshold = 0.000013625402
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236527086358             -465.811848105802
+     E_Harris              -34.236560493475             -465.812302632946
+      E_Fermi               -0.196758447273               -2.677036012549
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   4--------------------------------
+
+ Density error is 0.000130293705
+                          Error Threshold = 0.000001028116
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236562121478             -465.812324783072
+     E_Harris              -34.236605870085             -465.812920013399
+      E_Fermi               -0.197596470944               -2.688437909528
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   5--------------------------------
+
+ Density error is 0.000024525955
+                          Error Threshold = 0.000001028116
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236557021747             -465.812255397668
+     E_Harris              -34.236571054853             -465.812446327870
+      E_Fermi               -0.197329109008               -2.684800263772
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   6--------------------------------
+
+ Density error is 0.000001304759
+                          Error Threshold = 0.000000306574
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236563844352             -465.812348223977
+     E_Harris              -34.236563957567             -465.812349764348
+      E_Fermi               -0.197072028110               -2.681302498717
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   7--------------------------------
+
+ Density error is 0.000000346081
+                          Error Threshold = 0.000000016309
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236564300744             -465.812354433499
+     E_Harris              -34.236564193956             -465.812352980576
+      E_Fermi               -0.197125544263               -2.682030623327
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   8--------------------------------
+
+ Density error is 0.000000130954
+                          Error Threshold = 0.000000004326
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236564259962             -465.812353878642
+     E_Harris              -34.236564316674             -465.812354650242
+      E_Fermi               -0.197131965268               -2.682117985583
+
+ PW ALGORITHM --------------- ION=   5  ELEC=   9--------------------------------
+
+ Density error is 0.000000001123
+                          Error Threshold = 0.000000001637
+
+       Energy                       Rydberg                            eV
+   E_KohnSham              -34.236564293143             -465.812354330090
+     E_Harris              -34.236564293813             -465.812354339209
+       E_band               -8.062071986763             -109.690116706159
+   E_one_elec              -69.117794401277             -940.395837049864
+    E_Hartree              +35.979373791465             +489.524494035791
+         E_xc               -8.410666291229             -114.432985537248
+      E_Ewald               +7.312522607898              +99.491974221231
+      E_demet               -0.000000000000               -0.000000000000
+      E_descf               +0.000000000000               +0.000000000000
+     E_efield               +0.000000000000               +0.000000000000
+        E_exx               +0.000000000000               +0.000000000000
+      E_Fermi               -0.197145167314               -2.682297608633
+
+ charge density convergence is achieved
+ final etot is -465.812354330090 eV
+
+ STATE ENERGY(eV) AND OCCUPATIONS    NSPIN == 1
+ 1/1 kpoint (Cartesian) = 0.00000 0.00000 0.00000 (65576 pws)
+       1     -25.330615       2.000000
+       2     -13.155666       2.000000
+       3      -9.203788       2.000000
+       4      -7.154990       2.000000
+       5      -0.831095       0.000000
+       6       0.086695       0.000000
+
+
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.18807867    +0.13569889    -0.06941882
+       H2    +0.14926844    -0.14376688    +0.04694486
+       O1    +0.03881023    +0.00806799    +0.02247396
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -2.392469      -0.160549      -0.032796
+       -0.160549      -2.480798      -0.059783
+       -0.032796      -0.059783      -2.315957
+ TOTAL-PRESSURE: -2.396408 KBAR
+
+
+ --------------------------------------------
+ !FINAL_ETOT_IS -465.8123543300895335 eV
+ --------------------------------------------
+
+
+
+
+
+
+  |CLASS_NAME---------|NAME---------------|TIME(Sec)-----|CALLS----|AVG------|PER%-------
+                                      total      +84.59445        19     +4.45   +100.00%
+                 Run_pw     plane_wave_line      +84.58434         1    +84.58    +99.99%
+               PW_Basis  setup_struc_factor       +0.37204         9     +0.04     +0.44%
+              Potential            init_pot       +2.60817         5     +0.52     +3.08%
+              Potential       set_local_pot       +0.17850         5     +0.04     +0.21%
+               PW_Basis          recip2real       +6.88976       294     +0.02     +8.14%
+               PW_Basis    gathers_scatterp       +2.80189       294     +0.01     +3.31%
+                 Charge          atomic_rho       +0.93431         9     +0.10     +1.10%
+              Potential            v_of_rho      +21.19138        49     +0.43    +25.05%
+          XC_Functional                v_xc      +19.67060        54     +0.36    +23.25%
+               PW_Basis          real2recip       +9.16010       446     +0.02    +10.83%
+               PW_Basis    gatherp_scatters       +3.68783       446     +0.01     +4.36%
+           H_Hartree_pw           v_hartree       +3.16563        49     +0.06     +3.74%
+              Potential          set_vr_eff       +0.12252        49     +0.00     +0.14%
+                Cell_PW        opt_cells_pw      +83.63640         1    +83.64    +98.87%
+                   Ions         opt_ions_pw      +83.63639         1    +83.64    +98.87%
+          ESolver_KS_PW                 Run      +73.96240         5    +14.79    +87.43%
+               Symmetry        rho_symmetry       +3.36747        51     +0.07     +3.98%
+              HSolverPW               solve      +43.08348        46     +0.94    +50.93%
+            pp_cell_vnl              getvnl       +1.24764        56     +0.02     +1.47%
+                 WF_igk              get_sk       +0.31200       231     +0.00     +0.37%
+        DiagoIterAssist      diagH_subspace       +6.55659        45     +0.15     +7.75%
+               HamiltPW               h_psi      +34.80823      1083     +0.03    +41.15%
+               Operator          EkineticPW       +0.20066      1083     +0.00     +0.24%
+               Operator              VeffPW      +31.49160      1083     +0.03    +37.23%
+             PW_Basis_K          recip2real      +17.21913      1493     +0.01    +20.35%
+             PW_Basis_K    gathers_scatterp       +4.88147      1493     +0.00     +5.77%
+             PW_Basis_K          real2recip      +11.93248      1308     +0.01    +14.11%
+             PW_Basis_K    gatherp_scatters       +2.55499      1308     +0.00     +3.02%
+               Operator          NonlocalPW       +3.11107      1083     +0.00     +3.68%
+             NonlocalPW     add_nonlocal_pp       +1.47037      1083     +0.00     +1.74%
+                DiagoCG           diag_once      +31.41731        46     +0.68    +37.14%
+            ElecStatePW            psiToRho       +3.97135        46     +0.09     +4.69%
+                 Charge             rho_mpi       +1.34662        46     +0.03     +1.59%
+                 Charge             mix_rho       +3.23741        39     +0.08     +3.83%
+                 Forces       cal_force_loc       +0.29882         5     +0.06     +0.35%
+                 Forces        cal_force_ew       +0.22785         5     +0.05     +0.27%
+                 Forces        cal_force_nl       +0.20171         5     +0.04     +0.24%
+              Stress_PW          cal_stress       +3.22335         5     +0.64     +3.81%
+            Stress_Func          stress_har       +0.17289         5     +0.03     +0.20%
+            Stress_Func           stress_ew       +0.28902         5     +0.06     +0.34%
+            Stress_Func          stress_gga       +0.80316         5     +0.16     +0.95%
+            Stress_Func          stress_loc       +0.48018         5     +0.10     +0.57%
+            Stress_Func            stres_nl       +1.42753         5     +0.29     +1.69%
+ ----------------------------------------------------------------------------------------
+
+ CLASS_NAME---------|NAME---------------|MEMORY(MB)--------
+                                         +418.2583
+         Charge_Pulay                Rrho       +64.0000
+         Charge_Pulay               dRrho       +56.0000
+         Charge_Pulay                drho       +56.0000
+             PW_Basis           struc_fac       +15.9939
+               Charge                 rho        +8.0000
+               Charge            rho_save        +8.0000
+               Charge            rho_core        +8.0000
+            Potential               vltot        +8.0000
+            Potential                  vr        +8.0000
+            Potential              vr_eff        +8.0000
+            Potential             vr_eff1        +8.0000
+            Potential                vnew        +8.0000
+         Charge_Pulay           rho_save2        +8.0000
+             wavefunc                 psi        +6.0037
+               Charge                rhog        +3.9985
+               Charge           rhog_save        +3.9985
+               Charge               kin_r        +3.9985
+               Charge          kin_r_save        +3.9985
+               Charge           rhog_core        +3.9985
+ ----------------------------------------------------------
+
+ Start  Time  : Mon Jul 25 11:30:20 2022
+ Finish Time  : Mon Jul 25 11:31:45 2022
+ Total  Time  : 0 h 1 mins 25 secs 
