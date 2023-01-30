@@ -67,7 +67,7 @@ class Driver(ABC):
     @staticmethod
     def get_drivers() -> dict:
         """Get all driver plugins.
-        
+
         Returns
         -------
         dict
@@ -220,7 +220,7 @@ class Minimizer(ABC):
     @staticmethod
     def get_minimizers() -> dict:
         """Get all minimizer plugins.
-        
+
         Returns
         -------
         dict
