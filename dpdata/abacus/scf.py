@@ -109,16 +109,16 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
 
 def get_energy(outlines):
     Etot = None
-    for line in outlines:
-        if "!FINAL_ETOT_IS" in line:
-            Etot = float(line.split()[1])  # in eV
-            break
-    if not Etot:
-        return Etot, False
-    for line in outlines:
-        if "convergence has NOT been achieved!" in line:
+    for line in reversed(outlines):
+        if "final etot is" in line:
+            Etot = float(line.split()[-2])  # in eV
+            return Etot, True
+        elif "convergence has NOT been achieved!" in line:
             return Etot, False
-    return Etot, True
+        elif "convergence has not been achieved" in line:
+            return Etot, False
+
+    return Etot, False
 
 
 def get_force(outlines, natoms):

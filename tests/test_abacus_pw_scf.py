@@ -7,7 +7,19 @@ from dpdata.unit import LengthConversion
 bohr2ang = LengthConversion("bohr", "angstrom").value()
 
 
-class TestABACUSSinglePointEnergy:
+class TestABACUSLabeledOutput(unittest.TestCase):
+    def setUp(self):
+        shutil.copy("abacus.scf/INPUT.ok", "abacus.scf/INPUT")
+        self.system_ch4 = dpdata.LabeledSystem("abacus.scf", fmt="abacus/scf")
+        # self.system_h2o = dpdata.LabeledSystem('qe.scf/02.out',fmt='qe/pw/scf')
+        self.system_ch4_unlabeled = dpdata.System(
+            "abacus.scf/STRU.ch4", fmt="abacus/stru"
+        )
+
+    def tearDown(self):
+        if os.path.isfile("abacus.scf/INPUT"):
+            os.remove("abacus.scf/INPUT")
+
     def test_atom_names(self):
         self.assertEqual(self.system_ch4.data["atom_names"], ["C", "H"])
         # self.assertEqual(self.system_h2o.data['atom_names'], ['O','H'])
@@ -110,20 +122,6 @@ class TestABACUSSinglePointEnergy:
         self.assertAlmostEqual(self.system_ch4.data["energies"][0], ref_energy)
         # ref_energy = -30007.651851226798
         # self.assertAlmostEqual(self.system_h2o.data['energies'][0], ref_energy)
-
-
-class TestABACUSLabeledOutput(unittest.TestCase, TestABACUSSinglePointEnergy):
-    def setUp(self):
-        shutil.copy("abacus.scf/INPUT.ok", "abacus.scf/INPUT")
-        self.system_ch4 = dpdata.LabeledSystem("abacus.scf", fmt="abacus/scf")
-        # self.system_h2o = dpdata.LabeledSystem('qe.scf/02.out',fmt='qe/pw/scf')
-        self.system_ch4_unlabeled = dpdata.System(
-            "abacus.scf/STRU.ch4", fmt="abacus/stru"
-        )
-
-    def tearDown(self):
-        if os.path.isfile("abacus.scf/INPUT"):
-            os.remove("abacus.scf/INPUT")
 
 
 class TestABACUSLabeledOutputFail(unittest.TestCase):
