@@ -64,6 +64,17 @@ class Driver(ABC):
         except KeyError as e:
             raise RuntimeError("Unknown driver: " + key) from e
 
+    @staticmethod
+    def get_drivers() -> dict:
+        """Get all driver plugins.
+
+        Returns
+        -------
+        dict
+            dict for all driver plugisn
+        """
+        return Driver.__DriverPlugin.plugins
+
     def __init__(self, *args, **kwargs) -> None:
         """Setup the driver."""
 
@@ -205,6 +216,17 @@ class Minimizer(ABC):
             return Minimizer.__MinimizerPlugin.plugins[key]
         except KeyError as e:
             raise RuntimeError("Unknown minimizer: " + key) from e
+
+    @staticmethod
+    def get_minimizers() -> dict:
+        """Get all minimizer plugins.
+
+        Returns
+        -------
+        dict
+            dict for all minimizer plugisn
+        """
+        return Minimizer.__MinimizerPlugin.plugins
 
     def __init__(self, *args, **kwargs) -> None:
         """Setup the minimizer."""
