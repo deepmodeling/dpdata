@@ -21,6 +21,11 @@ repos:
     rev: 22.12.0
     hooks:
     -   id: black-jupyter
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+    - id: isort
+    files: \.py$
 # Python inside docs
 -   repo: https://github.com/asottile/blacken-docs
     rev: 1.13.0
