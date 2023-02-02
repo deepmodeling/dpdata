@@ -1,7 +1,7 @@
 import unittest
+
+from comp_sys import CompLabeledSys, IsNoPBC
 from context import dpdata
-from comp_sys import CompLabeledSys
-from comp_sys import IsNoPBC
 
 
 class TestRemove(unittest.TestCase, CompLabeledSys, IsNoPBC):

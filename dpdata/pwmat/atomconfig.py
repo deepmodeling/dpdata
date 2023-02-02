@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-from ..periodic_table import ELEMENTS
 import numpy as np
+
+from ..periodic_table import ELEMENTS
 
 
 def _to_system_data_lower(lines):

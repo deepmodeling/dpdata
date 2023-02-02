@@ -1,8 +1,9 @@
 import os
-import unittest
 import shutil
+import unittest
+
+from comp_sys import CompLabeledSys, CompSys, IsNoPBC
 from context import dpdata
-from comp_sys import CompSys, CompLabeledSys, IsNoPBC
 
 try:
     from dpdata import BondOrderSystem

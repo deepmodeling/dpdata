@@ -1,11 +1,11 @@
 import os
-import tempfile
 import subprocess as sp
+import tempfile
 
-import dpdata.gaussian.log
 import dpdata.gaussian.gjf
-from dpdata.format import Format
+import dpdata.gaussian.log
 from dpdata.driver import Driver
+from dpdata.format import Format
 
 
 @Format.register("gaussian/log")

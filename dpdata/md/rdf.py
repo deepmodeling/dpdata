@@ -68,8 +68,8 @@ def _compute_rdf_1frame(box, posis, atype, sel_type=[None, None], max_r=5, nbins
     if type(sel_type[1]) is not list:
         sel_type[1] = [sel_type[1]]
     natoms = len(posis)
-    from ase import Atoms
     import ase.neighborlist
+    from ase import Atoms
 
     atoms = Atoms(positions=posis, cell=box, pbc=[1, 1, 1])
     nlist = ase.neighborlist.NeighborList(

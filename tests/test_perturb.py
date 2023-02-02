@@ -1,11 +1,10 @@
 import os
-import numpy as np
 import unittest
-from context import dpdata
-from comp_sys import CompSys, IsPBC
+from unittest.mock import MagicMock, Mock, patch
 
-from unittest.mock import Mock
-from unittest.mock import patch, MagicMock
+import numpy as np
+from comp_sys import CompSys, IsPBC
+from context import dpdata
 
 
 class NormalGenerator(object):

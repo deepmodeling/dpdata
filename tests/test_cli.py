@@ -1,7 +1,8 @@
+import subprocess as sp
 import unittest
+
 from context import dpdata
 from poscars.poscar_ref_oh import TestPOSCARoh
-import subprocess as sp
 
 
 class TestCli(unittest.TestCase, TestPOSCARoh):

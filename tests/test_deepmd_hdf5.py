@@ -1,8 +1,9 @@
 import os
-import numpy as np
 import unittest
-from context import dpdata
+
+import numpy as np
 from comp_sys import CompLabeledSys, CompSys, IsNoPBC, IsPBC, MultiSystems
+from context import dpdata
 
 
 class TestDeepmdLoadDumpHDF5(unittest.TestCase, CompLabeledSys, IsPBC):

@@ -1,10 +1,9 @@
 import os
-import numpy as np
 import unittest
+
+import numpy as np
+from comp_sys import CompLabeledSys, CompSys, IsPBC
 from context import dpdata
-from comp_sys import CompSys
-from comp_sys import CompLabeledSys
-from comp_sys import IsPBC
 
 bohr2ang = dpdata.unit.LengthConversion("bohr", "angstrom").value()
 

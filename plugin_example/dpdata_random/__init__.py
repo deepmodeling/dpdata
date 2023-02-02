@@ -1,5 +1,6 @@
-from dpdata.format import Format
 import numpy as np
+
+from dpdata.format import Format
 
 
 @Format.register("random")

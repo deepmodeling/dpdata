@@ -1,5 +1,9 @@
-import os, glob, shutil
+import glob
+import os
+import shutil
+
 import numpy as np
+
 from .raw import load_type
 
 

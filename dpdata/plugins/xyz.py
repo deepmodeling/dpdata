@@ -1,8 +1,8 @@
 import numpy as np
 
+from dpdata.format import Format
 from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
 from dpdata.xyz.xyz import coord_to_xyz, xyz_to_coord
-from dpdata.format import Format
 
 
 @Format.register("xyz")

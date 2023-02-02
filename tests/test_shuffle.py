@@ -1,6 +1,7 @@
 import unittest
-from context import dpdata
+
 from comp_sys import CompLabeledSys, IsPBC
+from context import dpdata
 
 
 class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys, IsPBC):

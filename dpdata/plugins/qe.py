@@ -1,6 +1,6 @@
-import dpdata.qe.traj
-import dpdata.qe.scf
 import dpdata.md.pbc
+import dpdata.qe.scf
+import dpdata.qe.traj
 from dpdata.format import Format
 
 

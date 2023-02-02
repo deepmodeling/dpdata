@@ -1,8 +1,10 @@
-import os, shutil
-import numpy as np
+import os
+import shutil
 import unittest
-from context import dpdata
+
+import numpy as np
 from comp_sys import CompLabeledSys, CompSys, IsPBC
+from context import dpdata
 
 
 class TestDeepmdLoadDumpComp(unittest.TestCase, CompLabeledSys, IsPBC):

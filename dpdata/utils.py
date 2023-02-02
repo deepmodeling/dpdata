@@ -1,4 +1,5 @@
 import numpy as np
+
 from dpdata.periodic_table import Element
 
 

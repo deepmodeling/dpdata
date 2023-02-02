@@ -1,8 +1,9 @@
 # The index should map to that in the dump file
 
 import os
-import numpy as np
 import unittest
+
+import numpy as np
 from context import dpdata
 
 

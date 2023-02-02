@@ -1,7 +1,7 @@
 import unittest
+
+from comp_sys import CompLabeledSys, IsPBC
 from context import dpdata
-from comp_sys import CompLabeledSys
-from comp_sys import IsPBC
 
 
 class TestCorr(unittest.TestCase, CompLabeledSys, IsPBC):

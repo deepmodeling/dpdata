@@ -1,5 +1,5 @@
-import dpdata.siesta.output
 import dpdata.siesta.aiMD_output
+import dpdata.siesta.output
 from dpdata.format import Format
 
 

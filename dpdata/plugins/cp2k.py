@@ -1,5 +1,6 @@
-import dpdata.cp2k.output
 import glob
+
+import dpdata.cp2k.output
 from dpdata.cp2k.output import Cp2kSystems
 from dpdata.format import Format
 

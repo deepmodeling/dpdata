@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 
-import os, sys
+import os
+import sys
+
 import numpy as np
 
 lib_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(lib_path)
-import lmp
 import warnings
+
+import lmp
 
 
 class UnwrapWarning(UserWarning):

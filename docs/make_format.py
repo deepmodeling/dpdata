@@ -1,12 +1,11 @@
 import csv
-from typing import Any
 from collections import defaultdict
+from typing import Any
 
 # ensure all plugins are loaded!
 import dpdata.plugins
+from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-from dpdata.driver import Driver
-from dpdata.driver import Minimizer
 from dpdata.system import get_cls_name
 
 

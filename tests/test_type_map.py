@@ -1,6 +1,7 @@
 import unittest
-from context import dpdata
 from itertools import permutations
+
+from context import dpdata
 
 
 class TestTypeMap:

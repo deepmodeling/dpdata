@@ -1,6 +1,7 @@
-from dpdata.format import Format
-import dpdata.pymatgen.molecule
 import numpy as np
+
+import dpdata.pymatgen.molecule
+from dpdata.format import Format
 
 
 @Format.register("pymatgen/structure")

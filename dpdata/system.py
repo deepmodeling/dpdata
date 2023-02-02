@@ -1,30 +1,26 @@
 #%%
-import os
 import glob
 import inspect
-import numpy as np
-import dpdata.md.pbc
+import os
 from copy import deepcopy
 from enum import Enum, unique
 from typing import Any, Tuple, Union
+
+import numpy as np
 from monty.json import MSONable
-from monty.serialization import loadfn, dumpfn
-from dpdata.periodic_table import Element
-from dpdata.amber.mask import pick_by_amber_mask, load_param_file
+from monty.serialization import dumpfn, loadfn
+
 import dpdata
+import dpdata.md.pbc
 
 # ensure all plugins are loaded!
 import dpdata.plugins
-from dpdata.plugin import Plugin
-from dpdata.format import Format
+from dpdata.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.driver import Driver, Minimizer
-
-from dpdata.utils import (
-    elements_index_map,
-    remove_pbc,
-    sort_atom_names,
-    add_atom_names,
-)
+from dpdata.format import Format
+from dpdata.periodic_table import Element
+from dpdata.plugin import Plugin
+from dpdata.utils import add_atom_names, elements_index_map, remove_pbc, sort_atom_names
 
 
 def load_format(fmt):

@@ -1,8 +1,9 @@
 import os
-import unittest
 import shutil
-from context import dpdata
+import unittest
+
 from comp_sys import CompLabeledSys, IsPBC
+from context import dpdata
 
 try:
     import parmed

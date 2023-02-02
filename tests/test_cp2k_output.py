@@ -1,8 +1,9 @@
 import os
-import numpy as np
 import unittest
-from context import dpdata
+
+import numpy as np
 from comp_sys import CompLabeledSys
+from context import dpdata
 
 
 class TestCp2kNormalOutput(unittest.TestCase, CompLabeledSys):

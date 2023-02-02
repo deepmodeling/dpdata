@@ -7,7 +7,7 @@ class ListFormat(Format):
         """
         convert system to list, usefull for data collection
         """
-        from dpdata import System, LabeledSystem
+        from dpdata import LabeledSystem, System
 
         if "forces" in data:
             system = LabeledSystem(data=data)

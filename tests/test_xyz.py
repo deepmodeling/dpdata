@@ -1,8 +1,9 @@
-import unittest
-import numpy as np
 import tempfile
-from context import dpdata
+import unittest
+
+import numpy as np
 from comp_sys import CompSys, IsNoPBC
+from context import dpdata
 
 
 class TestToXYZ(unittest.TestCase):

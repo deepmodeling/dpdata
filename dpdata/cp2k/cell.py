@@ -1,7 +1,8 @@
 #%%
-import numpy as np
-from collections import OrderedDict
 import re
+from collections import OrderedDict
+
+import numpy as np
 
 
 def cell_to_low_triangle(A, B, C, alpha, beta, gamma):

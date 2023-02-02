@@ -1,9 +1,5 @@
-from . import vasp
-from . import lammps
-from . import md
-from .system import System
-from .system import LabeledSystem
-from .system import MultiSystems
+from . import lammps, md, vasp
+from .system import LabeledSystem, MultiSystems, System
 
 try:
     from ._version import version as __version__

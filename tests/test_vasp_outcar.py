@@ -1,8 +1,10 @@
 import os
-import numpy as np
 import unittest
-from context import dpdata
+
+import numpy as np
 from comp_sys import CompLabeledSys, IsPBC
+from context import dpdata
+
 from dpdata.utils import uniq_atom_names
 
 

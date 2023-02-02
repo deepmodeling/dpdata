@@ -3,7 +3,7 @@ import argparse
 from typing import Optional
 
 from . import __version__
-from .system import System, LabeledSystem, MultiSystems
+from .system import LabeledSystem, MultiSystems, System
 
 
 def dpdata_parser() -> argparse.ArgumentParser:

@@ -1,8 +1,10 @@
 import os
-import numpy as np
 import unittest
-import dpdata
+
+import numpy as np
 from pwmat.config_ref_ch4 import Testconfigch4
+
+import dpdata
 
 
 class Testconfig(unittest.TestCase, Testconfigch4):

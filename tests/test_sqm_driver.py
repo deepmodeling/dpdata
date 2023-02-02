@@ -1,9 +1,9 @@
-import unittest
 import shutil
+import unittest
 
 import numpy as np
-from context import dpdata
 from comp_sys import CompSys, IsNoPBC
+from context import dpdata
 
 
 @unittest.skipIf(shutil.which("sqm") is None, "sqm is not installed")

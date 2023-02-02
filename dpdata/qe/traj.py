@@ -1,10 +1,14 @@
 #!/usr/bin/python3
+import warnings
+
 import numpy as np
-import dpdata, warnings
+
+import dpdata
+
 from ..unit import (
     EnergyConversion,
-    LengthConversion,
     ForceConversion,
+    LengthConversion,
     PressureConversion,
 )
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-import os, sys
+import os
+import sys
+
 import numpy as np
 
 ry2ev = 13.605693009

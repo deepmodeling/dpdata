@@ -1,5 +1,5 @@
-import dpdata.lammps.lmp
 import dpdata.lammps.dump
+import dpdata.lammps.lmp
 from dpdata.format import Format
 
 

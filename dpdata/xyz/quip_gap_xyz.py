@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 #%%
-import numpy as np
-from collections import OrderedDict
 import re
+from collections import OrderedDict
+
+import numpy as np
 
 
 class QuipGapxyzSystems(object):

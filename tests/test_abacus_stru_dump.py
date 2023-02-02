@@ -1,6 +1,7 @@
 import os
-import numpy as np
 import unittest
+
+import numpy as np
 from context import dpdata
 from test_vasp_poscar_dump import myfilecmp
 
