@@ -35,12 +35,12 @@ def read_amber_traj(
     Parameters
     ----------
     parm7_file, nc_file, mdfrc_file, mden_file, mdout_file:
-      filenames
-    use_element_symbols: None or list or str
-      If use_element_symbols is a list of atom indexes, these atoms will use element symbols
-      instead of amber types. For example, a ligand will use C, H, O, N, and so on
-      instead of h1, hc, o, os, and so on.
-      IF use_element_symbols is str, it will be considered as Amber mask.
+        filenames
+    use_element_symbols : None or list or str
+        If use_element_symbols is a list of atom indexes, these atoms will use element symbols
+        instead of amber types. For example, a ligand will use C, H, O, N, and so on
+        instead of h1, hc, o, os, and so on.
+        IF use_element_symbols is str, it will be considered as Amber mask.
     """
 
     flag_atom_type = False

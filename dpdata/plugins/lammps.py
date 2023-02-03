@@ -18,7 +18,7 @@ class LAMMPSLmpFormat(Format):
 
         Parameters
         ----------
-        data: dict
+        data : dict
             System data
         file_name : str
             The output file name

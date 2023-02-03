@@ -51,7 +51,7 @@ class Format(ABC):
 
         Parameters
         ----------
-        file_name: str
+        file_name : str
             file name
 
         Returns
@@ -68,7 +68,7 @@ class Format(ABC):
 
         Parameters
         ----------
-        data: dict
+        data : dict
             system data
         """
         raise NotImplementedError(
@@ -107,7 +107,7 @@ class Format(ABC):
 
         Parameters
         ----------
-        directory: str
+        directory : str
             directory of system
 
         Returns

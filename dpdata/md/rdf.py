@@ -9,15 +9,15 @@ def rdf(sys, sel_type=[None, None], max_r=5, nbins=100):
     ----------
     sys : System or LabeledSystem
         The dpdata system
-    sel_type: list
+    sel_type : list
         List of size 2. The first element specifies the type of the first atom,
         while the second element specifies the type of the second atom.
         Both elements can be ints or list of ints.
         If the element is None, all types are specified.
         Examples are sel_type = [0, 0], sel_type = [0, [0, 1]] or sel_type = [0, None]
-    max_r: float
+    max_r : float
         Maximal range of rdf calculation
-    nbins: int
+    nbins : int
         Number of bins for rdf calculation
 
     Returns

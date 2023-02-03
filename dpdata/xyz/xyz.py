@@ -8,9 +8,9 @@ def coord_to_xyz(coord: np.ndarray, types: list) -> str:
 
     Parameters
     ----------
-    coord: np.ndarray
+    coord : np.ndarray
         coordinates, Nx3 array
-    types: list
+    types : list
         list of types
 
     Returns

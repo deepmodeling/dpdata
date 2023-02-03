@@ -19,9 +19,9 @@ class Plugin:
     def register(self, key):
         """Register a plugin.
 
-        Parameter
-        ---------
-        key: str
+        Parameters
+        ----------
+        key : str
             Key of the plugin.
         """
 
