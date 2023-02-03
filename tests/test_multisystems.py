@@ -1,12 +1,10 @@
 import os
-import numpy as np
 import unittest
-from context import dpdata
-from comp_sys import CompSys
-from comp_sys import CompLabeledSys
-from comp_sys import MultiSystems
-from comp_sys import IsNoPBC
 from itertools import permutations
+
+import numpy as np
+from comp_sys import CompLabeledSys, CompSys, IsNoPBC, MultiSystems
+from context import dpdata
 
 
 class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):

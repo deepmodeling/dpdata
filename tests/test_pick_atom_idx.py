@@ -1,7 +1,8 @@
-import numpy as np
 import unittest
-from context import dpdata
+
+import numpy as np
 from comp_sys import CompSys, IsNoPBC
+from context import dpdata
 
 try:
     import parmed

@@ -1,7 +1,7 @@
 """Implement the format plugin system."""
 import os
-from collections import abc
 from abc import ABC
+from collections import abc
 
 from .plugin import Plugin
 

@@ -1,8 +1,9 @@
-from copy import deepcopy
-from rdkit import Chem
-from rdkit.Chem.rdchem import Atom, Bond, Mol, BondType
 import os
 import time
+from copy import deepcopy
+
+from rdkit import Chem
+from rdkit.Chem.rdchem import Atom, Bond, BondType, Mol
 
 # openbabel
 try:

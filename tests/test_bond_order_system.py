@@ -1,11 +1,13 @@
+import glob
 import os
 import unittest
+
 from context import dpdata
-import glob
 
 try:
     from rdkit import Chem
     from rdkit.Chem import AllChem
+
     from dpdata import BondOrderSystem
 except ImportError:
     skip_bond_order_system = True
@@ -13,8 +15,9 @@ else:
     skip_bond_order_system = False
 
 import shutil
-import numpy as np
 from copy import deepcopy
+
+import numpy as np
 
 
 @unittest.skipIf(

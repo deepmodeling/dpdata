@@ -1,8 +1,10 @@
-from typing import Optional, TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Optional, Type
+
+import numpy as np
+
+import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-import numpy as np
-import dpdata
 
 try:
     import ase.io

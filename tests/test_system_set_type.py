@@ -1,9 +1,8 @@
 import os
-import numpy as np
 import unittest
-from context import dpdata
 
 import numpy as np
+from context import dpdata
 
 
 class TestSetAtomTypes(unittest.TestCase):

@@ -3,9 +3,7 @@ from typing import Optional, Union
 
 import h5py
 import numpy as np
-
 from wcmatch.glob import globfilter
-
 
 __all__ = ["to_system_data", "dump"]
 

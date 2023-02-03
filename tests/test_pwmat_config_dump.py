@@ -1,8 +1,10 @@
 import os
-import numpy as np
 import unittest
-import dpdata
+
+import numpy as np
 from pwmat.config_ref_oh import Testconfigoh
+
+import dpdata
 
 
 def myfilecmp(test, f0, f1):

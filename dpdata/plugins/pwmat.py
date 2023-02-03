@@ -1,6 +1,7 @@
-import dpdata.pwmat.movement
-import dpdata.pwmat.atomconfig
 import numpy as np
+
+import dpdata.pwmat.atomconfig
+import dpdata.pwmat.movement
 from dpdata.format import Format
 
 

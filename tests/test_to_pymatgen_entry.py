@@ -1,8 +1,9 @@
 import os
-import numpy as np
 import unittest
-from context import dpdata
+
+import numpy as np
 from comp_sys import CompSys, IsPBC
+from context import dpdata
 from monty.serialization import loadfn
 
 try:

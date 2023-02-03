@@ -3,10 +3,11 @@
 # under LGPL 3.0 license
 """Generate Gaussian input file."""
 
-from typing import Optional, List, Tuple, Union
-import uuid
 import itertools
+import uuid
 import warnings
+from typing import List, Optional, Tuple, Union
+
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components

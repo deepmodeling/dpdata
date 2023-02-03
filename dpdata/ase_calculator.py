@@ -1,12 +1,13 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from ase.calculators.calculator import (
     Calculator,
-    all_changes,
     PropertyNotImplementedError,
+    all_changes,
 )
 
 import dpdata
+
 from .driver import Driver
 
 if TYPE_CHECKING:

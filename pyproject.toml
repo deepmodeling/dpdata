@@ -64,3 +64,6 @@ dpdata = ['*.json']
 
 [tool.setuptools_scm]
 write_to = "dpdata/_version.py"
+
+[tool.isort]
+profile = "black"

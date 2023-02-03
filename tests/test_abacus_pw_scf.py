@@ -1,7 +1,10 @@
 import os
+import shutil
+import unittest
+
 import numpy as np
-import unittest, shutil
 from context import dpdata
+
 from dpdata.unit import LengthConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()

@@ -1,6 +1,6 @@
 import numpy as np
-from .pbc import posi_diff
-from .pbc import posi_shift
+
+from .pbc import posi_diff, posi_shift
 
 
 def compute_bonds(box, posis, atype, oh_sel=[0, 1], max_roh=1.3, uniq_hbond=True):
@@ -17,8 +17,8 @@ def compute_bonds(box, posis, atype, oh_sel=[0, 1], max_roh=1.3, uniq_hbond=True
 
 def compute_bonds_ase(box, posis, atype, oh_sel=[0, 1], max_roh=1.3, uniq_hbond=True):
     natoms = len(posis)
-    from ase import Atoms
     import ase.neighborlist
+    from ase import Atoms
 
     atoms = Atoms(positions=posis, cell=box, pbc=[1, 1, 1])
     nlist = ase.neighborlist.NeighborList(

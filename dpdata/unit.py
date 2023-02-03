@@ -1,4 +1,5 @@
 from abc import ABC
+
 from scipy import constants
 
 AVOGADRO = constants.Avogadro  # Avagadro constant

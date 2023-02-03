@@ -1,6 +1,9 @@
-import os, sys
+import os
+import sys
+
 import numpy as np
-from .scf import bohr2ang, kbar2evperang3, get_geometry_in, get_cell, get_coords
+
+from .scf import bohr2ang, get_cell, get_coords, get_geometry_in, kbar2evperang3
 
 # Read in geometries from an ABACUS RELAX(CELL-RELAX) trajectory in OUT.XXXX/runnning_relax/cell-relax.log.
 

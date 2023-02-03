@@ -1,7 +1,8 @@
 """Driver plugin system."""
-from typing import Callable, List, Union, TYPE_CHECKING
-from .plugin import Plugin
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Callable, List, Union
+
+from .plugin import Plugin
 
 if TYPE_CHECKING:
     import ase

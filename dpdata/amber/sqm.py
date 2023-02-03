@@ -1,4 +1,5 @@
 import numpy as np
+
 from dpdata.periodic_table import ELEMENTS
 from dpdata.unit import EnergyConversion
 

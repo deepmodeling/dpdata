@@ -1,6 +1,6 @@
-from context import dpdata
-
 import unittest
+
+from context import dpdata
 
 
 class TestStat(unittest.TestCase):

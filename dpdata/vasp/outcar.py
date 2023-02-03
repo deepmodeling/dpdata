@@ -1,6 +1,7 @@
-import numpy as np
 import re
 import warnings
+
+import numpy as np
 
 
 def system_info(lines, type_idx_zero=False):

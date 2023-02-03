@@ -1,11 +1,13 @@
 #%%
 # Bond Order System
-import numpy as np
-from dpdata.system import System, LabeledSystem, load_format, DataType, Axis
-import dpdata.rdkit.utils
-from dpdata.rdkit.sanitize import Sanitizer, SanitizeError
 from copy import deepcopy
+
+import numpy as np
 from rdkit.Chem import Conformer
+
+import dpdata.rdkit.utils
+from dpdata.rdkit.sanitize import SanitizeError, Sanitizer
+from dpdata.system import Axis, DataType, LabeledSystem, System, load_format
 
 # import dpdata.rdkit.mol2
 

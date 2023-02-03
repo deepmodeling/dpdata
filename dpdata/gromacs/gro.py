@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import re
+
 import numpy as np
+
 from ..unit import LengthConversion
 
 nm2ang = LengthConversion("nm", "angstrom").value()

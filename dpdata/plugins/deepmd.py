@@ -1,13 +1,14 @@
-from typing import Optional, Union, List
+from typing import List, Optional, Union
+
+import h5py
+import numpy as np
 
 import dpdata
-import dpdata.deepmd.raw
 import dpdata.deepmd.comp
 import dpdata.deepmd.hdf5
-import numpy as np
-import h5py
-from dpdata.format import Format
+import dpdata.deepmd.raw
 from dpdata.driver import Driver
+from dpdata.format import Format
 
 
 @Format.register("deepmd")

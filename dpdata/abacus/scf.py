@@ -1,7 +1,10 @@
-import os, sys
-import numpy as np
-from ..unit import EnergyConversion, PressureConversion, LengthConversion
+import os
 import re
+import sys
+
+import numpy as np
+
+from ..unit import EnergyConversion, LengthConversion, PressureConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
 ry2ev = EnergyConversion("rydberg", "eV").value()

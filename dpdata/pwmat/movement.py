@@ -1,6 +1,8 @@
-import numpy as np
-from ..periodic_table import ELEMENTS
 import warnings
+
+import numpy as np
+
+from ..periodic_table import ELEMENTS
 
 
 def system_info(lines, type_idx_zero=False):

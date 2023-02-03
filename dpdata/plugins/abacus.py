@@ -1,6 +1,6 @@
-import dpdata.abacus.scf
 import dpdata.abacus.md
 import dpdata.abacus.relax
+import dpdata.abacus.scf
 from dpdata.format import Format
 
 

@@ -1,7 +1,8 @@
+import numpy as np
+
+import dpdata.vasp.outcar
 import dpdata.vasp.poscar
 import dpdata.vasp.xml
-import dpdata.vasp.outcar
-import numpy as np
 from dpdata.format import Format
 from dpdata.utils import sort_atom_names, uniq_atom_names
 

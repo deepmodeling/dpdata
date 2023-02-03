@@ -1,11 +1,11 @@
-import tempfile
 import os
 import subprocess as sp
+import tempfile
 
 import dpdata.amber.md
 import dpdata.amber.sqm
-from dpdata.format import Format
 from dpdata.driver import Driver, Minimizer
+from dpdata.format import Format
 
 
 @Format.register("amber/md")
