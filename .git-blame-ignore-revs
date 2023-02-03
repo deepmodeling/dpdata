@@ -1,0 +1,7 @@
+# .git-blame-ignore-revs
+# pre-commit
+ffa52c5d6230303d6f7ee4f1356f01aa5b2a011d
+# pre-commit docs python block
+ecdf566626c4b2d1824b946d1b7ad809cb8946dd
+# pre-commit imports
+4f1a91167b58f9042ae17cae05b609b7fdf5f20c
