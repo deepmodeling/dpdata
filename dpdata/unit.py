@@ -48,9 +48,9 @@ class Conversion(ABC):
 
         Parameters
         ----------
-            unitA : str, unit to be converted
-            unitB : str, unit which unitA is converted to, i.e. `1 unitA = self._value unitB`
-            check : bool, whether to check unit validity
+        unitA : str, unit to be converted
+        unitB : str, unit which unitA is converted to, i.e. `1 unitA = self._value unitB`
+        check : bool, whether to check unit validity
 
         Examples
         --------
@@ -118,7 +118,7 @@ class ForceConversion(Conversion):
 
         Parameters
         ----------
-            unitA, unitB : str, in format of "energy_unit/length_unit"
+        unitA, unitB : str, in format of "energy_unit/length_unit"
 
         Examples
         --------
@@ -139,7 +139,7 @@ class PressureConversion(Conversion):
 
         Parameters
         ----------
-            unitA, unitB : str, in format of "energy_unit/length_unit^3", or in `["Pa", "pa", "kPa", "kpa", "bar", "kbar"]`
+        unitA, unitB : str, in format of "energy_unit/length_unit^3", or in `["Pa", "pa", "kPa", "kpa", "bar", "kbar"]`
 
         Examples
         --------

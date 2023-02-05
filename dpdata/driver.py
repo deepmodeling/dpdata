@@ -23,9 +23,9 @@ class Driver(ABC):
     def register(key: str) -> Callable:
         """Register a driver plugin. Used as decorators.
 
-        Parameter
-        ---------
-        key: str
+        Parameters
+        ----------
+        key : str
             key of the plugin.
 
         Returns
@@ -45,9 +45,9 @@ class Driver(ABC):
     def get_driver(key: str) -> "Driver":
         """Get a driver plugin.
 
-        Parameter
-        ---------
-        key: str
+        Parameters
+        ----------
+        key : str
             key of the plugin.
 
         Returns
@@ -176,9 +176,9 @@ class Minimizer(ABC):
     def register(key: str) -> Callable:
         """Register a minimizer plugin. Used as decorators.
 
-        Parameter
-        ---------
-        key: str
+        Parameters
+        ----------
+        key : str
             key of the plugin.
 
         Returns
@@ -198,9 +198,9 @@ class Minimizer(ABC):
     def get_minimizer(key: str) -> "Minimizer":
         """Get a minimizer plugin.
 
-        Parameter
-        ---------
-        key: str
+        Parameters
+        ----------
+        key : str
             key of the plugin.
 
         Returns

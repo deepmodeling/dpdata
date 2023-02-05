@@ -397,7 +397,7 @@ class System(MSONable):
 
         Parameters
         ----------
-        type_map :
+        type_map
             dict :  {"H":0,"O":1}
             or list  ["H","C","O","N"]
             The map between elements and index
@@ -673,7 +673,7 @@ class System(MSONable):
         Parameters
         ----------
         protect_layer : the protect layer between the atoms and the cell
-                        boundary
+            boundary
         """
         assert protect_layer >= 0, "the protect_layer should be no less than 0"
         remove_pbc(self.data, protect_layer)
@@ -726,7 +726,7 @@ class System(MSONable):
 
         Parameters
         ----------
-        ncopy :
+        ncopy
             list: [4,2,3]
             or tuple: (4,2,3,)
             make `ncopy[0]` copys in x dimensions,
@@ -846,7 +846,7 @@ class System(MSONable):
             The cell of each frame is deformed by a symmetric matrix perturbed from identity.
             The perturbation to the diagonal part is subject to a uniform distribution in [-cell_pert_fraction, cell_pert_fraction),
             and the perturbation to the off-diagonal part is subject to a uniform distribution in [-0.5*cell_pert_fraction, 0.5*cell_pert_fraction).
-        atom_pert_distance: float
+        atom_pert_distance : float
             unit: Angstrom. A distance determines how far atoms will move.
             Atoms will move about `atom_pert_distance` in random direction.
             The distribution of the distance atoms move is determined by atom_pert_style
@@ -964,9 +964,9 @@ class System(MSONable):
 
         Parameters
         ----------
-        idx: int or list or slice
+        idx : int or list or slice
             atom index
-        nopbc: Boolen (default: None)
+        nopbc : Boolen (default: None)
             If nopbc is True or False, set nopbc
 
         Returns
@@ -1026,16 +1026,16 @@ class System(MSONable):
 
         Parameters
         ----------
-        param: str or parmed.Structure
-          filename of Amber param file or parmed.Structure
-        maskstr: str
-          Amber masks
-        pass_coords: Boolen (default: False)
+        param : str or parmed.Structure
+            filename of Amber param file or parmed.Structure
+        maskstr : str
+            Amber masks
+        pass_coords : Boolen (default: False)
             If pass_coords is true, the function will pass coordinates and
             return a MultiSystem. Otherwise, the result is
             coordinate-independent, and the function will return System or
             LabeledSystem.
-        nopbc: Boolen (default: None)
+        nopbc : Boolen (default: None)
             If nopbc is True or False, set nopbc
         """
         parm = load_param_file(param)
@@ -1221,11 +1221,11 @@ class LabeledSystem(System):
 
         Parameters
         ----------
-        hl_sys: LabeledSystem
+        hl_sys : LabeledSystem
             high-level LabeledSystem
 
         Returns
-        ----------
+        -------
         corrected_sys: LabeledSystem
             Corrected LabeledSystem
         """
@@ -1248,7 +1248,7 @@ class MultiSystems:
         """
         Parameters
         ----------
-        systems : System
+        *systems : System
             The systems contained
         type_map : list of str
             Maps atom type to name
@@ -1461,9 +1461,9 @@ class MultiSystems:
 
         Parameters
         ----------
-        idx: int or list or slice
+        idx : int or list or slice
             atom index
-        nopbc: Boolen (default: None)
+        nopbc : Boolen (default: None)
             If nopbc is True or False, set nopbc
 
         Returns

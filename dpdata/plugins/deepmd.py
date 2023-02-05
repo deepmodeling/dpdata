@@ -50,13 +50,13 @@ class DeePMDCompFormat(Format):
 
         Parameters
         ----------
-        data: dict
+        data : dict
             System data
         file_name : str
             The output folder
         set_size : int
             The size of each set.
-        prec: {numpy.float32, numpy.float64}
+        prec : {numpy.float32, numpy.float64}
             The floating point precision of the compressed data
         """
         dpdata.deepmd.comp.dump(file_name, data, set_size=set_size, comp_prec=prec)

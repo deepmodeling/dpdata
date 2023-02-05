@@ -20,13 +20,13 @@ class AbacusSTRUFormat(Format):
             The output file name
         frame_idx : int
             The index of the frame to dump
-        pp_file: list of string, optional
+        pp_file : list of string, optional
             List of pseudo potential files
-        numerical_orbital: list of string, optional
+        numerical_orbital : list of string, optional
             List of orbital files
-        mass: list of float, optional
+        mass : list of float, optional
             List of atomic masses
-        numerical_descriptor: str, optional
+        numerical_descriptor : str, optional
             numerical descriptor file
         """
 

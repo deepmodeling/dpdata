@@ -10,12 +10,12 @@ def pick_by_amber_mask(param, maskstr, coords=None):
 
     Parameters
     ----------
-    param: str or parmed.Structure
-      filename of Amber param file or parmed.Structure
-    maskstr: str
-      Amber masks
-    coords: np.ndarray (optional)
-      frame coordinates, shape: N*3
+    param : str or parmed.Structure
+        filename of Amber param file or parmed.Structure
+    maskstr : str
+        Amber masks
+    coords : np.ndarray (optional)
+        frame coordinates, shape: N*3
     """
     parm = load_param_file(param)
     if coords is not None:
