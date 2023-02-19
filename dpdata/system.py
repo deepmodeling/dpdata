@@ -178,7 +178,9 @@ class System(MSONable):
         DataType("orig", np.ndarray, (3,)),
         DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
         DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
-        DataType("real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False),
+        DataType(
+            "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
+        ),
         DataType("real_atom_names", list, (Axis.NTYPES,), required=False),
         DataType("nopbc", bool, required=False),
     )
@@ -572,18 +574,20 @@ class System(MSONable):
         type_map : list
             type_map
         """
-        if 'real_atom_types' in self.data.keys():
+        if "real_atom_types" in self.data.keys():
             return
         if type_map is None:
             type_map = self.get_atom_names()
-        type_index = [type_map.index(i) for i in self.data['atom_names']]
+        type_index = [type_map.index(i) for i in self.data["atom_names"]]
         frames = self.get_nframes()
-        self.data['real_atom_types'] = np.tile(np.array([type_index[i] for i in self.data['atom_types']]), [frames, 1])
-        self.data['real_atom_names'] = type_map
+        self.data["real_atom_types"] = np.tile(
+            np.array([type_index[i] for i in self.data["atom_types"]]), [frames, 1]
+        )
+        self.data["real_atom_names"] = type_map
         natoms = self.get_natoms()
-        self.data['atom_types'] = np.array([0 for i in range(natoms)])
-        self.data['atom_numbs'] = [natoms]
-        self.data['atom_names'] = ['MIXED_TOKEN']
+        self.data["atom_types"] = np.array([0 for i in range(natoms)])
+        self.data["atom_numbs"] = [natoms]
+        self.data["atom_names"] = ["MIXED_TOKEN"]
 
     def sort_atom_names(self, type_map=None):
         """
@@ -1308,7 +1312,10 @@ class MultiSystems:
                     data_list = fmtobj.from_system_mix(dd, **kwargs)
                     for data_item in data_list:
                         system_list.append(System(data=data_item))
-            return self.__class__(*system_list, type_map=kwargs['type_map'] if 'type_map' in kwargs else None)
+            return self.__class__(
+                *system_list,
+                type_map=kwargs["type_map"] if "type_map" in kwargs else None,
+            )
 
     def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
@@ -1318,9 +1325,13 @@ class MultiSystems:
             ):
                 ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
         else:
-            mixed_systems = fmtobj.mix_system(*list(self.systems.values()), type_map=self.atom_names, **kwargs)
+            mixed_systems = fmtobj.mix_system(
+                *list(self.systems.values()), type_map=self.atom_names, **kwargs
+            )
             for fn in mixed_systems:
-                mixed_systems[fn].to_fmt_obj(fmtobj, os.path.join(directory, fn), *args, **kwargs)
+                mixed_systems[fn].to_fmt_obj(
+                    fmtobj, os.path.join(directory, fn), *args, **kwargs
+                )
         return self
 
     def to(self, fmt: str, *args, **kwargs) -> "MultiSystems":

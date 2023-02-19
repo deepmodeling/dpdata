@@ -9,7 +9,9 @@ def load_type(folder):
     data = {}
     data["atom_names"] = []
     # if find type_map.raw, use it
-    assert os.path.isfile(os.path.join(folder, "type_map.raw")), "Mixed type system must have type_map.raw!"
+    assert os.path.isfile(
+        os.path.join(folder, "type_map.raw")
+    ), "Mixed type system must have type_map.raw!"
     with open(os.path.join(folder, "type_map.raw")) as fp:
         data["atom_names"] = fp.read().split()
 
@@ -21,12 +23,7 @@ def formula(atom_names, atom_numbs):
     Return the formula of this system, like C3H5O2
     """
     return "".join(
-        [
-            "{}{}".format(symbol, numb)
-            for symbol, numb in zip(
-                atom_names, atom_numbs
-            )
-        ]
+        ["{}{}".format(symbol, numb) for symbol, numb in zip(atom_names, atom_numbs)]
     )
 
 
@@ -57,8 +54,10 @@ def to_system_data(folder, type_map=None, labels=True):
     if os.path.isfile(os.path.join(folder, "nopbc")):
         data["nopbc"] = True
     sets = sorted(glob.glob(os.path.join(folder, "set.*")))
-    assert len(sets) == 1, 'Mixed type must have only one set!'
-    cells, coords, eners, forces, virs, real_atom_types = _load_set(sets[0], data.get("nopbc", False))
+    assert len(sets) == 1, "Mixed type must have only one set!"
+    cells, coords, eners, forces, virs, real_atom_types = _load_set(
+        sets[0], data.get("nopbc", False)
+    )
     nframes = np.reshape(cells, [-1, 3, 3]).shape[0]
     cells = np.reshape(cells, [nframes, 3, 3])
     coords = np.reshape(coords, [nframes, -1, 3])
@@ -75,10 +74,17 @@ def to_system_data(folder, type_map=None, labels=True):
     while True:
         if real_atom_types.size == 0:
             break
-        temp_atom_numbs = [np.count_nonzero(real_atom_types[0] == i) for i in range(len(data['atom_names']))]
+        temp_atom_numbs = [
+            np.count_nonzero(real_atom_types[0] == i)
+            for i in range(len(data["atom_names"]))
+        ]
         # temp_formula = formula(data['atom_names'], temp_atom_numbs)
-        temp_idx = np.arange(real_atom_types.shape[0])[(real_atom_types == real_atom_types[0]).all(-1)]
-        rest_idx = np.arange(real_atom_types.shape[0])[(real_atom_types != real_atom_types[0]).any(-1)]
+        temp_idx = np.arange(real_atom_types.shape[0])[
+            (real_atom_types == real_atom_types[0]).all(-1)
+        ]
+        rest_idx = np.arange(real_atom_types.shape[0])[
+            (real_atom_types != real_atom_types[0]).any(-1)
+        ]
         temp_data = data.copy()
         temp_data["atom_numbs"] = temp_atom_numbs
         temp_data["atom_types"] = real_atom_types[0]
@@ -117,9 +123,10 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
                 + "not a clean deepmd raw dir. please firstly clean set.* then try compress"
             )
     # if not converted to mixed
-    if 'real_atom_types' not in data:
+    if "real_atom_types" not in data:
         from dpdata import LabeledSystem, System
-        if 'energies' in data:
+
+        if "energies" in data:
             temp_sys = LabeledSystem(data=data)
         else:
             temp_sys = System(data=data)
@@ -153,11 +160,14 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     if "atom_pref" in data:
         atom_pref = np.reshape(data["atom_pref"], [nframes, -1]).astype(comp_prec)
     if "real_atom_types" in data:
-        real_atom_types = np.reshape(data["real_atom_types"], [nframes, -1]).astype(np.int64)
+        real_atom_types = np.reshape(data["real_atom_types"], [nframes, -1]).astype(
+            np.int64
+        )
     # dump frame properties: cell, coord, energy, force and virial
-    assert nframes <= set_size, \
-        "Can not put more than {} frames into one mixed_type systems with one set! " \
+    assert nframes <= set_size, (
+        "Can not put more than {} frames into one mixed_type systems with one set! "
         "Please split them into different systems."
+    )
     set_folder = os.path.join(folder, "set.%03d" % 0)
     os.makedirs(set_folder)
     np.save(os.path.join(set_folder, "box"), cells)
@@ -217,8 +227,12 @@ def mix_system(*system, type_map, split_num=100, **kwargs):
             temp_systems[str(natom)].append(tmp_sys)
         if atom_numbs_frame_index[str(natom)] >= split_num:
             while True:
-                sys_split, temp_systems[str(natom)], rest_num = split_system(temp_systems[str(natom)], split_num=split_num)
-                sys_name = f'{str(natom)}/sys.' + "%.6d" % atom_numbs_sys_index[str(natom)]
+                sys_split, temp_systems[str(natom)], rest_num = split_system(
+                    temp_systems[str(natom)], split_num=split_num
+                )
+                sys_name = (
+                    f"{str(natom)}/sys." + "%.6d" % atom_numbs_sys_index[str(natom)]
+                )
                 mixed_systems[sys_name] = sys_split
                 atom_numbs_sys_index[str(natom)] += 1
                 if rest_num < split_num:
@@ -226,7 +240,7 @@ def mix_system(*system, type_map, split_num=100, **kwargs):
                     break
     for natom in temp_systems:
         if atom_numbs_frame_index[natom] > 0:
-            sys_name = f'{natom}/sys.' + "%.6d" % atom_numbs_sys_index[natom]
+            sys_name = f"{natom}/sys." + "%.6d" % atom_numbs_sys_index[natom]
             mixed_systems[sys_name] = temp_systems[natom]
     return mixed_systems
 

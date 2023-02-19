@@ -29,8 +29,10 @@ class TestMixedMultiSystems(unittest.TestCase, CompLabeledSys, IsNoPBC):
         )
 
         self.systems = dpdata.MultiSystems(system_1, system_2, system_3, system_4)
-        self.systems.to_deepmd_mixed('tmp.deepmd.mixed')
-        mixms = dpdata.MultiSystems().load_systems_from_file('tmp.deepmd.mixed', fmt='deepmd/mixed')
+        self.systems.to_deepmd_mixed("tmp.deepmd.mixed")
+        mixms = dpdata.MultiSystems().load_systems_from_file(
+            "tmp.deepmd.mixed", fmt="deepmd/mixed"
+        )
         self.system_1 = self.systems["C1H3"]
         self.system_2 = mixms["C1H3"]
         self.places = 6

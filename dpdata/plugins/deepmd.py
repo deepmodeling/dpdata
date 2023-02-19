@@ -1,3 +1,4 @@
+import os
 from typing import List, Optional, Union
 
 import h5py
@@ -6,9 +7,8 @@ import numpy as np
 import dpdata
 import dpdata.deepmd.comp
 import dpdata.deepmd.hdf5
-import dpdata.deepmd.raw
 import dpdata.deepmd.mixed
-import os
+import dpdata.deepmd.raw
 from dpdata.driver import Driver
 from dpdata.format import Format
 
@@ -135,16 +135,18 @@ class DeePMDMixedFormat(Format):
             level_1_dir = [
                 os.path.join(directory, name)
                 for name in os.listdir(directory)
-                if os.path.isdir(os.path.join(directory, name)) and
-                os.path.isfile(os.path.join(directory, name, 'type_map.raw'))
+                if os.path.isdir(os.path.join(directory, name))
+                and os.path.isfile(os.path.join(directory, name, "type_map.raw"))
             ]
             level_2_dir = [
                 os.path.join(directory, name1, name2)
                 for name1 in os.listdir(directory)
                 for name2 in os.listdir(os.path.join(directory, name1))
-                if os.path.isdir(os.path.join(directory, name1)) and
-                os.path.isdir(os.path.join(directory, name1, name2)) and
-                os.path.isfile(os.path.join(directory, name1, name2, 'type_map.raw'))
+                if os.path.isdir(os.path.join(directory, name1))
+                and os.path.isdir(os.path.join(directory, name1, name2))
+                and os.path.isfile(
+                    os.path.join(directory, name1, name2, "type_map.raw")
+                )
             ]
             return level_1_dir + level_2_dir
 
