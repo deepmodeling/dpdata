@@ -7,6 +7,8 @@ import dpdata
 import dpdata.deepmd.comp
 import dpdata.deepmd.hdf5
 import dpdata.deepmd.raw
+import dpdata.deepmd.mixed
+import os
 from dpdata.driver import Driver
 from dpdata.format import Format
 
@@ -65,6 +67,86 @@ class DeePMDCompFormat(Format):
         return dpdata.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=True
         )
+
+    MultiMode = Format.MultiModes.Directory
+
+
+@Format.register("deepmd/mixed")
+class DeePMDMixedFormat(Format):
+    def from_system_mix(self, file_name, type_map=None, **kwargs):
+        return dpdata.deepmd.mixed.to_system_data(
+            file_name, type_map=type_map, labels=False
+        )
+
+    def to_system(self, data, file_name, set_size=200, prec=np.float64, **kwargs):
+        """
+        Dump the system in deepmd mixed type format (numpy binary) to `folder`.
+
+        The frames were already split to different systems, so these frames can be dumped to one single subfolders
+            named as `folder/set.000`, containing less than `set_size` frames.
+
+        Parameters
+        ----------
+        data : dict
+            System data
+        file_name : str
+            The output folder
+        set_size : int
+            The max size of set.
+        prec : {numpy.float32, numpy.float64}
+            The floating point precision of the compressed data
+        """
+        dpdata.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
+
+    def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
+        return dpdata.deepmd.mixed.to_system_data(
+            file_name, type_map=type_map, labels=True
+        )
+
+    def mix_system(self, *system, **kwargs):
+        """Mix the systems into mixed_type ones
+
+        Parameters
+        ----------
+        file_name : str
+            file name
+
+        Returns
+        -------
+        data: dict
+            system data
+        """
+        return dpdata.deepmd.mixed.mix_system(*system, **kwargs)
+
+    def from_multi_systems(self, directory, **kwargs):
+        """MultiSystems.from
+
+        Parameters
+        ----------
+        directory : str
+            directory of system
+
+        Returns
+        -------
+        filenames: list[str]
+            list of filenames
+        """
+        if self.MultiMode == self.MultiModes.Directory:
+            level_1_dir = [
+                os.path.join(directory, name)
+                for name in os.listdir(directory)
+                if os.path.isdir(os.path.join(directory, name)) and
+                os.path.isfile(os.path.join(directory, name, 'type_map.raw'))
+            ]
+            level_2_dir = [
+                os.path.join(directory, name1, name2)
+                for name1 in os.listdir(directory)
+                for name2 in os.listdir(os.path.join(directory, name1))
+                if os.path.isdir(os.path.join(directory, name1)) and
+                os.path.isdir(os.path.join(directory, name1, name2)) and
+                os.path.isfile(os.path.join(directory, name1, name2, 'type_map.raw'))
+            ]
+            return level_1_dir + level_2_dir
 
     MultiMode = Format.MultiModes.Directory
 
