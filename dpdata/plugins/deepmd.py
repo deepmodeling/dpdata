@@ -118,7 +118,9 @@ class DeePMDMixedFormat(Format):
         mixed_systems: dict
             dict of mixed system with key '{atom_numbs}/sys.xxx'
         """
-        return dpdata.deepmd.mixed.mix_system(*system, type_map=type_map, split_num=split_num, **kwargs)
+        return dpdata.deepmd.mixed.mix_system(
+            *system, type_map=type_map, split_num=split_num, **kwargs
+        )
 
     def from_multi_systems(self, directory, **kwargs):
         """MultiSystems.from

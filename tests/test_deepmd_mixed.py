@@ -26,23 +26,23 @@ class TestMixedMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsN
         )
 
         tmp_data = system_1.data.copy()
-        tmp_data['atom_numbs'] = [1, 1, 1, 2]
-        tmp_data['atom_names'] = ['C', 'H', 'A', 'B']
-        tmp_data['atom_types'] = np.array([0, 1, 2, 3, 3])
+        tmp_data["atom_numbs"] = [1, 1, 1, 2]
+        tmp_data["atom_names"] = ["C", "H", "A", "B"]
+        tmp_data["atom_types"] = np.array([0, 1, 2, 3, 3])
         # C1H1A1B2
         system_1_modified_type_1 = dpdata.LabeledSystem(data=tmp_data)
 
         tmp_data = system_1.data.copy()
-        tmp_data['atom_numbs'] = [1, 1, 2, 1]
-        tmp_data['atom_names'] = ['C', 'H', 'A', 'B']
-        tmp_data['atom_types'] = np.array([0, 1, 2, 2, 3])
+        tmp_data["atom_numbs"] = [1, 1, 2, 1]
+        tmp_data["atom_names"] = ["C", "H", "A", "B"]
+        tmp_data["atom_types"] = np.array([0, 1, 2, 2, 3])
         # C1H1A2B1
         system_1_modified_type_2 = dpdata.LabeledSystem(data=tmp_data)
 
         tmp_data = system_1.data.copy()
-        tmp_data['atom_numbs'] = [1, 1, 1, 2]
-        tmp_data['atom_names'] = ['C', 'H', 'A', 'D']
-        tmp_data['atom_types'] = np.array([0, 1, 2, 3, 3])
+        tmp_data["atom_numbs"] = [1, 1, 1, 2]
+        tmp_data["atom_names"] = ["C", "H", "A", "D"]
+        tmp_data["atom_types"] = np.array([0, 1, 2, 3, 3])
         # C1H1A1C2
         system_1_modified_type_3 = dpdata.LabeledSystem(data=tmp_data)
 
@@ -66,8 +66,20 @@ class TestMixedMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsN
         self.system_1 = self.ms["C1H4A0B0D0"]
         self.system_2 = self.systems["C1H4A0B0D0"]
 
-        self.system_names = ['C1H4A0B0D0', 'C1H3A0B0D0', 'C1H1A1B2D0', 'C1H1A2B1D0', 'C1H1A1B0D2']
-        self.system_sizes = {'C1H4A0B0D0': 1, 'C1H3A0B0D0': 1, 'C1H1A1B2D0': 1, 'C1H1A2B1D0': 1, 'C1H1A1B0D2': 1}
+        self.system_names = [
+            "C1H4A0B0D0",
+            "C1H3A0B0D0",
+            "C1H1A1B2D0",
+            "C1H1A2B1D0",
+            "C1H1A1B0D2",
+        ]
+        self.system_sizes = {
+            "C1H4A0B0D0": 1,
+            "C1H3A0B0D0": 1,
+            "C1H1A1B2D0": 1,
+            "C1H1A2B1D0": 1,
+            "C1H1A1B0D2": 1,
+        }
         self.atom_names = ["C", "H", "A", "B", "D"]
 
     def tearDown(self):
@@ -85,9 +97,7 @@ class TestMixedMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsN
         self.assertEqual(self.systems.get_nframes(), 5)
 
     def test_str(self):
-        self.assertEqual(
-            str(self.ms), "MultiSystems (5 systems containing 5 frames)"
-        )
+        self.assertEqual(str(self.ms), "MultiSystems (5 systems containing 5 frames)")
         self.assertEqual(
             str(self.place_holder_ms), "MultiSystems (2 systems containing 5 frames)"
         )
