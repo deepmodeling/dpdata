@@ -71,14 +71,14 @@ class DeePMDCompFormat(Format):
     MultiMode = Format.MultiModes.Directory
 
 
-@Format.register("deepmd/mixed")
+@Format.register("deepmd/npy/mixed")
 class DeePMDMixedFormat(Format):
     def from_system_mix(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
-    def to_system(self, data, file_name, set_size=200, prec=np.float64, **kwargs):
+    def to_system(self, data, file_name, prec=np.float64, **kwargs):
         """
         Dump the system in deepmd mixed type format (numpy binary) to `folder`.
 
@@ -91,32 +91,34 @@ class DeePMDMixedFormat(Format):
             System data
         file_name : str
             The output folder
-        set_size : int
-            The max size of set.
         prec : {numpy.float32, numpy.float64}
             The floating point precision of the compressed data
         """
-        dpdata.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.deepmd.mixed.dump(file_name, data, comp_prec=prec)
 
     def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=True
         )
 
-    def mix_system(self, *system, **kwargs):
-        """Mix the systems into mixed_type ones
+    def mix_system(self, *system, type_map, split_num=200, **kwargs):
+        """Mix the systems into mixed_type ones according to the unified given type_map.
 
         Parameters
         ----------
-        file_name : str
-            file name
+        *system : System
+            The systems to mix
+        type_map : list of str
+            Maps atom type to name
+        split_num : int
+            Number of frames in each system
 
         Returns
         -------
-        data: dict
-            system data
+        mixed_systems: dict
+            dict of mixed system with key '{atom_numbs}/sys.xxx'
         """
-        return dpdata.deepmd.mixed.mix_system(*system, **kwargs)
+        return dpdata.deepmd.mixed.mix_system(*system, type_map=type_map, split_num=split_num, **kwargs)
 
     def from_multi_systems(self, directory, **kwargs):
         """MultiSystems.from

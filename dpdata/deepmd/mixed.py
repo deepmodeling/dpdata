@@ -107,7 +107,7 @@ def to_system_data(folder, type_map=None, labels=True):
     return data_list
 
 
-def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
+def dump(folder, data, comp_prec=np.float32, remove_sets=True):
     os.makedirs(folder, exist_ok=True)
     sets = sorted(glob.glob(os.path.join(folder, "set.*")))
     if len(sets) > 0:
@@ -164,10 +164,6 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
             np.int64
         )
     # dump frame properties: cell, coord, energy, force and virial
-    assert nframes <= set_size, (
-        "Can not put more than {} frames into one mixed_type systems with one set! "
-        "Please split them into different systems."
-    )
     set_folder = os.path.join(folder, "set.%03d" % 0)
     os.makedirs(set_folder)
     np.save(os.path.join(set_folder, "box"), cells)
@@ -191,7 +187,7 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
             pass
 
 
-def mix_system(*system, type_map, split_num=100, **kwargs):
+def mix_system(*system, type_map, split_num=200, **kwargs):
     """Mix the systems into mixed_type ones
 
     Parameters

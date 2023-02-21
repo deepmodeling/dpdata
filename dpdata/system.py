@@ -585,7 +585,7 @@ class System(MSONable):
         )
         self.data["real_atom_names"] = type_map
         natoms = self.get_natoms()
-        self.data["atom_types"] = np.array([0 for i in range(natoms)])
+        self.data["atom_types"] = np.zeros((natoms,), dtype=int)
         self.data["atom_numbs"] = [natoms]
         self.data["atom_names"] = ["MIXED_TOKEN"]
 

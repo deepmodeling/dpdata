@@ -132,7 +132,7 @@ class Format(ABC):
             "%s doesn't support MultiSystems.to" % (self.__class__.__name__)
         )
 
-    def mix_system(self, *system, type_map, split_num=100, **kwargs):
+    def mix_system(self, *system, type_map, split_num=200, **kwargs):
         """Mix the systems into mixed_type ones according to the unified given type_map.
 
         Parameters
