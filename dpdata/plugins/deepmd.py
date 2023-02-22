@@ -88,6 +88,7 @@ class DeePMDMixedFormat(Format):
     >>> import dpdata
     >>> dpdata.MultiSystems().load_systems_from_file("mixed_dir", fmt="deepmd/npy/mixed")
     """
+
     def from_system_mix(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=False
