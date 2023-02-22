@@ -73,6 +73,21 @@ class DeePMDCompFormat(Format):
 
 @Format.register("deepmd/npy/mixed")
 class DeePMDMixedFormat(Format):
+    """Mixed type numpy format for DeePMD-kit.
+    Under this format, systems with the same number of atoms but different formula can be put together
+    for a larger system, especially when the frame numbers in systems are sparse.
+    This also helps to mixture the type information together for model training with type embedding network.
+
+    Examples
+    --------
+    Dump a MultiSystems into a mixed type numpy directory:
+    >>> import dpdata
+    >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir")
+
+    Load a mixed type data into a MultiSystems:
+    >>> import dpdata
+    >>> dpdata.MultiSystems().load_systems_from_file("mixed_dir", fmt="deepmd/npy/mixed")
+    """
     def from_system_mix(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=False
