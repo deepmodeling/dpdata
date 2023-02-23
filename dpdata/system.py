@@ -178,6 +178,10 @@ class System(MSONable):
         DataType("orig", np.ndarray, (3,)),
         DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
         DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType(
+            "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
+        ),
+        DataType("real_atom_names", list, (Axis.NTYPES,), required=False),
         DataType("nopbc", bool, required=False),
     )
 
@@ -557,6 +561,33 @@ class System(MSONable):
             # appended system uses PBC, cancel nopbc
             self.data["nopbc"] = False
         return True
+
+    def convert_to_mixed_type(self, type_map=None):
+        """
+        Convert the data dict to mixed type format structure, in order to append systems
+        with different formula but the same number of atoms. Change the 'atom_names' to
+        one placeholder type 'MIXED_TOKEN' and add 'real_atom_types' to store the real type
+        vectors according to the given type_map.
+
+        Parameters
+        ----------
+        type_map : list
+            type_map
+        """
+        if "real_atom_types" in self.data.keys():
+            return
+        if type_map is None:
+            type_map = self.get_atom_names()
+        type_index = [type_map.index(i) for i in self.data["atom_names"]]
+        frames = self.get_nframes()
+        self.data["real_atom_types"] = np.tile(
+            np.array([type_index[i] for i in self.data["atom_types"]]), [frames, 1]
+        )
+        self.data["real_atom_names"] = type_map
+        natoms = self.get_natoms()
+        self.data["atom_types"] = np.zeros((natoms,), dtype=int)
+        self.data["atom_numbs"] = [natoms]
+        self.data["atom_names"] = ["MIXED_TOKEN"]
 
     def sort_atom_names(self, type_map=None):
         """
@@ -1261,21 +1292,46 @@ class MultiSystems:
         self.append(*systems)
 
     def from_fmt_obj(self, fmtobj, directory, labeled=True, **kwargs):
-        for dd in fmtobj.from_multi_systems(directory, **kwargs):
-            if labeled:
-                system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
-            else:
-                system = System().from_fmt_obj(fmtobj, dd, **kwargs)
-            system.sort_atom_names()
-            self.append(system)
-        return self
+        if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
+            for dd in fmtobj.from_multi_systems(directory, **kwargs):
+                if labeled:
+                    system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
+                else:
+                    system = System().from_fmt_obj(fmtobj, dd, **kwargs)
+                system.sort_atom_names()
+                self.append(system)
+            return self
+        else:
+            system_list = []
+            for dd in fmtobj.from_multi_systems(directory, **kwargs):
+                if labeled:
+                    data_list = fmtobj.from_labeled_system_mix(dd, **kwargs)
+                    for data_item in data_list:
+                        system_list.append(LabeledSystem(data=data_item))
+                else:
+                    data_list = fmtobj.from_system_mix(dd, **kwargs)
+                    for data_item in data_list:
+                        system_list.append(System(data=data_item))
+            return self.__class__(
+                *system_list,
+                type_map=kwargs["type_map"] if "type_map" in kwargs else None,
+            )
 
     def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
-        for fn, ss in zip(
-            fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs),
-            self.systems.values(),
-        ):
-            ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
+        if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
+            for fn, ss in zip(
+                fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs),
+                self.systems.values(),
+            ):
+                ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
+        else:
+            mixed_systems = fmtobj.mix_system(
+                *list(self.systems.values()), type_map=self.atom_names, **kwargs
+            )
+            for fn in mixed_systems:
+                mixed_systems[fn].to_fmt_obj(
+                    fmtobj, os.path.join(directory, fn), *args, **kwargs
+                )
         return self
 
     def to(self, fmt: str, *args, **kwargs) -> "MultiSystems":

@@ -1,3 +1,4 @@
+import os
 from typing import List, Optional, Union
 
 import h5py
@@ -6,6 +7,7 @@ import numpy as np
 import dpdata
 import dpdata.deepmd.comp
 import dpdata.deepmd.hdf5
+import dpdata.deepmd.mixed
 import dpdata.deepmd.raw
 from dpdata.driver import Driver
 from dpdata.format import Format
@@ -65,6 +67,108 @@ class DeePMDCompFormat(Format):
         return dpdata.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=True
         )
+
+    MultiMode = Format.MultiModes.Directory
+
+
+@Format.register("deepmd/npy/mixed")
+class DeePMDMixedFormat(Format):
+    """Mixed type numpy format for DeePMD-kit.
+    Under this format, systems with the same number of atoms but different formula can be put together
+    for a larger system, especially when the frame numbers in systems are sparse.
+    This also helps to mixture the type information together for model training with type embedding network.
+
+    Examples
+    --------
+    Dump a MultiSystems into a mixed type numpy directory:
+    >>> import dpdata
+    >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir")
+
+    Load a mixed type data into a MultiSystems:
+    >>> import dpdata
+    >>> dpdata.MultiSystems().load_systems_from_file("mixed_dir", fmt="deepmd/npy/mixed")
+    """
+
+    def from_system_mix(self, file_name, type_map=None, **kwargs):
+        return dpdata.deepmd.mixed.to_system_data(
+            file_name, type_map=type_map, labels=False
+        )
+
+    def to_system(self, data, file_name, prec=np.float64, **kwargs):
+        """
+        Dump the system in deepmd mixed type format (numpy binary) to `folder`.
+
+        The frames were already split to different systems, so these frames can be dumped to one single subfolders
+            named as `folder/set.000`, containing less than `set_size` frames.
+
+        Parameters
+        ----------
+        data : dict
+            System data
+        file_name : str
+            The output folder
+        prec : {numpy.float32, numpy.float64}
+            The floating point precision of the compressed data
+        """
+        dpdata.deepmd.mixed.dump(file_name, data, comp_prec=prec)
+
+    def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
+        return dpdata.deepmd.mixed.to_system_data(
+            file_name, type_map=type_map, labels=True
+        )
+
+    def mix_system(self, *system, type_map, split_num=200, **kwargs):
+        """Mix the systems into mixed_type ones according to the unified given type_map.
+
+        Parameters
+        ----------
+        *system : System
+            The systems to mix
+        type_map : list of str
+            Maps atom type to name
+        split_num : int
+            Number of frames in each system
+
+        Returns
+        -------
+        mixed_systems: dict
+            dict of mixed system with key '{atom_numbs}/sys.xxx'
+        """
+        return dpdata.deepmd.mixed.mix_system(
+            *system, type_map=type_map, split_num=split_num, **kwargs
+        )
+
+    def from_multi_systems(self, directory, **kwargs):
+        """MultiSystems.from
+
+        Parameters
+        ----------
+        directory : str
+            directory of system
+
+        Returns
+        -------
+        filenames: list[str]
+            list of filenames
+        """
+        if self.MultiMode == self.MultiModes.Directory:
+            level_1_dir = [
+                os.path.join(directory, name)
+                for name in os.listdir(directory)
+                if os.path.isdir(os.path.join(directory, name))
+                and os.path.isfile(os.path.join(directory, name, "type_map.raw"))
+            ]
+            level_2_dir = [
+                os.path.join(directory, name1, name2)
+                for name1 in os.listdir(directory)
+                for name2 in os.listdir(os.path.join(directory, name1))
+                if os.path.isdir(os.path.join(directory, name1))
+                and os.path.isdir(os.path.join(directory, name1, name2))
+                and os.path.isfile(
+                    os.path.join(directory, name1, name2, "type_map.raw")
+                )
+            ]
+            return level_1_dir + level_2_dir
 
     MultiMode = Format.MultiModes.Directory
 
