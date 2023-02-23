@@ -293,12 +293,14 @@ Here are examples using `deepmd/npy/mixed` format:
 - Dump a MultiSystems into a mixed type numpy directory:
 ```python
 import dpdata
+
 dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir")
 ```
 
 - Load a mixed type data into a MultiSystems:
 ```python
 import dpdata
+
 dpdata.MultiSystems().load_systems_from_file("mixed_dir", fmt="deepmd/npy/mixed")
 ```
 
