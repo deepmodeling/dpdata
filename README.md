@@ -280,7 +280,7 @@ print(syst.get_charge())  # return the total charge of the system
 
 If a valence of 3 is detected on carbon, the formal charge will be assigned to -1. Because for most cases (in alkynyl anion, isonitrile, cyclopentadienyl anion), the formal charge on 3-valence carbon is -1, and this is also consisent with the 8-electron rule.
 
-## Mixed Type Format
+# Mixed Type Format
 The format `deepmd/npy/mixed` is the mixed type numpy format for DeePMD-kit, and can be loaded or dumped through class `dpdata.MultiSystems`.
 
 Under this format, systems with the same number of atoms but different formula can be put together
