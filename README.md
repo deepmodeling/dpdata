@@ -2,7 +2,7 @@
 dpdata only works with python 3.7 or above.
 
 
-# Installation
+## Installation
 One can download the source code of dpdata by
 ```bash
 git clone https://github.com/deepmodeling/dpdata.git dpdata
@@ -19,7 +19,7 @@ pip install dpdata
 ```
 
 
-# Quick start
+## Quick start
 
 This section gives some examples on how dpdata works. Firstly one needs to import the module in a python 3.x compatible code.
 ```python
@@ -32,7 +32,7 @@ The typicall workflow of `dpdata` is
 3. Dump data to in a desired format
 
 
-## Load data
+### Load data
 ```python
 d_poscar = dpdata.System("POSCAR", fmt="vasp/poscar")
 ```
@@ -150,7 +150,7 @@ ms.to_deepmd_raw("deepmd")
 ms.to_deepmd_npy("deepmd")
 ```
 
-## Access data
+### Access data
 These properties stored in `System` and `LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
 ```python
 coords = d_outcar["coords"]
@@ -169,7 +169,7 @@ Available properties are (nframe: number of frames in the system, natoms: total 
 | 'virials'	| np.ndarray	| nframes x 3 x 3	| True		| The virial tensor of each frame
 
 
-## Dump data
+### Dump data
 The data stored in `System` or `LabeledSystem` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
 ```python
 d_outcar.to("lammps/lmp", "conf.lmp", frame_idx=0)
@@ -195,7 +195,7 @@ dpdata.LabeledSystem("OUTCAR").sub_system([0, -1]).to("deepmd/raw", "dpmd_raw")
 by which only the first and last frames are dumped to `dpmd_raw`.
 
 
-## replicate
+### replicate
 dpdata will create a super cell of the current atom configuration.
 ```python
 dpdata.System("./POSCAR").replicate(
@@ -209,7 +209,7 @@ dpdata.System("./POSCAR").replicate(
 tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.
 
 
-## perturb
+### perturb
 By the following example, each frame of the original system (`dpdata.System('./POSCAR')`) is perturbed to generate three new frames. For each frame, the cell is perturbed by 5% and the atom positions are perturbed by 0.6 Angstrom. `atom_pert_style` indicates that the perturbation to the atom positions is subject to normal distribution. Other available options to `atom_pert_style` are`uniform` (uniform in a ball), and `const` (uniform on a sphere).
 ```python
 perturbed_system = dpdata.System("./POSCAR").perturb(
@@ -221,7 +221,7 @@ perturbed_system = dpdata.System("./POSCAR").perturb(
 print(perturbed_system.data)
 ```
 
-## replace
+### replace
 By the following example, Random 8 Hf atoms in the system will be replaced by Zr atoms with the atom postion unchanged.
 ```python
 s = dpdata.System("tests/poscars/POSCAR.P42nmc", fmt="vasp/poscar")
@@ -229,7 +229,7 @@ s.replace("Hf", "Zr", 8)
 s.to_vasp_poscar("POSCAR.P42nmc.replace")
 ```
 
-# BondOrderSystem
+## BondOrderSystem
 A new class `BondOrderSystem` which inherits from class `System` is introduced in dpdata. This new class contains information of chemical bonds and formal charges (stored in `BondOrderSystem.data['bonds']`, `BondOrderSystem.data['formal_charges']`). Now BondOrderSystem can only read from .mol/.sdf formats, because of its dependency on rdkit (which means rdkit must be installed if you want to use this function). Other formats, such as pdb, must be converted to .mol/.sdf format (maybe with software like open babel).
 ```python
 import dpdata
@@ -254,7 +254,7 @@ AllChem.EmbedMultipleConfs(mol, 10)
 system = dpdata.BondOrderSystem(rdkit_mol=mol)
 ```
 
-## Bond Order Assignment
+### Bond Order Assignment
 The `BondOrderSystem` implements a more robust sanitize procedure for rdkit Mol, as defined in `dpdata.rdkit.santizie.Sanitizer`. This class defines 3 level of sanitization process by: low, medium and high. (default is medium).
 + low: use `rdkit.Chem.SanitizeMol()` function to sanitize molecule.
 + medium: before using rdkit, the programm will first assign formal charge of each atom to avoid inappropriate valence exceptions. However, this mode requires the rightness of the bond order information in the given molecule.
@@ -268,7 +268,7 @@ import dpdata
 for sdf_file in glob.glob("bond_order/refined-set-ligands/obabel/*sdf"):
     syst = dpdata.BondOrderSystem(sdf_file, sanitize_level="high", verbose=False)
 ```
-## Formal Charge Assignment
+### Formal Charge Assignment
 BondOrderSystem implement a method to assign formal charge for each atom based on the 8-electron rule (see below). Note that it only supports common elements in bio-system: B,C,N,O,P,S,As
 ```python
 import dpdata
@@ -280,7 +280,7 @@ print(syst.get_charge())  # return the total charge of the system
 
 If a valence of 3 is detected on carbon, the formal charge will be assigned to -1. Because for most cases (in alkynyl anion, isonitrile, cyclopentadienyl anion), the formal charge on 3-valence carbon is -1, and this is also consisent with the 8-electron rule.
 
-# Mixed Type Format
+## Mixed Type Format
 The format `deepmd/npy/mixed` is the mixed type numpy format for DeePMD-kit, and can be loaded or dumped through class `dpdata.MultiSystems`.
 
 Under this format, systems with the same number of atoms but different formula can be put together
@@ -304,7 +304,7 @@ import dpdata
 dpdata.MultiSystems().load_systems_from_file("mixed_dir", fmt="deepmd/npy/mixed")
 ```
 
-# Plugins
+## Plugins
 
 One can follow [a simple example](plugin_example/) to add their own format by creating and installing plugins. It's critical to add the [Format](dpdata/format.py) class to `entry_points['dpdata.plugins']` in [`pyproject.toml`](plugin_example/pyproject.toml):
 ```toml
