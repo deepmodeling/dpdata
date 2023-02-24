@@ -9,7 +9,9 @@ from comp_sys import CompLabeledSys, CompSys, IsNoPBC, MultiSystems
 from context import dpdata
 
 
-class TestMixedMultiSystemsDumpLoad(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):
+class TestMixedMultiSystemsDumpLoad(
+    unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC
+):
     def setUp(self):
         self.places = 6
         self.e_places = 6
@@ -64,7 +66,9 @@ class TestMixedMultiSystemsDumpLoad(unittest.TestCase, CompLabeledSys, MultiSyst
         mixed_sets = glob("tmp.deepmd.mixed/*/set.*")
         self.assertEqual(len(mixed_sets), 2)
         for i in mixed_sets:
-            self.assertEqual(os.path.exists(os.path.join(i, 'real_atom_types.npy')), True)
+            self.assertEqual(
+                os.path.exists(os.path.join(i, "real_atom_types.npy")), True
+            )
 
         self.system_names = [
             "C1H4A0B0D0",
@@ -106,7 +110,9 @@ class TestMixedMultiSystemsDumpLoad(unittest.TestCase, CompLabeledSys, MultiSyst
         )
 
 
-class TestMixedMultiSystemsTypeChange(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):
+class TestMixedMultiSystemsTypeChange(
+    unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC
+):
     def setUp(self):
         self.places = 6
         self.e_places = 6
@@ -162,7 +168,9 @@ class TestMixedMultiSystemsTypeChange(unittest.TestCase, CompLabeledSys, MultiSy
         mixed_sets = glob("tmp.deepmd.mixed/*/set.*")
         self.assertEqual(len(mixed_sets), 2)
         for i in mixed_sets:
-            self.assertEqual(os.path.exists(os.path.join(i, 'real_atom_types.npy')), True)
+            self.assertEqual(
+                os.path.exists(os.path.join(i, "real_atom_types.npy")), True
+            )
 
         self.system_names = [
             "TOKEN0C1H4A0B0D0",

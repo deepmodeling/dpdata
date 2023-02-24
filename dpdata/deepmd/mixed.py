@@ -201,7 +201,10 @@ def dump(folder, data, set_size=2000, comp_prec=np.float32, remove_sets=True):
         if virials is not None:
             np.save(os.path.join(set_folder, "virial"), virials[set_stt:set_end])
         if real_atom_types is not None:
-            np.save(os.path.join(set_folder, "real_atom_types"), real_atom_types[set_stt:set_end])
+            np.save(
+                os.path.join(set_folder, "real_atom_types"),
+                real_atom_types[set_stt:set_end],
+            )
         if "atom_pref" in data:
             np.save(os.path.join(set_folder, "atom_pref"), atom_pref[set_stt:set_end])
     try:
