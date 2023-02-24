@@ -54,61 +54,80 @@ def to_system_data(folder, type_map=None, labels=True):
     if os.path.isfile(os.path.join(folder, "nopbc")):
         data["nopbc"] = True
     sets = sorted(glob.glob(os.path.join(folder, "set.*")))
-    assert len(sets) == 1, "Mixed type must have only one set!"
-    cells, coords, eners, forces, virs, real_atom_types = _load_set(
-        sets[0], data.get("nopbc", False)
-    )
-    nframes = np.reshape(cells, [-1, 3, 3]).shape[0]
-    cells = np.reshape(cells, [nframes, 3, 3])
-    coords = np.reshape(coords, [nframes, -1, 3])
-    real_atom_types = np.reshape(real_atom_types, [nframes, -1])
-    natom = real_atom_types.shape[1]
-    if labels:
-        if eners is not None and eners.size > 0:
+    all_cells = []
+    all_coords = []
+    all_eners = []
+    all_forces = []
+    all_virs = []
+    all_real_atom_types = []
+    for ii in sets:
+        cells, coords, eners, forces, virs, real_atom_types = _load_set(
+            ii, data.get("nopbc", False)
+        )
+        nframes = np.reshape(cells, [-1, 3, 3]).shape[0]
+        all_cells.append(np.reshape(cells, [nframes, 3, 3]))
+        all_coords.append(np.reshape(coords, [nframes, -1, 3]))
+        all_real_atom_types.append(np.reshape(real_atom_types, [nframes, -1]))
+        if eners is not None:
             eners = np.reshape(eners, [nframes])
-        if forces is not None and forces.size > 0:
-            forces = np.reshape(forces, [nframes, -1, 3])
-        if virs is not None and virs.size > 0:
-            virs = np.reshape(virs, [nframes, 3, 3])
+        if labels:
+            if eners is not None and eners.size > 0:
+                all_eners.append(np.reshape(eners, [nframes]))
+            if forces is not None and forces.size > 0:
+                all_forces.append(np.reshape(forces, [nframes, -1, 3]))
+            if virs is not None and virs.size > 0:
+                all_virs.append(np.reshape(virs, [nframes, 3, 3]))
+    all_cells_concat = np.concatenate(all_cells, axis=0)
+    all_coords_concat = np.concatenate(all_coords, axis=0)
+    all_real_atom_types_concat = np.concatenate(all_real_atom_types, axis=0)
+    all_eners_concat = None
+    all_forces_concat = None
+    all_virs_concat = None
+    if len(all_eners) > 0:
+        all_eners_concat = np.concatenate(all_eners, axis=0)
+    if len(all_forces) > 0:
+        all_forces_concat = np.concatenate(all_forces, axis=0)
+    if len(all_virs) > 0:
+        all_virs_concat = np.concatenate(all_virs, axis=0)
     data_list = []
     while True:
-        if real_atom_types.size == 0:
+        if all_real_atom_types_concat.size == 0:
             break
         temp_atom_numbs = [
-            np.count_nonzero(real_atom_types[0] == i)
+            np.count_nonzero(all_real_atom_types_concat[0] == i)
             for i in range(len(data["atom_names"]))
         ]
         # temp_formula = formula(data['atom_names'], temp_atom_numbs)
-        temp_idx = np.arange(real_atom_types.shape[0])[
-            (real_atom_types == real_atom_types[0]).all(-1)
+        temp_idx = np.arange(all_real_atom_types_concat.shape[0])[
+            (all_real_atom_types_concat == all_real_atom_types_concat[0]).all(-1)
         ]
-        rest_idx = np.arange(real_atom_types.shape[0])[
-            (real_atom_types != real_atom_types[0]).any(-1)
+        rest_idx = np.arange(all_real_atom_types_concat.shape[0])[
+            (all_real_atom_types_concat != all_real_atom_types_concat[0]).any(-1)
         ]
         temp_data = data.copy()
         temp_data["atom_names"] = data["atom_names"].copy()
         temp_data["atom_numbs"] = temp_atom_numbs
-        temp_data["atom_types"] = real_atom_types[0]
-        real_atom_types = real_atom_types[rest_idx]
-        temp_data["cells"] = cells[temp_idx]
-        cells = cells[rest_idx]
-        temp_data["coords"] = coords[temp_idx]
-        coords = coords[rest_idx]
+        temp_data["atom_types"] = all_real_atom_types_concat[0]
+        all_real_atom_types_concat = all_real_atom_types_concat[rest_idx]
+        temp_data["cells"] = all_cells_concat[temp_idx]
+        all_cells_concat = all_cells_concat[rest_idx]
+        temp_data["coords"] = all_coords_concat[temp_idx]
+        all_coords_concat = all_coords_concat[rest_idx]
         if labels:
-            if eners is not None and eners.size > 0:
-                temp_data["energies"] = eners[temp_idx]
-                eners = eners[rest_idx]
-            if forces is not None and forces.size > 0:
-                temp_data["forces"] = forces[temp_idx]
-                forces = forces[rest_idx]
-            if virs is not None and virs.size > 0:
-                temp_data["virials"] = virs[temp_idx]
-                virs = virs[rest_idx]
+            if all_eners_concat is not None and all_eners_concat.size > 0:
+                temp_data["energies"] = all_eners_concat[temp_idx]
+                all_eners_concat = all_eners_concat[rest_idx]
+            if all_forces_concat is not None and all_forces_concat.size > 0:
+                temp_data["forces"] = all_forces_concat[temp_idx]
+                all_forces_concat = all_forces_concat[rest_idx]
+            if all_virs_concat is not None and all_virs_concat.size > 0:
+                temp_data["virials"] = all_virs_concat[temp_idx]
+                all_virs_concat = all_virs_concat[rest_idx]
         data_list.append(temp_data)
     return data_list
 
 
-def dump(folder, data, comp_prec=np.float32, remove_sets=True):
+def dump(folder, data, set_size=2000, comp_prec=np.float32, remove_sets=True):
     os.makedirs(folder, exist_ok=True)
     sets = sorted(glob.glob(os.path.join(folder, "set.*")))
     if len(sets) > 0:
@@ -165,20 +184,26 @@ def dump(folder, data, comp_prec=np.float32, remove_sets=True):
             np.int64
         )
     # dump frame properties: cell, coord, energy, force and virial
-    set_folder = os.path.join(folder, "set.%03d" % 0)
-    os.makedirs(set_folder)
-    np.save(os.path.join(set_folder, "box"), cells)
-    np.save(os.path.join(set_folder, "coord"), coords)
-    if eners is not None:
-        np.save(os.path.join(set_folder, "energy"), eners)
-    if forces is not None:
-        np.save(os.path.join(set_folder, "force"), forces)
-    if virials is not None:
-        np.save(os.path.join(set_folder, "virial"), virials)
-    if real_atom_types is not None:
-        np.save(os.path.join(set_folder, "real_atom_types"), real_atom_types)
-    if "atom_pref" in data:
-        np.save(os.path.join(set_folder, "atom_pref"), atom_pref)
+    nsets = nframes // set_size
+    if set_size * nsets < nframes:
+        nsets += 1
+    for ii in range(nsets):
+        set_stt = ii * set_size
+        set_end = (ii + 1) * set_size
+        set_folder = os.path.join(folder, "set.%06d" % ii)
+        os.makedirs(set_folder)
+        np.save(os.path.join(set_folder, "box"), cells[set_stt:set_end])
+        np.save(os.path.join(set_folder, "coord"), coords[set_stt:set_end])
+        if eners is not None:
+            np.save(os.path.join(set_folder, "energy"), eners[set_stt:set_end])
+        if forces is not None:
+            np.save(os.path.join(set_folder, "force"), forces[set_stt:set_end])
+        if virials is not None:
+            np.save(os.path.join(set_folder, "virial"), virials[set_stt:set_end])
+        if real_atom_types is not None:
+            np.save(os.path.join(set_folder, "real_atom_types"), real_atom_types[set_stt:set_end])
+        if "atom_pref" in data:
+            np.save(os.path.join(set_folder, "atom_pref"), atom_pref[set_stt:set_end])
     try:
         os.remove(os.path.join(folder, "nopbc"))
     except OSError:
@@ -188,8 +213,8 @@ def dump(folder, data, comp_prec=np.float32, remove_sets=True):
             pass
 
 
-def mix_system(*system, type_map, split_num=200, **kwargs):
-    """Mix the systems into mixed_type ones
+def mix_system(*system, type_map, split_num=50000, **kwargs):
+    """Mix the systems into mixed_type ones according to the unified given type_map.
 
     Parameters
     ----------
@@ -198,12 +223,12 @@ def mix_system(*system, type_map, split_num=200, **kwargs):
     type_map : list of str
         Maps atom type to name
     split_num : int
-        Number of frames in each system
+        Number of max frames in each system
 
     Returns
     -------
     mixed_systems: dict
-        dict of mixed system with key '{atom_numbs}/sys.xxx'
+        dict of mixed system with key 'atom_numbs.sys.xxx'
     """
     mixed_systems = {}
     temp_systems = {}
@@ -228,7 +253,7 @@ def mix_system(*system, type_map, split_num=200, **kwargs):
                     temp_systems[str(natom)], split_num=split_num
                 )
                 sys_name = (
-                    f"{str(natom)}/sys." + "%.6d" % atom_numbs_sys_index[str(natom)]
+                    f"{str(natom)}.sys." + "%.3d" % atom_numbs_sys_index[str(natom)]
                 )
                 mixed_systems[sys_name] = sys_split
                 atom_numbs_sys_index[str(natom)] += 1
@@ -237,12 +262,12 @@ def mix_system(*system, type_map, split_num=200, **kwargs):
                     break
     for natom in temp_systems:
         if atom_numbs_frame_index[natom] > 0:
-            sys_name = f"{natom}/sys." + "%.6d" % atom_numbs_sys_index[natom]
+            sys_name = f"{natom}.sys." + "%.3d" % atom_numbs_sys_index[natom]
             mixed_systems[sys_name] = temp_systems[natom]
     return mixed_systems
 
 
-def split_system(sys, split_num=100):
+def split_system(sys, split_num=10000):
     rest = sys.get_nframes() - split_num
     if rest <= 0:
         return sys, None, 0
