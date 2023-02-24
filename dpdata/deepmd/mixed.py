@@ -86,6 +86,7 @@ def to_system_data(folder, type_map=None, labels=True):
             (real_atom_types != real_atom_types[0]).any(-1)
         ]
         temp_data = data.copy()
+        temp_data["atom_names"] = data["atom_names"].copy()
         temp_data["atom_numbs"] = temp_atom_numbs
         temp_data["atom_types"] = real_atom_types[0]
         real_atom_types = real_atom_types[rest_idx]

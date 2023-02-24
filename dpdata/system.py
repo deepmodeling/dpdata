@@ -1307,15 +1307,13 @@ class MultiSystems:
                 if labeled:
                     data_list = fmtobj.from_labeled_system_mix(dd, **kwargs)
                     for data_item in data_list:
-                        system_list.append(LabeledSystem(data=data_item))
+                        system_list.append(LabeledSystem(data=data_item, **kwargs))
                 else:
                     data_list = fmtobj.from_system_mix(dd, **kwargs)
                     for data_item in data_list:
-                        system_list.append(System(data=data_item))
-            return self.__class__(
-                *system_list,
-                type_map=kwargs["type_map"] if "type_map" in kwargs else None,
-            )
+                        system_list.append(System(data=data_item, **kwargs))
+            self.append(*system_list)
+            return self
 
     def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
