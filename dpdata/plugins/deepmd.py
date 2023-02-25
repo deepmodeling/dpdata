@@ -132,14 +132,14 @@ class DeePMDMixedFormat(Format):
         mixed_systems: dict
             dict of mixed system with key 'atom_numbs'
         """
-        return dpdata.deepmd.mixed.mix_system(
-            *system, type_map=type_map, **kwargs
-        )
+        return dpdata.deepmd.mixed.mix_system(*system, type_map=type_map, **kwargs)
 
     def from_multi_systems(self, directory, **kwargs):
         sys_dir = []
         for root, dirs, files in os.walk(directory):
-            if "type_map.raw" in files:  # mixed_type format systems must have type_map.raw
+            if (
+                "type_map.raw" in files
+            ):  # mixed_type format systems must have type_map.raw
                 sys_dir.append(root)
         return sys_dir
 
