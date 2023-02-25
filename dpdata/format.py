@@ -132,7 +132,7 @@ class Format(ABC):
             "%s doesn't support MultiSystems.to" % (self.__class__.__name__)
         )
 
-    def mix_system(self, *system, type_map, split_num=50000, **kwargs):
+    def mix_system(self, *system, type_map, **kwargs):
         """Mix the systems into mixed_type ones according to the unified given type_map.
 
         Parameters
@@ -141,13 +141,11 @@ class Format(ABC):
             The systems to mix
         type_map : list of str
             Maps atom type to name
-        split_num : int
-            Number of max frames in each system
 
         Returns
         -------
         mixed_systems: dict
-            dict of mixed system with key 'atom_numbs.sys.xxx'
+            dict of mixed system with key 'atom_numbs'
         """
         raise NotImplementedError(
             "%s doesn't support System.from" % (self.__class__.__name__)

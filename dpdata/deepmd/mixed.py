@@ -216,7 +216,7 @@ def dump(folder, data, set_size=2000, comp_prec=np.float32, remove_sets=True):
             pass
 
 
-def mix_system(*system, type_map, split_num=50000, **kwargs):
+def mix_system(*system, type_map, **kwargs):
     """Mix the systems into mixed_type ones according to the unified given type_map.
 
     Parameters
@@ -225,24 +225,19 @@ def mix_system(*system, type_map, split_num=50000, **kwargs):
         The systems to mix
     type_map : list of str
         Maps atom type to name
-    split_num : int
-        Number of max frames in each system
 
     Returns
     -------
     mixed_systems: dict
-        dict of mixed system with key 'atom_numbs.sys.xxx'
+        dict of mixed system with key 'atom_numbs'
     """
     mixed_systems = {}
     temp_systems = {}
-    atom_numbs_sys_index = {}  # index of sys
     atom_numbs_frame_index = {}  # index of frames in cur sys
     for sys in system:
         tmp_sys = sys.copy()
         natom = tmp_sys.get_natoms()
         tmp_sys.convert_to_mixed_type(type_map=type_map)
-        if str(natom) not in atom_numbs_sys_index:
-            atom_numbs_sys_index[str(natom)] = 0
         if str(natom) not in atom_numbs_frame_index:
             atom_numbs_frame_index[str(natom)] = 0
         atom_numbs_frame_index[str(natom)] += tmp_sys.get_nframes()
@@ -250,22 +245,9 @@ def mix_system(*system, type_map, split_num=50000, **kwargs):
             temp_systems[str(natom)] = tmp_sys
         else:
             temp_systems[str(natom)].append(tmp_sys)
-        if atom_numbs_frame_index[str(natom)] >= split_num:
-            while True:
-                sys_split, temp_systems[str(natom)], rest_num = split_system(
-                    temp_systems[str(natom)], split_num=split_num
-                )
-                sys_name = (
-                    f"{str(natom)}.sys." + "%.3d" % atom_numbs_sys_index[str(natom)]
-                )
-                mixed_systems[sys_name] = sys_split
-                atom_numbs_sys_index[str(natom)] += 1
-                if rest_num < split_num:
-                    atom_numbs_frame_index[str(natom)] = rest_num
-                    break
     for natom in temp_systems:
         if atom_numbs_frame_index[natom] > 0:
-            sys_name = f"{natom}.sys." + "%.3d" % atom_numbs_sys_index[natom]
+            sys_name = f"{natom}"
             mixed_systems[sys_name] = temp_systems[natom]
     return mixed_systems
 
