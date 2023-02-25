@@ -117,7 +117,7 @@ class DeePMDMixedFormat(Format):
             file_name, type_map=type_map, labels=True
         )
 
-    def mix_system(self, *system, type_map, split_num=200, **kwargs):
+    def mix_system(self, *system, type_map, **kwargs):
         """Mix the systems into mixed_type ones according to the unified given type_map.
 
         Parameters
@@ -126,49 +126,22 @@ class DeePMDMixedFormat(Format):
             The systems to mix
         type_map : list of str
             Maps atom type to name
-        split_num : int
-            Number of frames in each system
 
         Returns
         -------
         mixed_systems: dict
-            dict of mixed system with key '{atom_numbs}/sys.xxx'
+            dict of mixed system with key 'atom_numbs'
         """
-        return dpdata.deepmd.mixed.mix_system(
-            *system, type_map=type_map, split_num=split_num, **kwargs
-        )
+        return dpdata.deepmd.mixed.mix_system(*system, type_map=type_map, **kwargs)
 
     def from_multi_systems(self, directory, **kwargs):
-        """MultiSystems.from
-
-        Parameters
-        ----------
-        directory : str
-            directory of system
-
-        Returns
-        -------
-        filenames: list[str]
-            list of filenames
-        """
-        if self.MultiMode == self.MultiModes.Directory:
-            level_1_dir = [
-                os.path.join(directory, name)
-                for name in os.listdir(directory)
-                if os.path.isdir(os.path.join(directory, name))
-                and os.path.isfile(os.path.join(directory, name, "type_map.raw"))
-            ]
-            level_2_dir = [
-                os.path.join(directory, name1, name2)
-                for name1 in os.listdir(directory)
-                for name2 in os.listdir(os.path.join(directory, name1))
-                if os.path.isdir(os.path.join(directory, name1))
-                and os.path.isdir(os.path.join(directory, name1, name2))
-                and os.path.isfile(
-                    os.path.join(directory, name1, name2, "type_map.raw")
-                )
-            ]
-            return level_1_dir + level_2_dir
+        sys_dir = []
+        for root, dirs, files in os.walk(directory):
+            if (
+                "type_map.raw" in files
+            ):  # mixed_type format systems must have type_map.raw
+                sys_dir.append(root)
+        return sys_dir
 
     MultiMode = Format.MultiModes.Directory
 
