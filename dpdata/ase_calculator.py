@@ -1,10 +1,13 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from ase.calculators.calculator import (
-    Calculator, all_changes, PropertyNotImplementedError
+    Calculator,
+    PropertyNotImplementedError,
+    all_changes,
 )
 
 import dpdata
+
 from .driver import Driver
 
 if TYPE_CHECKING:
@@ -12,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class DPDataCalculator(Calculator):
-    """Implementation of ASE deepmd calculator based on a driver. 
+    """Implementation of ASE deepmd calculator based on a driver.
 
     Parameters
     ----------
@@ -21,14 +24,9 @@ class DPDataCalculator(Calculator):
     """
 
     name = "dpdata"
-    implemented_properties = [
-        "energy", "free_energy", "forces", "virial", "stress"]
+    implemented_properties = ["energy", "free_energy", "forces", "virial", "stress"]
 
-    def __init__(
-        self,
-        driver: Driver,
-        **kwargs
-    ) -> None:
+    def __init__(self, driver: Driver, **kwargs) -> None:
         Calculator.__init__(self, label=Driver.__name__, **kwargs)
         self.driver = driver
 
@@ -56,21 +54,24 @@ class DPDataCalculator(Calculator):
         system = dpdata.System(self.atoms, fmt="ase/structure")
         data = system.predict(driver=self.driver).data
 
-        self.results['energy'] = data['energies'][0]
+        self.results["energy"] = data["energies"][0]
         # see https://gitlab.com/ase/ase/-/merge_requests/2485
-        self.results['free_energy'] = data['energies'][0]
-        self.results['forces'] = data['forces'][0]
-        if 'virials' in data:
-            self.results['virial'] = data['virials'][0].reshape(3, 3)
+        self.results["free_energy"] = data["energies"][0]
+        self.results["forces"] = data["forces"][0]
+        if "virials" in data:
+            self.results["virial"] = data["virials"][0].reshape(3, 3)
 
         # convert virial into stress for lattice relaxation
         if "stress" in properties:
             if sum(atoms.get_pbc()) > 0:
                 # the usual convention (tensile stress is positive)
                 # stress = -virial / volume
-                stress = -0.5 * (data['virials'][0].copy() + data['virials'][0].copy().T) / \
-                    atoms.get_volume()
+                stress = (
+                    -0.5
+                    * (data["virials"][0].copy() + data["virials"][0].copy().T)
+                    / atoms.get_volume()
+                )
                 # Voigt notation
-                self.results['stress'] = stress.flat[[0, 4, 8, 5, 2, 1]]
+                self.results["stress"] = stress.flat[[0, 4, 8, 5, 2, 1]]
             else:
                 raise PropertyNotImplementedError

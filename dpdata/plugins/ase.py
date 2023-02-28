@@ -1,11 +1,15 @@
-from typing import Optional, TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Optional, Type
+
+import numpy as np
+
+import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-import numpy as np
-import dpdata
+
 try:
     import ase.io
     from ase.calculators.calculator import PropertyNotImplementedError
+
     if TYPE_CHECKING:
         from ase.optimize.optimize import Optimizer
 except ImportError:
@@ -39,17 +43,19 @@ class ASEStructureFormat(Format):
         symbols = atoms.get_chemical_symbols()
         atom_names = list(set(symbols))
         atom_numbs = [symbols.count(symbol) for symbol in atom_names]
-        atom_types = np.array([atom_names.index(symbol) for symbol in symbols]).astype(int)
+        atom_types = np.array([atom_names.index(symbol) for symbol in symbols]).astype(
+            int
+        )
         cells = atoms.cell[:]
         coords = atoms.get_positions()
         info_dict = {
-            'atom_names': atom_names,
-            'atom_numbs': atom_numbs,
-            'atom_types': atom_types,
-            'cells': np.array([cells]).astype('float32'),
-            'coords': np.array([coords]).astype('float32'),
-            'orig': np.zeros(3),
-            'nopbc': not np.any(atoms.get_pbc()),
+            "atom_names": atom_names,
+            "atom_numbs": atom_numbs,
+            "atom_types": atom_types,
+            "cells": np.array([cells]).astype("float32"),
+            "coords": np.array([coords]).astype("float32"),
+            "orig": np.zeros(3),
+            "nopbc": not np.any(atoms.get_pbc()),
         }
         return info_dict
 
@@ -66,7 +72,7 @@ class ASEStructureFormat(Format):
         -------
         dict
             data dict
-        
+
         Raises
         ------
         RuntimeError
@@ -80,20 +86,28 @@ class ASEStructureFormat(Format):
             energies = atoms.get_potential_energy()
         forces = atoms.get_forces()
         info_dict = {
-            ** info_dict,
-            'energies': np.array([energies]).astype('float32'),
-            'forces': np.array([forces]).astype('float32'),
+            **info_dict,
+            "energies": np.array([energies]).astype("float32"),
+            "forces": np.array([forces]).astype("float32"),
         }
         try:
             stress = atoms.get_stress(False)
         except PropertyNotImplementedError:
             pass
         else:
-            virials = np.array([-atoms.get_volume() * stress]).astype('float32')
-            info_dict['virials'] = virials
+            virials = np.array([-atoms.get_volume() * stress]).astype("float32")
+            info_dict["virials"] = virials
         return info_dict
 
-    def from_multi_systems(self, file_name: str, begin: Optional[int] = None, end: Optional[int] = None, step: Optional[int] = None, ase_fmt: Optional[str] = None, **kwargs) -> "ase.Atoms":
+    def from_multi_systems(
+        self,
+        file_name: str,
+        begin: Optional[int] = None,
+        end: Optional[int] = None,
+        step: Optional[int] = None,
+        ase_fmt: Optional[str] = None,
+        **kwargs
+    ) -> "ase.Atoms":
         """Convert a ASE supported file to ASE Atoms.
 
         It will finally be converted to MultiSystems.
@@ -121,48 +135,49 @@ class ASEStructureFormat(Format):
             yield atoms
 
     def to_system(self, data, **kwargs):
-        '''
+        """
         convert System to ASE Atom obj
 
-        '''
+        """
         from ase import Atoms
 
         structures = []
-        species = [data['atom_names'][tt] for tt in data['atom_types']]
+        species = [data["atom_names"][tt] for tt in data["atom_types"]]
 
-        for ii in range(data['coords'].shape[0]):
+        for ii in range(data["coords"].shape[0]):
             structure = Atoms(
-                symbols=species, positions=data['coords'][ii], pbc=not data.get('nopbc', False), cell=data['cells'][ii])
+                symbols=species,
+                positions=data["coords"][ii],
+                pbc=not data.get("nopbc", False),
+                cell=data["cells"][ii],
+            )
             structures.append(structure)
 
         return structures
 
     def to_labeled_system(self, data, *args, **kwargs):
-        '''Convert System to ASE Atoms object.'''
+        """Convert System to ASE Atoms object."""
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
 
         structures = []
-        species = [data['atom_names'][tt] for tt in data['atom_types']]
+        species = [data["atom_names"][tt] for tt in data["atom_types"]]
 
-        for ii in range(data['coords'].shape[0]):
+        for ii in range(data["coords"].shape[0]):
             structure = Atoms(
                 symbols=species,
-                positions=data['coords'][ii],
-                pbc=not data.get('nopbc', False),
-                cell=data['cells'][ii]
+                positions=data["coords"][ii],
+                pbc=not data.get("nopbc", False),
+                cell=data["cells"][ii],
             )
 
-            results = {
-                'energy': data["energies"][ii],
-                'forces': data["forces"][ii]
-            }
+            results = {"energy": data["energies"][ii], "forces": data["forces"][ii]}
             if "virials" in data:
                 # convert to GPa as this is ase convention
                 # v_pref = 1 * 1e4 / 1.602176621e6
                 vol = structure.get_volume()
                 # results['stress'] = data["virials"][ii] / (v_pref * vol)
-                results['stress'] = -data["virials"][ii] / vol
+                results["stress"] = -data["virials"][ii] / vol
 
             structure.calc = SinglePointCalculator(structure, **results)
             structures.append(structure)
@@ -173,7 +188,7 @@ class ASEStructureFormat(Format):
 @Driver.register("ase")
 class ASEDriver(Driver):
     """ASE Driver.
-    
+
     Parameters
     ----------
     calculator : ase.calculators.calculator.Calculato
@@ -186,12 +201,12 @@ class ASEDriver(Driver):
 
     def label(self, data: dict) -> dict:
         """Label a system data. Returns new data with energy, forces, and virials.
-        
+
         Parameters
         ----------
         data : dict
             data with coordinates and atom types
-        
+
         Returns
         -------
         dict
@@ -204,7 +219,9 @@ class ASEDriver(Driver):
         labeled_system = dpdata.LabeledSystem()
         for atoms in structures:
             atoms.calc = self.calculator
-            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
+            ls = dpdata.LabeledSystem(
+                atoms, fmt="ase/structure", type_map=data["atom_names"]
+            )
             labeled_system.append(ls)
         return labeled_system.data
 
@@ -226,15 +243,19 @@ class ASEMinimizer(Minimizer):
     optimizer_kwargs : dict, optional
         other parameters for optimizer
     """
-    def __init__(self,
-                 driver: Driver,
-                 optimizer: Optional[Type["Optimizer"]] = None,
-                 fmax: float = 5e-3,
-                 max_steps: Optional[int] = None,
-                 optimizer_kwargs: dict = {}) -> None:
+
+    def __init__(
+        self,
+        driver: Driver,
+        optimizer: Optional[Type["Optimizer"]] = None,
+        fmax: float = 5e-3,
+        max_steps: Optional[int] = None,
+        optimizer_kwargs: dict = {},
+    ) -> None:
         self.calculator = driver.ase_calculator
         if optimizer is None:
             from ase.optimize import LBFGS
+
             self.optimizer = LBFGS
         else:
             self.optimizer = optimizer
@@ -252,7 +273,7 @@ class ASEMinimizer(Minimizer):
         ----------
         data : dict
             data with coordinates and atom types
-        
+
         Returns
         -------
         dict
@@ -266,6 +287,8 @@ class ASEMinimizer(Minimizer):
             atoms.calc = self.calculator
             dyn = self.optimizer(atoms, **self.optimizer_kwargs)
             dyn.run(fmax=self.fmax, steps=self.max_steps)
-            ls = dpdata.LabeledSystem(atoms, fmt="ase/structure", type_map=data['atom_names'])
+            ls = dpdata.LabeledSystem(
+                atoms, fmt="ase/structure", type_map=data["atom_names"]
+            )
             labeled_system.append(ls)
         return labeled_system.data

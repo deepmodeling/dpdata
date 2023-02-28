@@ -1,4 +1,5 @@
 from typing import Tuple
+
 import numpy as np
 
 from dpdata.format import Format
@@ -11,12 +12,15 @@ class Py3DMolFormat(Format):
 
     To use this format,  py3Dmol should be installed in advance.
     """
-    def to_system(self,
-                  data: dict,
-                  f_idx: int = 0,
-                  size: Tuple[int] = (300,300),
-                  style: dict = {"stick":{}, "sphere":{"radius":0.4}},
-                  **kwargs):
+
+    def to_system(
+        self,
+        data: dict,
+        f_idx: int = 0,
+        size: Tuple[int] = (300, 300),
+        style: dict = {"stick": {}, "sphere": {"radius": 0.4}},
+        **kwargs
+    ):
         """Show 3D structure of a frame in jupyter.
 
         Parameters
@@ -35,10 +39,11 @@ class Py3DMolFormat(Format):
         >>> system.to_3dmol()
         """
         import py3Dmol
-        types = np.array(data['atom_names'])[data['atom_types']]
-        xyz = coord_to_xyz(data['coords'][f_idx], types)
+
+        types = np.array(data["atom_names"])[data["atom_types"]]
+        xyz = coord_to_xyz(data["coords"][f_idx], types)
         viewer = py3Dmol.view(width=size[0], height=size[1])
-        viewer.addModel(xyz, 'xyz')
+        viewer.addModel(xyz, "xyz")
         viewer.setStyle(style.copy())
         viewer.zoomTo()
         return viewer

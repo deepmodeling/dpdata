@@ -1,8 +1,9 @@
 import numpy as np
 
+from dpdata.format import Format
 from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
 from dpdata.xyz.xyz import coord_to_xyz, xyz_to_coord
-from dpdata.format import Format
+
 
 @Format.register("xyz")
 class XYZFormat(Format):
@@ -12,26 +13,29 @@ class XYZFormat(Format):
     --------
     >>> s.to("xyz", "a.xyz")
     """
+
     def to_system(self, data, file_name, **kwargs):
         buff = []
-        types = np.array(data['atom_names'])[data['atom_types']]
-        for cc in data['coords']:
+        types = np.array(data["atom_names"])[data["atom_types"]]
+        for cc in data["coords"]:
             buff.append(coord_to_xyz(cc, types))
-        with open(file_name, 'w') as fp:
+        with open(file_name, "w") as fp:
             fp.write("\n".join(buff))
 
     def from_system(self, file_name, **kwargs):
-        with open(file_name, 'r') as fp:
+        with open(file_name, "r") as fp:
             coords, types = xyz_to_coord(fp.read())
-        atom_names, atom_types, atom_numbs = np.unique(types,  return_inverse=True, return_counts=True)
+        atom_names, atom_types, atom_numbs = np.unique(
+            types, return_inverse=True, return_counts=True
+        )
         return {
-            'atom_names': list(atom_names),
-            'atom_numbs': list(atom_numbs),
-            'atom_types': atom_types,
-            'coords': coords.reshape((1, *coords.shape)),
-            'cells': np.eye(3).reshape((1, 3, 3)) * 100,
-            'nopbc': True,
-            'orig': np.zeros(3),
+            "atom_names": list(atom_names),
+            "atom_numbs": list(atom_numbs),
+            "atom_types": atom_types,
+            "coords": coords.reshape((1, *coords.shape)),
+            "cells": np.eye(3).reshape((1, 3, 3)) * 100,
+            "nopbc": True,
+            "orig": np.zeros(3),
         }
 
 

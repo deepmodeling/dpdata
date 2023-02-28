@@ -13,6 +13,8 @@ Welcome to dpdata's documentation!
    Overview <self>
    cli
    formats
+   drivers
+   minimizers
    api/api
    credits
 
