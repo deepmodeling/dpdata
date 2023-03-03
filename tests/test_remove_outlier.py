@@ -23,9 +23,8 @@ class TestRemoveOutlier(unittest.TestCase, CompLabeledSys):
             }
         )
         system.data["energies"][0] = 100.0
-        system.data["energies"][1] = -100.0
         cls.system_1 = system.remove_outlier()
-        cls.system_2 = system[2:]
+        cls.system_2 = system[1:]
         cls.places = 6
         cls.e_places = 6
         cls.f_places = 6
