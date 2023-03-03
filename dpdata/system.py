@@ -1278,7 +1278,7 @@ class LabeledSystem(System):
 
         .. math::
 
-            \frac{\left \| E - \bar{E} \right \|}{\sigma(E)} > \text{threshold}
+            \frac{\left \| E - \bar{E} \right \|}{\sigma(E)} \geq \text{threshold}
 
         where :math:`\bar{E}` and :math:`\sigma(E)` are the mean and standard deviation
         of the energies in the system.
