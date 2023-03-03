@@ -1303,7 +1303,7 @@ class LabeledSystem(System):
            Deep Potential Interaction Model for Drug Discovery. J. Comput.
            Chem. 2023, 19, 1261-1275.
         """
-        energies = self.data['energies']
+        energies = self.data["energies"]
         idx = np.abs(energies - np.mean(energies)) / np.std(energies) < threshold
         return self.sub_system(idx)
 

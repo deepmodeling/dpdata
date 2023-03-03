@@ -2,8 +2,8 @@ import os
 import unittest
 
 import numpy as np
-from context import dpdata
 from comp_sys import CompLabeledSys
+from context import dpdata
 
 
 class TestRemoveOutlier(unittest.TestCase, CompLabeledSys):
@@ -22,8 +22,8 @@ class TestRemoveOutlier(unittest.TestCase, CompLabeledSys):
                 "forces": np.zeros((100, 1, 3), dtype=np.float32),
             }
         )
-        system.data['energies'][0] = 100.0
-        system.data['energies'][1] = -100.0
+        system.data["energies"][0] = 100.0
+        system.data["energies"][1] = -100.0
         cls.system_1 = system.remove_outlier()
         cls.system_2 = system[2:]
         cls.places = 6
