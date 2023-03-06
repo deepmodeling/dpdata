@@ -1304,7 +1304,10 @@ class LabeledSystem(System):
            Chem. 2023, 19, 1261-1275.
         """
         energies = self.data["energies"]
-        idx = np.abs(energies - np.mean(energies)) / np.std(energies) < threshold
+        std = np.std(energies)
+        if np.isclose(std, 0.0):
+            return self.copy()
+        idx = np.abs(energies - np.mean(energies)) / std < threshold
         return self.sub_system(idx)
 
 
