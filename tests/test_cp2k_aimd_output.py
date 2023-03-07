@@ -1,4 +1,4 @@
-#%%
+# %%
 import os
 import unittest
 
@@ -7,7 +7,7 @@ from comp_sys import CompLabeledSys
 from context import dpdata
 
 
-#%%
+# %%
 class TestCp2kAimdOutput(unittest.TestCase, CompLabeledSys):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem("cp2k/aimd", fmt="cp2k/aimd_output")
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     unittest.main()
 
 
-#%%
+# %%
 # print(1)
 # system_1 = dpda.La
 # system_1 = dpdata.LabeledSystem('cp2k/restart_aimd',fmt='cp2k/aimd_output', restart=True)

@@ -106,7 +106,7 @@ class ASEStructureFormat(Format):
         end: Optional[int] = None,
         step: Optional[int] = None,
         ase_fmt: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> "ase.Atoms":
         """Convert a ASE supported file to ASE Atoms.
 

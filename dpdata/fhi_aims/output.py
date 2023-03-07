@@ -14,7 +14,6 @@ debug = False
 
 
 def get_info(lines, type_idx_zero=False):
-
     atom_types = []
     atom_names = []
     cell = []
@@ -159,7 +158,6 @@ def analyze_block(lines, first_blk=False, md=True):
         natom = 0
 
     if first_blk:
-
         if md:
             _tmp = re.findall(pos_patt_other, contents)[:]
             for ii in _tmp[slice(int(len(_tmp) / 2), len(_tmp))]:
