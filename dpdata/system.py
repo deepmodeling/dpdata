@@ -1271,6 +1271,45 @@ class LabeledSystem(System):
             )
         return corrected_sys
 
+    def remove_outlier(self, threshold: float = 8.0) -> "LabeledSystem":
+        r"""Remove outlier frames from the system.
+
+        Remove the frames whose energies satisfy the condition
+
+        .. math::
+
+            \frac{\left \| E - \bar{E} \right \|}{\sigma(E)} \geq \text{threshold}
+
+        where :math:`\bar{E}` and :math:`\sigma(E)` are the mean and standard deviation
+        of the energies in the system.
+
+        Parameters
+        ----------
+        threshold : float
+            The threshold of outlier detection. The default value is 8.0.
+
+        Returns
+        -------
+        LabeledSystem
+            The system without outlier frames.
+
+        References
+        ----------
+        .. [1] Gao, X.; Ramezanghorbani, F.; Isayev, O.; Smith, J. S.;
+           Roitberg, A. E. TorchANI: A Free and Open Source PyTorch-Based
+           Deep Learning Implementation of the ANI Neural Network
+           Potentials. J. Chem. Inf. Model. 2020, 60, 3408-3415.
+        .. [2] Zeng, J.; Tao, Y.; Giese, T. J.; York, D. M.. QDπ: A Quantum
+           Deep Potential Interaction Model for Drug Discovery. J. Comput.
+           Chem. 2023, 19, 1261-1275.
+        """
+        energies = self.data["energies"]
+        std = np.std(energies)
+        if np.isclose(std, 0.0):
+            return self.copy()
+        idx = np.abs(energies - np.mean(energies)) / std < threshold
+        return self.sub_system(idx)
+
 
 class MultiSystems:
     """A set containing several systems."""
