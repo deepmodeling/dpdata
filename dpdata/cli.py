@@ -65,7 +65,7 @@ def convert(
     no_labeled: bool = False,
     multi: bool = False,
     type_map: Optional[list] = None,
-    **kwargs
+    **kwargs,
 ):
     """Convert files from one format to another one.
 

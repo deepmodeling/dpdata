@@ -1,4 +1,4 @@
-#%%
+# %%
 import re
 from collections import OrderedDict
 
@@ -13,7 +13,7 @@ from ..unit import (
 )
 from .cell import cell_to_low_triangle
 
-#%%
+# %%
 AU_TO_ANG = LengthConversion("bohr", "angstrom").value()
 AU_TO_EV = EnergyConversion("hartree", "eV").value()
 AU_TO_EV_EVERY_ANG = ForceConversion("hartree/bohr", "eV/angstrom").value()
@@ -370,7 +370,7 @@ class Cp2kSystems(object):
         return info_dict
 
 
-#%%
+# %%
 
 
 def get_frames(fname):

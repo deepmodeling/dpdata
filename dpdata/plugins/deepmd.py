@@ -205,7 +205,7 @@ class DeePMDHDF5Format(Format):
         self,
         file_name: Union[str, h5py.Group, h5py.File],
         type_map: Optional[List[str]] = None,
-        **kwargs
+        **kwargs,
     ) -> dict:
         """Convert HDF5 file to System data.
 
@@ -233,7 +233,7 @@ class DeePMDHDF5Format(Format):
         self,
         file_name: Union[str, h5py.Group, h5py.File],
         type_map: Optional[List[str]] = None,
-        **kwargs
+        **kwargs,
     ) -> dict:
         """Convert HDF5 file to LabeledSystem data.
 
@@ -263,7 +263,7 @@ class DeePMDHDF5Format(Format):
         file_name: Union[str, h5py.Group, h5py.File],
         set_size: int = 5000,
         comp_prec: np.dtype = np.float64,
-        **kwargs
+        **kwargs,
     ):
         """Convert System data to HDF5 file.
 
