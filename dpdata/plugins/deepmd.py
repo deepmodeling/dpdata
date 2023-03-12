@@ -136,7 +136,7 @@ class DeePMDMixedFormat(Format):
 
     def from_multi_systems(self, directory, **kwargs):
         sys_dir = []
-        assert os.path.isdir(directory), f'{directory} is not a directory!'
+        assert os.path.isdir(directory), f"{directory} is not a directory!"
         for root, dirs, files in os.walk(directory):
             if (
                 "type_map.raw" in files
