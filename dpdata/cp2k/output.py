@@ -1,10 +1,9 @@
 # %%
+import math
 import re
 from collections import OrderedDict
 
 import numpy as np
-import math
-
 
 from ..unit import (
     EnergyConversion,
@@ -41,7 +40,7 @@ class Cp2kSystems(object):
 
         self.cell = None
         self.print_level = None
-        
+
         self.atomic_kinds = None
 
         if self.restart_flag:
@@ -65,7 +64,9 @@ class Cp2kSystems(object):
         # assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         # assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         # assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
-        assert math.isclose(log_info_dict["energies"], xyz_info_dict["energies"],  abs_tol=1.0e-6), (
+        assert math.isclose(
+            log_info_dict["energies"], xyz_info_dict["energies"], abs_tol=1.0e-6
+        ), (
             log_info_dict["energies"],
             xyz_info_dict["energies"],
             "There may be errors in the file",
