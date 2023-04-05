@@ -1,21 +1,32 @@
 ATOMIC_SPECIES
-Si 1.000 ./Si_ONCV_PBE-1.0.upf 	#Element, Mass, Pseudopotential
+H 1.008 H_ONCV_PBE-1.0.upf
+O 15.9994 O_ONCV_PBE-1.0.upf
 
 NUMERICAL_ORBITAL
-./Si_gga_8au_60Ry_2s2p1d.orb
+H_gga_8au_60Ry_2s1p.orb
+O_gga_7au_60Ry_2s2p1d.orb
+
+NUMERICAL_DESCRIPTOR
+jle.orb
+
 
 LATTICE_CONSTANT
-10.2  			#Lattice constant
+1
 
 LATTICE_VECTORS
-0.5 0.5 0.0 		#Lattice vector 1
-0.5 0.0 0.5 		#Lattice vector 2
-0.0 0.5 0.5 		#Lattice vector 3
+28 0 0
+0 28 0
+0 0  28
 
 ATOMIC_POSITIONS
-Cartesian 		#Cartesian(Unit is LATTICE_CONSTANT)
-Si 			#Name of element	
-0.0			#Magnetic for this element.
-2			#Number of atoms
-0.00 0.00 0.00 1 1 1	#x,y,z, move_x, move_y, move_z
-0.241 0.255 0.251 1 1 1
+Cartesian
+
+H
+0
+2
+-12.046787058887078 18.76558614676448 8.395247471328744 1 1 1
+-14.228868795885418 20.61549300274637 7.611989524516571 1 1 1
+O
+0
+1
+-13.486789117423204 19.684192208418636 8.958321352749174 1 1 1

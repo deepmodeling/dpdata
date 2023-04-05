@@ -5,9 +5,10 @@ import numpy as np
 ev2ev = 1
 ang2ang = 1
 
+
 #############################read output#####################################
 def get_single_line_tail(fin, keyword, num=1):
-    file = open(fin, 'r')
+    file = open(fin, "r")
     part_res = []
     for value in file:
         if keyword in value:
@@ -17,12 +18,21 @@ def get_single_line_tail(fin, keyword, num=1):
     file.close()
     return part_res
 
+
 ## atomnum: number of atoms,  row numbers
 ## begin_column: begin column num
 ## read_column_num: read column num
 ## column_num: the column number in nxet reading line
-def extract_keyword(fout, keyword, down_line_num, begin_column, read_column_num, is_repeated_read, column_num):
-    file = open(fout, 'r')
+def extract_keyword(
+    fout,
+    keyword,
+    down_line_num,
+    begin_column,
+    read_column_num,
+    is_repeated_read,
+    column_num,
+):
+    file = open(fout, "r")
     ret = []
     part_ret = []
     flag = 0
@@ -61,17 +71,18 @@ def extract_keyword(fout, keyword, down_line_num, begin_column, read_column_num,
     file.close()
     return part_ret
 
+
 def obtain_nframe(fname):
-    fp = open(fname, 'r')
+    fp = open(fname, "r")
     flag = False
     idx = 0
     temp = 0
     for ii in fp:
-        if 'siesta: Stress tensor (static) (eV/Ang**3):' in ii:
+        if "siesta: Stress tensor (static) (eV/Ang**3):" in ii:
             flag = True
             continue
         if flag:
-            if not 'siesta: Pressure (static):' in ii:
+            if not "siesta: Pressure (static):" in ii:
                 if len(ii.split()) == 3:
                     temp += 1
                     if temp == 3:
@@ -82,25 +93,30 @@ def obtain_nframe(fname):
     fp.close()
     return idx
 
+
 def get_atom_types(fout, atomnums):
-    covert_type = extract_keyword(fout, 'outcoor: Atomic coordinates (Ang):', atomnums, 3, 4, 0, 6)[0]
+    covert_type = extract_keyword(
+        fout, "outcoor: Atomic coordinates (Ang):", atomnums, 3, 4, 0, 6
+    )[0]
     atomtype = []
     # print(covert_type)
     for i in range(0, len(covert_type)):
         atomtype.append(int(covert_type[i]) - 1)
     return atomtype
 
+
 def get_atom_name(fout):
-    file = open(fout, 'r')
+    file = open(fout, "r")
     ret = []
     for value in file:
-        if 'Species number:' in value:
+        if "Species number:" in value:
             for j in range(len(value.split())):
-                if value.split()[j] == 'Label:':
-                    ret.append(value.split()[j+1])
-                    break              
+                if value.split()[j] == "Label:":
+                    ret.append(value.split()[j + 1])
+                    break
     file.close()
     return ret
+
 
 def get_atom_numbs(atomtypes):
     atom_numbs = []
@@ -108,8 +124,11 @@ def get_atom_numbs(atomtypes):
         atom_numbs.append(atomtypes.count(i))
     return atom_numbs
 
+
 def get_virial(fout, cell):
-    viri = extract_keyword(fout, 'siesta: Stress tensor (static) (eV/Ang**3):', 3, 0, 3, 1, 3)
+    viri = extract_keyword(
+        fout, "siesta: Stress tensor (static) (eV/Ang**3):", 3, 0, 3, 1, 3
+    )
     vols = []
     length = obtain_nframe(fout)
     for ii in range(length):
@@ -120,6 +139,7 @@ def get_virial(fout, cell):
             viri[ii][jj] *= vols[ii]
     return viri
 
+
 def covert_dimension(arr, num):
     arr = np.array(arr)
     frames = len(arr)
@@ -128,23 +148,39 @@ def covert_dimension(arr, num):
         ret[i] = arr[i].reshape(num, 3)
     return ret
 
+
 def get_aiMD_frame(fname):
-    NumberOfSpecies = int(get_single_line_tail(fname, 'redata: Number of Atomic Species')[0])
+    NumberOfSpecies = int(
+        get_single_line_tail(fname, "redata: Number of Atomic Species")[0]
+    )
     atom_names = get_atom_name(fname)
-    tot_natoms = int(get_single_line_tail(fname, 'Number of atoms', 3)[0])
+    tot_natoms = int(get_single_line_tail(fname, "Number of atoms", 3)[0])
 
     atom_types = get_atom_types(fname, tot_natoms)
     atom_numbs = get_atom_numbs(atom_types)
-    assert (max(atom_types) + 1 == NumberOfSpecies)
+    assert max(atom_types) + 1 == NumberOfSpecies
 
-    cell = extract_keyword(fname, 'outcell: Unit cell vectors (Ang):', 3, 0, 3, 1, 3)
-    coord = extract_keyword(fname, 'outcoor: Atomic coordinates (Ang):', tot_natoms, 0, 3, 1, 6)
-    energy = get_single_line_tail(fname, 'siesta: E_KS(eV) =')
-    force = extract_keyword(fname, 'siesta: Atomic forces (eV/Ang):', tot_natoms, 1, 4, 1, 4)
+    cell = extract_keyword(fname, "outcell: Unit cell vectors (Ang):", 3, 0, 3, 1, 3)
+    coord = extract_keyword(
+        fname, "outcoor: Atomic coordinates (Ang):", tot_natoms, 0, 3, 1, 6
+    )
+    energy = get_single_line_tail(fname, "siesta: E_KS(eV) =")
+    force = extract_keyword(
+        fname, "siesta: Atomic forces (eV/Ang):", tot_natoms, 1, 4, 1, 4
+    )
     virial = get_virial(fname, cell)
 
     cells = covert_dimension(np.array(cell), 3)
     coords = covert_dimension(np.array(coord), tot_natoms)
     forces = covert_dimension(np.array(force), tot_natoms)
     virials = covert_dimension(np.array(virial), 3)
-    return atom_names, atom_numbs, np.array(atom_types), cells, coords, np.array(energy), forces, virials
+    return (
+        atom_names,
+        atom_numbs,
+        np.array(atom_types),
+        cells,
+        coords,
+        np.array(energy),
+        forces,
+        virials,
+    )

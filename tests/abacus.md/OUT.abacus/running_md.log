@@ -1,0 +1,2284 @@
+                                                                                     
+                             WELCOME TO ABACUS                                       
+                                                                                     
+               'Atomic-orbital Based Ab-initio Computation at UStc'                  
+                                                                                     
+                     Website: http://abacus.ustc.edu.cn/                             
+                                                                                     
+    Version: Parallel, in development
+    Processor Number is 4
+    Start Time is Wed Apr 13 14:58:14 2022
+                                                                                     
+ ------------------------------------------------------------------------------------
+
+ READING GENERAL INFORMATION
+                           global_out_dir = OUT.abacus/
+                           global_in_card = INPUT
+                               pseudo_dir = 
+                              orbital_dir = 
+                              pseudo_type = auto
+                                    DRANK = 1
+                                    DSIZE = 4
+                                   DCOLOR = 1
+                                    GRANK = 1
+                                    GSIZE = 1
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading atom information in unitcell:                              |
+ | From the input file and the structure file we know the number of   |
+ | different elments in this unitcell, then we list the detail        |
+ | information for each element, especially the zeta and polar atomic |
+ | orbital number for each element. The total atom number is counted. |
+ | We calculate the nearest atom distance for each atom and show the  |
+ | Cartesian and Direct coordinates for each atom. We list the file   |
+ | address for atomic orbitals. The volume and the lattice vectors    |
+ | in real and reciprocal space is also shown.                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+ READING UNITCELL INFORMATION
+                                    ntype = 2
+                 atom label for species 1 = H
+                 atom label for species 2 = O
+                  lattice constant (Bohr) = 1
+              lattice constant (Angstrom) = 0.529177
+
+ READING ATOM TYPE 1
+                               atom label = H
+                      L=0, number of zeta = 2
+                      L=1, number of zeta = 1
+             number of atom for this type = 2
+                      start magnetization = FALSE
+                      start magnetization = FALSE
+
+ READING ATOM TYPE 2
+                               atom label = O
+                      L=0, number of zeta = 2
+                      L=1, number of zeta = 2
+                      L=2, number of zeta = 1
+             number of atom for this type = 1
+                      start magnetization = FALSE
+
+                        TOTAL ATOM NUMBER = 3
+
+ CARTESIAN COORDINATES ( UNIT = 1 Bohr ).
+         atom                   x                   y                   z                 mag                  vx                  vy                  vz
+      tauc_H1       15.9532129411       18.7655861467       8.39524747132                   0                   0                   0                   0
+      tauc_H2       13.7711312041       20.6154930027       7.61198952454                   0                   0                   0                   0
+      tauc_O1       14.5132108826       19.6841922084       8.95832135273                   0                   0                   0                   0
+
+
+ READING ORBITAL FILE NAMES FOR LCAO
+ orbital file: H_gga_8au_60Ry_2s1p.orb
+ orbital file: O_gga_7au_60Ry_2s2p1d.orb
+
+                          Volume (Bohr^3) = 21952
+                             Volume (A^3) = 3252.94689686
+
+ Lattice vectors: (Cartesian coordinate: in unit of a_0)
+                  +28                  +0                  +0
+                   +0                 +28                  +0
+                   +0                  +0                 +28
+ Reciprocal vectors: (Cartesian coordinate: in unit of 2 pi/a_0)
+     +0.0357142857143                  +0                  +0
+                   +0    +0.0357142857143                  +0
+                   +0                  -0    +0.0357142857143
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading pseudopotentials files:                                    |
+ | The pseudopotential file is in UPF format. The 'NC' indicates that |
+ | the type of pseudopotential is 'norm conserving'. Functional of    |
+ | exchange and correlation is decided by 4 given parameters in UPF   |
+ | file.  We also read in the 'core correction' if there exists.      |
+ | Also we can read the valence electrons number and the maximal      |
+ | angular momentum used in this pseudopotential. We also read in the |
+ | trail wave function, trail atomic density and local-pseudopotential|
+ | on logrithmic grid. The non-local pseudopotential projector is also|
+ | read in if there is any.                                           |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+                PAO radial cut off (Bohr) = 15
+
+ Read in pseudopotential file is H_ONCV_PBE-1.0.upf
+                     pseudopotential type = NC
+          exchange-correlation functional = PBE
+                 nonlocal core correction = 0
+                        valence electrons = 1
+                                     lmax = 0
+                           number of zeta = 0
+                     number of projectors = 2
+                           L of projector = 0
+                           L of projector = 0
+                PAO radial cut off (Bohr) = 15
+
+ Read in pseudopotential file is O_ONCV_PBE-1.0.upf
+                     pseudopotential type = NC
+          exchange-correlation functional = PBE
+                 nonlocal core correction = 0
+                        valence electrons = 6
+                                     lmax = 1
+                           number of zeta = 0
+                     number of projectors = 4
+                           L of projector = 0
+                           L of projector = 0
+                           L of projector = 1
+                           L of projector = 1
+     initial pseudo atomic orbital number = 0
+                                   NLOCAL = 23
+
+ SETUP THE ELECTRONS NUMBER
+             electron number of element H = 1
+       total electron number of element H = 2
+             electron number of element O = 6
+       total electron number of element O = 6
+                           occupied bands = 4
+                                   NLOCAL = 23
+                                   NBANDS = 6
+                                   NBANDS = 6
+ DONE : SETUP UNITCELL Time : 0.0345590766519 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup K-points                                                     |
+ | We setup the k-points according to input parameters.               |
+ | The reduced k-points are set according to symmetry operations.     |
+ | We treat the spin as another set of k-points.                      |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP K-POINTS
+                                    nspin = 1
+                   Input type of k points = Monkhorst-Pack(Gamma)
+                                   nkstot = 1
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0                   1
+
+           k-point number in this process = 1
+       minimum distributed K point number = 1
+
+  KPOINTS         CARTESIAN_X         CARTESIAN_Y         CARTESIAN_Z              WEIGHT
+        1                   0                   0                   0                   2
+
+  KPOINTS            DIRECT_X            DIRECT_Y            DIRECT_Z              WEIGHT
+        1                   0                   0                   0                   2
+ DONE : INIT K-POINTS Time : 0.0349359968677 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves:                                                 |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT.                              |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP THE PLANE WAVE BASIS
+     energy cutoff for wavefunc (unit:Ry) = 50
+            [fft grid for wave functions] = 128, 128, 128
+          [fft grid for charge/potential] = 128, 128, 128
+                      [fft grid division] = 2, 2, 2
+      [big fft grid for charge/potential] = 64, 64, 64
+                                     nbxx = 65536
+                                     nrxx = 524288
+
+ SETUP PLANE WAVES FOR CHARGE/POTENTIAL
+                    number of plane waves = 1048171
+                         number of sticks = 12469
+
+ SETUP PLANE WAVES FOR WAVE FUNCTIONS
+                    number of plane waves = 1048171
+                         number of sticks = 12469
+
+ PARALLEL PW FOR CHARGE/POTENTIAL
+     PROC   COLUMNS(POT)             PW
+        1           3117         262043
+        2           3118         262044
+        3           3117         262043
+        4           3117         262041
+ --------------- sum -------------------
+        4          12469        1048171
+
+ PARALLEL PW FOR WAVE FUNCTIONS
+     PROC     COLUMNS(W)             PW
+        1           3117         262043
+        2           3118         262044
+        3           3117         262043
+        4           3117         262041
+ --------------- sum -------------------
+        4          12469        1048171
+
+ SETUP COORDINATES OF PLANE WAVES
+              number of total plane waves = 1048171
+
+ SETUP COORDINATES OF PLANE WAVES
+                            number of |g| = 3309
+                                  max |g| = 5.06505102041
+                                  min |g| = 0
+ DONE : INIT PLANEWAVE Time : 1.2043611249 (SEC)
+
+ DONE : INIT CHARGE Time : 1.25489114318 (SEC)
+
+ DONE : INIT POTENTIAL Time : 1.26592466421 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup numerical orbitals:                                          |
+ | This part setup: numerical atomic orbitals, non-local projectors   |
+ | and neutral potential (1D). The atomic orbitals information        |
+ | including the radius, angular momentum and zeta number.            |
+ | The neutral potential is the sum of local part of pseudopotential  |
+ | and potential given by atomic charge, they will cancel out beyond  |
+ | a certain radius cutoff, because the Z/r character.                |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP ONE DIMENSIONAL ORBITALS/POTENTIAL
+                        delta k  (1/Bohr) = 0.01
+                        delta r    (Bohr) = 0.01
+                        dr_uniform (Bohr) = 0.001
+                        rmax       (Bohr) = 30
+                                    kmesh = 711
+      ORBITAL  L  N      nr      dr    RCUT  CHECK_UNIT    NEW_UNIT
+            1  0  0     801    0.01       8           1           1
+            2  0  1     801    0.01       8           1           1
+            3  1  0     801    0.01       8           1           1
+      ORBITAL  L  N      nr      dr    RCUT  CHECK_UNIT    NEW_UNIT
+            1  0  0     701    0.01       7           1           1
+            2  0  1     701    0.01       7           1           1
+            3  1  0     701    0.01       7           1           1
+            4  1  1     701    0.01       7           1           1
+            5  2  0     701    0.01       7           1           1
+ SET NONLOCAL PSEUDOPOTENTIAL PROJECTORS
+ SET NONLOCAL PSEUDOPOTENTIAL PROJECTORS
+ max number of nonlocal projetors among all species is 4
+
+ SETUP THE TWO-CENTER INTEGRATION TABLES
+
+ SETUP THE DIVISION OF H/S MATRIX
+ divide the H&S matrix using 2D block algorithms.
+                                     nb2d = 1
+                  trace_loc_row dimension = 23
+                  trace_loc_col dimension = 23
+                                     nloc = 144
+                                 init_chg = atomic
+                                     nloc = 144
+              searching radius is (Bohr)) = 16.01
+         searching radius unit is (Bohr)) = 1
+        enter setAlltoallvParameter, nblk = 1
+checkpoint 2
+                                     pnum = 0
+                                     prow = 0
+                                     pcol = 0
+                             nRow_in_proc = 12
+                             nCol_in_proc = 12
+                                     pnum = 1
+                                     prow = 0
+                                     pcol = 1
+                             nRow_in_proc = 12
+                             nCol_in_proc = 11
+                                     pnum = 2
+                                     prow = 1
+                                     pcol = 0
+                             nRow_in_proc = 11
+                             nCol_in_proc = 12
+                                     pnum = 3
+                                     prow = 1
+                                     pcol = 1
+                             nRow_in_proc = 11
+                             nCol_in_proc = 11
+receiver_size is 529 ; receiver_size of each process is:
+144 132 132 121 
+sender_size is 436 ; sender_size of each process is:
+144 144 144 4 
+                         gamma_only_local = 1
+
+ LCAO ALGORITHM ------------- MD =    1  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = 0
+ vlocal data are exchanged, received size(M): = 0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = 1
+ number of non-zero elements in sender_buffer = 436
+                              sender_size = 436
+                       last sender_buffer = 0.000987248
+ number of non-zero elements in receiver_buffer = 529
+                            receiver_size = 529
+                     last receiver_buffer = 0.000213871
+
+ Density error is 0.22907025181
+
+ LCAO ALGORITHM ------------- MD =    1  ELEC =    2 --------------------------------
+
+temp variables are deleted
+ vlocal data are put in sender_buffer, size(M): = 0
+ vlocal data are exchanged, received size(M): = 0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = 1
+ number of non-zero elements in sender_buffer = 436
+                              sender_size = 436
+                       last sender_buffer = 0.00124178
+ number of non-zero elements in receiver_buffer = 529
+                            receiver_size = 529
+                     last receiver_buffer = 0.000232881
+
+ Density error is 0.0983063523487
+
+ LCAO ALGORITHM ------------- MD =    1  ELEC =    3 --------------------------------
+
+temp variables are deleted
+ vlocal data are put in sender_buffer, size(M): = 0
+ vlocal data are exchanged, received size(M): = 0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = 1
+ number of non-zero elements in sender_buffer = 436
+                              sender_size = 436
+                       last sender_buffer = 0.00119187
+ number of non-zero elements in receiver_buffer = 529
+                            receiver_size = 529
+                     last receiver_buffer = 0.00023854
+
+ Density error is 0.0630382071563
+
+ LCAO ALGORITHM ------------- MD =    1  ELEC =    4 --------------------------------
+
+temp variables are deleted
+ vlocal data are put in sender_buffer, size(M): = 0
+ vlocal data are exchanged, received size(M): = 0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = 1
+ number of non-zero elements in sender_buffer = 436
+                              sender_size = 436
+                       last sender_buffer = 0.00111123
+ number of non-zero elements in receiver_buffer = 529
+                            receiver_size = 529
+                     last receiver_buffer = 0.000247594
+
+ Density error is 0.00212188907864
+
+ charge density convergence is achieved
+ final etot is -466.692851174 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.86330858    -0.44325497    -0.75698516
+       H2    -0.20093087    +0.46812614      -1.160958
+       O1    -0.66237771   -0.024871173     +1.9179432
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.342474      -0.250612      -0.053956
+       -0.250612      +0.199085      -0.098627
+       -0.053956      -0.098627      +0.476229
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 0
+ -------------------------------------------
+
+output Pressure for check!
+Virtual Pressure is +0.364728 Kbar 
+Virial Term is +0.339263 Kbar 
+Kenetic Term is +0.025466 Kbar 
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ MD STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.381046      -0.260771      -0.035926
+       -0.260771      +0.213637      -0.116654
+       -0.035926      -0.116654      +0.499502
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    2  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001111
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000246
+
+ Density error is +0.000812965099
+
+ charge density convergence is achieved
+ final etot is -466.694119113669 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.64655531    -0.33147708    -0.63237758
+       H2    -0.27582922    +0.48531937    -1.07451897
+       O1    -0.37072609    -0.15384229    +1.70689655
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.304825      -0.225915      -0.041597
+       -0.225915      +0.184120      -0.109536
+       -0.041597      -0.109536      +0.476180
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    3  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001109
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000249
+
+ Density error is +0.000712200370
+
+ charge density convergence is achieved
+ final etot is -466.695421284274 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.61896149    -0.29339215    -0.65503589
+       H2    -0.21205075    +0.46474918    -1.12721978
+       O1    -0.40691074    -0.17135703    +1.78225568
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.270131      -0.203129      -0.030432
+       -0.203129      +0.169841      -0.118202
+       -0.030432      -0.118202      +0.473338
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    4  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001106
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000249
+
+ Density error is +0.000693457887
+
+ charge density convergence is achieved
+ final etot is -466.696750196281 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.48644933    -0.21743108    -0.58788434
+       H2    -0.24325232    +0.47926564    -1.10488732
+       O1    -0.24319701    -0.26183455    +1.69277166
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.232348      -0.178143      -0.019038
+       -0.178143      +0.154110      -0.127129
+       -0.019038      -0.127129      +0.469916
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    5  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001105
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000251
+
+ Density error is +0.000831214560
+
+ charge density convergence is achieved
+ final etot is -466.698028090263 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.40250864    -0.15283133    -0.57921295
+       H2    -0.19163250    +0.44793586    -1.10996658
+       O1    -0.21087614    -0.29510452    +1.68917953
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.192212      -0.150822      -0.009745
+       -0.150822      +0.135827      -0.133329
+       -0.009745      -0.133329      +0.463055
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    6  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001101
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000252
+
+ Density error is +0.000741826297
+
+ charge density convergence is achieved
+ final etot is -466.699290513689 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.30844698    -0.10059691    -0.51834944
+       H2    -0.21993046    +0.46606276    -1.09553665
+       O1    -0.08851653    -0.36546584    +1.61388609
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.154744      -0.125715      +0.000150
+       -0.125715      +0.119479      -0.140314
+       +0.000150      -0.140314      +0.457170
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 5
+ -------------------------------------------
+
+output Pressure for check!
+Virtual Pressure is +0.270990 Kbar 
+Virial Term is +0.243798 Kbar 
+Kenetic Term is +0.027192 Kbar 
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ MD STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.197322      -0.137704      +0.012493
+       -0.137704      +0.137750      -0.159772
+       +0.012493      -0.159772      +0.477896
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    7  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001100
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000254
+
+ Density error is +0.001296852096
+
+ charge density convergence is achieved
+ final etot is -466.700352492361 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.18090284    -0.00124347    -0.52452226
+       H2    -0.13733836    +0.40367906    -1.08114493
+       O1    -0.04356447    -0.40243559    +1.60566719
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.108237      -0.092885      +0.006743
+       -0.092885      +0.096063      -0.142871
+       +0.006743      -0.142871      +0.444942
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    8  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001095
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000255
+
+ Density error is +0.001373100441
+
+ charge density convergence is achieved
+ final etot is -466.701391168881 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.14255182    -0.00101230    -0.42624709
+       H2    -0.21850033    +0.46069015    -1.06078607
+       O1    +0.07594851    -0.45967785    +1.48703316
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.076272      -0.071788      +0.016002
+       -0.071788      +0.082562      -0.149268
+       +0.016002      -0.149268      +0.438978
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =    9  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001096
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000256
+
+ Density error is +0.002916062746
+
+ charge density convergence is achieved
+ final etot is -466.701752940586 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.07047054    +0.18417814    -0.50830181
+       H2    -0.02028818    +0.30684812    -1.03356989
+       O1    +0.09075872    -0.49102625    +1.54187171
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.016733      -0.027790      +0.017836
+       -0.027790      +0.048898      -0.145410
+       +0.017836      -0.145410      +0.417656
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   10  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001086
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000258
+
+ Density error is +0.004281856614
+
+ charge density convergence is achieved
+ final etot is -466.701784879168 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    +0.03821444    +0.03386400    -0.27622989
+       H2    -0.29847686    +0.50989617    -1.00686614
+       O1    +0.26026241    -0.54376017    +1.28309603
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       +0.005309      -0.022976      +0.029731
+       -0.022976      +0.048804      -0.155863
+       +0.029731      -0.155863      +0.418836
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   11  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001095
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000259
+
+ Density error is +0.008284286772
+
+ charge density convergence is achieved
+ final etot is -466.698298260896 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.42153194    +0.47800345    -0.60266923
+       H2    +0.26521496    +0.07640708    -0.96382431
+       O1    +0.15631698    -0.55441053    +1.56649354
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.091192      +0.052077      +0.020743
+       +0.052077      -0.012621      -0.137197
+       +0.020743      -0.137197      +0.376312
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 10
+ -------------------------------------------
+
+output Pressure for check!
+Virtual Pressure is +0.118981 Kbar 
+Virial Term is +0.090833 Kbar 
+Kenetic Term is +0.028148 Kbar 
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ MD STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.049247      +0.041841      +0.026216
+       +0.041841      +0.006782      -0.157984
+       +0.026216      -0.157984      +0.399408
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   12  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001068
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000260
+
+ Density error is +0.013857092147
+
+ LCAO ALGORITHM ------------- MD =   12  ELEC =    2 --------------------------------
+
+temp variables are deleted
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001085
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000261
+
+ Density error is +0.001589448966
+
+ charge density convergence is achieved
+ final etot is -466.703909676999 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.28674705    +0.32257779    -0.39663257
+       H2    +0.02955609    +0.25720918    -0.94465129
+       O1    +0.25719096    -0.57978697    +1.34128386
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.102767      +0.057764      +0.030039
+       +0.057764      -0.014383      -0.144341
+       +0.030039      -0.144341      +0.373965
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   13  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001077
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000262
+
+ Density error is +0.002070240779
+
+ charge density convergence is achieved
+ final etot is -466.704036345606 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.32428699    +0.29359387    -0.24641838
+       H2    -0.12773856    +0.34751550    -0.88532823
+       O1    +0.45202555    -0.64110937    +1.13174660
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.129688      +0.076052      +0.035709
+       +0.076052      -0.026981      -0.146605
+       +0.035709      -0.146605      +0.363477
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   14  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001080
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000264
+
+ Density error is +0.004359931704
+
+ charge density convergence is achieved
+ final etot is -466.702852817573 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.55904989    +0.52796169    -0.41105586
+       H2    +0.19505420    +0.09971169    -0.84000299
+       O1    +0.36399569    -0.62767338    +1.25105885
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.195852      +0.127521      +0.029560
+       +0.127521      -0.069558      -0.132591
+       +0.029560      -0.132591      +0.330830
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   15  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001065
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000265
+
+ Density error is +0.006891676295
+
+ charge density convergence is achieved
+ final etot is -466.700543051512 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.34568768    +0.25462803    -0.05926056
+       H2    -0.26550846    +0.43144795    -0.80103265
+       O1    +0.61119614    -0.68607598    +0.86029320
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.187581      +0.117448      +0.041239
+       +0.117448      -0.058254      -0.143489
+       +0.041239      -0.143489      +0.334349
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   16  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001081
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000268
+
+ Density error is +0.013146435036
+
+ LCAO ALGORITHM ------------- MD =   16  ELEC =    2 --------------------------------
+
+temp variables are deleted
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001066
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000268
+
+ Density error is +0.001586984246
+
+ charge density convergence is achieved
+ final etot is -466.703646638347 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.54319860    +0.45716115    -0.20682151
+       H2    +0.02270964    +0.21154904    -0.75898021
+       O1    +0.52048896    -0.66871019    +0.96580172
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.247918      +0.164911      +0.034034
+       +0.164911      -0.098300      -0.128317
+       +0.034034      -0.128317      +0.301503
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 15
+ -------------------------------------------
+
+output Pressure for check!
+Virtual Pressure is +0.012883 Kbar 
+Virial Term is -0.014905 Kbar 
+Kenetic Term is +0.027788 Kbar 
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ MD STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.210636      +0.159462      +0.032546
+       +0.159462      -0.080357      -0.150043
+       +0.032546      -0.150043      +0.329644
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   17  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001067
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000269
+
+ Density error is +0.003632561369
+
+ charge density convergence is achieved
+ final etot is -466.702235890628 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.80094970    +0.67278361    -0.30718791
+       H2    +0.24366564    +0.00932187    -0.67175682
+       O1    +0.55728406    -0.68210548    +0.97894473
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.307521      +0.211953      +0.026554
+       +0.211953      -0.138106      -0.113019
+       +0.026554      -0.113019      +0.268271
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   18  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001054
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000271
+
+ Density error is +0.005595449442
+
+ charge density convergence is achieved
+ final etot is -466.700163595798 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.59763214    +0.43904849    -0.03472448
+       H2    -0.09248416    +0.25763720    -0.63673302
+       O1    +0.69011630    -0.69668569    +0.67145750
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.303840      +0.206886      +0.033204
+       +0.206886      -0.132651      -0.117370
+       +0.033204      -0.117370      +0.264195
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   19  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001066
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000273
+
+ Density error is +0.010881139789
+
+ LCAO ALGORITHM ------------- MD =   19  ELEC =    2 --------------------------------
+
+temp variables are deleted
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001054
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000273
+
+ Density error is +0.001371997750
+
+ charge density convergence is achieved
+ final etot is -466.701537327762 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.77301593    +0.61134487    -0.14930516
+       H2    +0.13253222    +0.07664781    -0.58340174
+       O1    +0.64048370    -0.68799268    +0.73270691
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.355835      +0.248594      +0.024707
+       +0.248594      -0.169021      -0.100853
+       +0.024707      -0.100853      +0.231354
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   20  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001054
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000275
+
+ Density error is +0.003244323553
+
+ charge density convergence is achieved
+ final etot is -466.699800890155 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.98747030    +0.79286130    -0.23966801
+       H2    +0.33571389    -0.11433771    -0.49025776
+       O1    +0.65175640    -0.67852359    +0.72992577
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.407715      +0.290577      +0.015274
+       +0.290577      -0.205965      -0.083362
+       +0.015274      -0.083362      +0.197294
+                                     nloc = +144
+              searching radius is (Bohr)) = +16.010000
+         searching radius unit is (Bohr)) = +1.000000
+        enter setAlltoallvParameter, nblk = +1
+checkpoint 2
+                                     pnum = +0
+                                     prow = +0
+                                     pcol = +0
+                             nRow_in_proc = +12
+                             nCol_in_proc = +12
+                                     pnum = +1
+                                     prow = +0
+                                     pcol = +1
+                             nRow_in_proc = +12
+                             nCol_in_proc = +11
+                                     pnum = +2
+                                     prow = +1
+                                     pcol = +0
+                             nRow_in_proc = +11
+                             nCol_in_proc = +12
+                                     pnum = +3
+                                     prow = +1
+                                     pcol = +1
+                             nRow_in_proc = +11
+                             nCol_in_proc = +11
+receiver_size is +529 ; receiver_size of each process is:
++144 +132 +132 +121 
+sender_size is +436 ; sender_size of each process is:
++144 +144 +144 +4 
+                         gamma_only_local = +1
+
+ LCAO ALGORITHM ------------- MD =   21  ELEC =    1 --------------------------------
+
+temp variables are deleted
+
+vlocal exchange index is built
+                          buffer size(M): = 0
+                    buffer index size(M): = 0
+ vlocal data are put in sender_buffer, size(M): = +0
+ vlocal data are exchanged, received size(M): = +0
+                  start solver, ks_solver = genelpa
+
+K-S equation was solved by genelpa2
+
+eigenvalues were copied to ekb
+              cal_dk_gamma_from_2D, NSPIN = +1
+ number of non-zero elements in sender_buffer = +436
+                              sender_size = +436
+                       last sender_buffer = +0.001042
+ number of non-zero elements in receiver_buffer = +529
+                            receiver_size = +529
+                     last receiver_buffer = +0.000277
+
+ Density error is +0.004953382147
+
+ charge density convergence is achieved
+ final etot is -466.697608297566 eV
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+    TOTAL-FORCE (eV/Angstrom)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+     atom              x              y              z
+       H1    -0.81232991    +0.58791846    +0.00094132
+       H2    +0.03982643    +0.10078573    -0.45016602
+       O1    +0.77250348    -0.68870419    +0.44922470
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ TOTAL-STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.404278      +0.286671      +0.018904
+       +0.286671      -0.202682      -0.083866
+       +0.018904      -0.083866      +0.189109
+
+ -------------------------------------------
+ STEP OF MOLECULAR DYNAMICS : 20
+ -------------------------------------------
+
+output Pressure for check!
+Virtual Pressure is -0.113167 Kbar 
+Virial Term is -0.139283 Kbar 
+Kenetic Term is +0.026116 Kbar 
+
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+ MD STRESS (KBAR)
+
+ ><><><><><><><><><><><><><><><><><><><><><><
+
+       -0.373570      +0.287440      +0.010819
+       +0.287440      -0.188168      -0.105266
+       +0.010819      -0.105266      +0.222236
+
+
+ --------------------------------------------
+ !FINAL_ETOT_IS -466.6976082975657505 eV
+ --------------------------------------------
+
+
+
+
+
+
+  |CLASS_NAME---------|NAME---------------|TIME(Sec)-----|CALLS----|AVG------|PER%-------
+                                      total     +132.35550        11    +12.03   +100.00%
+               Run_lcao           lcao_line     +132.33977         1   +132.34    +99.99%
+               PW_Basis              gen_pw       +1.16916         1     +1.17     +0.88%
+          PW_complement        get_total_pw       +0.11398        10     +0.01     +0.09%
+          PW_complement      setup_GVectors       +0.25635        10     +0.03     +0.19%
+                 mymath            heapsort       +0.20875        10     +0.02     +0.16%
+               PW_Basis  setup_struc_factor       +0.47204        21     +0.02     +0.36%
+            ORB_control      read_orb_first       +0.12504         1     +0.13     +0.09%
+          LCAO_Orbitals       Read_Orbitals       +0.12504         1     +0.13     +0.09%
+            ORB_control      set_orb_tables       +1.21148         1     +1.21     +0.92%
+         ORB_gen_tables          gen_tables       +1.21148         1     +1.21     +0.92%
+          ORB_table_phi          init_Table       +0.71243         1     +0.71     +0.54%
+          ORB_table_phi      cal_ST_Phi12_R       +0.70420       126     +0.01     +0.53%
+         ORB_table_beta     init_Table_Beta       +0.30461         1     +0.30     +0.23%
+         ORB_table_beta       VNL_PhiBeta_R       +0.30229        56     +0.01     +0.23%
+              Potential            init_pot      +24.59861        42     +0.59    +18.59%
+              Potential       set_local_pot       +1.80187        42     +0.04     +1.36%
+                    FFT               FFT3D      +39.89220      1316     +0.03    +30.14%
+                 Charge          atomic_rho       +3.11639        41     +0.08     +2.35%
+              Potential            v_of_rho      +36.45681        69     +0.53    +27.54%
+          XC_Functional                v_xc      +39.40750        90     +0.44    +29.77%
+           H_Hartree_pw           v_hartree       +5.69526        69     +0.08     +4.30%
+              Potential          set_vr_eff       +0.22940        69     +0.00     +0.17%
+            Run_MD_LCAO            opt_ions     +128.93060         1   +128.93    +97.41%
+                NVT_NHC               setup       +8.70219         1     +8.70     +6.57%
+                MD_func        force_stress      +63.15373        11     +5.74    +47.72%
+              LOOP_elec     solve_elec_stru      +30.69312        21     +1.46    +23.19%
+              LOOP_elec     set_matrix_grid       +1.76637        21     +0.08     +1.33%
+         Grid_Technique                init       +1.76335        21     +0.08     +1.33%
+           Grid_BigCellgrid_expansion_index       +1.39932        42     +0.03     +1.06%
+              LOOP_elec              solver      +28.90742        21     +1.38    +21.84%
+               ELEC_scf                 scf      +28.90729        21     +1.38    +21.84%
+             H_Ewald_pw       compute_ewald       +0.21927        21     +0.01     +0.17%
+       ELEC_cband_gamma           cal_bands       +5.01029        27     +0.19     +3.79%
+            LCAO_Hamilt          cal_Hgamma       +4.88214        27     +0.18     +3.69%
+             Gint_Gamma          cal_vlocal       +4.88196        27     +0.18     +3.69%
+             Gint_Gamma        gamma_vlocal       +3.34387        27     +0.12     +2.53%
+      Local_Orbital_Cha           sum_bands       +6.29288        27     +0.23     +4.75%
+             Gint_Gamma             cal_rho       +6.22736        27     +0.23     +4.71%
+             Gint_Gamma        gamma_charge       +6.22723        27     +0.23     +4.70%
+             Gint_Gamma       reduce_charge       +1.93070        27     +0.07     +1.46%
+                 Charge             mix_rho       +2.62751        27     +0.10     +1.99%
+      Force_Stress_LCAO      getForceStress      +82.70782        21     +3.94    +62.49%
+                 Forces       cal_force_loc       +1.64530        21     +0.08     +1.24%
+                 Forces        cal_force_ew       +0.76779        21     +0.04     +0.58%
+            Stress_Func          stress_loc       +2.86125        21     +0.14     +2.16%
+            Stress_Func          stress_har       +2.01964        21     +0.10     +1.53%
+            Stress_Func           stress_ew       +1.07900        21     +0.05     +0.82%
+            Stress_Func          stress_gga       +4.78231        21     +0.23     +3.61%
+       Force_LCAO_gamma        ftable_gamma      +56.46509        21     +2.69    +42.66%
+       Force_LCAO_gamma        cal_fvl_dphi      +56.40976        21     +2.69    +42.62%
+             Gint_Gamma           cal_force      +44.33796        21     +2.11    +33.50%
+             Gint_Gamma         gamma_force      +26.79047        21     +1.28    +20.24%
+             Gint_Gamma    gamma_force_wait      +17.53623        21     +0.84    +13.25%
+                MD_func     md_force_stress      +60.66036        11     +5.51    +45.83%
+ ----------------------------------------------------------------------------------------
+
+ CLASS_NAME---------|NAME---------------|MEMORY(MB)--------
+                                         +1374.8320
+        ORB_table_phi               Jl(x)       +97.8037
+         Charge_Pulay                Rrho       +32.0000
+         Charge_Pulay               dRrho       +28.0000
+         Charge_Pulay                drho       +28.0000
+              Use_FFT              porter        +8.0000
+             PW_Basis           struc_fac        +7.9969
+        Grid_Meshcell        index2normal        +4.1684
+        Grid_Meshcell         index2ucell        +4.1684
+               Charge                 rho        +4.0000
+               Charge            rho_save        +4.0000
+               Charge            rho_core        +4.0000
+            Potential               vltot        +4.0000
+            Potential                  vr        +4.0000
+            Potential              vr_eff        +4.0000
+            Potential             vr_eff1        +4.0000
+            Potential                vnew        +4.0000
+         Charge_Pulay           rho_save2        +4.0000
+        ORB_table_phi         Table_SR&TR        +3.2158
+               Charge                rhog        +1.9992
+               Charge           rhog_save        +1.9992
+               Charge               kin_r        +1.9992
+               Charge          kin_r_save        +1.9992
+               Charge           rhog_core        +1.9992
+       ORB_table_beta            Table_NR        +1.0437
+ ----------------------------------------------------------
+
+ Start  Time  : Wed Apr 13 14:58:14 2022
+ Finish Time  : Wed Apr 13 15:00:27 2022
+ Total  Time  : 0 h 2 mins 13 secs 

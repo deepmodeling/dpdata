@@ -10,7 +10,13 @@ Welcome to dpdata's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Overview <self>
+   cli
+   formats
+   drivers
+   minimizers
    api/api
+   credits
 
 .. mdinclude:: ../README.md
 

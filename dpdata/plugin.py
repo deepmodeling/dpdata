@@ -12,22 +12,25 @@ class Plugin:
             pass
     >>> print(Plugin.plugins['xx'])
     """
+
     def __init__(self):
         self.plugins = {}
 
     def register(self, key):
         """Register a plugin.
-        
-        Parameter
-        ---------
-        key: str
+
+        Parameters
+        ----------
+        key : str
             Key of the plugin.
         """
+
         def decorator(object):
             self.plugins[key] = object
             return object
+
         return decorator
-    
+
     def get_plugin(self, key):
         return self.plugins[key]
 

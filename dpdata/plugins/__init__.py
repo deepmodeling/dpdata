@@ -1,8 +1,9 @@
 import importlib
 from pathlib import Path
+
 try:
     from importlib import metadata
-except ImportError: # for Python<3.8
+except ImportError:  # for Python<3.8
     import importlib_metadata as metadata
 
 PACKAGE_BASE = "dpdata.plugins"
@@ -14,6 +15,9 @@ for module_file in Path(__file__).parent.glob("*.py"):
         importlib.import_module(module_name, PACKAGE_BASE)
 
 # https://setuptools.readthedocs.io/en/latest/userguide/entry_point.html
-eps = metadata.entry_points().get('dpdata.plugins', [])
+try:
+    eps = metadata.entry_points(group="dpdata.plugins")
+except TypeError:
+    eps = metadata.entry_points().get("dpdata.plugins", [])
 for ep in eps:
     plugin = ep.load()

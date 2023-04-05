@@ -1,11 +1,14 @@
 import unittest
-from context import dpdata
+
 from comp_sys import CompLabeledSys, IsPBC
+from context import dpdata
+
 
 class TestDeepmdLoadRaw(unittest.TestCase, CompLabeledSys, IsPBC):
-    def setUp (self) :
-        original_system = dpdata.LabeledSystem('poscars/OUTCAR.h2o.md', 
-                                             fmt = 'vasp/outcar')
+    def setUp(self):
+        original_system = dpdata.LabeledSystem(
+            "poscars/OUTCAR.h2o.md", fmt="vasp/outcar"
+        )
         original_system += original_system
         original_system += original_system
         original_system += original_system

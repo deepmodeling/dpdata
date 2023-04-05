@@ -1,0 +1,17 @@
+INPUT_PARAMETERS
+#Parameters	(General)
+suffix 			ch4fail
+stru_file 	        STRU.ch4 #the filename of file containing atom positions
+kpoint_file        	KPT.ch4 #the name of file containing k points
+pseudo_dir		./
+nbands		  	8
+#Parameters (Accuracy)
+ecutwfc			100
+symmetry		1
+scf_nmax		50
+smearing_method		gauss #type of smearing: gauss; fd; fixed; mp; mp2; mv
+smearing_sigma		0.01
+mixing_type 		plain
+mixing_beta 		0.5
+cal_force 		1
+cal_stress 		1
