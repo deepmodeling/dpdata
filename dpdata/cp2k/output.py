@@ -1,9 +1,9 @@
 # %%
+import math
 import re
 from collections import OrderedDict
 
 import numpy as np
-from scipy.constants import R
 
 from ..unit import (
     EnergyConversion,
@@ -13,7 +13,6 @@ from ..unit import (
 )
 from .cell import cell_to_low_triangle
 
-# %%
 AU_TO_ANG = LengthConversion("bohr", "angstrom").value()
 AU_TO_EV = EnergyConversion("hartree", "eV").value()
 AU_TO_EV_EVERY_ANG = ForceConversion("hartree/bohr", "eV/angstrom").value()
@@ -38,8 +37,10 @@ class Cp2kSystems(object):
         self.log_block_generator = self.get_log_block_generator()
         self.xyz_block_generator = self.get_xyz_block_generator()
         self.restart_flag = restart
+
         self.cell = None
         self.print_level = None
+
         self.atomic_kinds = None
 
         if self.restart_flag:
@@ -63,7 +64,9 @@ class Cp2kSystems(object):
         # assert all(eq1), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         # assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         # assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
-        assert log_info_dict["energies"] == xyz_info_dict["energies"], (
+        assert math.isclose(
+            log_info_dict["energies"], xyz_info_dict["energies"], abs_tol=1.0e-6
+        ), (
             log_info_dict["energies"],
             xyz_info_dict["energies"],
             "There may be errors in the file",
@@ -257,7 +260,7 @@ class Cp2kSystems(object):
                     [cell_bx, cell_by, cell_bz],
                     [cell_cx, cell_cy, cell_cz],
                 ]
-            ).astype("float32")
+            ).astype("float64")
         if atomic_kinds:
             self.atomic_kinds = atomic_kinds
         # print(self.atomic_kinds)
@@ -299,7 +302,7 @@ class Cp2kSystems(object):
         GPa = PressureConversion("eV/angstrom^3", "GPa").value()
         if stress:
             stress = np.array(stress)
-            stress = stress.astype("float32")
+            stress = stress.astype("float64")
             stress = stress[np.newaxis, :, :]
             # stress to virial conversion, default unit in cp2k is GPa
             # note the stress is virial = stress * volume
@@ -314,11 +317,11 @@ class Cp2kSystems(object):
         info_dict["atom_numbs"] = atom_numbs
         info_dict["atom_types"] = np.asarray(atom_types_idx_list)
         info_dict["print_level"] = self.print_level
-        info_dict["cells"] = np.asarray([self.cell]).astype("float32")
-        info_dict["energies"] = np.asarray([energy]).astype("float32")
-        info_dict["forces"] = np.asarray([forces_list]).astype("float32")
+        info_dict["cells"] = np.asarray([self.cell]).astype("float64")
+        info_dict["energies"] = np.asarray([energy]).astype("float64")
+        info_dict["forces"] = np.asarray([forces_list]).astype("float64")
         if virial is not None:
-            info_dict["virials"] = np.asarray([virial]).astype("float32")
+            info_dict["virials"] = np.asarray([virial]).astype("float64")
         return info_dict
 
     def handle_single_xyz_frame(self, lines):
@@ -337,7 +340,7 @@ class Cp2kSystems(object):
         energy = 0
         if prop_dict.get("E"):
             energy = float(prop_dict.get("E")) * AU_TO_EV
-            # info_dict['energies'] = np.array([prop_dict['E']]).astype('float32')
+            # info_dict['energies'] = np.array([prop_dict['E']]).astype('float64')
 
         element_index = -1
         element_dict = OrderedDict()
@@ -364,8 +367,8 @@ class Cp2kSystems(object):
         # info_dict['atom_names'] = atom_names
         # info_dict['atom_numbs'] = atom_numbs
         # info_dict['atom_types'] = np.asarray(atom_types_list)
-        info_dict["coords"] = np.asarray([coords_list]).astype("float32")
-        info_dict["energies"] = np.array([energy]).astype("float32")
+        info_dict["coords"] = np.asarray([coords_list]).astype("float64")
+        info_dict["energies"] = np.array([energy]).astype("float64")
         info_dict["orig"] = np.zeros(3)
         return info_dict
 
@@ -392,6 +395,7 @@ def get_frames(fname):
     content = fp.read()
     count = content.count("SCF run converged")
     if count == 0:
+        fp.close()
         return [], [], [], [], [], [], [], None
 
     # search duplicated header
@@ -450,10 +454,10 @@ def get_frames(fname):
 
     # conver to float array and add extra dimension for nframes
     cell = np.array(cell)
-    cell = cell.astype("float32")
+    cell = cell.astype("float64")
     cell = cell[np.newaxis, :, :]
     coord = np.array(coord)
-    coord = coord.astype("float32")
+    coord = coord.astype("float64")
     coord = coord[np.newaxis, :, :]
     atom_symbol_idx_list = np.array(atom_symbol_idx_list)
     atom_symbol_idx_list = atom_symbol_idx_list.astype(int)
@@ -461,13 +465,13 @@ def get_frames(fname):
     atom_symbol_list = np.array(atom_symbol_list)
     atom_symbol_list = atom_symbol_list[atom_symbol_idx_list]
     force = np.array(force)
-    force = force.astype("float32")
+    force = force.astype("float64")
     force = force[np.newaxis, :, :]
 
     # virial is not necessary
     if stress:
         stress = np.array(stress)
-        stress = stress.astype("float32")
+        stress = stress.astype("float64")
         stress = stress[np.newaxis, :, :]
         # stress to virial conversion, default unit in cp2k is GPa
         # note the stress is virial = stress * volume
@@ -479,7 +483,7 @@ def get_frames(fname):
     force = force * eV / angstrom
     # energy unit conversion, default unit in cp2k is hartree
     energy = float(energy) * eV
-    energy = np.array(energy).astype("float32")
+    energy = np.array(energy).astype("float64")
     energy = energy[np.newaxis]
 
     tmp_names, symbol_idx = np.unique(atom_symbol_list, return_index=True)
