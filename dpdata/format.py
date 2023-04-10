@@ -7,12 +7,36 @@ from .plugin import Plugin
 
 
 class Format(ABC):
+    """The abstract base class for all formats."""
     __FormatPlugin = Plugin()
     __FromPlugin = Plugin()
     __ToPlugin = Plugin()
 
     @staticmethod
     def register(key):
+        """Register a format plugin.
+        
+        Returns a decorator for a Format.
+        
+        Parameters
+        ----------
+        key : str
+            The key to register the plugin.
+
+        Returns
+        -------
+        function
+            The decorator function.
+        
+        Examples
+        --------
+        Register a format plugin:
+
+        >>> @Format.register('test')
+        ... @Format.register('test2')
+        ... class TestFormat(Format):
+        ...     pass
+        """
         return Format.__FormatPlugin.register(key)
 
     @staticmethod
@@ -53,10 +77,12 @@ class Format(ABC):
         ----------
         file_name : str
             file name
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
-        data: dict
+        data : dict
             system data
         """
         raise NotImplementedError(
