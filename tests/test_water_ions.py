@@ -1,13 +1,9 @@
 import os
 import unittest
 
-import numpy as np
 from context import dpdata
 
 try:
-    import ase
-    import ase.neighborlist
-
     exist_ase = True
 except Exception:
     exist_ase = False

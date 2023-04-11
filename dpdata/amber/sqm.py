@@ -13,9 +13,7 @@ READ_FORCES = 7
 
 
 def parse_sqm_out(fname):
-    """
-    Read atom symbols, charges and coordinates from ambertools sqm.out file
-    """
+    """Read atom symbols, charges and coordinates from ambertools sqm.out file."""
     atom_symbols = []
     coords = []
     charges = []

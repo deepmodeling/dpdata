@@ -23,7 +23,7 @@ class XYZFormat(Format):
             fp.write("\n".join(buff))
 
     def from_system(self, file_name, **kwargs):
-        with open(file_name, "r") as fp:
+        with open(file_name) as fp:
             coords, types = xyz_to_coord(fp.read())
         atom_names, atom_types, atom_numbs = np.unique(
             types, return_inverse=True, return_counts=True

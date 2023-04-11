@@ -1,4 +1,4 @@
-"""Amber mask"""
+"""Amber mask."""
 try:
     import parmed
 except ImportError:
@@ -6,7 +6,7 @@ except ImportError:
 
 
 def pick_by_amber_mask(param, maskstr, coords=None):
-    """Pick atoms by amber masks
+    """Pick atoms by amber masks.
 
     Parameters
     ----------

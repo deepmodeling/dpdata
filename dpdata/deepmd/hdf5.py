@@ -101,7 +101,7 @@ def to_system_data(
                 nframes = dd.shape[0]
                 all_data.append(np.reshape(dd, (nframes, *prop["shape"])))
             elif prop["required"]:
-                raise RuntimeError("%s/%s/%s not found" % (folder, ii, fn))
+                raise RuntimeError(f"{folder}/{ii}/{fn} not found")
 
         if len(all_data) > 0:
             data[dt] = np.concatenate(all_data, axis=0)

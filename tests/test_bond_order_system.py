@@ -8,7 +8,6 @@ try:
     from rdkit import Chem
     from rdkit.Chem import AllChem
 
-    from dpdata import BondOrderSystem
 except ImportError:
     skip_bond_order_system = True
 else:

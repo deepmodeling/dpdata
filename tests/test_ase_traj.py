@@ -1,12 +1,10 @@
-import os
 import unittest
 
-import numpy as np
 from comp_sys import CompLabeledSys, IsPBC
 from context import dpdata
 
 try:
-    import ase
+    pass
 except ModuleNotFoundError:
     skip_ase = True
 else:
@@ -28,7 +26,7 @@ class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
 
 
 @unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
-class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
+class TestASEtraj2(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         self.system_temp0 = dpdata.MultiSystems.from_file(
             file_name="ase_traj/HeAlO.traj", fmt="ase/structure"

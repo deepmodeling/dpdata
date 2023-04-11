@@ -89,7 +89,7 @@ class CompLabeledSys(CompSys):
         # if len(self.system_1['virials']) == 0:
         #     self.assertEqual(len(self.system_1['virials']), 0)
         #     return
-        if not "virials" in self.system_1:
+        if "virials" not in self.system_1:
             self.assertFalse("virials" in self.system_2)
             return
         np.testing.assert_almost_equal(

@@ -6,7 +6,7 @@ from comp_sys import CompLabeledSys, CompSys, IsNoPBC
 from context import dpdata
 
 try:
-    from dpdata import BondOrderSystem
+    pass
 except ImportError:
     skip_bond_order_system = True
 else:
@@ -67,12 +67,12 @@ class TestAmberSqmIn(unittest.TestCase):
         self.system = dpdata.BondOrderSystem(
             "amber/methane.mol", fmt="mol", type_map=["H", "C"]
         )
-        with open("amber/sqm.in", "r") as f:
+        with open("amber/sqm.in") as f:
             self.sqm_in = f.read()
 
     def test_sqm_in(self):
         self.system.to("sqm/in", "amber/sqm_test.in")
-        with open("amber/sqm_test.in", "r") as f:
+        with open("amber/sqm_test.in") as f:
             self.sqm_in_test = f.read()
         self.assertEqual(self.sqm_in, self.sqm_in_test)
 

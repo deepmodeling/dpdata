@@ -217,23 +217,23 @@ def make_gaussian_input(
     buff = []
     # keywords, e.g., force b3lyp/6-31g**
     if use_fragment_guesses:
-        keywords[0] = "{} guess=fragment={}".format(keywords[0], frag_numb)
+        keywords[0] = f"{keywords[0]} guess=fragment={frag_numb}"
 
     chkkeywords = []
     if len(keywords) > 1:
-        chkkeywords.append("%chk={}.chk".format(str(uuid.uuid1())))
+        chkkeywords.append(f"%chk={str(uuid.uuid1())}.chk")
 
-    nprockeywords = "%nproc={:d}".format(nproc)
+    nprockeywords = f"%nproc={nproc:d}"
     # use formula as title
     titlekeywords = "".join(
-        ["{}{}".format(symbol, numb) for symbol, numb in zip(atom_names, atom_numbs)]
+        [f"{symbol}{numb}" for symbol, numb in zip(atom_names, atom_numbs)]
     )
-    chargekeywords = "{} {}".format(charge, multiplicity)
+    chargekeywords = f"{charge} {multiplicity}"
 
     buff = [
         *chkkeywords,
         nprockeywords,
-        "#{}".format(keywords[0]),
+        f"#{keywords[0]}",
         "",
         titlekeywords,
         "",
@@ -246,13 +246,13 @@ def make_gaussian_input(
                 "%s(Fragment=%d) %f %f %f" % (symbol, frag_index[ii] + 1, *coordinate)
             )
         else:
-            buff.append("%s %f %f %f" % (symbol, *coordinate))
+            buff.append("{} {:f} {:f} {:f}".format(symbol, *coordinate))
     if not sys_data.get("nopbc", False):
         # PBC condition
         cell = sys_data["cells"][0]
         for ii in range(3):
             # use TV as atomic symbol, see https://gaussian.com/pbc/
-            buff.append("TV %f %f %f" % (*cell[ii],))
+            buff.append("TV {:f} {:f} {:f}".format(*cell[ii]))
     if basis_set is not None:
         # custom basis set
         buff.extend(["", basis_set, ""])
@@ -262,7 +262,7 @@ def make_gaussian_input(
                 "\n--link1--",
                 *chkkeywords,
                 nprockeywords,
-                "#{}".format(kw),
+                f"#{kw}",
                 "",
                 titlekeywords,
                 "",

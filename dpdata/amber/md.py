@@ -30,7 +30,7 @@ def read_amber_traj(
     * mdfrc, NetCDF format, stores forces
     * mden (optional), text format, stores energies
     * mdout (optional), text format, may store energies if there is no mden_file
-    * parm7, text format, stores types
+    * parm7, text format, stores types.
 
     Parameters
     ----------
@@ -41,8 +41,9 @@ def read_amber_traj(
         instead of amber types. For example, a ligand will use C, H, O, N, and so on
         instead of h1, hc, o, os, and so on.
         IF use_element_symbols is str, it will be considered as Amber mask.
+    labeled : bool
+        Whether to return labeled data
     """
-
     flag_atom_type = False
     flag_atom_numb = False
     amber_types = []

@@ -1,13 +1,10 @@
 import os
 import unittest
 
-import numpy as np
 from comp_sys import CompSys, IsPBC
 from context import dpdata
 
 try:
-    from pymatgen import Structure
-
     exist_module = True
 except Exception:
     exist_module = False

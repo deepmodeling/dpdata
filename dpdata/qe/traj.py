@@ -3,7 +3,6 @@ import warnings
 
 import numpy as np
 
-import dpdata
 
 from ..unit import (
     EnergyConversion,
@@ -134,7 +133,7 @@ def load_data(fname, natoms, begin=0, step=1, convert=1.0):
     with open(fname) as fp:
         while True:
             blk, ss = _load_pos_block(fp, natoms)
-            if blk == None:
+            if blk is None:
                 break
             else:
                 if cc >= begin and (cc - begin) % step == 0:

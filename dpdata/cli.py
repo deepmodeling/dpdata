@@ -43,7 +43,7 @@ def dpdata_parser() -> argparse.ArgumentParser:
 
 
 def dpdata_cli():
-    """dpdata cli.
+    """Dpdata cli.
 
     Examples
     --------
@@ -85,6 +85,8 @@ def convert(
         the system contains multiple directories
     type_map : list
         type map
+    **kwargs : dict
+        Additional arguments for the format.
     """
     if multi:
         s = MultiSystems.from_file(

@@ -1,7 +1,5 @@
-import os
 import unittest
 
-import numpy as np
 
 from dpdata.system import elements_index_map
 
