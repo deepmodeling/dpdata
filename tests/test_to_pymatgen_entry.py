@@ -5,6 +5,8 @@ from context import dpdata
 from monty.serialization import loadfn
 
 try:
+    from pymatgen.entries.computed_entries import ComputedStructureEntry  # noqa: F401
+
     exist_module = True
 except Exception:
     exist_module = False

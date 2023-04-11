@@ -6,7 +6,7 @@ from comp_sys import CompLabeledSys, CompSys, IsNoPBC
 from context import dpdata
 
 try:
-    pass
+    from dpdata import BondOrderSystem  # noqa: F401
 except ImportError:
     skip_bond_order_system = True
 else:

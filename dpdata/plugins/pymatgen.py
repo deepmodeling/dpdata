@@ -33,7 +33,7 @@ class PyMatgenMoleculeFormat(Format):
     @Format.post("remove_pbc")
     def from_system(self, file_name, **kwargs):
         try:
-            pass
+            from pymatgen.core import Molecule  # noqa: F401
         except ModuleNotFoundError as e:
             raise ImportError("No module pymatgen.Molecule") from e
 

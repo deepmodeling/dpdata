@@ -4,6 +4,9 @@ import unittest
 from context import dpdata
 
 try:
+    import ase  # noqa: F401
+    import ase.neighborlist  # noqa: F401
+
     exist_ase = True
 except Exception:
     exist_ase = False
