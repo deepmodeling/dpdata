@@ -15,7 +15,7 @@ else:
 class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         self.multi_systems = dpdata.MultiSystems.from_file(
-            "ase_traj/HeAlO.traj", fmt="ase_traj/structure"
+            "ase_traj/HeAlO.traj", fmt="ase/structure"
         )
         self.system_1 = self.multi_systems.systems["Al0He4O0"]
         self.system_2 = dpdata.LabeledSystem("ase_traj/Al0He4O0", fmt="deepmd")
