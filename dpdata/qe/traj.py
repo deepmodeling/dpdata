@@ -3,7 +3,6 @@ import warnings
 
 import numpy as np
 
-
 from ..unit import (
     EnergyConversion,
     ForceConversion,

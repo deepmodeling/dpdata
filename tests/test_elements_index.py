@@ -1,6 +1,5 @@
 import unittest
 
-
 from dpdata.system import elements_index_map
 
 
