@@ -4,7 +4,7 @@ from comp_sys import CompLabeledSys, IsPBC
 from context import dpdata
 
 try:
-    pass
+    import ase  # noqa: F401
 except ModuleNotFoundError:
     skip_ase = True
 else:
