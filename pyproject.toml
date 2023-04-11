@@ -75,6 +75,7 @@ select = [
     "F", # pyflakes
     "D", # pydocstyle
     "UP", # pyupgrade
+    "I", # isort
 ]
 ignore = [
     "E501", # line too long
