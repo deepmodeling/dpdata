@@ -7,15 +7,16 @@ from .plugin import Plugin
 
 class Format(ABC):
     """The abstract base class for all formats.
-    
+
     To add a new format, one should create a new class inherited from this class, and then
-    
+
     - implement several methods, such as :meth:`from_system`;
     - register the format with a key;
     - add documentation in the class docstring;
-    
+
     The new format can be either insider or outside the package.
     """
+
     __FormatPlugin = Plugin()
     __FromPlugin = Plugin()
     __ToPlugin = Plugin()
@@ -23,7 +24,7 @@ class Format(ABC):
     @staticmethod
     def register(key):
         """Register a format plugin.
-        
+
         By default, after a format plugin is registered, the following methods
         will be registered as well for :meth:`System`, :meth:`LabeledSystem`, :meth:`MultiSystems`, and
         :meth:`BondOrderSystem`:
@@ -32,12 +33,12 @@ class Format(ABC):
         - to_{key.replace('/', '_')}
         - from({key}, ...)
         - to({key}, ...)
-        
+
         The decorator should be explicitly executed before :mod:`dpdata.system`
         is imported. A module will be imported automatically if it
-        
+
         - is a submodule of :mod:`dpdata.plugins`;
-        - is registered at the `dpdata.plugins` entry point 
+        - is registered at the `dpdata.plugins` entry point
 
         Parameters
         ----------
@@ -48,7 +49,7 @@ class Format(ABC):
         -------
         function
             The decorator function.
-        
+
         Examples
         --------
         Register a format plugin:
@@ -63,7 +64,7 @@ class Format(ABC):
     @staticmethod
     def register_from(key):
         """Register a from method if the target method name is not default.
-        
+
         Parameters
         ----------
         key : str
@@ -73,7 +74,7 @@ class Format(ABC):
         -------
         function
             The decorator function.
-        
+
         Examples
         --------
         Register a from method:
@@ -96,13 +97,14 @@ class Format(ABC):
         ----------
         key : str
             The key to register the plugin.
-        
+
         Returns
         -------
         function
             The decorator function.
-        
+
         Examples
+        --------
         --------'
         Register a to method:
 
@@ -141,12 +143,12 @@ class Format(ABC):
         ----------
         func_name : str or list of str
             The name of the post function.
-        
+
         Returns
         -------
         function
             The decorator function.
-        
+
         Examples
         --------
         Register a post function:
@@ -156,6 +158,7 @@ class Format(ABC):
         ... class TestFormat(Format):
         ...     pass
         """
+
         def decorator(object):
             if not isinstance(func_name, (list, tuple, set)):
                 object.post_func = (func_name,)
@@ -221,7 +224,7 @@ class Format(ABC):
 
     def to_labeled_system(self, data, *args, **kwargs):
         """Implement LabeledSystem.to that converts from LabeledSystem to this format.
-    
+
         By default, LabeledSystem.to will fallback to System.to.
 
         Parameters
@@ -244,7 +247,7 @@ class Format(ABC):
             file name
         **kwargs : dict
             other parameters
-            
+
         Returns
         -------
         data : dict
