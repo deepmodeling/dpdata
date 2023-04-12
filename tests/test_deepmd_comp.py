@@ -42,7 +42,7 @@ class TestDeepmdCompNoLabels(unittest.TestCase, CompSys, IsPBC):
             shutil.rmtree("tmp.deepmd.npy")
 
 
-class TestDeepmdCompNoLabels(unittest.TestCase, CompSys, IsPBC):
+class TestDeepmdCompNoLabels2(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
         self.dir_name = "tmp.deepmd.npy.nol"
         natoms = 3

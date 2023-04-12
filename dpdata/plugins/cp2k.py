@@ -8,8 +8,8 @@ from dpdata.format import Format
 @Format.register("cp2k/aimd_output")
 class CP2KAIMDOutputFormat(Format):
     def from_labeled_system(self, file_name, restart=False, **kwargs):
-        xyz_file = sorted(glob.glob("{}/*pos*.xyz".format(file_name)))[0]
-        log_file = sorted(glob.glob("{}/*.log".format(file_name)))[0]
+        xyz_file = sorted(glob.glob(f"{file_name}/*pos*.xyz"))[0]
+        log_file = sorted(glob.glob(f"{file_name}/*.log"))[0]
         return tuple(Cp2kSystems(log_file, xyz_file, restart))
 
 

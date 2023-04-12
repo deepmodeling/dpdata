@@ -8,7 +8,7 @@ ang2ang = 1
 
 #############################read output#####################################
 def get_single_line_tail(fin, keyword, num=1):
-    file = open(fin, "r")
+    file = open(fin)
     part_res = []
     for value in file:
         if keyword in value:
@@ -32,7 +32,7 @@ def extract_keyword(
     is_repeated_read,
     column_num,
 ):
-    file = open(fout, "r")
+    file = open(fout)
     ret = []
     part_ret = []
     flag = 0
@@ -73,7 +73,7 @@ def extract_keyword(
 
 
 def obtain_nframe(fname):
-    fp = open(fname, "r")
+    fp = open(fname)
     flag = False
     idx = 0
     temp = 0
@@ -82,7 +82,7 @@ def obtain_nframe(fname):
             flag = True
             continue
         if flag:
-            if not "siesta: Pressure (static):" in ii:
+            if "siesta: Pressure (static):" not in ii:
                 if len(ii.split()) == 3:
                     temp += 1
                     if temp == 3:
@@ -106,7 +106,7 @@ def get_atom_types(fout, atomnums):
 
 
 def get_atom_name(fout):
-    file = open(fout, "r")
+    file = open(fout)
     ret = []
     for value in file:
         if "Species number:" in value:

@@ -140,9 +140,9 @@ def get_frame(fname):
         path_out = fname[1]
     else:
         raise RuntimeError("invalid input")
-    with open(path_out, "r") as fp:
+    with open(path_out) as fp:
         outlines = fp.read().split("\n")
-    with open(path_in, "r") as fp:
+    with open(path_in) as fp:
         inlines = fp.read().split("\n")
     cell = get_cell(inlines)
     atom_names, natoms, types, coords = get_coords(inlines, cell)

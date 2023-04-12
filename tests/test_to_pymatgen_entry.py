@@ -1,13 +1,11 @@
 import os
 import unittest
 
-import numpy as np
-from comp_sys import CompSys, IsPBC
 from context import dpdata
 from monty.serialization import loadfn
 
 try:
-    from pymatgen.entries.computed_entries import ComputedStructureEntry
+    from pymatgen.entries.computed_entries import ComputedStructureEntry  # noqa: F401
 
     exist_module = True
 except Exception:

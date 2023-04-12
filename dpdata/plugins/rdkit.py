@@ -23,9 +23,7 @@ class MolFormat(Format):
 @Format.register("sdf_file")
 class SdfFormat(Format):
     def from_bond_order_system(self, file_name, **kwargs):
-        """
-        Note that it requires all molecules in .sdf file must be of the same topology
-        """
+        """Note that it requires all molecules in .sdf file must be of the same topology."""
         mols = [
             m
             for m in rdkit.Chem.SDMolSupplier(file_name, sanitize=False, removeHs=False)

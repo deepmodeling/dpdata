@@ -4,9 +4,7 @@ import numpy as np
 
 
 def _to_system_data_lower(lines, cartesian=True):
-    """
-    Treat as cartesian poscar
-    """
+    """Treat as cartesian poscar."""
     system = {}
     system["atom_names"] = [str(ii) for ii in lines[5].split()]
     system["atom_numbs"] = [int(ii) for ii in lines[6].split()]
@@ -44,7 +42,7 @@ def to_system_data(lines):
         lines.pop(7)
     is_cartesian = lines[7][0] in ["C", "c", "K", "k"]
     if not is_cartesian:
-        if not (lines[7][0] in ["d", "D"]):
+        if lines[7][0] not in ["d", "D"]:
             raise RuntimeError(
                 "seem not to be a valid POSCAR of vasp 5.x, may be a POSCAR of vasp 4.x?"
             )
@@ -84,7 +82,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     posis = posis[sort_idx]
     posi_list = []
     for ii in posis:
-        posi_list.append("%15.10f %15.10f %15.10f" % (ii[0], ii[1], ii[2]))
+        posi_list.append(f"{ii[0]:15.10f} {ii[1]:15.10f} {ii[2]:15.10f}")
     posi_list.append("")
     ret += "\n".join(posi_list)
     return ret

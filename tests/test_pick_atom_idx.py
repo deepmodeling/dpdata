@@ -1,12 +1,9 @@
 import unittest
 
-import numpy as np
 from comp_sys import CompSys, IsNoPBC
 from context import dpdata
 
 try:
-    import parmed
-
     exist_module = True
 except Exception:
     exist_module = False
@@ -33,7 +30,7 @@ class TestPickByAmberMask(unittest.TestCase, CompSys, IsNoPBC):
         ep = r"@%EP"
         target = ":1"
         cutoff = 6.0
-        interactwith = "(%s)<:%f&!%s" % (target, cutoff, ep)
+        interactwith = f"({target})<:{cutoff:f}&!{ep}"
         self.places = 6
         self.e_places = 6
         self.f_places = 6

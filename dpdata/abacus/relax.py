@@ -1,5 +1,4 @@
 import os
-import sys
 
 import numpy as np
 
@@ -16,19 +15,18 @@ def get_log_file(fname, inlines):
             suffix = line.split()[1]
         elif "calculation" in line and "calculation" == line.split()[0]:
             calculation = line.split()[1]
-    logf = os.path.join(fname, "OUT.%s/running_%s.log" % (suffix, calculation))
+    logf = os.path.join(fname, f"OUT.{suffix}/running_{calculation}.log")
     return logf
 
 
 def get_coords_from_log(loglines, natoms):
-    """
-    NOTICE: unit of coords and cells is Angstrom
+    """NOTICE: unit of coords and cells is Angstrom
     order:
         coordinate
         cell (no output if cell is not changed)
         energy (no output, if SCF is not converged)
         force (no output, if cal_force is not setted or abnormal ending)
-        stress (no output, if set cal_stress is not setted or abnormal ending)
+        stress (no output, if set cal_stress is not setted or abnormal ending).
     """
     natoms_log = 0
     for line in loglines:
@@ -175,10 +173,10 @@ def get_frame(fname):
         path_in = os.path.join(fname, "INPUT")
     else:
         raise RuntimeError("invalid input")
-    with open(path_in, "r") as fp:
+    with open(path_in) as fp:
         inlines = fp.read().split("\n")
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
-    with open(geometry_path_in, "r") as fp:
+    with open(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
     atom_names, natoms, types, coord_tmp = get_coords(

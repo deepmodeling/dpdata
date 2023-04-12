@@ -6,13 +6,11 @@ from collections import OrderedDict
 import numpy as np
 
 
-class QuipGapxyzSystems(object):
-    """
-    deal with QuipGapxyzFile
-    """
+class QuipGapxyzSystems:
+    """deal with QuipGapxyzFile."""
 
     def __init__(self, file_name):
-        self.file_object = open(file_name, "r")
+        self.file_object = open(file_name)
         self.block_generator = self.get_block_generator()
 
     def __iter__(self):
@@ -53,7 +51,7 @@ class QuipGapxyzSystems(object):
                     atom_num, len(lines)
                 )
             )
-        data_format_line = lines[1].strip("\n").strip() + str(" ")
+        data_format_line = lines[1].strip("\n").strip() + " "
         field_value_pattern = re.compile(
             r"(?P<key>\S+)=(?P<quote>[\'\"]?)(?P<value>.*?)(?P=quote)\s+"
         )
