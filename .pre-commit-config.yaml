@@ -21,11 +21,12 @@ repos:
     rev: 23.3.0
     hooks:
     -   id: black-jupyter
--   repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.0.243
     hooks:
-    - id: isort
-    files: \.py$
+    - id: ruff
+      args: ["--fix"]
 # numpydoc
 -   repo: https://github.com/Carreau/velin
     rev: 0.0.12

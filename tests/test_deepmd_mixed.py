@@ -2,10 +2,9 @@ import os
 import shutil
 import unittest
 from glob import glob
-from itertools import permutations
 
 import numpy as np
-from comp_sys import CompLabeledSys, CompSys, IsNoPBC, MultiSystems
+from comp_sys import CompLabeledSys, IsNoPBC, MultiSystems
 from context import dpdata
 
 

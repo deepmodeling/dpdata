@@ -1,7 +1,5 @@
-import os
 import unittest
 
-import numpy as np
 from comp_sys import CompSys, IsPBC
 from context import dpdata
 

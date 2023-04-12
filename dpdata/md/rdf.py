@@ -2,8 +2,7 @@ import numpy as np
 
 
 def rdf(sys, sel_type=[None, None], max_r=5, nbins=100):
-    """
-    compute the rdf of a system
+    """Compute the rdf of a system.
 
     Parameters
     ----------

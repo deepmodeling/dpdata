@@ -1,19 +1,15 @@
 import os
 import re
-import sys
 import warnings
-from ast import dump
 
 import numpy as np
 
 from .scf import (
     bohr2ang,
-    get_block,
     get_cell,
     get_coords,
     get_geometry_in,
     kbar2evperang3,
-    ry2ev,
 )
 
 # Read in geometries from an ABACUS MD trajectory.
@@ -180,12 +176,12 @@ def get_frame(fname):
         path_in = os.path.join(fname, "INPUT")
     else:
         raise RuntimeError("invalid input")
-    with open(path_in, "r") as fp:
+    with open(path_in) as fp:
         inlines = fp.read().split("\n")
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
     path_out = get_path_out(fname, inlines)
 
-    with open(geometry_path_in, "r") as fp:
+    with open(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
     atom_names, natoms, types, coords = get_coords(
@@ -196,11 +192,11 @@ def get_frame(fname):
     # ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
     # number of dumped geometry files
     # coords = get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, cell)
-    with open(os.path.join(path_out, "MD_dump"), "r") as fp:
+    with open(os.path.join(path_out, "MD_dump")) as fp:
         dumplines = fp.read().split("\n")
     coords, cells, force, stress = get_coords_from_dump(dumplines, natoms)
     ndump = np.shape(coords)[0]
-    with open(os.path.join(path_out, "running_md.log"), "r") as fp:
+    with open(os.path.join(path_out, "running_md.log")) as fp:
         outlines = fp.read().split("\n")
     energy = get_energy(outlines, ndump, dump_freq)
 
@@ -215,7 +211,7 @@ def get_frame(fname):
             unconv_stru += "%d " % i
     ndump = len(energy)
     if unconv_stru != "":
-        warnings.warn(f"Structure %s are unconverged and not collected!" % unconv_stru)
+        warnings.warn("Structure %s are unconverged and not collected!" % unconv_stru)
 
     for iframe in range(ndump):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))

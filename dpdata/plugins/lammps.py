@@ -13,8 +13,7 @@ class LAMMPSLmpFormat(Format):
         return dpdata.lammps.lmp.to_system_data(lines, type_map)
 
     def to_system(self, data, file_name, frame_idx=0, **kwargs):
-        """
-        Dump the system in lammps data format
+        """Dump the system in lammps data format.
 
         Parameters
         ----------
@@ -24,6 +23,8 @@ class LAMMPSLmpFormat(Format):
             The output file name
         frame_idx : int
             The index of the frame to dump
+        **kwargs : dict
+            other parameters
         """
         assert frame_idx < len(data["coords"])
         w_str = dpdata.lammps.lmp.from_system_data(data, frame_idx)

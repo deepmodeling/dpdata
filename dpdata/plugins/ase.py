@@ -34,6 +34,8 @@ class ASEStructureFormat(Format):
         ----------
         atoms : ase.Atoms
             an ASE Atoms, containing a structure
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -67,6 +69,8 @@ class ASEStructureFormat(Format):
         ----------
         atoms : ase.Atoms
             an ASE Atoms, containing a structure
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -124,6 +128,8 @@ class ASEStructureFormat(Format):
             frame index step
         ase_fmt : str, optional
             ASE format. See the ASE documentation about supported formats
+        **kwargs : dict
+            other parameters
 
         Yields
         ------
@@ -131,14 +137,10 @@ class ASEStructureFormat(Format):
             ASE atoms in the file
         """
         frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
-        for atoms in frames:
-            yield atoms
+        yield from frames
 
     def to_system(self, data, **kwargs):
-        """
-        convert System to ASE Atom obj
-
-        """
+        """convert System to ASE Atom obj."""
         from ase import Atoms
 
         structures = []

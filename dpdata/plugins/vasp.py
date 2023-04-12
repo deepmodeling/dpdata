@@ -4,7 +4,7 @@ import dpdata.vasp.outcar
 import dpdata.vasp.poscar
 import dpdata.vasp.xml
 from dpdata.format import Format
-from dpdata.utils import sort_atom_names, uniq_atom_names
+from dpdata.utils import uniq_atom_names
 
 
 @Format.register("poscar")
@@ -21,15 +21,18 @@ class VASPPoscarFormat(Format):
         return data
 
     def to_system(self, data, file_name, frame_idx=0, **kwargs):
-        """
-        Dump the system in vasp POSCAR format
+        """Dump the system in vasp POSCAR format.
 
         Parameters
         ----------
+        data : dict
+            The system data
         file_name : str
             The output file name
         frame_idx : int
             The index of the frame to dump
+        **kwargs : dict
+            other parameters
         """
         w_str = VASPStringFormat().to_system(data, frame_idx=frame_idx)
         with open(file_name, "w") as fp:
@@ -39,13 +42,16 @@ class VASPPoscarFormat(Format):
 @Format.register("vasp/string")
 class VASPStringFormat(Format):
     def to_system(self, data, frame_idx=0, **kwargs):
-        """
-        Dump the system in vasp POSCAR format string
+        """Dump the system in vasp POSCAR format string.
 
         Parameters
         ----------
+        data : dict
+            The system data
         frame_idx : int
             The index of the frame to dump
+        **kwargs : dict
+            other parameters
         """
         assert frame_idx < len(data["coords"])
         return dpdata.vasp.poscar.from_system_data(data, frame_idx)

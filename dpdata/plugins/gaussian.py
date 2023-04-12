@@ -25,7 +25,7 @@ class GaussianMDFormat(Format):
 
 @Format.register("gaussian/gjf")
 class GaussiaGJFFormat(Format):
-    """Gaussian input file"""
+    """Gaussian input file."""
 
     def to_system(self, data: dict, file_name: str, **kwargs):
         """Generate Gaussian input file.

@@ -9,7 +9,7 @@ except ImportError:
 # BondOrder System has dependency on rdkit
 try:
     # prevent conflict with dpdata.rdkit
-    import rdkit as _
+    import rdkit as _  # noqa: F401
 
     USE_RDKIT = True
 except ModuleNotFoundError:
@@ -17,3 +17,14 @@ except ModuleNotFoundError:
 
 if USE_RDKIT:
     from .bond_order_system import BondOrderSystem
+
+__all__ = [
+    "__version__",
+    "lammps",
+    "md",
+    "vasp",
+    "System",
+    "LabeledSystem",
+    "MultiSystems",
+    "BondOrderSystem",
+]

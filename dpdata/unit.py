@@ -43,14 +43,16 @@ def check_unit(unit):
 
 class Conversion(ABC):
     def __init__(self, unitA, unitB, check=True):
-        """
-        Parent class for unit conversion
+        """Parent class for unit conversion.
 
         Parameters
         ----------
-        unitA : str, unit to be converted
-        unitB : str, unit which unitA is converted to, i.e. `1 unitA = self._value unitB`
-        check : bool, whether to check unit validity
+        unitA : str
+            unit to be converted
+        unitB : str
+            unit which unitA is converted to, i.e. `1 unitA = self._value unitB`
+        check : bool
+            whether to check unit validity
 
         Examples
         --------
@@ -83,8 +85,7 @@ class Conversion(ABC):
 
 class EnergyConversion(Conversion):
     def __init__(self, unitA, unitB):
-        """
-        Class for energy conversion
+        """Class for energy conversion.
 
         Examples
         --------
@@ -98,8 +99,7 @@ class EnergyConversion(Conversion):
 
 class LengthConversion(Conversion):
     def __init__(self, unitA, unitB):
-        """
-        Class for length conversion
+        """Class for length conversion.
 
         Examples
         --------
@@ -113,12 +113,12 @@ class LengthConversion(Conversion):
 
 class ForceConversion(Conversion):
     def __init__(self, unitA, unitB):
-        """
-        Class for force conversion
+        """Class for force conversion.
 
         Parameters
         ----------
-        unitA, unitB : str, in format of "energy_unit/length_unit"
+        unitA, unitB : str
+            in format of "energy_unit/length_unit"
 
         Examples
         --------
@@ -134,12 +134,12 @@ class ForceConversion(Conversion):
 
 class PressureConversion(Conversion):
     def __init__(self, unitA, unitB):
-        """
-        Class for pressure conversion
+        """Class for pressure conversion.
 
         Parameters
         ----------
-        unitA, unitB : str, in format of "energy_unit/length_unit^3", or in `["Pa", "pa", "kPa", "kpa", "bar", "kbar"]`
+        unitA, unitB : str
+            in format of "energy_unit/length_unit^3", or in `["Pa", "pa", "kPa", "kpa", "bar", "kbar"]`
 
         Examples
         --------

@@ -32,22 +32,21 @@ def remove_pbc(system, protect_layer=9):
 
 
 def add_atom_names(data, atom_names):
-    """
-    Add atom_names that do not exist.
-    """
+    """Add atom_names that do not exist."""
     data["atom_names"].extend(atom_names)
     data["atom_numbs"].extend([0 for _ in atom_names])
     return data
 
 
 def sort_atom_names(data, type_map=None):
-    """
-    Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
+    """Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
     to atom_names. If type_map is not given, atom_names will be sorted by
     alphabetical order. If type_map is given, atom_names will be type_map.
 
     Parameters
     ----------
+    data : dict
+        system data
     type_map : list
         type_map
     """
@@ -76,9 +75,8 @@ def sort_atom_names(data, type_map=None):
 
 
 def uniq_atom_names(data):
-    """
-    Make the atom names uniq. For example
-    ['O', 'H', 'O', 'H', 'O'] -> ['O', 'H']
+    """Make the atom names uniq. For example
+    ['O', 'H', 'O', 'H', 'O'] -> ['O', 'H'].
 
     Parameters
     ----------

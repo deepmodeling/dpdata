@@ -1,6 +1,5 @@
 # %%
 import glob
-import inspect
 import os
 from copy import deepcopy
 from enum import Enum, unique
@@ -18,7 +17,6 @@ import dpdata.plugins
 from dpdata.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-from dpdata.periodic_table import Element
 from dpdata.plugin import Plugin
 from dpdata.utils import add_atom_names, elements_index_map, remove_pbc, sort_atom_names
 
@@ -29,7 +27,9 @@ def load_format(fmt):
     if fmt in formats:
         return formats[fmt]()
     raise NotImplementedError(
-        "Unsupported data format %s. Supported formats: %s" % (fmt, " ".join(formats))
+        "Unsupported data format {}. Supported formats: {}".format(
+            fmt, " ".join(formats)
+        )
     )
 
 
@@ -142,8 +142,7 @@ class DataType:
 
 
 class System(MSONable):
-    """
-    The data System
+    """The data System.
 
     A data System (a concept used by `deepmd-kit <https://github.com/deepmodeling/deepmd-kit>`_)
     contains frames (e.g. produced by an MD simulation) that has the same number of atoms of the same type.
@@ -196,8 +195,7 @@ class System(MSONable):
         convergence_check=True,
         **kwargs,
     ):
-        """
-        Constructor
+        """Constructor.
 
         Parameters
         ----------
@@ -265,6 +263,8 @@ class System(MSONable):
             The raw data of System class.
         convergence_check : boolean
             Whether to request a convergence check.
+        **kwargs : dict
+            other parameters
         """
         self.data = {}
         self.data["atom_numbs"] = []
@@ -340,6 +340,10 @@ class System(MSONable):
         ----------
         fmt : str
             format
+        *args
+            arguments
+        **kwargs
+            keyword arguments
 
         Returns
         -------
@@ -367,17 +371,17 @@ class System(MSONable):
         return ret
 
     def __getitem__(self, key):
-        """Returns proerty stored in System by key or by idx"""
+        """Returns proerty stored in System by key or by idx."""
         if isinstance(key, (int, slice, list, np.ndarray)):
             return self.sub_system(key)
         return self.data[key]
 
     def __len__(self):
-        """Returns number of frames in the system"""
+        """Returns number of frames in the system."""
         return self.get_nframes()
 
     def __add__(self, others):
-        """magic method "+" operation"""
+        """magic method "+" operation."""
         self_copy = self.copy()
         if isinstance(others, System):
             other_copy = others.copy()
@@ -392,12 +396,11 @@ class System(MSONable):
         return self.__class__.from_dict({"data": self_copy.data})
 
     def dump(self, filename, indent=4):
-        """dump .json or .yaml file"""
+        """dump .json or .yaml file."""
         dumpfn(self.as_dict(), filename, indent=indent)
 
     def map_atom_types(self, type_map=None) -> np.ndarray:
-        """
-        Map the atom types of the system
+        """Map the atom types of the system.
 
         Parameters
         ----------
@@ -436,11 +439,11 @@ class System(MSONable):
 
     @staticmethod
     def load(filename):
-        """rebuild System obj. from .json or .yaml file"""
+        """rebuild System obj. from .json or .yaml file."""
         return loadfn(filename)
 
     def as_dict(self):
-        """Returns data dict of System instance"""
+        """Returns data dict of System instance."""
         d = {
             "@module": self.__class__.__module__,
             "@class": self.__class__.__name__,
@@ -449,23 +452,23 @@ class System(MSONable):
         return d
 
     def get_atom_names(self):
-        """Returns name of atoms"""
+        """Returns name of atoms."""
         return self.data["atom_names"]
 
     def get_atom_types(self):
-        """Returns type of atoms"""
+        """Returns type of atoms."""
         return self.data["atom_types"]
 
     def get_atom_numbs(self):
-        """Returns number of atoms"""
+        """Returns number of atoms."""
         return self.data["atom_numbs"]
 
     def get_nframes(self):
-        """Returns number of frames in the system"""
+        """Returns number of frames in the system."""
         return len(self.data["cells"])
 
     def get_natoms(self):
-        """Returns total number of atoms in the system"""
+        """Returns total number of atoms in the system."""
         return len(self.data["atom_types"])
 
     def get_ntypes(self) -> int:
@@ -477,8 +480,7 @@ class System(MSONable):
         return self.__class__.from_dict({"data": deepcopy(self.data)})
 
     def sub_system(self, f_idx):
-        """
-        Construct a subsystem from the system
+        """Construct a subsystem from the system.
 
         Parameters
         ----------
@@ -509,8 +511,7 @@ class System(MSONable):
         return tmp
 
     def append(self, system):
-        """
-        Append a system to this system
+        """Append a system to this system.
 
         Parameters
         ----------
@@ -563,8 +564,7 @@ class System(MSONable):
         return True
 
     def convert_to_mixed_type(self, type_map=None):
-        """
-        Convert the data dict to mixed type format structure, in order to append systems
+        """Convert the data dict to mixed type format structure, in order to append systems
         with different formula but the same number of atoms. Change the 'atom_names' to
         one placeholder type 'MIXED_TOKEN' and add 'real_atom_types' to store the real type
         vectors according to the given type_map.
@@ -590,8 +590,7 @@ class System(MSONable):
         self.data["atom_names"] = ["MIXED_TOKEN"]
 
     def sort_atom_names(self, type_map=None):
-        """
-        Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
+        """Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
         to atom_names. If type_map is not given, atom_names will be sorted by
         alphabetical order. If type_map is given, atom_names will be type_map.
 
@@ -603,8 +602,7 @@ class System(MSONable):
         self.data = sort_atom_names(self.data, type_map=type_map)
 
     def check_type_map(self, type_map):
-        """
-        Assign atom_names to type_map if type_map is given and different from
+        """Assign atom_names to type_map if type_map is given and different from
         atom_names.
 
         Parameters
@@ -643,12 +641,10 @@ class System(MSONable):
 
     @property
     def formula(self):
-        """
-        Return the formula of this system, like C3H5O2
-        """
+        """Return the formula of this system, like C3H5O2."""
         return "".join(
             [
-                "{}{}".format(symbol, numb)
+                f"{symbol}{numb}"
                 for symbol, numb in zip(
                     self.data["atom_names"], self.data["atom_numbs"]
                 )
@@ -657,14 +653,13 @@ class System(MSONable):
 
     @property
     def uniq_formula(self):
-        """
-        Return the uniq_formula of this system.
+        """Return the uniq_formula of this system.
         The uniq_formula sort the elements in formula by names.
         Systems with the same uniq_formula can be append together.
         """
         return "".join(
             [
-                "{}{}".format(symbol, numb)
+                f"{symbol}{numb}"
                 for symbol, numb in sorted(
                     zip(self.data["atom_names"], self.data["atom_numbs"])
                 )
@@ -672,30 +667,25 @@ class System(MSONable):
         )
 
     def extend(self, systems):
-        """
-        Extend a system list to this system
+        """Extend a system list to this system.
 
         Parameters
         ----------
         systems : [System1, System2, System3 ]
             The list to extend
         """
-
         for system in systems:
             self.append(system.copy())
 
     def apply_pbc(self):
-        """
-        Append periodic boundary condition
-        """
+        """Append periodic boundary condition."""
         ncoord = dpdata.md.pbc.dir_coord(self.data["coords"], self.data["cells"])
         ncoord = ncoord % 1
         self.data["coords"] = np.matmul(ncoord, self.data["cells"])
 
     @post_funcs.register("remove_pbc")
     def remove_pbc(self, protect_layer=9):
-        """
-        This method does NOT delete the definition of the cells, it
+        """This method does NOT delete the definition of the cells, it
         (1) revises the cell to a cubic cell and ensures that the cell
         boundary to any atom in the system is no less than `protect_layer`
         (2) translates the system such that the center-of-geometry of the system
@@ -745,14 +735,11 @@ class System(MSONable):
         return np.matmul(qq, rot)
 
     def add_atom_names(self, atom_names):
-        """
-        Add atom_names that do not exist.
-        """
+        """Add atom_names that do not exist."""
         self.data = add_atom_names(self.data, atom_names)
 
     def replicate(self, ncopy):
-        """
-        Replicate the each frame  in the system in 3 dimensions.
+        """Replicate the each frame  in the system in 3 dimensions.
         Each frame in the system will become a supercell.
 
         Parameters
@@ -862,8 +849,7 @@ class System(MSONable):
     def perturb(
         self, pert_num, cell_pert_fraction, atom_pert_distance, atom_pert_style="normal"
     ):
-        """
-        Perturb each frame in the system randomly.
+        """Perturb each frame in the system randomly.
         The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
 
         Parameters
@@ -939,8 +925,7 @@ class System(MSONable):
         return idx
 
     def predict(self, *args: Any, driver: str = "dp", **kwargs: Any) -> "LabeledSystem":
-        """
-        Predict energies and forces by a driver.
+        """Predict energies and forces by a driver.
 
         Parameters
         ----------
@@ -991,7 +976,7 @@ class System(MSONable):
         return LabeledSystem(data=data)
 
     def pick_atom_idx(self, idx, nopbc=None):
-        """Pick atom index
+        """Pick atom index.
 
         Parameters
         ----------
@@ -1053,7 +1038,7 @@ class System(MSONable):
         return new_sys
 
     def pick_by_amber_mask(self, param, maskstr, pass_coords=False, nopbc=None):
-        """Pick atoms by amber mask
+        """Pick atoms by amber mask.
 
         Parameters
         ----------
@@ -1120,15 +1105,12 @@ def get_atom_perturb_vector(atom_pert_distance, atom_pert_style="normal"):
         random_unit_vector = e / np.linalg.norm(e)
         random_vector = atom_pert_distance * random_unit_vector
     else:
-        raise RuntimeError(
-            "unsupported options atom_pert_style={}".format(atom_pert_style)
-        )
+        raise RuntimeError(f"unsupported options atom_pert_style={atom_pert_style}")
     return random_vector
 
 
 class LabeledSystem(System):
-    """
-    The labeled data System
+    """The labeled data System.
 
     For example, a labeled water system named `d_example` has two molecules (6 atoms) and `nframes` frames. The labels can be accessed by
         - `d_example['energies']` : a numpy array of size nframes
@@ -1139,8 +1121,8 @@ class LabeledSystem(System):
         - The order of frames stored in `'energies'`, `'forces'` and `'virials'` should be consistent with `'atom_types'`, `'cells'` and `'coords'`.
         - The order of atoms in **every** frame of `'forces'` should be consistent with `'coords'` and `'atom_types'`.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
         file_name : str
             The file to load the system
         fmt : str
@@ -1211,7 +1193,7 @@ class LabeledSystem(System):
         return ret
 
     def __add__(self, others):
-        """magic method "+" operation"""
+        """magic method "+" operation."""
         self_copy = self.copy()
         if isinstance(others, LabeledSystem):
             other_copy = others.copy()
@@ -1315,8 +1297,7 @@ class MultiSystems:
     """A set containing several systems."""
 
     def __init__(self, *systems, type_map=None):
-        """
-        Parameters
+        """Parameters
         ----------
         *systems : System
             The systems contained
@@ -1378,6 +1359,10 @@ class MultiSystems:
         ----------
         fmt : str
             format
+        *args : list
+            arguments
+        **kwargs : dict
+            keyword arguments
 
         Returns
         -------
@@ -1387,7 +1372,7 @@ class MultiSystems:
         return self.to_fmt_obj(load_format(fmt), *args, **kwargs)
 
     def __getitem__(self, key):
-        """Returns proerty stored in System by key or by idx"""
+        """Returns proerty stored in System by key or by idx."""
         if isinstance(key, int):
             return list(self.systems.values())[key]
         return self.systems[key]
@@ -1404,7 +1389,7 @@ class MultiSystems:
         )
 
     def __add__(self, others):
-        """magic method "+" operation"""
+        """magic method "+" operation."""
         self_copy = deepcopy(self)
         if isinstance(others, System) or isinstance(others, MultiSystems):
             return self.__class__(self, others)
@@ -1422,7 +1407,7 @@ class MultiSystems:
     def from_dir(cls, dir_name, file_name, fmt="auto", type_map=None):
         multi_systems = cls()
         target_file_list = sorted(
-            glob.glob("./{}/**/{}".format(dir_name, file_name), recursive=True)
+            glob.glob(f"./{dir_name}/**/{file_name}", recursive=True)
         )
         for target_file in target_file_list:
             multi_systems.append(
@@ -1435,16 +1420,15 @@ class MultiSystems:
         return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
 
     def get_nframes(self):
-        """Returns number of frames in all systems"""
+        """Returns number of frames in all systems."""
         return sum(len(system) for system in self.systems.values())
 
     def append(self, *systems):
-        """
-        Append systems or MultiSystems to systems
+        """Append systems or MultiSystems to systems.
 
         Parameters
         ----------
-        system : System
+        *systems : System
             The system to append
         """
         for system in systems:
@@ -1467,9 +1451,7 @@ class MultiSystems:
             self.systems[formula] = system.copy()
 
     def check_atom_names(self, system):
-        """
-        Make atom_names in all systems equal, prevent inconsistent atom_types.
-        """
+        """Make atom_names in all systems equal, prevent inconsistent atom_types."""
         # new_in_system = set(system["atom_names"]) - set(self.atom_names)
         # new_in_self = set(self.atom_names) - set(system["atom_names"])
         new_in_system = [e for e in system["atom_names"] if e not in self.atom_names]
@@ -1490,8 +1472,7 @@ class MultiSystems:
         system.sort_atom_names(type_map=self.atom_names)
 
     def predict(self, *args: Any, driver="dp", **kwargs: Any) -> "MultiSystems":
-        """
-        Predict energies and forces by a driver.
+        """Predict energies and forces by a driver.
 
         Parameters
         ----------
@@ -1517,8 +1498,7 @@ class MultiSystems:
     def minimize(
         self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any
     ) -> "MultiSystems":
-        """
-        Minimize geometry by a minimizer.
+        """Minimize geometry by a minimizer.
 
         Parameters
         ----------
@@ -1550,7 +1530,7 @@ class MultiSystems:
         return new_multisystems
 
     def pick_atom_idx(self, idx, nopbc=None):
-        """Pick atom index
+        """Pick atom index.
 
         Parameters
         ----------

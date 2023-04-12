@@ -1,8 +1,7 @@
-import os
 import unittest
 
 import numpy as np
-from comp_sys import CompLabeledSys, CompSys, IsNoPBC, IsPBC
+from comp_sys import CompLabeledSys, IsNoPBC, IsPBC
 from context import dpdata
 
 

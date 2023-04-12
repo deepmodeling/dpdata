@@ -1,6 +1,5 @@
 try:
     from rdkit import Chem
-    from rdkit.Chem import AllChem
 except ModuleNotFoundError:
     pass
 import numpy as np

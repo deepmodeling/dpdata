@@ -11,11 +11,12 @@ class AbacusSTRUFormat(Format):
         return dpdata.abacus.scf.get_frame_from_stru(file_name)
 
     def to_system(self, data, file_name, frame_idx=0, **kwargs):
-        """
-        Dump the system into ABACUS STRU format file.
+        """Dump the system into ABACUS STRU format file.
 
         Parameters
         ----------
+        data : dict
+            System data
         file_name : str
             The output file name
         frame_idx : int
@@ -28,8 +29,9 @@ class AbacusSTRUFormat(Format):
             List of atomic masses
         numerical_descriptor : str, optional
             numerical descriptor file
+        **kwargs : dict
+            other parameters
         """
-
         pp_file = kwargs.get("pp_file")
         numerical_orbital = kwargs.get("numerical_orbital")
         mass = kwargs.get("mass")
