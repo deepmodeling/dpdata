@@ -5,7 +5,7 @@ import numpy as np
 from context import dpdata
 
 try:
-    import pymatgen
+    import pymatgen  # noqa: F401
 except ModuleNotFoundError:
     skip_pymatgen = True
 else:

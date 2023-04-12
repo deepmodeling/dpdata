@@ -151,7 +151,7 @@ def system_data(lines, type_map=None, type_idx_zero=True):
     system = {}
     system["atom_numbs"] = get_natoms_vec(lines)
     system["atom_names"] = []
-    if type_map == None:
+    if type_map is None:
         for ii in range(len(system["atom_numbs"])):
             system["atom_names"].append("Type_%d" % ii)
     else:

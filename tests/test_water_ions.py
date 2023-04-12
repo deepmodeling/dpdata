@@ -1,12 +1,11 @@
 import os
 import unittest
 
-import numpy as np
 from context import dpdata
 
 try:
-    import ase
-    import ase.neighborlist
+    import ase  # noqa: F401
+    import ase.neighborlist  # noqa: F401
 
     exist_ase = True
 except Exception:

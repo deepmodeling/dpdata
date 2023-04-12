@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from monty.serialization import dumpfn, loadfn
+from monty.serialization import loadfn
 
 fpdt = str(Path(__file__).absolute().parent / "periodic_table.json")
 _pdt = loadfn(fpdt)

@@ -6,15 +6,14 @@ import numpy as np
 from rdkit.Chem import Conformer
 
 import dpdata.rdkit.utils
-from dpdata.rdkit.sanitize import SanitizeError, Sanitizer
-from dpdata.system import Axis, DataType, LabeledSystem, System, load_format
+from dpdata.rdkit.sanitize import Sanitizer
+from dpdata.system import Axis, DataType, System
 
 # import dpdata.rdkit.mol2
 
 
 class BondOrderSystem(System):
-    """
-    The system with chemical bond and formal charges information
+    """The system with chemical bond and formal charges information.
 
     For example, a labeled methane system named `d_example` has one molecule (5 atoms, 4 bonds) and `n_frames` frames. The bond order and formal charge information can be accessed by
         - `d_example['bonds']` : a numpy array of size 4 x 3, and
@@ -44,8 +43,7 @@ class BondOrderSystem(System):
         verbose=False,
         **kwargs,
     ):
-        """
-        Constructor
+        """Constructor.
 
         Parameters
         ----------
@@ -73,8 +71,9 @@ class BondOrderSystem(System):
             whether to raise an Exception if sanitization procedure fails.
         verbose : bool
             whether to print information in the sanitization procedure.
+        **kwargs : dict
+            Additional arguments for the format.
         """
-
         System.__init__(self)
         self.sanitizer = Sanitizer(sanitize_level, raise_errors, verbose)
 
@@ -112,9 +111,7 @@ class BondOrderSystem(System):
         return fmtobj.to_bond_order_system(self.data, self.rdkit_mol, *args, **kwargs)
 
     def __str__(self):
-        """
-        A brief summary of the system
-        """
+        """A brief summary of the system."""
         ret = "Data Summary"
         ret += "\nBondOrder System"
         ret += "\n-------------------"
@@ -128,33 +125,23 @@ class BondOrderSystem(System):
         return ret
 
     def get_nbonds(self):
-        """
-        Return the number of bonds
-        """
+        """Return the number of bonds."""
         return len(self.data["bonds"])
 
     def get_charge(self):
-        """
-        Return the total formal charge of the moleclue
-        """
+        """Return the total formal charge of the moleclue."""
         return sum(self.data["formal_charges"])
 
     def get_mol(self):
-        """
-        Return the rdkit.Mol object
-        """
+        """Return the rdkit.Mol object."""
         return self.rdkit_mol
 
     def get_bond_order(self, begin_atom_idx, end_atom_idx):
-        """
-        Return the bond order between given atoms
-        """
+        """Return the bond order between given atoms."""
         return self.data["bond_dict"][f"{int(begin_atom_idx)}-{int(end_atom_idx)}"]
 
     def get_formal_charges(self):
-        """
-        Return the formal charges on each atom
-        """
+        """Return the formal charges on each atom."""
         return self.data["formal_charges"]
 
     def copy(self):
@@ -178,9 +165,7 @@ class BondOrderSystem(System):
     #         raise RuntimeError(f"Unsupported data structure: {type(other)}")
 
     def from_rdkit_mol(self, rdkit_mol):
-        """
-        Initialize from a rdkit.Chem.rdchem.Mol object
-        """
+        """Initialize from a rdkit.Chem.rdchem.Mol object."""
         rdkit_mol = self.sanitizer.sanitize(rdkit_mol)
         self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
         self.data["bond_dict"] = dict(

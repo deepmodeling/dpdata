@@ -26,14 +26,12 @@ avail_patterns.append(re.compile(r"^ INITIAL POTENTIAL ENERGY"))
 avail_patterns.append(re.compile(r"^ ENSEMBLE TYPE"))
 
 
-class Cp2kSystems(object):
-    """
-    deal with cp2k outputfile
-    """
+class Cp2kSystems:
+    """deal with cp2k outputfile."""
 
     def __init__(self, log_file_name, xyz_file_name, restart=False):
-        self.log_file_object = open(log_file_name, "r")
-        self.xyz_file_object = open(xyz_file_name, "r")
+        self.log_file_object = open(log_file_name)
+        self.xyz_file_object = open(xyz_file_name)
         self.log_block_generator = self.get_log_block_generator()
         self.xyz_block_generator = self.get_xyz_block_generator()
         self.restart_flag = restart
@@ -333,7 +331,7 @@ class Cp2kSystems(object):
                     atom_num, len(lines)
                 )
             )
-        data_format_line = lines[1].strip("\n").strip() + str(" ")
+        data_format_line = lines[1].strip("\n").strip() + " "
         prop_pattern = re.compile(r"(?P<prop>\w+)\s*=\s*(?P<number>.*?)[, ]")
         prop_dict = dict(prop_pattern.findall(data_format_line))
 

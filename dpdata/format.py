@@ -1,7 +1,6 @@
 """Implement the format plugin system."""
 import os
 from abc import ABC
-from collections import abc
 
 from .plugin import Plugin
 
@@ -71,7 +70,7 @@ class Format(ABC):
         return decorator
 
     def from_system(self, file_name, **kwargs):
-        """System.from
+        """System.from.
 
         Parameters
         ----------
@@ -90,12 +89,16 @@ class Format(ABC):
         )
 
     def to_system(self, data, *args, **kwargs):
-        """System.to
+        """System.to.
 
         Parameters
         ----------
         data : dict
             system data
+        *args : list
+            other parameters
+        **kwargs : dict
+            other parameters
         """
         raise NotImplementedError(
             "%s doesn't support System.to" % (self.__class__.__name__)
@@ -120,7 +123,7 @@ class Format(ABC):
     class MultiModes:
         """File mode for MultiSystems
         0 (default): not implemented
-        1: every directory under the top-level directory is a system
+        1: every directory under the top-level directory is a system.
         """
 
         NotImplemented = 0
@@ -129,12 +132,14 @@ class Format(ABC):
     MultiMode = MultiModes.NotImplemented
 
     def from_multi_systems(self, directory, **kwargs):
-        """MultiSystems.from
+        """MultiSystems.from.
 
         Parameters
         ----------
         directory : str
             directory of system
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -167,6 +172,8 @@ class Format(ABC):
             The systems to mix
         type_map : list of str
             Maps atom type to name
+        **kwargs : dict
+            other parameters
 
         Returns
         -------

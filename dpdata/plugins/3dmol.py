@@ -33,6 +33,8 @@ class Py3DMolFormat(Format):
             (width, height) of the widget
         style : dict
             style of 3DMol. Read 3DMol documentation for details.
+        **kwargs : dict
+            other parameters
 
         Examples
         --------

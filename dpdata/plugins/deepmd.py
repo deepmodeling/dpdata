@@ -22,7 +22,7 @@ class DeePMDRawFormat(Format):
         )
 
     def to_system(self, data, file_name, **kwargs):
-        """Dump the system in deepmd raw format to directory `file_name`"""
+        """Dump the system in deepmd raw format to directory `file_name`."""
         dpdata.deepmd.raw.dump(file_name, data)
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
@@ -42,8 +42,7 @@ class DeePMDCompFormat(Format):
         )
 
     def to_system(self, data, file_name, set_size=5000, prec=np.float64, **kwargs):
-        """
-        Dump the system in deepmd compressed format (numpy binary) to `folder`.
+        """Dump the system in deepmd compressed format (numpy binary) to `folder`.
 
         The frames are firstly split to sets, then dumped to seperated subfolders named as `folder/set.000`, `folder/set.001`, ....
 
@@ -60,6 +59,8 @@ class DeePMDCompFormat(Format):
             The size of each set.
         prec : {numpy.float32, numpy.float64}
             The floating point precision of the compressed data
+        **kwargs : dict
+            other parameters
         """
         dpdata.deepmd.comp.dump(file_name, data, set_size=set_size, comp_prec=prec)
 
@@ -95,8 +96,7 @@ class DeePMDMixedFormat(Format):
         )
 
     def to_system(self, data, file_name, prec=np.float64, **kwargs):
-        """
-        Dump the system in deepmd mixed type format (numpy binary) to `folder`.
+        """Dump the system in deepmd mixed type format (numpy binary) to `folder`.
 
         The frames were already split to different systems, so these frames can be dumped to one single subfolders
             named as `folder/set.000`, containing less than `set_size` frames.
@@ -109,6 +109,8 @@ class DeePMDMixedFormat(Format):
             The output folder
         prec : {numpy.float32, numpy.float64}
             The floating point precision of the compressed data
+        **kwargs : dict
+            other parameters
         """
         dpdata.deepmd.mixed.dump(file_name, data, comp_prec=prec)
 
@@ -126,6 +128,8 @@ class DeePMDMixedFormat(Format):
             The systems to mix
         type_map : list of str
             Maps atom type to name
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -216,6 +220,8 @@ class DeePMDHDF5Format(Format):
             hashtag is used to split path to the HDF5 file and the HDF5 group
         type_map : dict[str]
             type map
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -244,6 +250,8 @@ class DeePMDHDF5Format(Format):
             hashtag is used to split path to the HDF5 file and the HDF5 group
         type_map : dict[str]
             type map
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -278,6 +286,8 @@ class DeePMDHDF5Format(Format):
             set size
         comp_prec : np.dtype
             data precision
+        **kwargs : dict
+            other parameters
         """
         if isinstance(file_name, (h5py.Group, h5py.File)):
             dpdata.deepmd.hdf5.dump(
@@ -301,6 +311,8 @@ class DeePMDHDF5Format(Format):
         ----------
         directory : str
             HDF5 file name
+        **kwargs : dict
+            other parameters
 
         Yields
         ------
@@ -322,6 +334,8 @@ class DeePMDHDF5Format(Format):
             formulas of MultiSystems
         directory : str
             HDF5 file name
+        **kwargs : dict
+            other parameters
 
         Yields
         ------

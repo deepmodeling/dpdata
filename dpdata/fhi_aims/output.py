@@ -41,7 +41,7 @@ def get_info(lines, type_idx_zero=False):
         _atom_names.append(ii[0])
     atom_names = []
     for ii in _atom_names:
-        if not ii in atom_names:
+        if ii not in atom_names:
             atom_names.append(ii)
 
     atom_numbs = [_atom_names.count(ii) for ii in atom_names]

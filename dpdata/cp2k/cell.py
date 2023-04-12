@@ -1,13 +1,10 @@
 # %%
-import re
-from collections import OrderedDict
 
 import numpy as np
 
 
 def cell_to_low_triangle(A, B, C, alpha, beta, gamma):
-    """
-    Convert cell to low triangle matrix.
+    """Convert cell to low triangle matrix.
 
     Parameters
     ----------
@@ -51,11 +48,11 @@ def cell_to_low_triangle(A, B, C, alpha, beta, gamma):
             )
         )
     if not A > 0.2:
-        raise RuntimeError("A=={}, must be greater than 0.2".format(A))
+        raise RuntimeError(f"A=={A}, must be greater than 0.2")
     if not B > 0.2:
-        raise RuntimeError("B=={}, must be greater than 0.2".format(B))
+        raise RuntimeError(f"B=={B}, must be greater than 0.2")
     if not C > 0.2:
-        raise RuntimeError("C=={}, must be greater than 0.2".format(C))
+        raise RuntimeError(f"C=={C}, must be greater than 0.2")
 
     lx = A
     xy = B * np.cos(gamma)
