@@ -64,9 +64,9 @@ class TestABACUSMD(unittest.TestCase):
         )
         cell4 = np.array(
             [
-                [1.24112058855e+01, 0, 0],
-                [0, 1.24112058855e+01, 0],
-                [0,0, 1.24112058855e+01],
+                [1.24112058855e01, 0, 0],
+                [0, 1.24112058855e01, 0],
+                [0, 0, 1.24112058855e01],
             ]
         )
         for idx in range(np.shape(self.system_water.data["cells"])[0]):

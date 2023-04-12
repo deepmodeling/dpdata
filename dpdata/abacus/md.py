@@ -46,37 +46,37 @@ def get_coord_dump_freq(inlines):
 
 
 def get_coords_from_dump(dumplines, natoms):
-    '''
-abacus version >=3.1.4:
-MDSTEP:  0
-LATTICE_CONSTANT: 12.411200939060 Angstrom
-LATTICE_VECTORS
-  1.000000000000  0.000000000000  0.000000000000
-  0.000000000000  1.000000000000  0.000000000000
-  0.000000000000  0.000000000000  1.000000000000
-VIRIAL (kbar)
-  36.689617311101  0.000000000003  -0.000000000000
-  0.000000000003  36.689617311089  -0.000000000001
-  -0.000000000000  -0.000000000001  36.689617311135
-INDEX    LABEL    POSITION (Angstrom)    FORCE (eV/Angstrom)    VELOCITY (Angstrom/fs)
-  0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001  0.001244557166  -0.000346684288  0.000768457739
-  1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983  
+    """
+    abacus version >=3.1.4:
+    MDSTEP:  0
+    LATTICE_CONSTANT: 12.411200939060 Angstrom
+    LATTICE_VECTORS
+      1.000000000000  0.000000000000  0.000000000000
+      0.000000000000  1.000000000000  0.000000000000
+      0.000000000000  0.000000000000  1.000000000000
+    VIRIAL (kbar)
+      36.689617311101  0.000000000003  -0.000000000000
+      0.000000000003  36.689617311089  -0.000000000001
+      -0.000000000000  -0.000000000001  36.689617311135
+    INDEX    LABEL    POSITION (Angstrom)    FORCE (eV/Angstrom)    VELOCITY (Angstrom/fs)
+      0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001  0.001244557166  -0.000346684288  0.000768457739
+      1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983
 
-abacus version < 3.1.4:
-MDSTEP:  0
-LATTICE_CONSTANT: 23.453780000000
-LATTICE_VECTORS
-  1.000000000000  0.000000000000  0.000000000000
-  0.000000000000  1.000000000000  0.000000000000
-  0.000000000000  0.000000000000  1.000000000000
-VIRIAL (KBAR)
-  36.689617311101  0.000000000003  -0.000000000000
-  0.000000000003  36.689617311089  -0.000000000001
-  -0.000000000000  -0.000000000001  36.689617311135
-INDEX    LABEL    POSITIONS    FORCE (eV/Angstrom)
-  0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001
-  1  Sn  0.000000000000  0.250000000000  0.250000000000  -0.000186795145  -0.000453823768  -0.000453823768  
-    '''
+    abacus version < 3.1.4:
+    MDSTEP:  0
+    LATTICE_CONSTANT: 23.453780000000
+    LATTICE_VECTORS
+      1.000000000000  0.000000000000  0.000000000000
+      0.000000000000  1.000000000000  0.000000000000
+      0.000000000000  0.000000000000  1.000000000000
+    VIRIAL (KBAR)
+      36.689617311101  0.000000000003  -0.000000000000
+      0.000000000003  36.689617311089  -0.000000000001
+      -0.000000000000  -0.000000000001  36.689617311135
+    INDEX    LABEL    POSITIONS    FORCE (eV/Angstrom)
+      0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001
+      1  Sn  0.000000000000  0.250000000000  0.250000000000  -0.000186795145  -0.000453823768  -0.000453823768
+    """
 
     nlines = len(dumplines)
     total_natoms = sum(natoms)
@@ -109,57 +109,40 @@ INDEX    LABEL    POSITIONS    FORCE (eV/Angstrom)
             celldm = float(dumplines[iline + 1].split()[1])
             newversion = True
             if "Angstrom" not in dumplines[iline + 1]:
-                celldm *= bohr2ang  #transfer unit to ANGSTROM
+                celldm *= bohr2ang  # transfer unit to ANGSTROM
                 newversion = False
 
             # read in LATTICE_VECTORS
             for ix in range(3):
                 cells[iframe, ix] = (
-                    np.array(
-                        [
-                            float(i)
-                            for i in dumplines[iline + 3 + ix].split() [0:3]
-                        ]
-                    )
+                    np.array([float(i) for i in dumplines[iline + 3 + ix].split()[0:3]])
                     * celldm
                 )
                 if calc_stress:
                     stresses[iframe, ix] = np.array(
-                        [
-                            float(i)
-                            for i in dumplines[iline + 7 + ix].split() [0:3]
-                        ]
+                        [float(i) for i in dumplines[iline + 7 + ix].split()[0:3]]
                     )
 
             if calc_stress:
                 skipline = 11
             else:
-                skipline =  7
+                skipline = 7
 
             for iat in range(total_natoms):
-                #INDEX    LABEL    POSITION (Angstrom)    FORCE (eV/Angstrom)    VELOCITY (Angstrom/fs)
-                #0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001  0.001244557166  -0.000346684288  0.000768457739
-                #1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983
-                #for abacus version >= v3.1.4, the value of POSITION is the real cartessian position, and unit is angstrom, and if cal_force the VELOCITY is added at the end.
-                #for abacus version < v3.1.4, the real position = POSITION * celldm
-                coords[iframe, iat] = (
-                    np.array(
-                        [
-                            float(i)
-                            for i in dumplines[iline + skipline + iat].split()[
-                                2:5
-                            ]
-                        ]
-                    ))
-                
+                # INDEX    LABEL    POSITION (Angstrom)    FORCE (eV/Angstrom)    VELOCITY (Angstrom/fs)
+                # 0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001  0.001244557166  -0.000346684288  0.000768457739
+                # 1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983
+                # for abacus version >= v3.1.4, the value of POSITION is the real cartessian position, and unit is angstrom, and if cal_force the VELOCITY is added at the end.
+                # for abacus version < v3.1.4, the real position = POSITION * celldm
+                coords[iframe, iat] = np.array(
+                    [float(i) for i in dumplines[iline + skipline + iat].split()[2:5]]
+                )
+
                 if not newversion:
                     coords[iframe, iat] *= celldm
 
                 forces[iframe, iat] = np.array(
-                    [
-                        float(i)
-                        for i in dumplines[iline + skipline + iat].split()[5:8]
-                    ]
+                    [float(i) for i in dumplines[iline + skipline + iat].split()[5:8]]
                 )
             iframe += 1
     assert iframe == nframes_dump, (
