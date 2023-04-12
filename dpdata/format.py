@@ -6,7 +6,16 @@ from .plugin import Plugin
 
 
 class Format(ABC):
-    """The abstract base class for all formats."""
+    """The abstract base class for all formats.
+    
+    To add a new format, one should create a new class inherited from this class, and then
+    
+    - implement several methods, such as :meth:`from_system`;
+    - register the format with a key;
+    - add documentation in the class docstring;
+    
+    The new format can be either insider or outside the package.
+    """
     __FormatPlugin = Plugin()
     __FromPlugin = Plugin()
     __ToPlugin = Plugin()
@@ -16,14 +25,20 @@ class Format(ABC):
         """Register a format plugin.
         
         By default, after a format plugin is registered, the following methods
-        will be registered as well for System, LabeledSystem, MultiSystems, and
-        BondOrderSystem:
+        will be registered as well for :meth:`System`, :meth:`LabeledSystem`, :meth:`MultiSystems`, and
+        :meth:`BondOrderSystem`:
 
         - from_{key.replace('/', '_')}
         - to_{key.replace('/', '_')}
         - from({key}, ...)
         - to({key}, ...)
         
+        The decorator should be explicitly executed before :mod:`dpdata.system`
+        is imported. A module will be imported automatically if it
+        
+        - is a submodule of :mod:`dpdata.plugins`;
+        - is registered at the `dpdata.plugins` entry point 
+
         Parameters
         ----------
         key : str
