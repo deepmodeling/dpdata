@@ -72,7 +72,9 @@ def get_coords_from_dump(dumplines, natoms):
     for iline in range(nlines):
         if "MDSTEP" in dumplines[iline]:
             # read in LATTICE_CONSTANT
-            celldm = float(dumplines[iline + 1].split(" ")[-1])
+            #LATTICE_CONSTANT: 12.411200939060 Angstrom
+            #for abacus version >= v3.2, add unit "Angstrom" at the end.
+            celldm = float(dumplines[iline + 1].split()[1])
             # read in LATTICE_VECTORS
             for ix in range(3):
                 cells[iframe, ix] = (
