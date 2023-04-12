@@ -1,5 +1,4 @@
 import os
-import re
 import warnings
 
 import numpy as np
@@ -42,8 +41,7 @@ def get_coord_dump_freq(inlines):
 
 
 def get_coords_from_dump(dumplines, natoms):
-    """
-    abacus version >=3.1.4:
+    """abacus version >=3.1.4:
     MDSTEP:  0
     LATTICE_CONSTANT: 12.411200939060 Angstrom
     LATTICE_VECTORS
@@ -56,7 +54,7 @@ def get_coords_from_dump(dumplines, natoms):
       -0.000000000000  -0.000000000001  36.689617311135
     INDEX    LABEL    POSITION (Angstrom)    FORCE (eV/Angstrom)    VELOCITY (Angstrom/fs)
       0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001  0.001244557166  -0.000346684288  0.000768457739
-      1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983
+      1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983.
 
     abacus version < 3.1.4:
     MDSTEP:  0
@@ -73,7 +71,6 @@ def get_coords_from_dump(dumplines, natoms):
       0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001
       1  Sn  0.000000000000  0.250000000000  0.250000000000  -0.000186795145  -0.000453823768  -0.000453823768
     """
-
     nlines = len(dumplines)
     total_natoms = sum(natoms)
     calc_stress = False
