@@ -105,7 +105,6 @@ class Format(ABC):
 
         Examples
         --------
-        --------'
         Register a to method:
 
         >>> @Format.register_to('to_test_haha')
@@ -174,9 +173,9 @@ class Format(ABC):
         Parameters
         ----------
         file_name : str
-            file name
+            file name, i.e. the first argument
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
 
         Returns
         -------
@@ -195,9 +194,9 @@ class Format(ABC):
         data : dict
             system data, whose keys are defined in System.DTYPES
         *args : list
-            other parameters
+            arguments that will be passed from the method
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
         """
         raise NotImplementedError(
             "%s doesn't support System.to" % (self.__class__.__name__)
@@ -209,9 +208,9 @@ class Format(ABC):
         Parameters
         ----------
         file_name : str
-            file name
+            file name, i.e. the first argument
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
 
         Returns
         -------
@@ -232,9 +231,9 @@ class Format(ABC):
         data : dict
             system data, whose keys are defined in LabeledSystem.DTYPES
         *args : list
-            other parameters
+            arguments that will be passed from the method
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
         """
         return self.to_system(data, *args, **kwargs)
 
@@ -244,9 +243,9 @@ class Format(ABC):
         Parameters
         ----------
         file_name : str
-            file name
+            file name, i.e. the first argument
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
 
         Returns
         -------
@@ -269,9 +268,9 @@ class Format(ABC):
         rdkit_mol : rdkit.Chem.rdchem.Mol
             rdkit mol object
         *args : list
-            other parameters
+            arguments that will be passed from the method
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
         """
         return self.to_system(data, *args, **kwargs)
 
@@ -299,7 +298,7 @@ class Format(ABC):
         directory : str
             directory of system
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
 
         Returns
         -------
@@ -328,7 +327,7 @@ class Format(ABC):
         directory : str
             directory of system
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
         """
         if self.MultiMode == self.MultiModes.Directory:
             return [os.path.join(directory, ff) for ff in formulas]
@@ -346,7 +345,7 @@ class Format(ABC):
         type_map : list of str
             Maps atom type to name
         **kwargs : dict
-            other parameters
+            keyword arguments that will be passed from the method
 
         Returns
         -------
