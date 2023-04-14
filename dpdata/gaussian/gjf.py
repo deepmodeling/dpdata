@@ -4,6 +4,7 @@
 """Generate Gaussian input file."""
 
 import itertools
+import re
 import uuid
 import warnings
 from typing import List, Optional, Tuple, Union
