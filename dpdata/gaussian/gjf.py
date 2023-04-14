@@ -272,3 +272,68 @@ def make_gaussian_input(
         )
     buff.append("\n")
     return "\n".join(buff)
+
+
+def read_gaussian_input(inp: str):
+    """Read Gaussian input.
+    
+    Parameters
+    ----------
+    inp : str
+        Gaussian input str
+    
+    Returns
+    -------
+    dict
+        system data
+    """
+    flag = 0
+    coords = []
+    elements = []
+    cells = []
+    for line in inp.split("\n"):
+        if not line.strip():
+            # empty line
+            flag += 1
+        elif flag == 0:
+            # keywords
+            if line.startswith("#"):
+                # setting
+                keywords = line.split()
+            elif line.startswith("%"):
+                pass
+        elif flag == 1:
+            # title
+            pass
+        elif flag == 2:
+            # multi and coords
+            s = line.split()
+            if len(s) == 2:
+                pass
+            elif len(s) == 4:
+                if s[0] == "TV":
+                    cells.append(list(map(float, s[1:4])))
+                else:
+                    # element
+                    elements.append(re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", s[0]))
+                    coords.append(list(map(float, s[1:4])))
+        elif flag == 3:
+            # end
+            break
+    atom_names, atom_types, atom_numbs = np.unique(
+        elements, return_inverse=True, return_counts=True
+    )
+    if len(cells):
+        nopbc = False
+    else:
+        nopbc = True
+        cells = np.array([np.eye(3)]) * 100
+    return {
+        "atom_names": list(atom_names),
+        "atom_numbs": list(atom_numbs),
+        "atom_types": atom_types,
+        "cells": cells,
+        "nopbc": nopbc,
+        "coords": coords.reshape(1, -1, 3),
+        "orig": np.zeros(3),
+    }
