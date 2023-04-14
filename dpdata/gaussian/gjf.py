@@ -276,12 +276,12 @@ def make_gaussian_input(
 
 def read_gaussian_input(inp: str):
     """Read Gaussian input.
-    
+
     Parameters
     ----------
     inp : str
         Gaussian input str
-    
+
     Returns
     -------
     dict
@@ -315,7 +315,7 @@ def read_gaussian_input(inp: str):
                     cells.append(list(map(float, s[1:4])))
                 else:
                     # element
-                    elements.append(re.sub(u"\\(.*?\\)|\\{.*?}|\\[.*?]", "", s[0]))
+                    elements.append(re.sub("\\(.*?\\)|\\{.*?}|\\[.*?]", "", s[0]))
                     coords.append(list(map(float, s[1:4])))
         elif flag == 3:
             # end

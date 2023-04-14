@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from context import dpdata
 from comp_sys import CompSys
+from context import dpdata
 
 
 class TestGaussianGJF(unittest.TestCase):
