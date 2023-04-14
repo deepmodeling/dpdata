@@ -335,6 +335,6 @@ def read_gaussian_input(inp: str):
         "atom_types": atom_types,
         "cells": cells,
         "nopbc": nopbc,
-        "coords": coords.reshape(1, -1, 3),
+        "coords": np.array(coords).reshape(1, -1, 3),
         "orig": np.zeros(3),
     }
