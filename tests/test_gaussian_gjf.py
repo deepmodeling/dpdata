@@ -17,7 +17,7 @@ class TestGaussianGJF(unittest.TestCase):
 class TestGaussianGJFComp(unittest.TestCase, CompSys):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
-        self.system_2.to_gaussian_gjf("tmp.gjf", keywords="force b3lyp/6-31g*")
+        self.system_1.to_gaussian_gjf("tmp.gjf", keywords="force b3lyp/6-31g*")
         self.system_2 = dpdata.System("tmp.gjf", fmt="gaussian/gjf")
         os.remove("tmp.gjf")
         self.places = 6
