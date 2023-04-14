@@ -333,7 +333,7 @@ def read_gaussian_input(inp: str):
         "atom_names": list(atom_names),
         "atom_numbs": list(atom_numbs),
         "atom_types": atom_types,
-        "cells": cells,
+        "cells": np.array(cells).reshape(1, 3, 3),
         "nopbc": nopbc,
         "coords": np.array(coords).reshape(1, -1, 3),
         "orig": np.zeros(3),
