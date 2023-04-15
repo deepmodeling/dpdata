@@ -34,6 +34,8 @@ class GaussiaGJFFormat(Format):
         ----------
         file_name : str
             file name
+        **kwargs : dict
+            keyword arguments
         """
         with open(file_name) as fp:
             text = fp.read()
