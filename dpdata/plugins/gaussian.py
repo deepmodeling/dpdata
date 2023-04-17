@@ -27,6 +27,20 @@ class GaussianMDFormat(Format):
 class GaussiaGJFFormat(Format):
     """Gaussian input file."""
 
+    def from_system(self, file_name: str, **kwargs):
+        """Read Gaussian input file.
+
+        Parameters
+        ----------
+        file_name : str
+            file name
+        **kwargs : dict
+            keyword arguments
+        """
+        with open(file_name) as fp:
+            text = fp.read()
+        return dpdata.gaussian.gjf.read_gaussian_input(text)
+
     def to_system(self, data: dict, file_name: str, **kwargs):
         """Generate Gaussian input file.
 
