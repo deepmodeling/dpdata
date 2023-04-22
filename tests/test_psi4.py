@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-
 from comp_sys import CompLabeledSys, IsNoPBC
 from context import dpdata
 
