@@ -24,6 +24,8 @@ class PSI4OutFormat(Format):
         ----------
         file_name : str
             file name
+        **kwargs
+            keyword arguments
 
         Returns
         -------

@@ -24,6 +24,10 @@ def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
     np.ndarray
         atomic forces
     """
+    coord = None
+    symbols = None
+    forces = None
+    energy = None
     with open(fn) as f:
         flag = 0
         for line in f:
