@@ -1,6 +1,6 @@
-import numpy as np
-
 from typing import Tuple
+
+import numpy as np
 
 
 def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
@@ -28,7 +28,7 @@ def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
         flag = 0
         for line in f:
             if flag in (1, 3, 4, 5, 6):
-                flag +=1
+                flag += 1
             elif flag == 2:
                 s = line.split()
                 if not len(s):
@@ -42,7 +42,9 @@ def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
                     flag = 0
                 else:
                     forces.append([float(s[1]), float(s[2]), float(s[3])])
-            elif line.startswith("       Center              X                  Y                   Z               Mass"):
+            elif line.startswith(
+                "       Center              X                  Y                   Z               Mass"
+            ):
                 # coord
                 flag = 1
                 coord = []
