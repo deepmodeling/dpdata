@@ -17,7 +17,7 @@ class TestDeepmdLoadDumpHDF5(unittest.TestCase, CompLabeledSys, IsNoPBC):
 
         self.system_2 = dpdata.LabeledSystem(
             data={
-                "atom_types": [0, 0, 1, 1, 1, 1, 1, 1],
+                "atom_types": np.array([0, 0, 1, 1, 1, 1, 1, 1]),
                 "atom_names": ["C", "H"],
                 "atom_numbs": [2, 6],
                 "coords": np.array(
