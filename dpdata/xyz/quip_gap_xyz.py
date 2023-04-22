@@ -123,7 +123,7 @@ class QuipGapxyzSystems(object):
                 ].flatten()
                 used_colomn += field_length
                 continue
-            elif kv_dict["key"] == "force":
+            elif kv_dict["key"] == "forces":
                 if kv_dict["datatype"] != "R":
                     raise RuntimeError(
                         "datatype for pos must be 'R' instead of {}".format(
