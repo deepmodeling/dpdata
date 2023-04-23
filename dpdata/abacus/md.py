@@ -1,5 +1,4 @@
 import os
-import re
 import warnings
 
 import numpy as np
@@ -68,69 +67,51 @@ def get_coords_from_dump(dumplines, natoms):
     for iline in range(nlines):
         if "MDSTEP" in dumplines[iline]:
             # read in LATTICE_CONSTANT
-            celldm = float(dumplines[iline + 1].split(" ")[-1])
+            # for abacus version >= v3.1.4, the unit is angstrom, and "ANGSTROM" is added at the end
+            # for abacus version <  v3.1.4, the unit is bohr
+            celldm = float(dumplines[iline + 1].split()[1])
+            newversion = True
+            if "Angstrom" not in dumplines[iline + 1]:
+                celldm *= bohr2ang  # transfer unit to ANGSTROM
+                newversion = False
+
             # read in LATTICE_VECTORS
             for ix in range(3):
                 cells[iframe, ix] = (
-                    np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 3 + ix])[-3:]
-                        ]
-                    )
+                    np.array([float(i) for i in dumplines[iline + 3 + ix].split()[0:3]])
                     * celldm
                 )
                 if calc_stress:
                     stresses[iframe, ix] = np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 7 + ix])[-3:]
-                        ]
+                        [float(i) for i in dumplines[iline + 7 + ix].split()[0:3]]
                     )
+
+            if calc_stress:
+                skipline = 11
+            else:
+                skipline = 7
+
             for iat in range(total_natoms):
-                if calc_stress:
-                    coords[iframe, iat] = (
-                        np.array(
-                            [
-                                float(i)
-                                for i in re.split("\s+", dumplines[iline + 11 + iat])[
-                                    -6:-3
-                                ]
-                            ]
-                        )
-                        * celldm
-                    )
-                    forces[iframe, iat] = np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 11 + iat])[-3:]
-                        ]
-                    )
-                else:
-                    coords[iframe, iat] = (
-                        np.array(
-                            [
-                                float(i)
-                                for i in re.split("\s+", dumplines[iline + 7 + iat])[
-                                    -6:-3
-                                ]
-                            ]
-                        )
-                        * celldm
-                    )
-                    forces[iframe, iat] = np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 7 + iat])[-3:]
-                        ]
-                    )
+                # INDEX    LABEL    POSITION (Angstrom)    FORCE (eV/Angstrom)    VELOCITY (Angstrom/fs)
+                # 0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001  0.001244557166  -0.000346684288  0.000768457739
+                # 1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983
+                # for abacus version >= v3.1.4, the value of POSITION is the real cartessian position, and unit is angstrom, and if cal_force the VELOCITY is added at the end.
+                # for abacus version < v3.1.4, the real position = POSITION * celldm
+                coords[iframe, iat] = np.array(
+                    [float(i) for i in dumplines[iline + skipline + iat].split()[2:5]]
+                )
+
+                if not newversion:
+                    coords[iframe, iat] *= celldm
+
+                forces[iframe, iat] = np.array(
+                    [float(i) for i in dumplines[iline + skipline + iat].split()[5:8]]
+                )
             iframe += 1
     assert iframe == nframes_dump, (
         "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."
         % (iframe, nframes_dump)
     )
-    cells *= bohr2ang
-    coords *= bohr2ang
     stresses *= kbar2evperang3
     return coords, cells, forces, stresses
 
