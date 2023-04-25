@@ -140,7 +140,7 @@ class ASEStructureFormat(Format):
         yield from frames
 
     def to_system(self, data, **kwargs):
-        """convert System to ASE Atom obj."""
+        """Convert System to ASE Atom obj."""
         from ase import Atoms
 
         structures = []

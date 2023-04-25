@@ -116,8 +116,7 @@ class DataType:
                 pass
             elif not isinstance(data, self.dtype):
                 raise DataError(
-                    "Type of %s is %s, but expected %s"
-                    % (self.name, type(data).__name__, self.dtype.__name__)
+                    f"Type of {self.name} is {type(data).__name__}, but expected {self.dtype.__name__}"
                 )
             # check shape
             if self.shape is not None:
@@ -126,8 +125,7 @@ class DataType:
                 if isinstance(data, np.ndarray):
                     if data.size and shape != data.shape:
                         raise DataError(
-                            "Shape of %s is %s, but expected %s"
-                            % (self.name, data.shape, shape)
+                            f"Shape of {self.name} is {data.shape}, but expected {shape}"
                         )
                 elif isinstance(data, list):
                     if len(shape) and shape[0] != len(data):
@@ -381,7 +379,7 @@ class System(MSONable):
         return self.get_nframes()
 
     def __add__(self, others):
-        """magic method "+" operation."""
+        """Magic method "+" operation."""
         self_copy = self.copy()
         if isinstance(others, System):
             other_copy = others.copy()
@@ -396,7 +394,7 @@ class System(MSONable):
         return self.__class__.from_dict({"data": self_copy.data})
 
     def dump(self, filename, indent=4):
-        """dump .json or .yaml file."""
+        """Dump .json or .yaml file."""
         dumpfn(self.as_dict(), filename, indent=indent)
 
     def map_atom_types(self, type_map=None) -> np.ndarray:
@@ -439,7 +437,7 @@ class System(MSONable):
 
     @staticmethod
     def load(filename):
-        """rebuild System obj. from .json or .yaml file."""
+        """Rebuild System obj. from .json or .yaml file."""
         return loadfn(filename)
 
     def as_dict(self):
@@ -527,8 +525,7 @@ class System(MSONable):
             return False
         if system.uniq_formula != self.uniq_formula:
             raise RuntimeError(
-                "systems with inconsistent formula could not be append: %s v.s. %s"
-                % (self.uniq_formula, system.uniq_formula)
+                f"systems with inconsistent formula could not be append: {self.uniq_formula} v.s. {system.uniq_formula}"
             )
         if system.data["atom_names"] != self.data["atom_names"]:
             # allow to append a system with different atom_names order
@@ -1193,7 +1190,7 @@ class LabeledSystem(System):
         return ret
 
     def __add__(self, others):
-        """magic method "+" operation."""
+        """Magic method "+" operation."""
         self_copy = self.copy()
         if isinstance(others, LabeledSystem):
             other_copy = others.copy()
@@ -1389,7 +1386,7 @@ class MultiSystems:
         )
 
     def __add__(self, others):
-        """magic method "+" operation."""
+        """Magic method "+" operation."""
         self_copy = deepcopy(self)
         if isinstance(others, System) or isinstance(others, MultiSystems):
             return self.__class__(self, others)
