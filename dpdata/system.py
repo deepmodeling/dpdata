@@ -1638,7 +1638,7 @@ class MultiSystems:
             test_systems.append(
                 self[nn][select_test[system_idx[ii] : system_idx[ii + 1]]]
             )
-            test_system_idx[nn] = test_idx[system_idx[ii] : system_idx[ii + 1]]
+            test_system_idx[nn] = select_test[system_idx[ii] : system_idx[ii + 1]]
         return train_systems, test_systems, test_system_idx
 
 
