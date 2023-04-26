@@ -7,7 +7,7 @@ from dpdata.format import Format
 @Format.register("pymatgen/structure")
 class PyMatgenStructureFormat(Format):
     def to_system(self, data, **kwargs):
-        """convert System to Pymatgen Structure obj."""
+        """Convert System to Pymatgen Structure obj."""
         structures = []
         try:
             from pymatgen.core import Structure
@@ -40,7 +40,7 @@ class PyMatgenMoleculeFormat(Format):
         return dpdata.pymatgen.molecule.to_system_data(file_name)
 
     def to_system(self, data, **kwargs):
-        """convert System to Pymatgen Molecule obj."""
+        """Convert System to Pymatgen Molecule obj."""
         molecules = []
         try:
             from pymatgen.core import Molecule
@@ -61,7 +61,7 @@ class PyMatgenMoleculeFormat(Format):
 @Format.register_to("to_pymatgen_ComputedStructureEntry")
 class PyMatgenCSEFormat(Format):
     def to_labeled_system(self, data, *args, **kwargs):
-        """convert System to Pymagen ComputedStructureEntry obj."""
+        """Convert System to Pymagen ComputedStructureEntry obj."""
         try:
             from pymatgen.entries.computed_entries import ComputedStructureEntry
         except ModuleNotFoundError as e:
