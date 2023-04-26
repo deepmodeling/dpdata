@@ -13,9 +13,9 @@ class TestSplitDataset(unittest.TestCase):
 
     def test_split_dataset(self):
         train, test, test_idx = self.systems.train_test_split(0.2)
-        self.assertEqual(train.get_nframes(), int(self.systems.get_nframes() * 0.8))
-        self.assertEqual(test.get_nframes(), int(self.systems.get_nframes() * 0.2))
+        self.assertEqual(train.get_nframes(), int(np.floor(self.systems.get_nframes() * 0.8)))
+        self.assertEqual(test.get_nframes(), int(np.floor(self.systems.get_nframes() * 0.2)))
         self.assertEqual(
             sum([np.count_nonzero(x) for x in test_idx.values()]),
-            int(self.systems.get_nframes() * 0.2),
+            int(np.floor(self.systems.get_nframes() * 0.2)),
         )
