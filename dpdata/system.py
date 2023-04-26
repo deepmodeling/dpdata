@@ -1602,7 +1602,7 @@ class MultiSystems:
         MultiSystems
             The testing set
         Dict[str, np.ndarray]
-            The indices of training and testing sets for each system
+            The bool array of training and testing sets for each system. False for training set and True for testing set.
         """
         nframes = self.get_nframes()
         if isinstance(test_size, float):
