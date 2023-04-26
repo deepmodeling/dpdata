@@ -3,7 +3,7 @@ import glob
 import os
 from copy import deepcopy
 from enum import Enum, unique
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
 from monty.json import MSONable
@@ -1585,7 +1585,7 @@ class MultiSystems:
         return corrected_sys
 
     def train_test_split(
-        self, test_size: Union[float, int]
+        self, test_size: Union[float, int], seed: Optional[int] = None
     ) -> Tuple["MultiSystems", "MultiSystems", Dict[str, np.ndarray]]:
         """Split systems into random train and test subsets.
 
@@ -1613,7 +1613,7 @@ class MultiSystems:
         else:
             raise RuntimeError("test_size should be float or int")
         # get random indices
-        rng = np.random.default_rng()
+        rng = np.random.default_rng(seed=seed)
         test_idx = rng.choice(nframes, test_size, replace=False)
         select_test = np.zeros(nframes, dtype=bool)
         select_test[test_idx] = True
