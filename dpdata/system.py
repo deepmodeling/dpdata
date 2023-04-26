@@ -1594,6 +1594,8 @@ class MultiSystems:
         test_size : float or int
             If float, should be between 0.0 and 1.0 and represent the proportion of the dataset to include in the test split.
             If int, represents the absolute number of test samples.
+        seed : int, default=None
+            Random seed
 
         Returns
         -------
