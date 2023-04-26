@@ -1584,15 +1584,17 @@ class MultiSystems:
             corrected_sys.append(ll_ss.correction(hl_ss))
         return corrected_sys
 
-    def train_test_split(self, test_size: Union[float, int]) -> Tuple["MultiSystems", "MultiSystems", Dict[str, np.ndarray]]:
+    def train_test_split(
+        self, test_size: Union[float, int]
+    ) -> Tuple["MultiSystems", "MultiSystems", Dict[str, np.ndarray]]:
         """Split systems into random train and test subsets.
-        
+
         Parameters
         ----------
         test_size : float or int
             If float, should be between 0.0 and 1.0 and represent the proportion of the dataset to include in the test split.
             If int, represents the absolute number of test samples.
-        
+
         Returns
         -------
         MultiSystems
@@ -1617,7 +1619,9 @@ class MultiSystems:
         select_test[test_idx] = True
         select_train = np.logical_not(select_test)
         # flatten systems dict
-        system_names, system_sizes = zip(*((kk, len(vv)) for (kk, vv) in self.systems.items()))
+        system_names, system_sizes = zip(
+            *((kk, len(vv)) for (kk, vv) in self.systems.items())
+        )
         system_idx = np.empty(len(system_sizes) + 1, dtype=int)
         system_idx[0] = 0
         np.cumsum(system_sizes, out=system_idx[1:])
@@ -1626,8 +1630,12 @@ class MultiSystems:
         test_systems = MultiSystems(type_map=self.atom_names)
         test_system_idx = {}
         for ii, nn in enumerate(system_names):
-            train_systems.append(self[nn][select_train[system_idx[ii] : system_idx[ii + 1]]])
-            test_systems.append(self[nn][select_test[system_idx[ii] : system_idx[ii + 1]]])
+            train_systems.append(
+                self[nn][select_train[system_idx[ii] : system_idx[ii + 1]]]
+            )
+            test_systems.append(
+                self[nn][select_test[system_idx[ii] : system_idx[ii + 1]]]
+            )
             test_system_idx[nn] = test_idx[system_idx[ii] : system_idx[ii + 1]]
         return train_systems, test_systems, test_system_idx
 
