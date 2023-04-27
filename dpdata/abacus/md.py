@@ -72,7 +72,7 @@ def get_coords_from_dump(dumplines, natoms):
     for iline in range(nlines):
         if "MDSTEP" in dumplines[iline]:
             # read in LATTICE_CONSTANT
-            celldm = float(dumplines[iline + 1].split(" ")[-1])
+            celldm = float(dumplines[iline + 1].split(" ")[-2])
             # read in LATTICE_VECTORS
             for ix in range(3):
                 cells[iframe, ix] = (
@@ -98,7 +98,7 @@ def get_coords_from_dump(dumplines, natoms):
                             [
                                 float(i)
                                 for i in re.split("\s+", dumplines[iline + 11 + iat])[
-                                    -6:-3
+                                    3:6
                                 ]
                             ]
                         )
@@ -107,7 +107,7 @@ def get_coords_from_dump(dumplines, natoms):
                     forces[iframe, iat] = np.array(
                         [
                             float(i)
-                            for i in re.split("\s+", dumplines[iline + 11 + iat])[-3:]
+                            for i in re.split("\s+", dumplines[iline + 11 + iat])[6:9]
                         ]
                     )
                 else:
@@ -116,7 +116,7 @@ def get_coords_from_dump(dumplines, natoms):
                             [
                                 float(i)
                                 for i in re.split("\s+", dumplines[iline + 7 + iat])[
-                                    -6:-3
+                                    3:6
                                 ]
                             ]
                         )
@@ -125,7 +125,7 @@ def get_coords_from_dump(dumplines, natoms):
                     forces[iframe, iat] = np.array(
                         [
                             float(i)
-                            for i in re.split("\s+", dumplines[iline + 7 + iat])[-3:]
+                            for i in re.split("\s+", dumplines[iline + 7 + iat])[6:9]
                         ]
                     )
             iframe += 1
@@ -133,8 +133,8 @@ def get_coords_from_dump(dumplines, natoms):
         "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."
         % (iframe, nframes_dump)
     )
-    cells *= bohr2ang
-    coords *= bohr2ang
+    #cells *= bohr2ang
+    #coords *= bohr2ang
     stresses *= kbar2evperang3
     return coords, cells, forces, stresses
 
