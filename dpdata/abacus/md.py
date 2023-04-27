@@ -133,8 +133,6 @@ def get_coords_from_dump(dumplines, natoms):
         "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."
         % (iframe, nframes_dump)
     )
-    #cells *= bohr2ang
-    #coords *= bohr2ang
     stresses *= kbar2evperang3
     return coords, cells, forces, stresses
 
