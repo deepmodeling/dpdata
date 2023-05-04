@@ -34,6 +34,8 @@ class ASEStructureFormat(Format):
         ----------
         atoms : ase.Atoms
             an ASE Atoms, containing a structure
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -52,8 +54,8 @@ class ASEStructureFormat(Format):
             "atom_names": atom_names,
             "atom_numbs": atom_numbs,
             "atom_types": atom_types,
-            "cells": np.array([cells]).astype("float32"),
-            "coords": np.array([coords]).astype("float32"),
+            "cells": np.array([cells]),
+            "coords": np.array([coords]),
             "orig": np.zeros(3),
             "nopbc": not np.any(atoms.get_pbc()),
         }
@@ -67,6 +69,8 @@ class ASEStructureFormat(Format):
         ----------
         atoms : ase.Atoms
             an ASE Atoms, containing a structure
+        **kwargs : dict
+            other parameters
 
         Returns
         -------
@@ -87,15 +91,15 @@ class ASEStructureFormat(Format):
         forces = atoms.get_forces()
         info_dict = {
             **info_dict,
-            "energies": np.array([energies]).astype("float32"),
-            "forces": np.array([forces]).astype("float32"),
+            "energies": np.array([energies]),
+            "forces": np.array([forces]),
         }
         try:
             stress = atoms.get_stress(False)
         except PropertyNotImplementedError:
             pass
         else:
-            virials = np.array([-atoms.get_volume() * stress]).astype("float32")
+            virials = np.array([-atoms.get_volume() * stress])
             info_dict["virials"] = virials
         return info_dict
 
@@ -106,7 +110,7 @@ class ASEStructureFormat(Format):
         end: Optional[int] = None,
         step: Optional[int] = None,
         ase_fmt: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> "ase.Atoms":
         """Convert a ASE supported file to ASE Atoms.
 
@@ -124,6 +128,8 @@ class ASEStructureFormat(Format):
             frame index step
         ase_fmt : str, optional
             ASE format. See the ASE documentation about supported formats
+        **kwargs : dict
+            other parameters
 
         Yields
         ------
@@ -131,14 +137,10 @@ class ASEStructureFormat(Format):
             ASE atoms in the file
         """
         frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
-        for atoms in frames:
-            yield atoms
+        yield from frames
 
     def to_system(self, data, **kwargs):
-        """
-        convert System to ASE Atom obj
-
-        """
+        """Convert System to ASE Atom obj."""
         from ase import Atoms
 
         structures = []

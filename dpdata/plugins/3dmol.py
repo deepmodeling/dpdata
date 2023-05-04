@@ -19,7 +19,7 @@ class Py3DMolFormat(Format):
         f_idx: int = 0,
         size: Tuple[int] = (300, 300),
         style: dict = {"stick": {}, "sphere": {"radius": 0.4}},
-        **kwargs
+        **kwargs,
     ):
         """Show 3D structure of a frame in jupyter.
 
@@ -33,6 +33,8 @@ class Py3DMolFormat(Format):
             (width, height) of the widget
         style : dict
             style of 3DMol. Read 3DMol documentation for details.
+        **kwargs : dict
+            other parameters
 
         Examples
         --------

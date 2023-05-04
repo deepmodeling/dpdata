@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 
 import numpy as np
 
@@ -172,7 +171,7 @@ def get_frame(fname):
     if not CheckFile(path_in):
         return data
 
-    with open(path_in, "r") as fp:
+    with open(path_in) as fp:
         inlines = fp.read().split("\n")
 
     geometry_path_in = get_geometry_in(fname, inlines)
@@ -180,9 +179,9 @@ def get_frame(fname):
     if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
         return data
 
-    with open(geometry_path_in, "r") as fp:
+    with open(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
-    with open(path_out, "r") as fp:
+    with open(path_out) as fp:
         outlines = fp.read().split("\n")
 
     celldm, cell = get_cell(geometry_inlines)
@@ -257,7 +256,7 @@ def get_nele_from_stru(geometry_inlines):
 
 def get_frame_from_stru(fname):
     assert type(fname) == str
-    with open(fname, "r") as fp:
+    with open(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
     inlines = ["ntype %d" % nele]

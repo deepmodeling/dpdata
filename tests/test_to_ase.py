@@ -1,12 +1,10 @@
 import os
 import unittest
 
-import numpy as np
 from comp_sys import CompSys, IsPBC
 from context import dpdata
 
 try:
-    from ase import Atoms
     from ase.io import write
 except ModuleNotFoundError:
     exist_module = False
@@ -32,7 +30,7 @@ class TestASE(unittest.TestCase, CompSys, IsPBC):
 
 @unittest.skipIf(not exist_module, "skip test_ase")
 class TestFromASE(unittest.TestCase, CompSys, IsPBC):
-    """Test ASEStructureFormat.from_system"""
+    """Test ASEStructureFormat.from_system."""
 
     def setUp(self):
         system_1 = dpdata.System()

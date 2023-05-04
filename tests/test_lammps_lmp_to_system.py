@@ -1,7 +1,6 @@
 import os
 import unittest
 
-import numpy as np
 from context import dpdata
 from poscars.poscar_ref_oh import TestPOSCARoh
 

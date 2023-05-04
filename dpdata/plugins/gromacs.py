@@ -6,28 +6,34 @@ from dpdata.format import Format
 @Format.register("gromacs/gro")
 class GromacsGroFormat(Format):
     def from_system(self, file_name, format_atom_name=True, **kwargs):
-        """
-        Load gromacs .gro file
+        """Load gromacs .gro file.
 
         Parameters
         ----------
         file_name : str
             The input file name
+        format_atom_name : bool
+            Whether to format the atom name
+        **kwargs : dict
+            other parameters
         """
         return dpdata.gromacs.gro.file_to_system_data(
             file_name, format_atom_name=format_atom_name, **kwargs
         )
 
     def to_system(self, data, file_name=None, frame_idx=-1, **kwargs):
-        """
-        Dump the system in gromacs .gro format
+        """Dump the system in gromacs .gro format.
 
         Parameters
         ----------
+        data : dict
+            System data
         file_name : str or None
             The output file name. If None, return the file content as a string
         frame_idx : int
             The index of the frame to dump
+        **kwargs : dict
+            other parameters
         """
         assert frame_idx < len(data["coords"])
         if frame_idx == -1:

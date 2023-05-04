@@ -5,9 +5,6 @@ from .pbc import posi_diff, posi_shift
 
 def compute_bonds(box, posis, atype, oh_sel=[0, 1], max_roh=1.3, uniq_hbond=True):
     try:
-        import ase
-        import ase.neighborlist
-
         # nlist implemented by ase
         return compute_bonds_ase(box, posis, atype, oh_sel, max_roh, uniq_hbond)
     except ImportError:

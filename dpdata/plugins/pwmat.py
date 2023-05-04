@@ -51,15 +51,20 @@ class PwmatAtomconfigFormat(Format):
         return dpdata.pwmat.atomconfig.to_system_data(lines)
 
     def to_system(self, data, file_name, frame_idx=0, *args, **kwargs):
-        """
-        Dump the system in pwmat atom.config format
+        """Dump the system in pwmat atom.config format.
 
         Parameters
         ----------
+        data : dict
+            The system data
         file_name : str
             The output file name
         frame_idx : int
             The index of the frame to dump
+        *args : list
+            other parameters
+        **kwargs : dict
+            other parameters
         """
         assert frame_idx < len(data["coords"])
         w_str = dpdata.pwmat.atomconfig.from_system_data(data, frame_idx)
