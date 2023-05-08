@@ -417,6 +417,12 @@ def get_frames(fname):
 
             # get the coord block info
             if coord_flag:
+                if idx == coord_idx + 1:
+                    if ii == "\n":
+                        pass
+                    else:
+                        coord.append(ii.split()[4:7])
+                        atom_symbol_idx_list.append(ii.split()[1])
                 if idx > coord_idx + 1:
                     if ii == "\n":
                         coord_flag = False
