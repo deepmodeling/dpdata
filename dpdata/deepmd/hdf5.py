@@ -30,6 +30,9 @@ def to_system_data(
     g = f[folder] if folder else f
 
     data = {}
+    # ignore empty files or groups
+    if "type.raw" not in g.keys():
+        return data
     data["atom_types"] = g["type.raw"][:]
     ntypes = np.max(data["atom_types"]) + 1
     natoms = data["atom_types"].size
@@ -140,6 +143,9 @@ def dump(
         g = f.create_group(folder)
     else:
         g = f
+    # ignore empty systems
+    if not len(data["coords"]):
+        return
     # dump raw (array in fact)
     g.create_dataset("type.raw", data=data["atom_types"])
     g.create_dataset("type_map.raw", data=np.array(data["atom_names"], dtype="S"))
