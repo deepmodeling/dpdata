@@ -394,8 +394,10 @@ class DPDriver(Driver):
         type_map = self.dp.get_type_map()
 
         ori_sys = dpdata.System.from_dict({"data": data})
+        ori_sys_copy = ori_sys.copy()
         ori_sys.sort_atom_names(type_map=type_map)
         atype = ori_sys["atom_types"]
+        ori_sys = ori_sys_copy
 
         if not self.enable_auto_batch_size:
             labeled_sys = dpdata.LabeledSystem()
