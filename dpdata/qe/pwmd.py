@@ -1,6 +1,6 @@
 import os
-import sys
 import re
+import sys
 
 import numpy as np
 
@@ -18,49 +18,53 @@ length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
+
 def get_coords(lines, natoms):
     coord = []
     ret = []
     for i, string in enumerate(lines):
         if "ATOMIC_POSITIONS" in string:
-            newlines =  lines[i:]
+            newlines = lines[i:]
             blk = get_block(newlines, "ATOMIC_POSITIONS")
             blk = blk[0 : sum(natoms)]
             for ii in blk:
                 ret.append([float(jj) for jj in ii.split()[1:4]])
             coord.append(ret)
-            ret =[]
+            ret = []
     coord = np.array(coord)
     return coord
+
 
 def get_cell_vc(lines):
     cell = []
     ret = []
     for i, string in enumerate(lines):
         if "CELL_PARAMETERS" in string:
-            newlines =  lines[i:]
+            newlines = lines[i:]
             blk = get_block(newlines, "CELL_PARAMETERS")
             for ii in blk:
                 ret.append([float(jj) for jj in ii.split()[0:3]])
             cell.append(ret)
-            ret =[]
+            ret = []
     cell = np.array(cell)
     return cell
+
 
 def get_stress(lines):
     ret = []
     stress = []
     for i, string in enumerate(lines):
-        if 'total   stress' in string:
-            newlines =  lines[i:]
+        if "total   stress" in string:
+            newlines = lines[i:]
             blk = get_block(newlines, "total   stress")
             for ii in blk:
                 ret.append([float(jj) for jj in ii.split()[3:6]])
             stress.append(ret)
-            ret=[]
+            ret = []
     stress = np.array(stress)
     stress *= kbar2evperang3
     return stress
+
 
 def get_energy(lines):
     energy = []
@@ -68,24 +72,26 @@ def get_energy(lines):
         if "!    total energy" in string:
             energy.append(ry2ev * float(string.split("=")[1].split()[0]))
     energy = np.array(energy)
-    
+
     return energy
+
 
 def get_force(lines, natoms):
     ret = []
     force = []
     for i, string in enumerate(lines):
-        if 'Forces acting on atoms' in string:
-            newlines =  lines[i:]
+        if "Forces acting on atoms" in string:
+            newlines = lines[i:]
             blk = get_block(newlines, "Forces acting on atoms", skip=1)
             blk = blk[0 : sum(natoms)]
             for ii in blk:
                 ret.append([float(jj) for jj in ii.split("=")[1].split()])
             force.append(ret)
-            ret=[]
+            ret = []
     force = np.array(force)
     force *= ry2ev / length_convert
     return force
+
 
 def get_block(lines, keyword, skip=0):
     ret = []
@@ -99,6 +105,7 @@ def get_block(lines, keyword, skip=0):
                 blk_idx += 1
             break
     return ret
+
 
 def get_cell(lines):
     ret = []
@@ -134,6 +141,7 @@ def get_cell(lines):
         sys.exit("ibrav > 1 not supported yet.")
     return ret
 
+
 def get_atoms(lines):
     atom_symbol_list = []
     for iline in lines:
@@ -157,6 +165,7 @@ def get_atoms(lines):
     atom_types = np.array(atom_types)
     return list(atom_names), atom_numbs, atom_types
 
+
 def to_system_data(fname, begin=0, step=1):
     if type(fname) == str:
         path_out = fname
@@ -175,9 +184,9 @@ def to_system_data(fname, begin=0, step=1):
         inlines = fp.read().split("\n")
 
     for i, string in enumerate(outlines):
-        if 'Program PWSCF' in string:
+        if "Program PWSCF" in string:
             checkpoint_index = i
-    outlines =  outlines[checkpoint_index:]
+    outlines = outlines[checkpoint_index:]
     # In case of output file from previous failed pw calculation was not deleted
 
     atom_names, atom_numbs, atom_types = get_atoms(inlines)
@@ -189,22 +198,21 @@ def to_system_data(fname, begin=0, step=1):
 
     for line in inlines:
         # check calculation option in input file to find it is vc (variable cell) or not
-        if 'calculation' in line:
-            calculation=line.strip()
+        if "calculation" in line:
+            calculation = line.strip()
     calculation = re.search(r"'([^']*)'", calculation)
     calculation = calculation.group(1)
     calculation = calculation.lower()
-    if calculation == 'md' or calculation == 'relax':
+    if calculation == "md" or calculation == "relax":
         cells = get_cell(inlines)
-        cells = np.tile(cells, (len(virials),1,1))
+        cells = np.tile(cells, (len(virials), 1, 1))
         for ii, temp in enumerate(virials):
             virials[ii] = virials[ii] * np.linalg.det(cells[ii])
-    elif calculation == 'vc-md' or calculation == 'vc-relax':
+    elif calculation == "vc-md" or calculation == "vc-relax":
         cells = get_cell_vc(outlines)
         for ii, temp in enumerate(cells):
             virials[ii] = virials[ii] * np.linalg.det(cells[ii])
     # because cell changes every step when variable cell calculation
-
 
     return (
         atom_names,
