@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 
 import dpdata
+
 from .raw import load_type
 
 
@@ -65,13 +66,30 @@ def to_system_data(folder, type_map=None, labels=True):
     # allow custom dtypes
     if labels:
         for dtype in dpdata.system.LabeledSystem.DTYPES:
-            if dtype.name in ("atom_numbs", "atom_names", "atom_types", "orig", "cells", "coords", "real_atom_types", "real_atom_names", "nopbc", "energies", "forces", "virials"):
+            if dtype.name in (
+                "atom_numbs",
+                "atom_names",
+                "atom_types",
+                "orig",
+                "cells",
+                "coords",
+                "real_atom_types",
+                "real_atom_names",
+                "nopbc",
+                "energies",
+                "forces",
+                "virials",
+            ):
                 # skip as these data contains specific rules
                 continue
-            if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):    
-                warnings.warn(f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/npy format.")
+            if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+                warnings.warn(
+                    f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/npy format."
+                )
                 continue
-            shape = [-1 if xx == dpdata.system.Axis.NATOMS else xx for xx in dtype.shape[1:]]
+            shape = [
+                -1 if xx == dpdata.system.Axis.NATOMS else xx for xx in dtype.shape[1:]
+            ]
             all_data = []
             for ii in sets:
                 tmp = _cond_load_data(os.path.join(ii, dtype.name + ".npy"))
@@ -152,13 +170,28 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
             pass
     # allow custom dtypes
     for dtype in dpdata.system.LabeledSystem.DTYPES:
-        if dtype.name in ("atom_numbs", "atom_names", "atom_types", "orig", "cells", "coords", "real_atom_types", "real_atom_names", "nopbc", "energies", "forces", "virials"):
+        if dtype.name in (
+            "atom_numbs",
+            "atom_names",
+            "atom_types",
+            "orig",
+            "cells",
+            "coords",
+            "real_atom_types",
+            "real_atom_names",
+            "nopbc",
+            "energies",
+            "forces",
+            "virials",
+        ):
             # skip as these data contains specific rules
             continue
         if dtype.name not in data:
             continue
-        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):    
-            warnings.warn(f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/npy format.")
+        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+            warnings.warn(
+                f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/npy format."
+            )
             continue
         ddata = np.reshape(data[dtype.name], [nframes, -1]).astype(comp_prec)
         for ii in range(nsets):

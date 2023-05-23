@@ -1,6 +1,6 @@
 """Utils for deepmd/hdf5 format."""
-from typing import Optional, Union
 import warnings
+from typing import Optional, Union
 
 import h5py
 import numpy as np
@@ -97,11 +97,26 @@ def to_system_data(
     }
     # allow custom dtypes
     for dtype in dpdata.system.LabeledSystem.DTYPES:
-        if dtype.name in ("atom_numbs", "atom_names", "atom_types", "orig", "cells", "coords", "real_atom_types", "real_atom_names", "nopbc", "energies", "forces", "virials"):
+        if dtype.name in (
+            "atom_numbs",
+            "atom_names",
+            "atom_types",
+            "orig",
+            "cells",
+            "coords",
+            "real_atom_types",
+            "real_atom_names",
+            "nopbc",
+            "energies",
+            "forces",
+            "virials",
+        ):
             # skip as these data contains specific rules
             continue
-        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):    
-            warnings.warn(f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/hdf5 format.")
+        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+            warnings.warn(
+                f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/hdf5 format."
+            )
             continue
 
         data_types[dtype.name] = {
@@ -110,7 +125,6 @@ def to_system_data(
             "shape": dtype.shape[1:],
             "required": False,
         }
-
 
     for dt, prop in data_types.items():
         all_data = []
@@ -189,11 +203,26 @@ def dump(
 
     # allow custom dtypes
     for dtype in dpdata.system.LabeledSystem.DTYPES:
-        if dtype.name in ("atom_numbs", "atom_names", "atom_types", "orig", "cells", "coords", "real_atom_types", "real_atom_names", "nopbc", "energies", "forces", "virials"):
+        if dtype.name in (
+            "atom_numbs",
+            "atom_names",
+            "atom_types",
+            "orig",
+            "cells",
+            "coords",
+            "real_atom_types",
+            "real_atom_names",
+            "nopbc",
+            "energies",
+            "forces",
+            "virials",
+        ):
             # skip as these data contains specific rules
             continue
         if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
-            warnings.warn(f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/hdf5 format.")
+            warnings.warn(
+                f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/hdf5 format."
+            )
             continue
 
         data_types[dtype.name] = {

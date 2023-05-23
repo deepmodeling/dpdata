@@ -63,15 +63,38 @@ def to_system_data(folder, type_map=None, labels=True):
         # allow custom dtypes
         if labels:
             for dtype in dpdata.system.LabeledSystem.DTYPES:
-                if dtype.name in ("atom_numbs", "atom_names", "atom_types", "orig", "cells", "coords", "real_atom_types", "real_atom_names", "nopbc", "energies", "forces", "virials"):
+                if dtype.name in (
+                    "atom_numbs",
+                    "atom_names",
+                    "atom_types",
+                    "orig",
+                    "cells",
+                    "coords",
+                    "real_atom_types",
+                    "real_atom_names",
+                    "nopbc",
+                    "energies",
+                    "forces",
+                    "virials",
+                ):
                     # skip as these data contains specific rules
                     continue
-                if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):    
-                    warnings.warn(f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/raw format.")
+                if not (
+                    len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES
+                ):
+                    warnings.warn(
+                        f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/raw format."
+                    )
                     continue
-                shape = [-1 if xx == dpdata.system.Axis.NATOMS else xx for xx in dtype.shape[1:]]
+                shape = [
+                    -1 if xx == dpdata.system.Axis.NATOMS else xx
+                    for xx in dtype.shape[1:]
+                ]
                 if os.path.exists(os.path.join(folder, f"{dtype.name}.raw")):
-                    data[dtype.name] = np.reshape(np.loadtxt(os.path.join(folder, f"{dtype.name}.raw")), [nframes, *shape])
+                    data[dtype.name] = np.reshape(
+                        np.loadtxt(os.path.join(folder, f"{dtype.name}.raw")),
+                        [nframes, *shape],
+                    )
         return data
     else:
         raise RuntimeError("not dir " + folder)
@@ -119,13 +142,28 @@ def dump(folder, data):
             pass
     # allow custom dtypes
     for dtype in dpdata.system.LabeledSystem.DTYPES:
-        if dtype.name in ("atom_numbs", "atom_names", "atom_types", "orig", "cells", "coords", "real_atom_types", "real_atom_names", "nopbc", "energies", "forces", "virials"):
+        if dtype.name in (
+            "atom_numbs",
+            "atom_names",
+            "atom_types",
+            "orig",
+            "cells",
+            "coords",
+            "real_atom_types",
+            "real_atom_names",
+            "nopbc",
+            "energies",
+            "forces",
+            "virials",
+        ):
             # skip as these data contains specific rules
             continue
         if dtype.name not in data:
             continue
-        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):    
-            warnings.warn(f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/raw format.")
+        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+            warnings.warn(
+                f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/raw format."
+            )
             continue
         ddata = np.reshape(data[dtype.name], [nframes, -1])
         np.savetxt(os.path.join(folder, f"{dtype.name}.raw"), ddata)

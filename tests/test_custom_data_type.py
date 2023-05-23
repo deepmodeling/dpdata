@@ -1,10 +1,11 @@
 import unittest
 
-import numpy as np
 import h5py
+import numpy as np
 
 import dpdata
 from dpdata.system import Axis, DataType
+
 
 class TestDeepmdLoadDumpComp(unittest.TestCase):
     def setUp(self):
@@ -44,7 +45,7 @@ class TestDeepmdLoadDumpComp(unittest.TestCase):
         self.system.to_deepmd_hdf5("data_foo.h5")
         with h5py.File("data_foo.h5") as f:
             foo = f["set.000/foo.npy"][:]
-        #foo = np.load("data_foo/set.000/foo.npy")
+        # foo = np.load("data_foo/set.000/foo.npy")
         np.testing.assert_allclose(foo.reshape(self.foo.shape), self.foo)
 
     def test_from_deepmd_hdf5(self):
