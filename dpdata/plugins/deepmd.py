@@ -95,7 +95,7 @@ class DeePMDMixedFormat(Format):
             file_name, type_map=type_map, labels=False
         )
 
-    def to_system(self, data, file_name, set_size: int = 2000, prec=np.float64, **kwargs):
+    def to_system(self, data, file_name, prec=np.float64, **kwargs):
         """Dump the system in deepmd mixed type format (numpy binary) to `folder`.
 
         The frames were already split to different systems, so these frames can be dumped to one single subfolders
@@ -107,14 +107,12 @@ class DeePMDMixedFormat(Format):
             System data
         file_name : str
             The output folder
-        set_size: int, default=2000
-            set size
         prec : {numpy.float32, numpy.float64}
             The floating point precision of the compressed data
         **kwargs : dict
             other parameters
         """
-        dpdata.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.deepmd.mixed.dump(file_name, data, comp_prec=prec)
 
     def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.mixed.to_system_data(
