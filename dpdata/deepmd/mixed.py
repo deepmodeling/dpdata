@@ -19,12 +19,8 @@ def load_type(folder):
 
 
 def formula(atom_names, atom_numbs):
-    """
-    Return the formula of this system, like C3H5O2
-    """
-    return "".join(
-        ["{}{}".format(symbol, numb) for symbol, numb in zip(atom_names, atom_numbs)]
-    )
+    """Return the formula of this system, like C3H5O2."""
+    return "".join([f"{symbol}{numb}" for symbol, numb in zip(atom_names, atom_numbs)])
 
 
 def _cond_load_data(fname):
@@ -225,6 +221,8 @@ def mix_system(*system, type_map, **kwargs):
         The systems to mix
     type_map : list of str
         Maps atom type to name
+    **kwargs : dict
+        Other parameters
 
     Returns
     -------

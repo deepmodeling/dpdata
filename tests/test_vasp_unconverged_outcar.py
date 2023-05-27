@@ -1,7 +1,6 @@
 import os
 import unittest
 
-import numpy as np
 from context import dpdata
 
 
@@ -16,7 +15,6 @@ class TestSingleStep(unittest.TestCase):
         )
 
     def test_unconverged(self):
-
         self.assertEqual(self.LabeledSystem1["energies"], -23.94708651)
         self.assertEqual(self.LabeledSystem1.get_nframes(), 1)
         self.assertEqual(self.LabeledSystem1.get_natoms(), 5)

@@ -107,9 +107,10 @@ def get_energy(lines):
     return energy
 
 
-def get_force(lines):
+def get_force(lines, natoms):
     blk = get_block(lines, "Forces acting on atoms", skip=1)
     ret = []
+    blk = blk[0 : sum(natoms)]
     for ii in blk:
         ret.append([float(jj) for jj in ii.split("=")[1].split()])
     ret = np.array(ret)
@@ -139,14 +140,14 @@ def get_frame(fname):
         path_out = fname[1]
     else:
         raise RuntimeError("invalid input")
-    with open(path_out, "r") as fp:
+    with open(path_out) as fp:
         outlines = fp.read().split("\n")
-    with open(path_in, "r") as fp:
+    with open(path_in) as fp:
         inlines = fp.read().split("\n")
     cell = get_cell(inlines)
     atom_names, natoms, types, coords = get_coords(inlines, cell)
     energy = get_energy(outlines)
-    force = get_force(outlines)
+    force = get_force(outlines, natoms)
     stress = get_stress(outlines) * np.linalg.det(cell)
     return (
         atom_names,

@@ -1,19 +1,14 @@
 import os
-import re
-import sys
 import warnings
-from ast import dump
 
 import numpy as np
 
 from .scf import (
     bohr2ang,
-    get_block,
     get_cell,
     get_coords,
     get_geometry_in,
     kbar2evperang3,
-    ry2ev,
 )
 
 # Read in geometries from an ABACUS MD trajectory.
@@ -72,69 +67,51 @@ def get_coords_from_dump(dumplines, natoms):
     for iline in range(nlines):
         if "MDSTEP" in dumplines[iline]:
             # read in LATTICE_CONSTANT
-            celldm = float(dumplines[iline + 1].split(" ")[-1])
+            # for abacus version >= v3.1.4, the unit is angstrom, and "ANGSTROM" is added at the end
+            # for abacus version <  v3.1.4, the unit is bohr
+            celldm = float(dumplines[iline + 1].split()[1])
+            newversion = True
+            if "Angstrom" not in dumplines[iline + 1]:
+                celldm *= bohr2ang  # transfer unit to ANGSTROM
+                newversion = False
+
             # read in LATTICE_VECTORS
             for ix in range(3):
                 cells[iframe, ix] = (
-                    np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 3 + ix])[-3:]
-                        ]
-                    )
+                    np.array([float(i) for i in dumplines[iline + 3 + ix].split()[0:3]])
                     * celldm
                 )
                 if calc_stress:
                     stresses[iframe, ix] = np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 7 + ix])[-3:]
-                        ]
+                        [float(i) for i in dumplines[iline + 7 + ix].split()[0:3]]
                     )
+
+            if calc_stress:
+                skipline = 11
+            else:
+                skipline = 7
+
             for iat in range(total_natoms):
-                if calc_stress:
-                    coords[iframe, iat] = (
-                        np.array(
-                            [
-                                float(i)
-                                for i in re.split("\s+", dumplines[iline + 11 + iat])[
-                                    -6:-3
-                                ]
-                            ]
-                        )
-                        * celldm
-                    )
-                    forces[iframe, iat] = np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 11 + iat])[-3:]
-                        ]
-                    )
-                else:
-                    coords[iframe, iat] = (
-                        np.array(
-                            [
-                                float(i)
-                                for i in re.split("\s+", dumplines[iline + 7 + iat])[
-                                    -6:-3
-                                ]
-                            ]
-                        )
-                        * celldm
-                    )
-                    forces[iframe, iat] = np.array(
-                        [
-                            float(i)
-                            for i in re.split("\s+", dumplines[iline + 7 + iat])[-3:]
-                        ]
-                    )
+                # INDEX    LABEL    POSITION (Angstrom)    FORCE (eV/Angstrom)    VELOCITY (Angstrom/fs)
+                # 0  Sn  0.000000000000  0.000000000000  0.000000000000  -0.000000000000  -0.000000000001  -0.000000000001  0.001244557166  -0.000346684288  0.000768457739
+                # 1  Sn  0.000000000000  3.102800034079  3.102800034079  -0.000186795145  -0.000453823768  -0.000453823768  0.000550996187  -0.000886442775  0.001579501983
+                # for abacus version >= v3.1.4, the value of POSITION is the real cartessian position, and unit is angstrom, and if cal_force the VELOCITY is added at the end.
+                # for abacus version < v3.1.4, the real position = POSITION * celldm
+                coords[iframe, iat] = np.array(
+                    [float(i) for i in dumplines[iline + skipline + iat].split()[2:5]]
+                )
+
+                if not newversion:
+                    coords[iframe, iat] *= celldm
+
+                forces[iframe, iat] = np.array(
+                    [float(i) for i in dumplines[iline + skipline + iat].split()[5:8]]
+                )
             iframe += 1
     assert iframe == nframes_dump, (
         "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."
         % (iframe, nframes_dump)
     )
-    cells *= bohr2ang
-    coords *= bohr2ang
     stresses *= kbar2evperang3
     return coords, cells, forces, stresses
 
@@ -166,12 +143,12 @@ def get_frame(fname):
         path_in = os.path.join(fname, "INPUT")
     else:
         raise RuntimeError("invalid input")
-    with open(path_in, "r") as fp:
+    with open(path_in) as fp:
         inlines = fp.read().split("\n")
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
     path_out = get_path_out(fname, inlines)
 
-    with open(geometry_path_in, "r") as fp:
+    with open(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
     atom_names, natoms, types, coords = get_coords(
@@ -182,11 +159,11 @@ def get_frame(fname):
     # ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
     # number of dumped geometry files
     # coords = get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, cell)
-    with open(os.path.join(path_out, "MD_dump"), "r") as fp:
+    with open(os.path.join(path_out, "MD_dump")) as fp:
         dumplines = fp.read().split("\n")
     coords, cells, force, stress = get_coords_from_dump(dumplines, natoms)
     ndump = np.shape(coords)[0]
-    with open(os.path.join(path_out, "running_md.log"), "r") as fp:
+    with open(os.path.join(path_out, "running_md.log")) as fp:
         outlines = fp.read().split("\n")
     energy = get_energy(outlines, ndump, dump_freq)
 
@@ -201,7 +178,7 @@ def get_frame(fname):
             unconv_stru += "%d " % i
     ndump = len(energy)
     if unconv_stru != "":
-        warnings.warn(f"Structure %s are unconverged and not collected!" % unconv_stru)
+        warnings.warn("Structure %s are unconverged and not collected!" % unconv_stru)
 
     for iframe in range(ndump):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))

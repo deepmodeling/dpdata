@@ -4,6 +4,7 @@
 """Generate Gaussian input file."""
 
 import itertools
+import re
 import uuid
 import warnings
 from typing import List, Optional, Tuple, Union
@@ -217,23 +218,23 @@ def make_gaussian_input(
     buff = []
     # keywords, e.g., force b3lyp/6-31g**
     if use_fragment_guesses:
-        keywords[0] = "{} guess=fragment={}".format(keywords[0], frag_numb)
+        keywords[0] = f"{keywords[0]} guess=fragment={frag_numb}"
 
     chkkeywords = []
     if len(keywords) > 1:
-        chkkeywords.append("%chk={}.chk".format(str(uuid.uuid1())))
+        chkkeywords.append(f"%chk={str(uuid.uuid1())}.chk")
 
-    nprockeywords = "%nproc={:d}".format(nproc)
+    nprockeywords = f"%nproc={nproc:d}"
     # use formula as title
     titlekeywords = "".join(
-        ["{}{}".format(symbol, numb) for symbol, numb in zip(atom_names, atom_numbs)]
+        [f"{symbol}{numb}" for symbol, numb in zip(atom_names, atom_numbs)]
     )
-    chargekeywords = "{} {}".format(charge, multiplicity)
+    chargekeywords = f"{charge} {multiplicity}"
 
     buff = [
         *chkkeywords,
         nprockeywords,
-        "#{}".format(keywords[0]),
+        f"#{keywords[0]}",
         "",
         titlekeywords,
         "",
@@ -246,13 +247,13 @@ def make_gaussian_input(
                 "%s(Fragment=%d) %f %f %f" % (symbol, frag_index[ii] + 1, *coordinate)
             )
         else:
-            buff.append("%s %f %f %f" % (symbol, *coordinate))
+            buff.append("{} {:f} {:f} {:f}".format(symbol, *coordinate))
     if not sys_data.get("nopbc", False):
         # PBC condition
         cell = sys_data["cells"][0]
         for ii in range(3):
             # use TV as atomic symbol, see https://gaussian.com/pbc/
-            buff.append("TV %f %f %f" % (*cell[ii],))
+            buff.append("TV {:f} {:f} {:f}".format(*cell[ii]))
     if basis_set is not None:
         # custom basis set
         buff.extend(["", basis_set, ""])
@@ -262,7 +263,7 @@ def make_gaussian_input(
                 "\n--link1--",
                 *chkkeywords,
                 nprockeywords,
-                "#{}".format(kw),
+                f"#{kw}",
                 "",
                 titlekeywords,
                 "",
@@ -272,3 +273,68 @@ def make_gaussian_input(
         )
     buff.append("\n")
     return "\n".join(buff)
+
+
+def read_gaussian_input(inp: str):
+    """Read Gaussian input.
+
+    Parameters
+    ----------
+    inp : str
+        Gaussian input str
+
+    Returns
+    -------
+    dict
+        system data
+    """
+    flag = 0
+    coords = []
+    elements = []
+    cells = []
+    for line in inp.split("\n"):
+        if not line.strip():
+            # empty line
+            flag += 1
+        elif flag == 0:
+            # keywords
+            if line.startswith("#"):
+                # setting
+                keywords = line.split()
+            elif line.startswith("%"):
+                pass
+        elif flag == 1:
+            # title
+            pass
+        elif flag == 2:
+            # multi and coords
+            s = line.split()
+            if len(s) == 2:
+                pass
+            elif len(s) == 4:
+                if s[0] == "TV":
+                    cells.append(list(map(float, s[1:4])))
+                else:
+                    # element
+                    elements.append(re.sub("\\(.*?\\)|\\{.*?}|\\[.*?]", "", s[0]))
+                    coords.append(list(map(float, s[1:4])))
+        elif flag == 3:
+            # end
+            break
+    atom_names, atom_types, atom_numbs = np.unique(
+        elements, return_inverse=True, return_counts=True
+    )
+    if len(cells):
+        nopbc = False
+    else:
+        nopbc = True
+        cells = np.array([np.eye(3)]) * 100
+    return {
+        "atom_names": list(atom_names),
+        "atom_numbs": list(atom_numbs),
+        "atom_types": atom_types,
+        "cells": np.array(cells).reshape(1, 3, 3),
+        "nopbc": nopbc,
+        "coords": np.array(coords).reshape(1, -1, 3),
+        "orig": np.zeros(3),
+    }

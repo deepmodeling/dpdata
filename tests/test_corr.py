@@ -20,7 +20,7 @@ class TestCorr(unittest.TestCase, CompLabeledSys, IsPBC):
         ep = r"@%EP"
         target = ":1"
         cutoff = 6.0
-        interactwith = "(%s)<:%f&!%s" % (target, cutoff, ep)
+        interactwith = f"({target})<:{cutoff:f}&!{ep}"
         s_ll = dpdata.LabeledSystem("amber/corr/dp_ll", fmt="deepmd/npy")
         s_hl = dpdata.LabeledSystem("amber/corr/dp_hl", fmt="deepmd/npy")
         self.system_1 = s_ll.correction(s_hl)
@@ -31,7 +31,7 @@ class TestCorr(unittest.TestCase, CompLabeledSys, IsPBC):
         self.v_places = 6
 
 
-class TestCorr(unittest.TestCase, CompLabeledSys, IsPBC):
+class TestCorrMulti(unittest.TestCase, CompLabeledSys, IsPBC):
     """Make a test to get a correction of two MultiSystems."""
 
     def setUp(self):

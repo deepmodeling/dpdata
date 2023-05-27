@@ -9,7 +9,25 @@ from dpdata.unit import LengthConversion
 bohr2ang = LengthConversion("bohr", "angstrom").value()
 
 
-class TestABACUSMD:
+class TestABACUSMD(unittest.TestCase):
+    def setUp(self):
+        self.system_water = dpdata.LabeledSystem(
+            "abacus.md", fmt="abacus/md"
+        )  # system with stress
+        self.system_Si = dpdata.LabeledSystem(
+            "abacus.md.nostress", fmt="abacus/md"
+        )  # system without stress
+        self.system_water_unconv = dpdata.LabeledSystem(
+            "abacus.md.unconv", fmt="abacus/md"
+        )  # system with unconverged SCF
+        self.system_newversion = dpdata.LabeledSystem(
+            "abacus.md.newversion", fmt="abacus/md"
+        )  # system with unconverged SCF
+
+    def tearDown(self):
+        if os.path.isfile("abacus.md/water_stru"):
+            os.remove("abacus.md/water_stru")
+
     def test_atom_names(self):
         self.assertEqual(self.system_water.data["atom_names"], ["H", "O"])
         self.assertEqual(self.system_Si.data["atom_names"], ["Si"])
@@ -44,6 +62,13 @@ class TestABACUSMD:
                 [-4.42369435e-01, 4.17648184e-01, 1.49535208e01],
             ]
         )
+        cell4 = np.array(
+            [
+                [1.24112058855e01, 0, 0],
+                [0, 1.24112058855e01, 0],
+                [0, 0, 1.24112058855e01],
+            ]
+        )
         for idx in range(np.shape(self.system_water.data["cells"])[0]):
             np.testing.assert_almost_equal(
                 cell, self.system_water.data["cells"][idx], decimal=5
@@ -55,6 +80,10 @@ class TestABACUSMD:
         for idx in range(np.shape(self.system_water_unconv.data["cells"])[0]):
             np.testing.assert_almost_equal(
                 self.system_water_unconv.data["cells"][idx], cell3, decimal=5
+            )
+        for idx in range(np.shape(self.system_newversion.data["cells"])[0]):
+            np.testing.assert_almost_equal(
+                self.system_newversion.data["cells"][idx], cell4, decimal=5
             )
 
     def test_coord(self):
@@ -88,6 +117,16 @@ class TestABACUSMD:
                 self.system_water_unconv.data["coords"], coord, decimal=5
             )
 
+        with open("abacus.md.newversion/coord.ref") as fp4:
+            coord = []
+            for ii in fp4:
+                coord.append([float(jj) for jj in ii.split()])
+            coord = np.array(coord)
+            coord = coord.reshape([11, 64, 3])
+            np.testing.assert_almost_equal(
+                self.system_newversion.data["coords"], coord, decimal=5
+            )
+
     def test_force(self):
         with open("abacus.md/water_force") as fp:
             force = []
@@ -119,6 +158,16 @@ class TestABACUSMD:
                 self.system_water_unconv.data["forces"], force, decimal=5
             )
 
+        with open("abacus.md.newversion/force.ref") as fp4:
+            force = []
+            for ii in fp4:
+                force.append([float(jj) for jj in ii.split()])
+            force = np.array(force)
+            force = force.reshape([11, 64, 3])
+            np.testing.assert_almost_equal(
+                self.system_newversion.data["forces"], force, decimal=5
+            )
+
     def test_virial(self):
         with open("abacus.md/water_virial") as fp:
             virial = []
@@ -138,6 +187,16 @@ class TestABACUSMD:
             virial = virial.reshape([10, 3, 3])
             np.testing.assert_almost_equal(
                 self.system_water_unconv.data["virials"], virial, decimal=5
+            )
+
+        with open("abacus.md.newversion/virial.ref") as fp:
+            virial = []
+            for ii in fp:
+                virial.append([float(jj) for jj in ii.split()])
+            virial = np.array(virial)
+            virial = virial.reshape([11, 3, 3])
+            np.testing.assert_almost_equal(
+                self.system_newversion.data["virials"], virial, decimal=5
             )
 
     def test_energy(self):
@@ -187,23 +246,6 @@ class TestABACUSMD:
                 for iline, l in enumerate(f):
                     iline += 1
                 self.assertEqual(iline, 30)
-
-
-class TestABACUSMDLabeledOutput(unittest.TestCase, TestABACUSMD):
-    def setUp(self):
-        self.system_water = dpdata.LabeledSystem(
-            "abacus.md", fmt="abacus/md"
-        )  # system with stress
-        self.system_Si = dpdata.LabeledSystem(
-            "abacus.md.nostress", fmt="abacus/md"
-        )  # system without stress
-        self.system_water_unconv = dpdata.LabeledSystem(
-            "abacus.md.unconv", fmt="abacus/md"
-        )  # system with unconverged SCF
-
-    def tearDown(self):
-        if os.path.isfile("abacus.md/water_stru"):
-            os.remove("abacus.md/water_stru")
 
 
 if __name__ == "__main__":

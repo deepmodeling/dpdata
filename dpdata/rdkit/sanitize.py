@@ -3,7 +3,7 @@ import time
 from copy import deepcopy
 
 from rdkit import Chem
-from rdkit.Chem.rdchem import Atom, Bond, BondType, Mol
+from rdkit.Chem.rdchem import BondType
 
 # openbabel
 try:
@@ -31,9 +31,7 @@ def get_explicit_valence(atom, verbose=False):
 
 
 def regularize_formal_charges(mol, sanitize=True, verbose=False):
-    """
-    Regularize formal charges of atoms
-    """
+    """Regularize formal charges of atoms."""
     assert isinstance(mol, Chem.rdchem.Mol)
     for atom in mol.GetAtoms():
         assign_formal_charge_for_atom(atom, verbose)
@@ -48,9 +46,7 @@ def regularize_formal_charges(mol, sanitize=True, verbose=False):
 
 
 def assign_formal_charge_for_atom(atom, verbose=False):
-    """
-    assigen formal charge according to 8-electron rule for element B,C,N,O,S,P,As
-    """
+    """Assigen formal charge according to 8-electron rule for element B,C,N,O,S,P,As."""
     assert isinstance(atom, Chem.rdchem.Atom)
     valence = get_explicit_valence(atom, verbose)
     if atom.GetSymbol() == "B":
@@ -630,19 +626,24 @@ def super_sanitize_mol(mol, name=None, verbose=True):
             return None
 
 
-class Sanitizer(object):
+class Sanitizer:
     def __init__(self, level="medium", raise_errors=True, verbose=False):
-        """
-        Set up sanitizer.
-        --------
-        Parameters:
-            level : 'low', 'medium' or 'high'.
-                `low`    - use rdkit.Chem.SanitizeMol() to sanitize
-                `medium` - before using rdkit, assign formal charges of each atom first, which requires
-                            the rightness of bond order information
-                `high`   - try to regularize bond order of nitro, phosphate, sulfate, nitrine, guanidine,
-                            pyridine-oxide function groups and aromatic heterocycles. If failed, the program
-                            will call obabel to pre-process the mol object and re-try the procedure.
+        """Set up sanitizer.
+        --------.
+
+        Parameters
+        ----------
+        level : 'low', 'medium' or 'high'.
+            `low`    - use rdkit.Chem.SanitizeMol() to sanitize
+            `medium` - before using rdkit, assign formal charges of each atom first, which requires
+                        the rightness of bond order information
+            `high`   - try to regularize bond order of nitro, phosphate, sulfate, nitrine, guanidine,
+                        pyridine-oxide function groups and aromatic heterocycles. If failed, the program
+                        will call obabel to pre-process the mol object and re-try the procedure.
+        raise_errors : bool, default=True
+            If True, raise SanitizeError when failed.
+        verbose : bool, default=False
+            If True, print error information when failed.
         """
         self._check_level(level)
         self.level = level
@@ -667,9 +668,7 @@ class Sanitizer(object):
             print(error_info)
 
     def sanitize(self, mol):
-        """
-        Sanitize mol according to `self.level`. If failed, return None.
-        """
+        """Sanitize mol according to `self.level`. If failed, return None."""
         if self.level == "low":
             try:
                 Chem.SanitizeMol(mol)

@@ -6,8 +6,6 @@ except ImportError:
     pass
 from collections import Counter
 
-import dpdata
-
 
 def to_system_data(file_name, protect_layer=9):
     mol = Molecule.from_file(file_name)

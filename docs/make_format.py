@@ -1,12 +1,9 @@
 import csv
 from collections import defaultdict
-from typing import Any
 
 # ensure all plugins are loaded!
-import dpdata.plugins
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-from dpdata.system import get_cls_name
 
 
 def get_formats() -> dict:
@@ -31,7 +28,7 @@ def get_minimizer() -> dict:
 
 
 def detect_overridden(cls: Format, method: str) -> bool:
-    """Check whether a method is override
+    """Check whether a method is override.
 
     Parameters
     ----------
@@ -61,7 +58,9 @@ def get_cls_link(cls: object) -> str:
     str
         the link of a class
     """
-    return ":class:`%s <%s>`" % (cls.__name__, ".".join([cls.__module__, cls.__name__]))
+    return ":class:`{} <{}>`".format(
+        cls.__name__, ".".join([cls.__module__, cls.__name__])
+    )
 
 
 def check_supported(fmt: Format):
@@ -112,7 +111,7 @@ if __name__ == "__main__":
             writer.writerow(
                 {
                     "Class": get_cls_link(kk),
-                    "Alias": "\n".join(("``%s``" % vvv for vvv in vv)),
+                    "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                     "Supported Functions": "\n".join(
                         method_links[mtd] for mtd in check_supported(kk)
                     ),
@@ -132,7 +131,7 @@ if __name__ == "__main__":
             writer.writerow(
                 {
                     "Class": get_cls_link(kk),
-                    "Alias": "\n".join(("``%s``" % vvv for vvv in vv)),
+                    "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                 }
             )
 
@@ -149,6 +148,6 @@ if __name__ == "__main__":
             writer.writerow(
                 {
                     "Class": get_cls_link(kk),
-                    "Alias": "\n".join(("``%s``" % vvv for vvv in vv)),
+                    "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                 }
             )
