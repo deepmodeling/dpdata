@@ -118,11 +118,14 @@ def to_system_data(
                 f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/hdf5 format."
             )
             continue
+        shape = [
+            natoms if xx == dpdata.system.Axis.NATOMS else xx for xx in dtype.shape[1:]
+        ]
 
         data_types[dtype.name] = {
             "fn": dtype.name,
             "labeled": True,
-            "shape": dtype.shape[1:],
+            "shape": shape,
             "required": False,
         }
 
