@@ -3,7 +3,7 @@ import glob
 import os
 from copy import deepcopy
 from enum import Enum, unique
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
 from monty.json import MSONable
