@@ -3,7 +3,7 @@ import glob
 import os
 from copy import deepcopy
 from enum import Enum, unique
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 from monty.json import MSONable
@@ -521,17 +521,21 @@ class System(MSONable):
             return False
         elif not len(self.data["atom_numbs"]):
             # this system is non-converged but the system to append is converged
-            self.data = system.data
+            self.data = system.data.copy()
             return False
         if system.uniq_formula != self.uniq_formula:
             raise RuntimeError(
                 f"systems with inconsistent formula could not be append: {self.uniq_formula} v.s. {system.uniq_formula}"
             )
         if system.data["atom_names"] != self.data["atom_names"]:
+            # prevent original system to be modified
+            system = system.copy()
             # allow to append a system with different atom_names order
             system.sort_atom_names()
             self.sort_atom_names()
         if (system.data["atom_types"] != self.data["atom_types"]).any():
+            # prevent original system to be modified
+            system = system.copy()
             # allow to append a system with different atom_types order
             system.sort_atom_types()
             self.sort_atom_types()
@@ -1440,6 +1444,8 @@ class MultiSystems:
     def __append(self, system):
         if not system.formula:
             return
+        # prevent changing the original system
+        system = system.copy()
         self.check_atom_names(system)
         formula = system.formula
         if formula in self.systems:
