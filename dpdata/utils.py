@@ -63,7 +63,9 @@ def sort_atom_names(data, type_map=None):
         # a[as[a]] == b[as[b]]  as == argsort
         # as[as[b]] == as^{-1}[b]
         # a[as[a][as[as[b]]]] = b[as[b][as^{-1}[b]]] = b[id]
-        idx = np.argsort(data["atom_names"], kind="stable")[np.argsort(np.argsort(type_map, kind="stable"), kind="stable")]
+        idx = np.argsort(data["atom_names"], kind="stable")[
+            np.argsort(np.argsort(type_map, kind="stable"), kind="stable")
+        ]
     else:
         # index that will sort an array by alphabetical order
         idx = np.argsort(data["atom_names"], kind="stable")
