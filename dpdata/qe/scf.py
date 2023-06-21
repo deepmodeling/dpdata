@@ -87,7 +87,7 @@ def get_coords(lines, cell):
     atom_types = []
     atom_numbs = []
     # preserve the atom_name order
-    atom_names = atom_symbol_list[np.sort(symbol_idx)]
+    atom_names = atom_symbol_list[np.sort(symbol_idx, kind="stable")]
     for jj in atom_symbol_list:
         for idx, ii in enumerate(atom_names):
             if jj == ii:
