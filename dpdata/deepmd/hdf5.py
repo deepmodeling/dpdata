@@ -1,9 +1,12 @@
 """Utils for deepmd/hdf5 format."""
+import warnings
 from typing import Optional, Union
 
 import h5py
 import numpy as np
 from wcmatch.glob import globfilter
+
+import dpdata
 
 __all__ = ["to_system_data", "dump"]
 
@@ -30,6 +33,9 @@ def to_system_data(
     g = f[folder] if folder else f
 
     data = {}
+    # ignore empty files or groups
+    if "type.raw" not in g.keys():
+        return data
     data["atom_types"] = g["type.raw"][:]
     ntypes = np.max(data["atom_types"]) + 1
     natoms = data["atom_types"].size
@@ -89,6 +95,39 @@ def to_system_data(
             "required": False,
         },
     }
+    # allow custom dtypes
+    for dtype in dpdata.system.LabeledSystem.DTYPES:
+        if dtype.name in (
+            "atom_numbs",
+            "atom_names",
+            "atom_types",
+            "orig",
+            "cells",
+            "coords",
+            "real_atom_types",
+            "real_atom_names",
+            "nopbc",
+            "energies",
+            "forces",
+            "virials",
+        ):
+            # skip as these data contains specific rules
+            continue
+        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+            warnings.warn(
+                f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/hdf5 format."
+            )
+            continue
+        shape = [
+            natoms if xx == dpdata.system.Axis.NATOMS else xx for xx in dtype.shape[1:]
+        ]
+
+        data_types[dtype.name] = {
+            "fn": dtype.name,
+            "labeled": True,
+            "shape": shape,
+            "required": False,
+        }
 
     for dt, prop in data_types.items():
         all_data = []
@@ -140,6 +179,9 @@ def dump(
         g = f.create_group(folder)
     else:
         g = f
+    # ignore empty systems
+    if not len(data["coords"]):
+        return
     # dump raw (array in fact)
     g.create_dataset("type.raw", data=data["atom_types"])
     g.create_dataset("type_map.raw", data=np.array(data["atom_names"], dtype="S"))
@@ -161,6 +203,37 @@ def dump(
         "forces": {"fn": "force", "shape": (nframes, -1), "dump": True},
         "virials": {"fn": "virial", "shape": (nframes, 9), "dump": True},
     }
+
+    # allow custom dtypes
+    for dtype in dpdata.system.LabeledSystem.DTYPES:
+        if dtype.name in (
+            "atom_numbs",
+            "atom_names",
+            "atom_types",
+            "orig",
+            "cells",
+            "coords",
+            "real_atom_types",
+            "real_atom_names",
+            "nopbc",
+            "energies",
+            "forces",
+            "virials",
+        ):
+            # skip as these data contains specific rules
+            continue
+        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+            warnings.warn(
+                f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/hdf5 format."
+            )
+            continue
+
+        data_types[dtype.name] = {
+            "fn": dtype.name,
+            "shape": (nframes, -1),
+            "dump": True,
+        }
+
     for dt, prop in data_types.items():
         if dt in data:
             if prop["dump"]:

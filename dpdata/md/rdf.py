@@ -57,7 +57,7 @@ def compute_rdf(box, posis, atype, sel_type=[None, None], max_r=5, nbins=100):
 
 
 def _compute_rdf_1frame(box, posis, atype, sel_type=[None, None], max_r=5, nbins=100):
-    all_types = list(set(list(np.sort(atype))))
+    all_types = list(set(list(np.sort(atype, kind="stable"))))
     if sel_type[0] is None:
         sel_type[0] = all_types
     if sel_type[1] is None:

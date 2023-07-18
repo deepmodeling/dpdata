@@ -521,17 +521,21 @@ class System(MSONable):
             return False
         elif not len(self.data["atom_numbs"]):
             # this system is non-converged but the system to append is converged
-            self.data = system.data
+            self.data = system.data.copy()
             return False
         if system.uniq_formula != self.uniq_formula:
             raise RuntimeError(
                 f"systems with inconsistent formula could not be append: {self.uniq_formula} v.s. {system.uniq_formula}"
             )
         if system.data["atom_names"] != self.data["atom_names"]:
+            # prevent original system to be modified
+            system = system.copy()
             # allow to append a system with different atom_names order
             system.sort_atom_names()
             self.sort_atom_names()
         if (system.data["atom_types"] != self.data["atom_types"]).any():
+            # prevent original system to be modified
+            system = system.copy()
             # allow to append a system with different atom_types order
             system.sort_atom_types()
             self.sort_atom_types()
@@ -624,7 +628,7 @@ class System(MSONable):
         idx : np.ndarray
             new atom index in the Axis.NATOMS
         """
-        idx = np.argsort(self.data["atom_types"])
+        idx = np.argsort(self.data["atom_types"], kind="stable")
         for tt in self.DTYPES:
             if tt.name not in self.data:
                 # skip optional data
@@ -767,7 +771,7 @@ class System(MSONable):
             np.array(np.copy(data["atom_numbs"])) * np.prod(ncopy)
         )
         tmp.data["atom_types"] = np.sort(
-            np.tile(np.copy(data["atom_types"]), np.prod(ncopy))
+            np.tile(np.copy(data["atom_types"]), np.prod(ncopy)), kind="stable"
         )
         tmp.data["cells"] = np.copy(data["cells"])
         for ii in range(3):
@@ -1440,6 +1444,8 @@ class MultiSystems:
     def __append(self, system):
         if not system.formula:
             return
+        # prevent changing the original system
+        system = system.copy()
         self.check_atom_names(system)
         formula = system.formula
         if formula in self.systems:

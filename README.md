@@ -1,3 +1,9 @@
+# dpdata
+
+[![conda-forge](https://img.shields.io/conda/dn/conda-forge/dpdata?color=red&label=conda-forge&logo=conda-forge)](https://anaconda.org/conda-forge/dpdata)
+[![pip install](https://img.shields.io/pypi/dm/dpdata?label=pip%20install&logo=pypi)](https://pypi.org/project/dpdata)
+[![Documentation Status](https://readthedocs.org/projects/dpdata/badge/)](https://dpdata.readthedocs.io/)
+
 **dpdata** is a python package for manipulating data formats of software in computational science, including DeePMD-kit, VASP, LAMMPS, GROMACS, Gaussian.
 dpdata only works with python 3.7 or above.
 

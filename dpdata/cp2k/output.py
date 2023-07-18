@@ -417,6 +417,12 @@ def get_frames(fname):
 
             # get the coord block info
             if coord_flag:
+                if idx == coord_idx + 1:
+                    if ii == "\n":
+                        pass
+                    else:
+                        coord.append(ii.split()[4:7])
+                        atom_symbol_idx_list.append(ii.split()[1])
                 if idx > coord_idx + 1:
                     if ii == "\n":
                         coord_flag = False
@@ -488,7 +494,7 @@ def get_frames(fname):
     atom_types = []
     atom_numbs = []
     # preserve the atom_name order
-    atom_names = atom_symbol_list[np.sort(symbol_idx)]
+    atom_names = atom_symbol_list[np.sort(symbol_idx, kind="stable")]
     for jj in atom_symbol_list:
         for idx, ii in enumerate(atom_names):
             if jj == ii:
