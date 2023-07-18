@@ -113,7 +113,10 @@ def get_coords_from_dump(dumplines, natoms):
 
                 if calc_force:
                     forces[iframe, iat] = np.array(
-                        [float(i) for i in dumplines[iline + skipline + iat].split()[5:8]]
+                        [
+                            float(i)
+                            for i in dumplines[iline + skipline + iat].split()[5:8]
+                        ]
                     )
             iframe += 1
     assert iframe == nframes_dump, (
