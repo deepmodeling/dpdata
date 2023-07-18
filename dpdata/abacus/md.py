@@ -43,6 +43,8 @@ def get_coord_dump_freq(inlines):
 def get_coords_from_dump(dumplines, natoms):
     nlines = len(dumplines)
     total_natoms = sum(natoms)
+    # The output of VIRIAL, FORCE, and VELOCITY are controlled by INPUT parameters dump_virial, dump_force, and dump_vel, respectively.
+    # So the search of keywords can determine whether these datas are printed into MD_dump.
     calc_stress = False
     calc_force = False
     check_line = 6
