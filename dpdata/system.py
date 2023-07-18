@@ -798,15 +798,11 @@ class System(MSONable):
             )
         if type(replace_num) is not int:
             raise ValueError(
-                "replace_num must be a integer. Now is {replace_num}".format(
-                    replace_num=replace_num
-                )
+                f"replace_num must be a integer. Now is {replace_num}"
             )
         if replace_num <= 0:
             raise ValueError(
-                "replace_num must be larger than 0.Now is {replace_num}".format(
-                    replace_num=replace_num
-                )
+                f"replace_num must be larger than 0.Now is {replace_num}"
             )
 
         try:
