@@ -44,12 +44,17 @@ def get_coords_from_dump(dumplines, natoms):
     nlines = len(dumplines)
     total_natoms = sum(natoms)
     calc_stress = False
+    calc_force = False
+    check_line = 6
     if "VIRIAL" in dumplines[6]:
         calc_stress = True
-    else:
-        assert (
-            "POSITIONS" in dumplines[6] and "FORCE" in dumplines[6]
-        ), "keywords 'POSITIONS' and 'FORCE' cannot be found in the 6th line. Please check."
+        check_line = 10
+    assert (
+        "POSITION" in dumplines[check_line]
+    ), "keywords 'POSITION' cannot be found in the 6th line. Please check."
+    if "FORCE" in dumplines[check_line]:
+        calc_force = True
+
     nframes_dump = -1
     if calc_stress:
         nframes_dump = int(nlines / (total_natoms + 13))
@@ -104,9 +109,10 @@ def get_coords_from_dump(dumplines, natoms):
                 if not newversion:
                     coords[iframe, iat] *= celldm
 
-                forces[iframe, iat] = np.array(
-                    [float(i) for i in dumplines[iline + skipline + iat].split()[5:8]]
-                )
+                if calc_force:
+                    forces[iframe, iat] = np.array(
+                        [float(i) for i in dumplines[iline + skipline + iat].split()[5:8]]
+                    )
             iframe += 1
     assert iframe == nframes_dump, (
         "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."
