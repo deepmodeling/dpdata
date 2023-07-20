@@ -797,13 +797,9 @@ class System(MSONable):
                 "Must use method replace() of the instance of class dpdata.System"
             )
         if type(replace_num) is not int:
-            raise ValueError(
-                f"replace_num must be a integer. Now is {replace_num}"
-            )
+            raise ValueError(f"replace_num must be a integer. Now is {replace_num}")
         if replace_num <= 0:
-            raise ValueError(
-                f"replace_num must be larger than 0.Now is {replace_num}"
-            )
+            raise ValueError(f"replace_num must be larger than 0.Now is {replace_num}")
 
         try:
             initial_atom_index = self.data["atom_names"].index(initial_atom_type)
