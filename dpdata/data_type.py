@@ -1,5 +1,5 @@
 from enum import Enum, unique
-from typing import Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 import numpy as np
 
@@ -113,9 +113,11 @@ class DataType:
                     raise RuntimeError("Unsupported type to check shape")
         elif self.required:
             raise DataError("%s not found in data" % self.name)
-        
+
+
 __system_data_type_plugin = Plugin()
 __labeled_system_data_type_plugin = Plugin()
+
 
 def register_data_type(data_type: DataType, labeled: bool):
     plugin = __labeled_system_data_type_plugin if labeled else __system_data_type_plugin

@@ -2,7 +2,6 @@
 import glob
 import os
 from copy import deepcopy
-from enum import Enum, unique
 from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
@@ -15,11 +14,12 @@ import dpdata.md.pbc
 # ensure all plugins are loaded!
 import dpdata.plugins
 from dpdata.amber.mask import load_param_file, pick_by_amber_mask
+from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 from dpdata.plugin import Plugin
 from dpdata.utils import add_atom_names, elements_index_map, remove_pbc, sort_atom_names
-from dpdata.data_type import Axis, DataType, DataError, get_data_types
+
 
 def load_format(fmt):
     fmt = fmt.lower()
@@ -1600,5 +1600,6 @@ def add_format_methods():
     System.DTYPES = System.DTYPES + get_data_types(labeled=False)
     LabeledSystem.DTYPES = LabeledSystem.DTYPES + get_data_types(labeled=False)
     LabeledSystem.DTYPES = LabeledSystem.DTYPES + get_data_types(labeled=True)
+
 
 add_format_methods()
