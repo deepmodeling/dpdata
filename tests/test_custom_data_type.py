@@ -4,7 +4,6 @@ import h5py
 import numpy as np
 
 import dpdata
-from dpdata.system import Axis, DataType
 
 
 class TestDeepmdLoadDumpComp(unittest.TestCase):

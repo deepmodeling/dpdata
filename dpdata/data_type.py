@@ -121,7 +121,7 @@ __labeled_system_data_type_plugin = Plugin()
 
 def register_data_type(data_type: DataType, labeled: bool):
     """Register a data type.
-    
+
     Parameters
     ----------
     data_type : DataType
@@ -135,7 +135,7 @@ def register_data_type(data_type: DataType, labeled: bool):
 
 def get_data_types(labeled: bool):
     """Get all registered data types.
-    
+
     Parameters
     ----------
     labeled : bool
