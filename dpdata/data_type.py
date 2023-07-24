@@ -19,6 +19,12 @@ class Axis(Enum):
     NBONDS = "nbonds"
 
 
+class AnyInt(int):
+    """AnyInt equals to any other integer."""
+    def __eq__(self, other):
+        return True
+
+
 class DataError(Exception):
     """Data is not correct."""
 
@@ -64,6 +70,8 @@ class DataType:
             elif ii is Axis.NBONDS:
                 # BondOrderSystem
                 shape.append(system.get_nbonds())
+            elif ii == -1:
+                shape.append(AnyInt(-1))
             elif isinstance(ii, int):
                 shape.append(ii)
             else:
