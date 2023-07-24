@@ -120,10 +120,26 @@ __labeled_system_data_type_plugin = Plugin()
 
 
 def register_data_type(data_type: DataType, labeled: bool):
+    """Register a data type.
+    
+    Parameters
+    ----------
+    data_type : DataType
+        data type to be registered
+    labeled : bool
+        whether this data type is for LabeledSystem
+    """
     plugin = __labeled_system_data_type_plugin if labeled else __system_data_type_plugin
     plugin.register(data_type.name)(data_type)
 
 
 def get_data_types(labeled: bool):
+    """Get all registered data types.
+    
+    Parameters
+    ----------
+    labeled : bool
+        whether this data type is for LabeledSystem
+    """
     plugin = __labeled_system_data_type_plugin if labeled else __system_data_type_plugin
     return tuple(plugin.plugins.values())
