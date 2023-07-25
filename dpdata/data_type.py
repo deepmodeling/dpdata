@@ -21,6 +21,7 @@ class Axis(Enum):
 
 class AnyInt(int):
     """AnyInt equals to any other integer."""
+
     def __eq__(self, other):
         return True
 

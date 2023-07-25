@@ -9,7 +9,8 @@ register_data_type(
 )
 
 register_data_type(
-    DataType("bar", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, -1), required=False), labeled=True
+    DataType("bar", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, -1), required=False),
+    labeled=True,
 )
 
 ep = None

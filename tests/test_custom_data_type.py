@@ -82,5 +82,3 @@ class TestDeepmdLoadDumpCompAny(unittest.TestCase):
         self.system.to_deepmd_hdf5("data_bar.h5")
         x = dpdata.LabeledSystem("data_bar.h5", fmt="deepmd/hdf5")
         np.testing.assert_allclose(x.data["bar"], self.bar)
-
-
