@@ -1,8 +1,8 @@
 import numpy as np
-from dpdata.format import Format
-from dpdata.dftb_plus.inout import read_dftb_plus
-from dpdata.unit import LengthConversion, EnergyConversion, ForceConversion
 
+from dpdata.dftb_plus.inout import read_dftb_plus
+from dpdata.format import Format
+from dpdata.unit import EnergyConversion, ForceConversion, LengthConversion
 
 length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
@@ -14,7 +14,9 @@ class DFTBplusFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         symbols, coord, energy, forces = read_dftb_plus(file_name)
 
-        atom_names, atom_types, atom_numbs = np.unique(symbols, return_inverse=True, return_counts=True)
+        atom_names, atom_types, atom_numbs = np.unique(
+            symbols, return_inverse=True, return_counts=True
+        )
         natoms = coord.shape[0]
 
         return {
