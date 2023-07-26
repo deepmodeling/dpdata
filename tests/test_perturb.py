@@ -168,7 +168,4 @@ class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):
         self.places = 6
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 # %%

@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from comp_sys import CompLabeledSys, IsNoPBC
 from context import dpdata
-#注意下单位转换
+
 class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp(self):
         length_convert = dpdata.unit.LengthConversion("bohr", "angstrom").value()
@@ -56,5 +56,4 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
 
 
 
-if __name__ == "__main__":
-    unittest.main()
+
