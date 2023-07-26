@@ -4,6 +4,7 @@ import numpy as np
 from comp_sys import CompLabeledSys, IsNoPBC
 from context import dpdata
 
+
 class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp(self):
         length_convert = dpdata.unit.LengthConversion("bohr", "angstrom").value()
@@ -13,7 +14,6 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
         ).value()
 
         self.system_1 = dpdata.LabeledSystem("dftb_plus/input.out", fmt="dftb_plus")
-     
 
         self.system_2 = dpdata.LabeledSystem(
             data={
@@ -23,10 +23,10 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
                 "coords": np.array(
                     [
                         [
-                            [1.014150, 0.112320 , 0.047370],
+                            [1.014150, 0.112320, 0.047370],
                             [3.909390, 0.037985, -0.101159],
                             [0.702550, -0.851820, -0.060860],
-                            [0.702550, 0.603740 , -0.789160],
+                            [0.702550, 0.603740, -0.789160],
                         ]
                     ]
                 )
@@ -35,10 +35,10 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
                 "forces": -np.array(
                     [
                         [
-                            [0.016567056203, 0.002817951422,  0.005634574270],
+                            [0.016567056203, 0.002817951422, 0.005634574270],
                             [-0.018803818530, -0.000002880649, -0.000006015442],
                             [0.001118562874, -0.005291070259, -0.000870711110],
-                            [0.001118199454 , 0.002475999486, -0.004757847718]
+                            [0.001118199454, 0.002475999486, -0.004757847718],
                         ]
                     ]
                 )
@@ -56,5 +56,3 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
 
 if __name__ == "__main__":
     unittest.main()
-
-
