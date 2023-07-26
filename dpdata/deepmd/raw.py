@@ -86,8 +86,9 @@ def to_system_data(folder, type_map=None, labels=True):
                         f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/raw format."
                     )
                     continue
+                natoms = data["coords"].shape[1]
                 shape = [
-                    -1 if xx == dpdata.system.Axis.NATOMS else xx
+                    natoms if xx == dpdata.system.Axis.NATOMS else xx
                     for xx in dtype.shape[1:]
                 ]
                 if os.path.exists(os.path.join(folder, f"{dtype.name}.raw")):
