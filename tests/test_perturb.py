@@ -170,3 +170,5 @@ class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):
 
 if __name__ == "__main__":
     unittest.main()
+
+# %%

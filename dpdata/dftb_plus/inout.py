@@ -43,3 +43,7 @@ def read_dftb_plus(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
     assert coord.shape == forces.shape
 
     return symbols, coord, energy, forces
+
+read_dftb_plus(r'C:\Users\liaoruihao\Desktop\github仓库\dpdata\dpdata_DFTBplus\tests\input.out')
+
+ 
