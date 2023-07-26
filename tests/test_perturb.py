@@ -164,8 +164,9 @@ class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):
         random_mock.randn = ConstGenerator().randn
         system_1_origin = dpdata.System("poscars/POSCAR.SiC", fmt="vasp/poscar")
         self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "const")
-        self.system_2 = dpdata.System("poscars/POSCAR.SiC.const", fmt="vasp/poscar")
+        self.system_2 = dpdata.System("poscars/POSCAR.SiC.const", fmt="vasp/poscar")     
         self.places = 6
 
 
-# %%
+if __name__ == "__main__":
+    unittest.main()
