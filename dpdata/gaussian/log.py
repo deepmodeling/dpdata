@@ -31,11 +31,17 @@ def to_system_data(file_name, md=False):
             ):
                 flag = 1
                 forces = []
-            elif line.startswith(
-                "                          Input orientation:"
-            ) or line.startswith("                         Z-Matrix orientation:"
-            ) or (line.strip() == "Standard orientation:" and not locals().get('coords', None)):  # TODO: Modified
-                flag = 11 if line.strip() == "Standard orientation:" else 5  # TODO: Modified
+            elif (
+                line.startswith("                          Input orientation:")
+                or line.startswith("                         Z-Matrix orientation:")
+                or (
+                    line.strip() == "Standard orientation:"
+                    and not locals().get("coords", None)
+                )
+            ):  # TODO: Modified
+                flag = (
+                    11 if line.strip() == "Standard orientation:" else 5
+                )  # TODO: Modified
                 coords = []
                 atom_symbols = []
                 cells = []
