@@ -33,13 +33,14 @@ def to_system_data(file_name, md=False):
                 forces = []
             elif line.startswith(
                 "                          Input orientation:"
-            ) or line.startswith("                         Z-Matrix orientation:"):
-                flag = 5
+            ) or line.startswith("                         Z-Matrix orientation:"
+            ) or (line.strip() == "Standard orientation:" and not locals().get('coords', None)):  # TODO: Modified
+                flag = 11 if line.strip() == "Standard orientation:" else 5  # TODO: Modified
                 coords = []
                 atom_symbols = []
                 cells = []
 
-            if 1 <= flag <= 3 or 5 <= flag <= 9:
+            if 1 <= flag <= 3 or 5 <= flag <= 9 or 11 <= flag <= 15:  # TODO: Modified
                 flag += 1
             elif flag == 4:
                 # forces
@@ -64,7 +65,7 @@ def to_system_data(file_name, md=False):
                         forces.append(
                             [float(line[23:38]), float(line[38:53]), float(line[53:68])]
                         )
-            elif flag == 10:
+            elif flag == 10 or flag == 16:  # TODO: Modified
                 # atom_symbols and coords
                 if line.startswith(" -------"):
                     flag = 0
