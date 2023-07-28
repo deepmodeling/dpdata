@@ -61,5 +61,6 @@ class TestDeepmdLoadDumpHDF5(unittest.TestCase, CompLabeledSys, IsNoPBC):
         self.f_places = 6
         self.v_places = 6
 
+
 if __name__ == "__main__":
     unittest.main()
