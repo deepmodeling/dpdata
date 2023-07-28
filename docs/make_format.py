@@ -184,7 +184,11 @@ def generate_sub_format_pages(formats: dict):
                 buff.append("")
                 if docstring is not None:
                     doc_obj = SphinxDocString(docstring)
-                    doc_obj["Parameters"] = [xx for xx in doc_obj["Parameters"] if xx.name not in ("args", "kwargs")]
+                    doc_obj["Parameters"] = [
+                        xx
+                        for xx in doc_obj["Parameters"]
+                        if xx.name not in ("args", "kwargs")
+                    ]
                     rst = str(doc_obj)
                     buff.append(rst)
                     buff.append("")
@@ -221,7 +225,11 @@ def generate_sub_format_pages(formats: dict):
                 buff.append("")
                 if docstring is not None:
                     doc_obj = SphinxDocString(docstring)
-                    doc_obj["Parameters"] = [xx for xx in doc_obj["Parameters"] if xx.name not in ("data", "args", "kwargs")]
+                    doc_obj["Parameters"] = [
+                        xx
+                        for xx in doc_obj["Parameters"]
+                        if xx.name not in ("data", "args", "kwargs")
+                    ]
                     rst = str(doc_obj)
                     buff.append(rst)
                     buff.append("")
