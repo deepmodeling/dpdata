@@ -4,7 +4,7 @@ from collections import defaultdict
 from inspect import Parameter, Signature, signature
 from typing import Literal
 
-from sphinx.ext.napoleon.docstring import NumpyDocstring
+from numpydoc.docscrape_sphinx import SphinxDocString
 
 # ensure all plugins are loaded!
 from dpdata.driver import Driver, Minimizer
@@ -123,10 +123,12 @@ def generate_sub_format_pages(formats: dict):
             buff.append("%s format" % aa)
             buff.append("=" * len(buff[-1]))
             buff.append("")
+        buff.append("Class: %s" % get_cls_link(format))
+        buff.append("")
 
         docstring = format.__doc__
         if docstring is not None:
-            rst = str(NumpyDocstring(docstring))
+            rst = str(SphinxDocString(docstring))
             buff.append(rst)
             buff.append("")
 
@@ -134,8 +136,16 @@ def generate_sub_format_pages(formats: dict):
         buff.append("------------")
         methods = check_supported(format)
         for method in methods:
+            if method.startswith("from_"):
+                buff.append("Convert from this format to %s" % method_classes[method])
+                buff.append("`" * len(buff[-1]))
+            elif method.startswith("to_"):
+                buff.append("Convert from %s to this format" % method_classes[method])
+                buff.append("`" * len(buff[-1]))
             buff.append("")
-            sig = signature(getattr(format, method))
+            method_obj = getattr(format, method)
+            docstring = method_obj.__doc__
+            sig = signature(method_obj)
             parameters = dict(sig.parameters)
             # del self
             del parameters[list(parameters)[0]]
@@ -172,10 +182,17 @@ def generate_sub_format_pages(formats: dict):
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                buff.append(
-                    """   Convert this format to :func:`%s`."""
-                    % (method_classes[method])
-                )
+                if docstring is not None:
+                    doc_obj = SphinxDocString(docstring)
+                    doc_obj["Parameters"] = [xx for xx in doc_obj["Parameters"] if xx.name not in ("args", "kwargs")]
+                    rst = str(doc_obj)
+                    buff.append(rst)
+                    buff.append("")
+                else:
+                    buff.append(
+                        """   Convert this format to :func:`%s`."""
+                        % (method_classes[method])
+                    )
             elif method.startswith("to_"):
                 for aa in alias:
                     parameters = {
@@ -202,10 +219,17 @@ def generate_sub_format_pages(formats: dict):
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                buff.append(
-                    """   Convert :func:`%s` to this format."""
-                    % (method_classes[method])
-                )
+                if docstring is not None:
+                    doc_obj = SphinxDocString(docstring)
+                    doc_obj["Parameters"] = [xx for xx in doc_obj["Parameters"] if xx.name not in ("data", "args", "kwargs")]
+                    rst = str(doc_obj)
+                    buff.append(rst)
+                    buff.append("")
+                else:
+                    buff.append(
+                        """   Convert :func:`%s` to this format."""
+                        % (method_classes[method])
+                    )
             buff.append("")
             buff.append("")
 
