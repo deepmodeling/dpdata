@@ -11,6 +11,5 @@ dpdata supports the following formats:
 .. toctree::
    :maxdepth: 1
    :glob:
-   :hidden:
 
    formats/*

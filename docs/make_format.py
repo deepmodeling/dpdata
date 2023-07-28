@@ -158,20 +158,21 @@ def generate_sub_format_pages(formats: dict):
                 del parameters["kwargs"]
             sig = Signature(list(parameters.values()))
             sig = str(sig)
-            if method.startswith("from_") and method != "from_multi_systems":
-                for aa in alias:
-                    parameters["fmt"] = Parameter(
-                        "fmt",
-                        Parameter.POSITIONAL_OR_KEYWORD,
-                        default=None,
-                        annotation=Literal[aa],
-                    )
-                    sig_fmt = Signature(list(parameters.values()))
-                    sig_fmt = str(sig_fmt)
-                    buff.append(
-                        f""".. py:function:: {method_classes[method]}.from{sig_fmt}"""
-                    )
-                    buff.append("""   :noindex:""")
+            if method.startswith("from_"):
+                if method != "from_multi_systems":
+                    for aa in alias:
+                        parameters["fmt"] = Parameter(
+                            "fmt",
+                            Parameter.POSITIONAL_OR_KEYWORD,
+                            default=None,
+                            annotation=Literal[aa],
+                        )
+                        sig_fmt = Signature(list(parameters.values()))
+                        sig_fmt = str(sig_fmt)
+                        buff.append(
+                            f""".. py:function:: {method_classes[method]}.from{sig_fmt}"""
+                        )
+                        buff.append("""   :noindex:""")
                 for aa in alias:
                     buff.append(
                         """.. py:function:: {}.from_{}{}""".format(
@@ -182,14 +183,10 @@ def generate_sub_format_pages(formats: dict):
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                if docstring is not None:
+                if docstring is not None and method in format.__dict__:
                     doc_obj = SphinxDocString(docstring)
-                    doc_obj["Parameters"] = [
-                        xx
-                        for xx in doc_obj["Parameters"]
-                        if xx.name not in ("args", "kwargs")
-                    ]
-                    rst = str(doc_obj)
+                    doc_obj["Parameters"] = [xx for xx in doc_obj["Parameters"] if xx.name not in ("*args", "**kwargs")]
+                    rst = "   " + str(doc_obj)
                     buff.append(rst)
                     buff.append("")
                 else:
@@ -223,14 +220,10 @@ def generate_sub_format_pages(formats: dict):
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                if docstring is not None:
+                if docstring is not None and method in format.__dict__:
                     doc_obj = SphinxDocString(docstring)
-                    doc_obj["Parameters"] = [
-                        xx
-                        for xx in doc_obj["Parameters"]
-                        if xx.name not in ("data", "args", "kwargs")
-                    ]
-                    rst = str(doc_obj)
+                    doc_obj["Parameters"] = [xx for xx in doc_obj["Parameters"] if xx.name not in ("data", "*args", "**kwargs")]
+                    rst = "   " + str(doc_obj)
                     buff.append(rst)
                     buff.append("")
                 else:
