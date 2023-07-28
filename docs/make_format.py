@@ -1,6 +1,10 @@
 import csv
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
+import os
+from inspect import Parameter, Signature, signature
+from typing import Literal
 
+from sphinx.ext.napoleon.docstring import NumpyDocstring
 # ensure all plugins are loaded!
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
@@ -96,6 +100,84 @@ method_links = {
     "to_multi_systems": ":func:`MultiSystems.to() <dpdata.system.MultiSystems.to>`",
 }
 
+method_classes = {
+    "from_system": "System",
+    "to_system": "System",
+    "from_labeled_system": "LabeledSystem",
+    "to_labeled_system": "LabeledSystem",
+    "from_bond_order_system": "BondOrderSystem",
+    "to_bond_order_system": "BondOrderSystem",
+    "from_multi_systems": "MultiSystems",
+    "to_multi_systems": "MultiSystems",
+}
+
+
+def generate_sub_format_pages(formats: dict):
+    """Generate sub format pages."""
+    os.makedirs("formats", exist_ok=True)
+    for format, alias in formats.items():
+        # format: Format, alias: list[str]
+        buff = []
+        for aa in alias:
+            buff.append("%s format" % aa)
+            buff.append("=" * len(buff[-1]))
+            buff.append("")
+        
+        docstring = format.__doc__
+        if docstring is not None:
+            rst = str(NumpyDocstring(docstring))
+            buff.append(rst)
+            buff.append("")
+        
+        buff.append("Conversation")
+        buff.append("------------")
+        methods = check_supported(format)
+        for method in methods:
+            buff.append("")
+            sig = signature(getattr(format, method))
+            parameters = dict(sig.parameters)
+            # del self
+            del parameters[list(parameters)[0]]
+            # del data
+            if method.startswith("to_"):
+                del parameters[list(parameters)[0]]
+            if "args" in parameters:
+                del parameters["args"]
+            if "kwargs" in parameters:
+                del parameters["kwargs"]
+            sig = Signature(list(parameters.values()))
+            sig = str(sig)
+            if method.startswith("from_") and method != "from_multi_systems":
+                for aa in alias:
+                    parameters['fmt'] = Parameter('fmt', Parameter.POSITIONAL_OR_KEYWORD, default=None, annotation=Literal[aa])
+                    sig_fmt = Signature(list(parameters.values()))
+                    sig_fmt = str(sig_fmt)
+                    buff.append(""".. py:function:: %s.from%s""" % (method_classes[method], sig_fmt))
+                    buff.append("""   :noindex:""")
+                for aa in alias:
+                    buff.append(""".. py:function:: %s.from_%s%s""" % (method_classes[method], aa.replace("/", "_").replace(".", ""), sig))
+                    buff.append("""   :noindex:""")
+                buff.append("")
+                buff.append("""   Convert this format to :func:`%s`.""" % (method_classes[method]))
+            elif method.startswith("to_"):
+                for aa in alias:
+                    parameters = {'fmt': Parameter('fmt', Parameter.POSITIONAL_OR_KEYWORD, annotation=Literal[aa]), **parameters}
+                    sig_fmt = Signature(list(parameters.values()))
+                    sig_fmt = str(sig_fmt)
+                    buff.append(""".. py:function:: %s.to%s""" % (method_classes[method], sig_fmt))
+                    buff.append("""   :noindex:""")
+                for aa in alias:
+                    buff.append(""".. py:function:: %s.to_%s%s""" % (method_classes[method], aa.replace("/", "_").replace(".", ""), sig))
+                    buff.append("""   :noindex:""")
+                buff.append("")
+                buff.append("""   Convert :func:`%s` to this format.""" % (method_classes[method]))
+            buff.append("")
+            buff.append("")
+
+        with open("formats/%s.rst" % format.__name__, "w") as rstfile:
+            rstfile.write("\n".join(buff))
+
+
 if __name__ == "__main__":
     formats = get_formats()
     with open("formats.csv", "w", newline="") as csvfile:
@@ -151,3 +233,4 @@ if __name__ == "__main__":
                     "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                 }
             )
+    generate_sub_format_pages(formats)
