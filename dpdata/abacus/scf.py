@@ -327,10 +327,11 @@ def make_unlabeled_stru(
         out += "0.0\n"
         out += str(data["atom_numbs"][iele]) + "\n"
         for iatom in range(data["atom_numbs"][iele]):
+            iatomtype = np.nonzero(data["atom_types"] == iele)[0][iatom]
             out += "%.12f %.12f %.12f %d %d %d\n" % (
-                data["coords"][frame_idx][natom_tot, 0],
-                data["coords"][frame_idx][natom_tot, 1],
-                data["coords"][frame_idx][natom_tot, 2],
+                data["coords"][frame_idx][iatomtype, 0],
+                data["coords"][frame_idx][iatomtype, 1],
+                data["coords"][frame_idx][iatomtype, 2],
                 1,
                 1,
                 1,
