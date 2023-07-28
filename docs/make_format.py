@@ -1,10 +1,11 @@
 import csv
-from collections import OrderedDict, defaultdict
 import os
+from collections import defaultdict
 from inspect import Parameter, Signature, signature
 from typing import Literal
 
 from sphinx.ext.napoleon.docstring import NumpyDocstring
+
 # ensure all plugins are loaded!
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
@@ -122,13 +123,13 @@ def generate_sub_format_pages(formats: dict):
             buff.append("%s format" % aa)
             buff.append("=" * len(buff[-1]))
             buff.append("")
-        
+
         docstring = format.__doc__
         if docstring is not None:
             rst = str(NumpyDocstring(docstring))
             buff.append(rst)
             buff.append("")
-        
+
         buff.append("Conversation")
         buff.append("------------")
         methods = check_supported(format)
@@ -149,28 +150,62 @@ def generate_sub_format_pages(formats: dict):
             sig = str(sig)
             if method.startswith("from_") and method != "from_multi_systems":
                 for aa in alias:
-                    parameters['fmt'] = Parameter('fmt', Parameter.POSITIONAL_OR_KEYWORD, default=None, annotation=Literal[aa])
+                    parameters["fmt"] = Parameter(
+                        "fmt",
+                        Parameter.POSITIONAL_OR_KEYWORD,
+                        default=None,
+                        annotation=Literal[aa],
+                    )
                     sig_fmt = Signature(list(parameters.values()))
                     sig_fmt = str(sig_fmt)
-                    buff.append(""".. py:function:: %s.from%s""" % (method_classes[method], sig_fmt))
+                    buff.append(
+                        f""".. py:function:: {method_classes[method]}.from{sig_fmt}"""
+                    )
                     buff.append("""   :noindex:""")
                 for aa in alias:
-                    buff.append(""".. py:function:: %s.from_%s%s""" % (method_classes[method], aa.replace("/", "_").replace(".", ""), sig))
+                    buff.append(
+                        """.. py:function:: {}.from_{}{}""".format(
+                            method_classes[method],
+                            aa.replace("/", "_").replace(".", ""),
+                            sig,
+                        )
+                    )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                buff.append("""   Convert this format to :func:`%s`.""" % (method_classes[method]))
+                buff.append(
+                    """   Convert this format to :func:`%s`."""
+                    % (method_classes[method])
+                )
             elif method.startswith("to_"):
                 for aa in alias:
-                    parameters = {'fmt': Parameter('fmt', Parameter.POSITIONAL_OR_KEYWORD, annotation=Literal[aa]), **parameters}
+                    parameters = {
+                        "fmt": Parameter(
+                            "fmt",
+                            Parameter.POSITIONAL_OR_KEYWORD,
+                            annotation=Literal[aa],
+                        ),
+                        **parameters,
+                    }
                     sig_fmt = Signature(list(parameters.values()))
                     sig_fmt = str(sig_fmt)
-                    buff.append(""".. py:function:: %s.to%s""" % (method_classes[method], sig_fmt))
+                    buff.append(
+                        f""".. py:function:: {method_classes[method]}.to{sig_fmt}"""
+                    )
                     buff.append("""   :noindex:""")
                 for aa in alias:
-                    buff.append(""".. py:function:: %s.to_%s%s""" % (method_classes[method], aa.replace("/", "_").replace(".", ""), sig))
+                    buff.append(
+                        """.. py:function:: {}.to_{}{}""".format(
+                            method_classes[method],
+                            aa.replace("/", "_").replace(".", ""),
+                            sig,
+                        )
+                    )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                buff.append("""   Convert :func:`%s` to this format.""" % (method_classes[method]))
+                buff.append(
+                    """   Convert :func:`%s` to this format."""
+                    % (method_classes[method])
+                )
             buff.append("")
             buff.append("")
 
