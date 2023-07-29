@@ -218,7 +218,7 @@ def generate_sub_format_pages(formats: dict):
                     buff.append("""   :noindex:""")
                 buff.append("")
                 if docstring is None or method not in format.__dict__:
-                    docstring = """   Convert this format to :func:`%s`.""" % (
+                    docstring = """   Convert this format to :class:`%s`.""" % (
                         method_classes[method]
                     )
                 doc_obj = SphinxDocString(docstring)
@@ -280,7 +280,7 @@ def generate_sub_format_pages(formats: dict):
                     buff.append("""   :noindex:""")
                 buff.append("")
                 if docstring is None or method not in format.__dict__:
-                    docstring = "Convert :func:`%s` to this format." % (
+                    docstring = "Convert :class:`%s` to this format." % (
                         method_classes[method]
                     )
                 doc_obj = SphinxDocString(docstring)
