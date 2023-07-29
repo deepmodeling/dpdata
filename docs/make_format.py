@@ -344,7 +344,8 @@ if __name__ == "__main__":
                     "Format": ":ref:`%s`" % kk.__name__,
                     "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                     "Supported Conversions": "\n".join(
-                        method_links[mtd].format(kk.__name__, mtd) for mtd in check_supported(kk)
+                        method_links[mtd].format(kk.__name__, mtd)
+                        for mtd in check_supported(kk)
                     ),
                 }
             )
