@@ -73,7 +73,7 @@ def get_cls_link(cls: object) -> str:
 
 
 def check_supported(fmt: Format):
-    methods = []
+    methods = {}
     for mtd in [
         "from_system",
         "to_system",
@@ -85,24 +85,24 @@ def check_supported(fmt: Format):
         "to_multi_systems",
     ]:
         if detect_overridden(fmt, mtd):
-            methods.append(mtd)
+            methods[mtd] = None
             if mtd == "to_system":
-                methods.append("to_labeled_system")
+                methods["to_labeled_system"] = None
     if fmt.MultiMode != fmt.MultiModes.NotImplemented:
-        methods.append("from_multi_systems")
-        methods.append("to_multi_systems")
-    return methods
+        methods["from_multi_systems"] = None
+        methods["to_multi_systems"] = None
+    return list(methods.keys())
 
 
 method_links = {
-    "from_system": ":func:`System() <dpdata.system.System>`",
-    "to_system": ":func:`System.to() <dpdata.system.System.to>`",
-    "from_labeled_system": ":func:`LabeledSystem() <dpdata.system.LabeledSystem>`",
-    "to_labeled_system": ":func:`LabeledSystem.to() <dpdata.system.System.to>`",
-    "from_bond_order_system": ":func:`BondOrderSystem() <dpdata.bond_order_system.BondOrderSystem>`",
-    "to_bond_order_system": ":func:`BondOrderSystem.to() <dpdata.system.System.to>`",
-    "from_multi_systems": ":func:`MultiSystems.load_systems_from_file() <dpdata.system.MultiSystems.load_systems_from_file>`",
-    "to_multi_systems": ":func:`MultiSystems.to() <dpdata.system.MultiSystems.to>`",
+    "from_system": ":ref:`System() <{}_{}>`",
+    "to_system": ":ref:`System.to() <{}_{}>`",
+    "from_labeled_system": ":ref:`LabeledSystem() <{}_{}>`",
+    "to_labeled_system": ":ref:`LabeledSystem.to() <{}_{}>`",
+    "from_bond_order_system": ":ref:`BondOrderSystem() <{}_{}>`",
+    "to_bond_order_system": ":ref:`BondOrderSystem.to() <{}_{}>`",
+    "from_multi_systems": ":ref:`MultiSystems.load_systems_from_file() <{}_{}>`",
+    "to_multi_systems": ":ref:`MultiSystems.to() <{}_{}>`",
 }
 
 method_classes = {
@@ -150,8 +150,8 @@ def generate_sub_format_pages(formats: dict):
             buff.append(rst)
             buff.append("")
 
-        buff.append("Conversation")
-        buff.append("------------")
+        buff.append("Conversions")
+        buff.append("-----------")
         methods = check_supported(format)
         for method in methods:
             buff.append("")
@@ -331,9 +331,9 @@ if __name__ == "__main__":
     formats = get_formats()
     with open("formats.csv", "w", newline="") as csvfile:
         fieldnames = [
-            "Class",
+            "Format",
             "Alias",
-            "Supported Functions",
+            "Supported Conversions",
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -341,10 +341,10 @@ if __name__ == "__main__":
         for kk, vv in formats.items():
             writer.writerow(
                 {
-                    "Class": ":ref:`%s`" % kk.__name__,
+                    "Format": ":ref:`%s`" % kk.__name__,
                     "Alias": "\n".join("``%s``" % vvv for vvv in vv),
-                    "Supported Functions": "\n".join(
-                        f":ref:`{kk.__name__}_{mtd}`" for mtd in check_supported(kk)
+                    "Supported Conversions": "\n".join(
+                        method_links[mtd].format(kk.__name__, mtd) for mtd in check_supported(kk)
                     ),
                 }
             )
