@@ -331,8 +331,7 @@ if __name__ == "__main__":
                     "Class": ":ref:`%s`" % kk.__name__,
                     "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                     "Supported Functions": "\n".join(
-                        f":ref:`{kk.__name__}_{mtd}`"
-                        for mtd in check_supported(kk)
+                        f":ref:`{kk.__name__}_{mtd}`" for mtd in check_supported(kk)
                     ),
                 }
             )
