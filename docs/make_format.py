@@ -285,7 +285,11 @@ def generate_sub_format_pages(formats: dict):
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                if method == "to_labeled_system" and method not in format.__dict__ and "to_system" in format.__dict__:
+                if (
+                    method == "to_labeled_system"
+                    and method not in format.__dict__
+                    and "to_system" in format.__dict__
+                ):
                     pass
                 elif docstring is None or method not in format.__dict__:
                     docstring = "Convert :class:`%s` to this format." % (
