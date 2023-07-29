@@ -204,7 +204,7 @@ def generate_sub_format_pages(formats: dict):
                         )
                         sig_fmt = str(sig_fmt)
                         buff.append(
-                            f""".. py:function:: dpdata.{method_classes[method]}.from{sig_fmt}"""
+                            f""".. py:function:: dpdata.{method_classes[method]}{sig_fmt}"""
                         )
                         buff.append("""   :noindex:""")
                 for aa in alias:
