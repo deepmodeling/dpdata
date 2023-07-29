@@ -5,10 +5,13 @@ from inspect import Parameter, Signature, signature
 from typing import Literal
 
 from numpydoc.docscrape_sphinx import SphinxDocString
+from numpydoc.docscrape import Parameter as numpydoc_Parameter
 
 # ensure all plugins are loaded!
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
+from dpdata.system import System, LabeledSystem, MultiSystems
+from dpdata.bond_order_system import BondOrderSystem
 
 
 def get_formats() -> dict:
@@ -69,7 +72,7 @@ def get_cls_link(cls: object) -> str:
 
 
 def check_supported(fmt: Format):
-    methods = set()
+    methods = []
     for mtd in [
         "from_system",
         "to_system",
@@ -81,12 +84,12 @@ def check_supported(fmt: Format):
         "to_multi_systems",
     ]:
         if detect_overridden(fmt, mtd):
-            methods.add(mtd)
+            methods.append(mtd)
             if mtd == "to_system":
-                methods.add("to_labeled_system")
+                methods.append("to_labeled_system")
     if fmt.MultiMode != fmt.MultiModes.NotImplemented:
-        methods.add("from_multi_systems")
-        methods.add("to_multi_systems")
+        methods.append("from_multi_systems")
+        methods.append("to_multi_systems")
     return methods
 
 
@@ -110,6 +113,17 @@ method_classes = {
     "to_bond_order_system": "BondOrderSystem",
     "from_multi_systems": "MultiSystems",
     "to_multi_systems": "MultiSystems",
+}
+
+method_obj = {
+    "from_system": System,
+    "to_system": System,
+    "from_labeled_system": LabeledSystem,
+    "to_labeled_system": LabeledSystem,
+    "from_bond_order_system": BondOrderSystem,
+    "to_bond_order_system": BondOrderSystem,
+    "from_multi_systems": MultiSystems,
+    "to_multi_systems": MultiSystems,
 }
 
 
@@ -159,6 +173,8 @@ def generate_sub_format_pages(formats: dict):
             sig = Signature(list(parameters.values()))
             sig = str(sig)
             if method.startswith("from_"):
+                sig = Signature(list(parameters.values()), return_annotation=method_obj[method])
+                sig = str(sig_fmt)
                 if method != "from_multi_systems":
                     for aa in alias:
                         parameters["fmt"] = Parameter(
@@ -167,15 +183,15 @@ def generate_sub_format_pages(formats: dict):
                             default=None,
                             annotation=Literal[aa],
                         )
-                        sig_fmt = Signature(list(parameters.values()))
+                        sig_fmt = Signature(list(parameters.values()), return_annotation=method_obj[method])
                         sig_fmt = str(sig_fmt)
                         buff.append(
-                            f""".. py:function:: {method_classes[method]}.from{sig_fmt}"""
+                            f""".. py:function:: dpdata.{method_classes[method]}.from{sig_fmt}"""
                         )
                         buff.append("""   :noindex:""")
                 for aa in alias:
                     buff.append(
-                        """.. py:function:: {}.from_{}{}""".format(
+                        """.. py:function:: dpdata.{}.from_{}{}""".format(
                             method_classes[method],
                             aa.replace("/", "_").replace(".", ""),
                             sig,
@@ -190,6 +206,8 @@ def generate_sub_format_pages(formats: dict):
                         for xx in doc_obj["Parameters"]
                         if xx.name not in ("*args", "**kwargs")
                     ]
+                    doc_obj["Yields"] = []
+                    doc_obj["Returns"] = [numpydoc_Parameter("", method_classes[method], "converted system")]
                     rst = "   " + str(doc_obj)
                     buff.append(rst)
                     buff.append("")
@@ -211,12 +229,12 @@ def generate_sub_format_pages(formats: dict):
                     sig_fmt = Signature(list(parameters.values()))
                     sig_fmt = str(sig_fmt)
                     buff.append(
-                        f""".. py:function:: {method_classes[method]}.to{sig_fmt}"""
+                        f""".. py:function:: dpdata.{method_classes[method]}.to{sig_fmt}"""
                     )
                     buff.append("""   :noindex:""")
                 for aa in alias:
                     buff.append(
-                        """.. py:function:: {}.to_{}{}""".format(
+                        """.. py:function:: dpdata.{}.to_{}{}""".format(
                             method_classes[method],
                             aa.replace("/", "_").replace(".", ""),
                             sig,
@@ -226,11 +244,12 @@ def generate_sub_format_pages(formats: dict):
                 buff.append("")
                 if docstring is not None and method in format.__dict__:
                     doc_obj = SphinxDocString(docstring)
-                    doc_obj["Parameters"] = [
-                        xx
-                        for xx in doc_obj["Parameters"]
-                        if xx.name not in ("data", "*args", "**kwargs")
-                    ]
+                    if len(doc_obj["Parameters"]) > 0:
+                        doc_obj["Parameters"] = [
+                            xx
+                            for xx in doc_obj["Parameters"][1:]
+                            if xx.name not in ("*args", "**kwargs")
+                        ]
                     rst = "   " + str(doc_obj)
                     buff.append(rst)
                     buff.append("")
