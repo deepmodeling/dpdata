@@ -1,7 +1,7 @@
 import csv
 import os
 from collections import defaultdict
-from inspect import Parameter, Signature, signature
+from inspect import Parameter, Signature, signature, cleandoc
 from typing import Literal
 
 from numpydoc.docscrape import Parameter as numpydoc_Parameter
@@ -116,7 +116,7 @@ method_classes = {
     "to_multi_systems": "MultiSystems",
 }
 
-method_obj = {
+method_cls_obj = {
     "from_system": System,
     "to_system": System,
     "from_labeled_system": LabeledSystem,
@@ -143,6 +143,7 @@ def generate_sub_format_pages(formats: dict):
 
         docstring = format.__doc__
         if docstring is not None:
+            docstring = cleandoc(docstring)
             rst = str(SphinxDocString(docstring))
             buff.append(rst)
             buff.append("")
@@ -160,8 +161,11 @@ def generate_sub_format_pages(formats: dict):
             buff.append("")
             method_obj = getattr(format, method)
             docstring = method_obj.__doc__
+            if docstring is not None:
+                docstring = cleandoc(docstring)
             sig = signature(method_obj)
             parameters = dict(sig.parameters)
+            return_annotation = sig.return_annotation
             # del self
             del parameters[list(parameters)[0]]
             # del data
@@ -171,13 +175,12 @@ def generate_sub_format_pages(formats: dict):
                 del parameters["args"]
             if "kwargs" in parameters:
                 del parameters["kwargs"]
-            sig = Signature(list(parameters.values()))
+            if method == "to_multi_systems" or method.startswith("from_"):
+                sig = Signature(list(parameters.values()), return_annotation=method_cls_obj[method])
+            else:
+                sig = Signature(list(parameters.values()), return_annotation=return_annotation)
             sig = str(sig)
             if method.startswith("from_"):
-                sig = Signature(
-                    list(parameters.values()), return_annotation=method_obj[method]
-                )
-                sig = str(sig_fmt)
                 if method != "from_multi_systems":
                     for aa in alias:
                         parameters["fmt"] = Parameter(
@@ -188,7 +191,7 @@ def generate_sub_format_pages(formats: dict):
                         )
                         sig_fmt = Signature(
                             list(parameters.values()),
-                            return_annotation=method_obj[method],
+                            return_annotation=method_cls_obj[method],
                         )
                         sig_fmt = str(sig_fmt)
                         buff.append(
@@ -215,7 +218,7 @@ def generate_sub_format_pages(formats: dict):
                     doc_obj["Yields"] = []
                     doc_obj["Returns"] = [
                         numpydoc_Parameter(
-                            "", method_classes[method], "converted system"
+                            "", method_classes[method], ["converted system"]
                         )
                     ]
                     rst = "   " + str(doc_obj)
@@ -236,7 +239,10 @@ def generate_sub_format_pages(formats: dict):
                         ),
                         **parameters,
                     }
-                    sig_fmt = Signature(list(parameters.values()))
+                    if method == "to_multi_systems":
+                        sig_fmt = Signature(list(parameters.values()), return_annotation=method_cls_obj[method])
+                    else:
+                        sig_fmt = Signature(list(parameters.values()), return_annotation=return_annotation)
                     sig_fmt = str(sig_fmt)
                     buff.append(
                         f""".. py:function:: dpdata.{method_classes[method]}.to{sig_fmt}"""
@@ -259,6 +265,13 @@ def generate_sub_format_pages(formats: dict):
                             xx
                             for xx in doc_obj["Parameters"][1:]
                             if xx.name not in ("*args", "**kwargs")
+                        ]
+                    if method == "to_multi_systems":
+                        doc_obj["Yields"] = []
+                        doc_obj["Returns"] = [
+                            numpydoc_Parameter(
+                                "", method_classes[method], ["this system"]
+                            )
                         ]
                     rst = "   " + str(doc_obj)
                     buff.append(rst)
