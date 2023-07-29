@@ -155,7 +155,7 @@ def generate_sub_format_pages(formats: dict):
         methods = check_supported(format)
         for method in methods:
             buff.append("")
-            buff.append(".. _%s_%s:" % (format.__name__, method))
+            buff.append(f".. _{format.__name__}_{method}:")
             buff.append("")
             if method.startswith("from_"):
                 buff.append("Convert from this format to %s" % method_classes[method])
@@ -218,7 +218,9 @@ def generate_sub_format_pages(formats: dict):
                     buff.append("""   :noindex:""")
                 buff.append("")
                 if docstring is None or method not in format.__dict__:
-                    docstring = """   Convert this format to :func:`%s`.""" % (method_classes[method])
+                    docstring = """   Convert this format to :func:`%s`.""" % (
+                        method_classes[method]
+                    )
                 doc_obj = SphinxDocString(docstring)
                 if len(doc_obj["Parameters"]) > 0:
                     doc_obj["Parameters"] = [
@@ -237,9 +239,7 @@ def generate_sub_format_pages(formats: dict):
                         ]
                 doc_obj["Yields"] = []
                 doc_obj["Returns"] = [
-                    numpydoc_Parameter(
-                        "", method_classes[method], ["converted system"]
-                    )
+                    numpydoc_Parameter("", method_classes[method], ["converted system"])
                 ]
                 rst = "   " + str(doc_obj)
                 buff.append(rst)
@@ -280,7 +280,9 @@ def generate_sub_format_pages(formats: dict):
                     buff.append("""   :noindex:""")
                 buff.append("")
                 if docstring is None or method not in format.__dict__:
-                    docstring = "Convert :func:`%s` to this format." % (method_classes[method])
+                    docstring = "Convert :func:`%s` to this format." % (
+                        method_classes[method]
+                    )
                 doc_obj = SphinxDocString(docstring)
                 if len(doc_obj["Parameters"]) > 0:
                     doc_obj["Parameters"] = [
@@ -300,9 +302,7 @@ def generate_sub_format_pages(formats: dict):
                 if method == "to_multi_systems":
                     doc_obj["Yields"] = []
                     doc_obj["Returns"] = [
-                        numpydoc_Parameter(
-                            "", method_classes[method], ["this system"]
-                        )
+                        numpydoc_Parameter("", method_classes[method], ["this system"])
                     ]
                 rst = "   " + str(doc_obj)
                 buff.append(rst)
@@ -331,7 +331,8 @@ if __name__ == "__main__":
                     "Class": ":ref:`%s`" % kk.__name__,
                     "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                     "Supported Functions": "\n".join(
-                        ":ref:`%s_%s`" % (kk.__name__, mtd) for mtd in check_supported(kk)
+                        f":ref:`{kk.__name__}_{mtd}`"
+                        for mtd in check_supported(kk)
                     ),
                 }
             )
