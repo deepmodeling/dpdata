@@ -165,11 +165,7 @@ def generate_sub_format_pages(formats: dict):
                 buff.append("`" * len(buff[-1]))
             buff.append("")
             method_obj = getattr(format, method)
-            if (
-                method == "to_label_system"
-                and method not in format.__dict__
-                and "to_system" in format.__dict__
-            ):
+            if method == "to_labeled_system" and method not in format.__dict__ and "to_system" in format.__dict__:
                 method_obj = getattr(format, "to_system")
             docstring = method_obj.__doc__
             if docstring is not None:
