@@ -4,14 +4,15 @@ from collections import defaultdict
 from inspect import Parameter, Signature, signature
 from typing import Literal
 
-from numpydoc.docscrape_sphinx import SphinxDocString
 from numpydoc.docscrape import Parameter as numpydoc_Parameter
+from numpydoc.docscrape_sphinx import SphinxDocString
+
+from dpdata.bond_order_system import BondOrderSystem
 
 # ensure all plugins are loaded!
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-from dpdata.system import System, LabeledSystem, MultiSystems
-from dpdata.bond_order_system import BondOrderSystem
+from dpdata.system import LabeledSystem, MultiSystems, System
 
 
 def get_formats() -> dict:
@@ -173,7 +174,9 @@ def generate_sub_format_pages(formats: dict):
             sig = Signature(list(parameters.values()))
             sig = str(sig)
             if method.startswith("from_"):
-                sig = Signature(list(parameters.values()), return_annotation=method_obj[method])
+                sig = Signature(
+                    list(parameters.values()), return_annotation=method_obj[method]
+                )
                 sig = str(sig_fmt)
                 if method != "from_multi_systems":
                     for aa in alias:
@@ -183,7 +186,10 @@ def generate_sub_format_pages(formats: dict):
                             default=None,
                             annotation=Literal[aa],
                         )
-                        sig_fmt = Signature(list(parameters.values()), return_annotation=method_obj[method])
+                        sig_fmt = Signature(
+                            list(parameters.values()),
+                            return_annotation=method_obj[method],
+                        )
                         sig_fmt = str(sig_fmt)
                         buff.append(
                             f""".. py:function:: dpdata.{method_classes[method]}.from{sig_fmt}"""
@@ -207,7 +213,11 @@ def generate_sub_format_pages(formats: dict):
                         if xx.name not in ("*args", "**kwargs")
                     ]
                     doc_obj["Yields"] = []
-                    doc_obj["Returns"] = [numpydoc_Parameter("", method_classes[method], "converted system")]
+                    doc_obj["Returns"] = [
+                        numpydoc_Parameter(
+                            "", method_classes[method], "converted system"
+                        )
+                    ]
                     rst = "   " + str(doc_obj)
                     buff.append(rst)
                     buff.append("")
