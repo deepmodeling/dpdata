@@ -1,7 +1,7 @@
 import csv
 import os
 from collections import defaultdict
-from inspect import Parameter, Signature, signature, cleandoc
+from inspect import Parameter, Signature, cleandoc, signature
 from typing import Literal
 
 from numpydoc.docscrape import Parameter as numpydoc_Parameter
@@ -176,9 +176,13 @@ def generate_sub_format_pages(formats: dict):
             if "kwargs" in parameters:
                 del parameters["kwargs"]
             if method == "to_multi_systems" or method.startswith("from_"):
-                sig = Signature(list(parameters.values()), return_annotation=method_cls_obj[method])
+                sig = Signature(
+                    list(parameters.values()), return_annotation=method_cls_obj[method]
+                )
             else:
-                sig = Signature(list(parameters.values()), return_annotation=return_annotation)
+                sig = Signature(
+                    list(parameters.values()), return_annotation=return_annotation
+                )
             sig = str(sig)
             if method.startswith("from_"):
                 if method != "from_multi_systems":
@@ -240,9 +244,15 @@ def generate_sub_format_pages(formats: dict):
                         **parameters,
                     }
                     if method == "to_multi_systems":
-                        sig_fmt = Signature(list(parameters.values()), return_annotation=method_cls_obj[method])
+                        sig_fmt = Signature(
+                            list(parameters.values()),
+                            return_annotation=method_cls_obj[method],
+                        )
                     else:
-                        sig_fmt = Signature(list(parameters.values()), return_annotation=return_annotation)
+                        sig_fmt = Signature(
+                            list(parameters.values()),
+                            return_annotation=return_annotation,
+                        )
                     sig_fmt = str(sig_fmt)
                     buff.append(
                         f""".. py:function:: dpdata.{method_classes[method]}.to{sig_fmt}"""
