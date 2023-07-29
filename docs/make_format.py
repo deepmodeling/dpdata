@@ -134,6 +134,8 @@ def generate_sub_format_pages(formats: dict):
     for format, alias in formats.items():
         # format: Format, alias: list[str]
         buff = []
+        buff.append(".. _%s:" % format.__name__)
+        buff.append("")
         for aa in alias:
             buff.append("%s format" % aa)
             buff.append("=" * len(buff[-1]))
@@ -152,6 +154,9 @@ def generate_sub_format_pages(formats: dict):
         buff.append("------------")
         methods = check_supported(format)
         for method in methods:
+            buff.append("")
+            buff.append(".. _%s_%s:" % (format.__name__, method))
+            buff.append("")
             if method.startswith("from_"):
                 buff.append("Convert from this format to %s" % method_classes[method])
                 buff.append("`" * len(buff[-1]))
@@ -212,27 +217,33 @@ def generate_sub_format_pages(formats: dict):
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                if docstring is not None and method in format.__dict__:
-                    doc_obj = SphinxDocString(docstring)
+                if docstring is None or method not in format.__dict__:
+                    docstring = """   Convert this format to :func:`%s`.""" % (method_classes[method])
+                doc_obj = SphinxDocString(docstring)
+                if len(doc_obj["Parameters"]) > 0:
                     doc_obj["Parameters"] = [
                         xx
                         for xx in doc_obj["Parameters"]
                         if xx.name not in ("*args", "**kwargs")
                     ]
-                    doc_obj["Yields"] = []
-                    doc_obj["Returns"] = [
-                        numpydoc_Parameter(
-                            "", method_classes[method], ["converted system"]
-                        )
-                    ]
-                    rst = "   " + str(doc_obj)
-                    buff.append(rst)
-                    buff.append("")
                 else:
-                    buff.append(
-                        """   Convert this format to :func:`%s`."""
-                        % (method_classes[method])
+                    if method == "from_multi_systems":
+                        doc_obj["Parameters"] = [
+                            numpydoc_Parameter(
+                                "directory",
+                                "str",
+                                ["directory of systems"],
+                            )
+                        ]
+                doc_obj["Yields"] = []
+                doc_obj["Returns"] = [
+                    numpydoc_Parameter(
+                        "", method_classes[method], ["converted system"]
                     )
+                ]
+                rst = "   " + str(doc_obj)
+                buff.append(rst)
+                buff.append("")
             elif method.startswith("to_"):
                 for aa in alias:
                     parameters = {
@@ -268,29 +279,34 @@ def generate_sub_format_pages(formats: dict):
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                if docstring is not None and method in format.__dict__:
-                    doc_obj = SphinxDocString(docstring)
-                    if len(doc_obj["Parameters"]) > 0:
-                        doc_obj["Parameters"] = [
-                            xx
-                            for xx in doc_obj["Parameters"][1:]
-                            if xx.name not in ("*args", "**kwargs")
-                        ]
+                if docstring is None or method not in format.__dict__:
+                    docstring = "Convert :func:`%s` to this format." % (method_classes[method])
+                doc_obj = SphinxDocString(docstring)
+                if len(doc_obj["Parameters"]) > 0:
+                    doc_obj["Parameters"] = [
+                        xx
+                        for xx in doc_obj["Parameters"][1:]
+                        if xx.name not in ("*args", "**kwargs")
+                    ]
+                else:
                     if method == "to_multi_systems":
-                        doc_obj["Yields"] = []
-                        doc_obj["Returns"] = [
+                        doc_obj["Parameters"] = [
                             numpydoc_Parameter(
-                                "", method_classes[method], ["this system"]
+                                "directory",
+                                "str",
+                                ["directory to save systems"],
                             )
                         ]
-                    rst = "   " + str(doc_obj)
-                    buff.append(rst)
-                    buff.append("")
-                else:
-                    buff.append(
-                        """   Convert :func:`%s` to this format."""
-                        % (method_classes[method])
-                    )
+                if method == "to_multi_systems":
+                    doc_obj["Yields"] = []
+                    doc_obj["Returns"] = [
+                        numpydoc_Parameter(
+                            "", method_classes[method], ["this system"]
+                        )
+                    ]
+                rst = "   " + str(doc_obj)
+                buff.append(rst)
+                buff.append("")
             buff.append("")
             buff.append("")
 
@@ -312,10 +328,10 @@ if __name__ == "__main__":
         for kk, vv in formats.items():
             writer.writerow(
                 {
-                    "Class": get_cls_link(kk),
+                    "Class": ":ref:`%s`" % kk.__name__,
                     "Alias": "\n".join("``%s``" % vvv for vvv in vv),
                     "Supported Functions": "\n".join(
-                        method_links[mtd] for mtd in check_supported(kk)
+                        ":ref:`%s_%s`" % (kk.__name__, mtd) for mtd in check_supported(kk)
                     ),
                 }
             )
