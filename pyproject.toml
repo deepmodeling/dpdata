@@ -54,6 +54,7 @@ docs = [
     'm2r2',
     'deepmodeling-sphinx>=0.1.1',
     'sphinx-argparse',
+    'rdkit',
 ]
 
 [tool.setuptools.packages.find]
