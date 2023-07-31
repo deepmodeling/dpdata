@@ -31,13 +31,12 @@ class DFTBplusFormat(Format):
         """
         Reads system information from the given DFTB+ file paths.
 
-        Parameters:
-            file_paths (tuple): A tuple containing the input and output file paths.
-            the input file path should be a .hsd file and the output file path should be a .out file.
-                - Input file (file_in): Contains information about symbols and coord.
-                - Output file (file_out): Contains information about energy and force.
+        file_paths (tuple): A tuple containing the input and output file paths.
+            - Input file (file_in): Contains information about symbols and coord.
+            - Output file (file_out): Contains information about energy and force.
 
-            **kwargs: Additional optional keyword arguments.
+        **kwargs: Additional optional keyword arguments.
+
         """
         file_in, file_out = file_paths
         symbols, coord, energy, forces = read_dftb_plus(file_in,file_out)
