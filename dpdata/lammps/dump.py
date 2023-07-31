@@ -215,7 +215,9 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False):
         system["cells"].append(cell)
         atype = get_atype(array_lines[ii], type_idx_zero=type_idx_zero)
         # map atom type; a[as[a][as[as[b]]]] = b[as[b][as^{-1}[b]]] = b[id]
-        idx = np.argsort(atype)[np.argsort(np.argsort(system["atom_types"]))]
+        idx = np.argsort(atype, kind="stable")[
+            np.argsort(np.argsort(system["atom_types"], kind="stable"), kind="stable")
+        ]
         system["coords"].append(
             safe_get_posi(array_lines[ii], cell, np.array(orig), unwrap)[idx]
         )
