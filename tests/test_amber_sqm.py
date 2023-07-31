@@ -79,6 +79,3 @@ class TestAmberSqmIn(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("amber/sqm_test.in"):
             os.remove("amber/sqm_test.in")
-
-
-
