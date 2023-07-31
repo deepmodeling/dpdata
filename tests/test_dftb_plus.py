@@ -13,8 +13,9 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
             "hartree/bohr", "eV/angstrom"
         ).value()
 
-        self.system_1 = dpdata.LabeledSystem(("dftb_plus/dftb_pin.hsd",'dftb_plus/detailed.out'), fmt="dftb_plus")
-
+        self.system_1 = dpdata.LabeledSystem(
+            ("dftb_plus/dftb_pin.hsd", "dftb_plus/detailed.out"), fmt="dftb_plus"
+        )
 
         self.system_2 = dpdata.LabeledSystem(
             data={
