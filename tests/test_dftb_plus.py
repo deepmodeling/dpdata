@@ -13,7 +13,8 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
             "hartree/bohr", "eV/angstrom"
         ).value()
 
-        self.system_1 = dpdata.LabeledSystem("dftb_plus/input.out", fmt="dftb_plus")
+        self.system_1 = dpdata.LabeledSystem(("dftb_plus/dftb_pin.hsd",'dftb_plus/detailed.out'), fmt="dftb_plus")
+
 
         self.system_2 = dpdata.LabeledSystem(
             data={
@@ -32,7 +33,7 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
                 )
                 * length_convert,
                 "energies": np.array([-3.2963983884]) * energy_convert,
-                "forces": -np.array(
+                "forces": np.array(
                     [
                         [
                             [0.016567056203, 0.002817951422, 0.005634574270],
