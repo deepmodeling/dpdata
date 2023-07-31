@@ -47,9 +47,7 @@ class QuipGapxyzSystems:
         atom_num = int(lines[0].strip("\n").strip())
         if len(lines) != atom_num + 2:
             raise RuntimeError(
-                "format error, atom_num=={}, {}!=atom_num+2".format(
-                    atom_num, len(lines)
-                )
+                f"format error, atom_num=={atom_num}, {len(lines)}!=atom_num+2"
             )
         data_format_line = lines[1].strip("\n").strip() + " "
         field_value_pattern = re.compile(

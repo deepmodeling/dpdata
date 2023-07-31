@@ -80,3 +80,5 @@ class TestAmberSqmIn(unittest.TestCase):
         if os.path.isfile("amber/sqm_test.in"):
             os.remove("amber/sqm_test.in")
 
+
+
