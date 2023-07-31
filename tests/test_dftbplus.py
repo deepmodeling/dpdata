@@ -7,7 +7,6 @@ from context import dpdata
 
 class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp(self):
-        length_convert = dpdata.unit.LengthConversion("bohr", "angstrom").value()
         energy_convert = dpdata.unit.EnergyConversion("hartree", "eV").value()
         force_convert = dpdata.unit.ForceConversion(
             "hartree/bohr", "eV/angstrom"
@@ -31,8 +30,7 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
                             [0.702550, 0.603740, -0.789160],
                         ]
                     ]
-                )
-                * length_convert,
+                ),
                 "energies": np.array([-3.2963983884]) * energy_convert,
                 "forces": np.array(
                     [
