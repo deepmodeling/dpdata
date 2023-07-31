@@ -80,5 +80,3 @@ class TestAmberSqmIn(unittest.TestCase):
         if os.path.isfile("amber/sqm_test.in"):
             os.remove("amber/sqm_test.in")
 
-#print(dpdata.LabeledSystem("amber/sqm_forces.out", fmt="sqm/out"))
-print(dpdata.LabeledSystem("amber/sqm.in", fmt="sqm/in"))
