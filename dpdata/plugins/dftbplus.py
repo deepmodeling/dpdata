@@ -23,8 +23,7 @@ class DFTBplusFormat(Format):
 
     Methods:
         from_labeled_system(file_paths, **kwargs): Reads system information from files.
-
-        
+    
     """
         
     def from_labeled_system(self, file_paths, **kwargs):
