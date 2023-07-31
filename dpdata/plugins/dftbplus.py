@@ -31,11 +31,15 @@ class DFTBplusFormat(Format):
         """
         Reads system information from the given DFTB+ file paths.
 
-        file_paths (tuple): A tuple containing the input and output file paths.
+        Parameters
+        ----------
+        file_paths: tuple
+            A tuple containing the input and output file paths.
             - Input file (file_in): Contains information about symbols and coord.
             - Output file (file_out): Contains information about energy and force.
 
-        **kwargs: Additional optional keyword arguments.
+        **kwargs : dict
+            other parameters
 
         """
         file_in, file_out = file_paths
