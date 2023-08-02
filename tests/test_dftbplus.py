@@ -13,7 +13,7 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
         ).value()
 
         self.system_1 = dpdata.LabeledSystem(
-            ("dftb_plus/dftb_pin.hsd", "dftb_plus/detailed.out"), fmt="dftb_plus"
+            ("dftbplus/dftb_pin.hsd", "dftbplus/detailed.out"), fmt="dftbplus"
         )
 
         self.system_2 = dpdata.LabeledSystem(

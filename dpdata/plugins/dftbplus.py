@@ -8,7 +8,7 @@ energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 
-@Format.register("dftb_plus")
+@Format.register("dftbplus")
 class DFTBplusFormat(Format):
     """The DFTBplusFormat class handles files in the DFTB+ format.
 
