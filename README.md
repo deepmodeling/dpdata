@@ -88,11 +88,12 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
 | Amber/sqm | sqm.out   | False        | False   | System        | 'sqm/out'            |
 | Gromacs | gro         | True         | False   | System        | 'gromacs/gro'        |
-| ABACUS  | STRU        | False        | False   | System        | 'abacus/stru'         |
+| ABACUS  | STRU        | False        | False   | System        | 'abacus/stru'        |
 | ABACUS  | STRU        | False        | True    | LabeledSystem | 'abacus/scf'         |
 | ABACUS  | cif         | True         | True    | LabeledSystem | 'abacus/md'          |
 | ABACUS  | STRU        | True         | True    | LabeledSystem | 'abacus/relax'       |
 | ase     | structure   | True         | True    | MultiSystems  | 'ase/structure'      |
+| DFTB+   | dftbplus    | False        | True    | LabeledSystem | 'dftbplus'           |
 
 
 The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
