@@ -205,6 +205,7 @@ def to_system_data(input_name, prefix, begin=0, step=1):
         data["cells"], tmp_steps = load_data(
             prefix + ".cel", 3, begin=begin, step=step, convert=length_convert
         )
+        data["cells"] = np.transpose(data["cells"], (0, 2, 1))
         if csteps != tmp_steps:
             csteps.append(None)
             tmp_steps.append(None)
