@@ -82,10 +82,12 @@ class DeePMDMixedFormat(Format):
     Examples
     --------
     Dump a MultiSystems into a mixed type numpy directory:
+
     >>> import dpdata
     >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir")
 
     Load a mixed type data into a MultiSystems:
+
     >>> import dpdata
     >>> dpdata.MultiSystems().load_systems_from_file("mixed_dir", fmt="deepmd/npy/mixed")
     """
@@ -161,6 +163,7 @@ class DeePMDHDF5Format(Format):
     Examples
     --------
     Dump a MultiSystems to a HDF5 file:
+
     >>> import dpdata
     >>> dpdata.MultiSystems().from_deepmd_npy("data").to_deepmd_hdf5("data.hdf5")
     """

@@ -831,6 +831,7 @@ class System(MSONable):
         Examples
         --------
         The default driver is DP:
+
         >>> labeled_sys = ori_sys.predict("frozen_model_compressed.pb")
         """
         if not isinstance(driver, Driver):
@@ -1406,6 +1407,7 @@ class MultiSystems:
         Examples
         --------
         Minimize a system using ASE BFGS along with a DP driver:
+
         >>> from dpdata.driver import Driver
         >>> from ase.optimize import BFGS
         >>> driver = driver.get_driver("dp")("some_model.pb")
