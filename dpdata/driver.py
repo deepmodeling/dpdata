@@ -125,6 +125,7 @@ class HybridDriver(Driver):
     ...     {"type": "sqm", "qm_theory": "DFTB3"},
     ...     {"type": "dp", "dp": "frozen_model.pb"},
     ... ])
+
     This driver is the hybrid of SQM and DP.
     """
 
