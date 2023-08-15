@@ -255,7 +255,7 @@ def get_nele_from_stru(geometry_inlines):
 
 
 def get_frame_from_stru(fname):
-    assert isinstacne(fname, str)
+    assert isinstance(fname, str)
     with open(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
