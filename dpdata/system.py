@@ -654,7 +654,7 @@ class System(MSONable):
         if len(ncopy) != 3:
             raise RuntimeError("ncopy must be a list or tuple with 3 int")
         for ii in ncopy:
-            if type(ii) is not int:
+            if not isinstance(ii, int):
                 raise RuntimeError("ncopy must be a list or tuple must with 3 int")
 
         tmp = System()
@@ -690,7 +690,7 @@ class System(MSONable):
             raise RuntimeError(
                 "Must use method replace() of the instance of class dpdata.System"
             )
-        if type(replace_num) is not int:
+        if not isinstance(replace_num, int):
             raise ValueError(f"replace_num must be a integer. Now is {replace_num}")
         if replace_num <= 0:
             raise ValueError(f"replace_num must be larger than 0.Now is {replace_num}")
