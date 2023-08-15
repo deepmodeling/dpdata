@@ -1410,7 +1410,7 @@ class MultiSystems:
 
         >>> from dpdata.driver import Driver
         >>> from ase.optimize import BFGS
-        >>> driver = driver.get_driver("dp")("some_model.pb")
+        >>> driver = Driver.get_driver("dp")("some_model.pb")
         >>> some_system.minimize(minimizer="ase", driver=driver, optimizer=BFGS, fmax=1e-5)
         """
         if not isinstance(minimizer, Minimizer):
