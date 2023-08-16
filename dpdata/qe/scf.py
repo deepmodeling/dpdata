@@ -129,13 +129,13 @@ def get_stress(lines):
 
 
 def get_frame(fname):
-    if type(fname) == str:
+    if isinstance(fname, str):
         path_out = fname
         outname = os.path.basename(path_out)
         # the name of the input file is assumed to be different from the output by 'in' and 'out'
         inname = outname.replace("out", "in")
         path_in = os.path.join(os.path.dirname(path_out), inname)
-    elif type(fname) == list and len(fname) == 2:
+    elif isinstance(fname, list) and len(fname) == 2:
         path_in = fname[0]
         path_out = fname[1]
     else:

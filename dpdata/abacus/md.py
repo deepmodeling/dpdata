@@ -148,7 +148,7 @@ def get_energy(outlines, ndump, dump_freq):
 
 
 def get_frame(fname):
-    if type(fname) == str:
+    if isinstance(fname, str):
         # if the input parameter is only one string, it is assumed that it is the
         # base directory containing INPUT file;
         path_in = os.path.join(fname, "INPUT")

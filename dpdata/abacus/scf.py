@@ -161,7 +161,7 @@ def get_frame(fname):
         "forces": [],
     }
 
-    if type(fname) == str:
+    if isinstance(fname, str):
         # if the input parameter is only one string, it is assumed that it is the
         # base directory containing INPUT file;
         path_in = os.path.join(fname, "INPUT")
@@ -255,7 +255,7 @@ def get_nele_from_stru(geometry_inlines):
 
 
 def get_frame_from_stru(fname):
-    assert type(fname) == str
+    assert isinstance(fname, str)
     with open(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
@@ -304,7 +304,7 @@ def make_unlabeled_stru(
         out += "\n"
 
     if numerical_descriptor is not None:
-        assert type(numerical_descriptor) == str
+        assert isinstance(numerical_descriptor, str)
         out += "NUMERICAL_DESCRIPTOR\n%s\n" % numerical_descriptor
         out += "\n"
 
