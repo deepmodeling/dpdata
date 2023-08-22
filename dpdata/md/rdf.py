@@ -62,9 +62,9 @@ def _compute_rdf_1frame(box, posis, atype, sel_type=[None, None], max_r=5, nbins
         sel_type[0] = all_types
     if sel_type[1] is None:
         sel_type[1] = all_types
-    if type(sel_type[0]) is not list:
+    if not isinstance(sel_type[0], list):
         sel_type[0] = [sel_type[0]]
-    if type(sel_type[1]) is not list:
+    if not isinstance(sel_type[1], list):
         sel_type[1] = [sel_type[1]]
     natoms = len(posis)
     import ase.neighborlist
