@@ -686,10 +686,6 @@ class System(MSONable):
         return tmp
 
     def replace(self, initial_atom_type, end_atom_type, replace_num):
-        if type(self) is not dpdata.System:
-            raise RuntimeError(
-                "Must use method replace() of the instance of class dpdata.System"
-            )
         if not isinstance(replace_num, int):
             raise ValueError(f"replace_num must be a integer. Now is {replace_num}")
         if replace_num <= 0:
@@ -1179,6 +1175,11 @@ class LabeledSystem(System):
             return self.copy()
         idx = np.abs(energies - np.mean(energies)) / std < threshold
         return self.sub_system(idx)
+
+    def replace(self, initial_atom_type, end_atom_type, replace_num):
+        raise RuntimeError(
+                "Must use method replace() of the instance of class dpdata.System"
+            )
 
 
 class MultiSystems:
