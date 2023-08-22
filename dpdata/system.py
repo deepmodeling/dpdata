@@ -1178,8 +1178,8 @@ class LabeledSystem(System):
 
     def replace(self, initial_atom_type, end_atom_type, replace_num):
         raise RuntimeError(
-                "Must use method replace() of the instance of class dpdata.System"
-            )
+            "Must use method replace() of the instance of class dpdata.System"
+        )
 
 
 class MultiSystems:
