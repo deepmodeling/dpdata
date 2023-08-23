@@ -509,7 +509,7 @@ class System(MSONable):
             self.sort_atom_names(type_map=type_map)
 
     def apply_type_map(self, type_map):
-        if type_map is not None and type(type_map) is list:
+        if type_map is not None and isinstance(type_map, list):
             self.check_type_map(type_map)
         else:
             raise RuntimeError("invalid type map, cannot be applied")
