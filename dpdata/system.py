@@ -957,7 +957,7 @@ class System(MSONable):
     @classmethod
     def register_data_type(cls, *data_type: Tuple[DataType]):
         """Register data type.
-        
+
         Parameters
         ----------
         *data_type : tuple[DataType]
