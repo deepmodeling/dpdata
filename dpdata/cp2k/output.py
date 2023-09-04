@@ -409,7 +409,7 @@ def get_frames(fname):
                 cell.append(ii.split()[4:7])
             if "Atomic kind:" in ii:
                 atom_symbol_list.append(ii.split()[3])
-            if "Atom  Kind  Element" in ii:
+            if "Atom  Kind  Element" in ii or "Atom Kind Element" in ii:
                 coord_flag = True
                 coord_idx = idx
 
