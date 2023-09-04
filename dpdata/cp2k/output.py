@@ -410,12 +410,11 @@ def get_frames(fname):
             if "Atomic kind:" in ii:
                 atom_symbol_list.append(ii.split()[3])
 
-            # start to parse coords block
+            # beginning of coords block
             if "Atom  Kind  Element" in ii or "Atom Kind Element" in ii:
                 coord_flag = True
-                coord_idx = idx  # save start line of coord block
             # parse coords lines
-            if coord_flag and idx > coord_idx:
+            elif coord_flag:
                 if ii == "\n":
                     coord_flag = len(coord) == 0  # skip empty line at the beginning
                 else:
