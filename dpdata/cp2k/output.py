@@ -409,9 +409,9 @@ def get_frames(fname):
                 cell.append(ii.split()[4:7])
             if "Atomic kind:" in ii:
                 atom_symbol_list.append(ii.split()[3])
-            
-            # parse coords    
-            if "Atom  Kind  Element" in ii: # ver. < 2023
+
+            # parse coords
+            if "Atom  Kind  Element" in ii:  # ver. < 2023
                 coord_flag = True
                 coord_idx = idx + 1  # skip empty line
             elif "Atom Kind Element" in ii:  # ver. >= 2023
@@ -424,7 +424,7 @@ def get_frames(fname):
                 else:
                     coord.append(ii.split()[4:7])
                     atom_symbol_idx_list.append(ii.split()[1])
-                    
+
             if "ENERGY|" in ii:
                 energy = ii.split()[8]
             if " Atom   Kind " in ii:
