@@ -6,6 +6,7 @@ pip install .
 
 ```py
 import dpdata
+
 print(dpdata.System(12, fmt="random"))
 ```
 

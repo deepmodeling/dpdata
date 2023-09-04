@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 
 import numpy as np
 
@@ -162,7 +161,7 @@ def get_frame(fname):
         "forces": [],
     }
 
-    if type(fname) == str:
+    if isinstance(fname, str):
         # if the input parameter is only one string, it is assumed that it is the
         # base directory containing INPUT file;
         path_in = os.path.join(fname, "INPUT")
@@ -172,7 +171,7 @@ def get_frame(fname):
     if not CheckFile(path_in):
         return data
 
-    with open(path_in, "r") as fp:
+    with open(path_in) as fp:
         inlines = fp.read().split("\n")
 
     geometry_path_in = get_geometry_in(fname, inlines)
@@ -180,9 +179,9 @@ def get_frame(fname):
     if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
         return data
 
-    with open(geometry_path_in, "r") as fp:
+    with open(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
-    with open(path_out, "r") as fp:
+    with open(path_out) as fp:
         outlines = fp.read().split("\n")
 
     celldm, cell = get_cell(geometry_inlines)
@@ -256,8 +255,8 @@ def get_nele_from_stru(geometry_inlines):
 
 
 def get_frame_from_stru(fname):
-    assert type(fname) == str
-    with open(fname, "r") as fp:
+    assert isinstance(fname, str)
+    with open(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
     inlines = ["ntype %d" % nele]
@@ -305,7 +304,7 @@ def make_unlabeled_stru(
         out += "\n"
 
     if numerical_descriptor is not None:
-        assert type(numerical_descriptor) == str
+        assert isinstance(numerical_descriptor, str)
         out += "NUMERICAL_DESCRIPTOR\n%s\n" % numerical_descriptor
         out += "\n"
 
@@ -328,10 +327,11 @@ def make_unlabeled_stru(
         out += "0.0\n"
         out += str(data["atom_numbs"][iele]) + "\n"
         for iatom in range(data["atom_numbs"][iele]):
+            iatomtype = np.nonzero(data["atom_types"] == iele)[0][iatom]
             out += "%.12f %.12f %.12f %d %d %d\n" % (
-                data["coords"][frame_idx][natom_tot, 0],
-                data["coords"][frame_idx][natom_tot, 1],
-                data["coords"][frame_idx][natom_tot, 2],
+                data["coords"][frame_idx][iatomtype, 0],
+                data["coords"][frame_idx][iatomtype, 1],
+                data["coords"][frame_idx][iatomtype, 2],
                 1,
                 1,
                 1,

@@ -8,7 +8,7 @@ ang2ang = 1
 
 #############################read output#####################################
 def get_single_line_tail(fin, keyword, num=1):
-    file = open(fin, "r")
+    file = open(fin)
     res = []
     for value in file:
         if keyword in value:
@@ -23,7 +23,7 @@ def get_single_line_tail(fin, keyword, num=1):
 ## begin_column: begin column num
 ## column_num: read column num
 def extract_keyword(fout, keyword, down_line_num, begin_column, column_num):
-    file = open(fout, "r")
+    file = open(fout)
     ret = []
     flag = 0
     idx = 0
@@ -63,7 +63,7 @@ def get_atom_types(fout, atomnums):
 
 
 def get_atom_name(fout):
-    file = open(fout, "r")
+    file = open(fout)
     ret = []
     for value in file:
         if "Species number:" in value:

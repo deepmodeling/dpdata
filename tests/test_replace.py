@@ -1,13 +1,12 @@
-import os
 import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import numpy as np
 from comp_sys import CompSys, IsPBC
 from context import dpdata
 
 
-class ConstGenerator(object):
+class ConstGenerator:
     def __init__(self):
         self.choice_generator = self.get_choice_generator()
 

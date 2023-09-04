@@ -1,13 +1,12 @@
-import os
 import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 import numpy as np
 from comp_sys import CompSys, IsPBC
 from context import dpdata
 
 
-class NormalGenerator(object):
+class NormalGenerator:
     def __init__(self):
         self.randn_generator = self.get_randn_generator()
         self.rand_generator = self.get_rand_generator()
@@ -44,7 +43,7 @@ class NormalGenerator(object):
         )
 
 
-class UniformGenerator(object):
+class UniformGenerator:
     def __init__(self):
         self.randn_generator = self.get_randn_generator()
         self.rand_generator = self.get_rand_generator()
@@ -97,7 +96,7 @@ class UniformGenerator(object):
             count += 1
 
 
-class ConstGenerator(object):
+class ConstGenerator:
     def __init__(self):
         self.randn_generator = self.get_randn_generator()
         self.rand_generator = self.get_rand_generator()

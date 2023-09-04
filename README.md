@@ -1,3 +1,9 @@
+# dpdata
+
+[![conda-forge](https://img.shields.io/conda/dn/conda-forge/dpdata?color=red&label=conda-forge&logo=conda-forge)](https://anaconda.org/conda-forge/dpdata)
+[![pip install](https://img.shields.io/pypi/dm/dpdata?label=pip%20install&logo=pypi)](https://pypi.org/project/dpdata)
+[![Documentation Status](https://readthedocs.org/projects/dpdata/badge/)](https://dpdata.readthedocs.io/)
+
 **dpdata** is a python package for manipulating data formats of software in computational science, including DeePMD-kit, VASP, LAMMPS, GROMACS, Gaussian.
 dpdata only works with python 3.7 or above.
 
@@ -82,11 +88,12 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | Amber   | multi       | True         | True    | LabeledSystem | 'amber/md'           |
 | Amber/sqm | sqm.out   | False        | False   | System        | 'sqm/out'            |
 | Gromacs | gro         | True         | False   | System        | 'gromacs/gro'        |
-| ABACUS  | STRU        | False        | False   | System        | 'abacus/stru'         |
+| ABACUS  | STRU        | False        | False   | System        | 'abacus/stru'        |
 | ABACUS  | STRU        | False        | True    | LabeledSystem | 'abacus/scf'         |
 | ABACUS  | cif         | True         | True    | LabeledSystem | 'abacus/md'          |
 | ABACUS  | STRU        | True         | True    | LabeledSystem | 'abacus/relax'       |
 | ase     | structure   | True         | True    | MultiSystems  | 'ase/structure'      |
+| DFTB+   | dftbplus    | False        | True    | LabeledSystem | 'dftbplus'           |
 
 
 The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.

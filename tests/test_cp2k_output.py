@@ -1,7 +1,5 @@
-import os
 import unittest
 
-import numpy as np
 from comp_sys import CompLabeledSys
 from context import dpdata
 

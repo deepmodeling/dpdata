@@ -1,7 +1,6 @@
 import os
 import unittest
 
-import numpy as np
 from pwmat.config_ref_oh import Testconfigoh
 
 import dpdata

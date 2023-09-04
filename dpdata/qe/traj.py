@@ -3,8 +3,6 @@ import warnings
 
 import numpy as np
 
-import dpdata
-
 from ..unit import (
     EnergyConversion,
     ForceConversion,
@@ -134,7 +132,7 @@ def load_data(fname, natoms, begin=0, step=1, convert=1.0):
     with open(fname) as fp:
         while True:
             blk, ss = _load_pos_block(fp, natoms)
-            if blk == None:
+            if blk is None:
                 break
             else:
                 if cc >= begin and (cc - begin) % step == 0:
@@ -207,6 +205,7 @@ def to_system_data(input_name, prefix, begin=0, step=1):
         data["cells"], tmp_steps = load_data(
             prefix + ".cel", 3, begin=begin, step=step, convert=length_convert
         )
+        data["cells"] = np.transpose(data["cells"], (0, 2, 1))
         if csteps != tmp_steps:
             csteps.append(None)
             tmp_steps.append(None)
