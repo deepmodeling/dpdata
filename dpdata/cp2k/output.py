@@ -409,13 +409,16 @@ def get_frames(fname):
                 cell.append(ii.split()[4:7])
             if "Atomic kind:" in ii:
                 atom_symbol_list.append(ii.split()[3])
-            if "Atom  Kind  Element" in ii or "Atom Kind Element" in ii:
+            if "Atom  Kind  Element" in ii:
+                coord_flag = True
+                coord_idx = idx + 1
+            if "Atom Kind Element" in ii:  # cp2k 2023 format
                 coord_flag = True
                 coord_idx = idx
 
             # get the coord block info
             if coord_flag:
-                if idx > coord_idx + 1:
+                if idx > coord_idx:
                     if ii == "\n":
                         coord_flag = False
                     else:
