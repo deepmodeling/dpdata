@@ -409,24 +409,18 @@ def get_frames(fname):
                 cell.append(ii.split()[4:7])
             if "Atomic kind:" in ii:
                 atom_symbol_list.append(ii.split()[3])
-            if "Atom  Kind  Element" in ii:
-                coord_flag = True
-                coord_idx = idx
 
-            # get the coord block info
-            if coord_flag:
-                if idx == coord_idx + 1:
-                    if ii == "\n":
-                        pass
-                    else:
-                        coord.append(ii.split()[4:7])
-                        atom_symbol_idx_list.append(ii.split()[1])
-                if idx > coord_idx + 1:
-                    if ii == "\n":
-                        coord_flag = False
-                    else:
-                        coord.append(ii.split()[4:7])
-                        atom_symbol_idx_list.append(ii.split()[1])
+            # beginning of coords block
+            if "Atom  Kind  Element" in ii or "Atom Kind Element" in ii:
+                coord_flag = True
+            # parse coords lines
+            elif coord_flag:
+                if ii == "\n":
+                    coord_flag = len(coord) == 0  # skip empty line at the beginning
+                else:
+                    coord.append(ii.split()[4:7])
+                    atom_symbol_idx_list.append(ii.split()[1])
+
             if "ENERGY|" in ii:
                 energy = ii.split()[8]
             if " Atom   Kind " in ii:
