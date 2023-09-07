@@ -74,8 +74,10 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | gaussian| log    | True         | True    | LabeledSystem | 'gaussian/md' |
 | siesta  | output | False        | True    | LabeledSystem | 'siesta/output'|
 | siesta  | aimd_output  | True         | True    | LabeledSystem | 'siesta/aimd_output' |
-| cp2k    | output | False        | True    | LabeledSystem | 'cp2k/output' |
-| cp2k    | aimd_output  | True         | True    | LabeledSystem | 'cp2k/aimd_output' |
+| cp2k(deprecated in future)    | output | False        | True    | LabeledSystem | 'cp2k/output' |
+| cp2k(deprecated in future)    | aimd_output  | True         | True    | LabeledSystem | 'cp2k/aimd_output' |
+| cp2k([plug-in](https://github.com/robinzyb/cp2kdata#plug-in-for-dpdata))    | stdout | False        | True    | LabeledSystem | 'cp2kdata/e_f' |
+| cp2k([plug-in](https://github.com/robinzyb/cp2kdata#plug-in-for-dpdata))    | stdout  | True         | True    | LabeledSystem | 'cp2kdata/md' |
 | QE      | log    | False        | True    | LabeledSystem | 'qe/pw/scf'   |
 | QE      | log    | True         | False   | System        | 'qe/cp/traj'  |
 | QE      | log    | True         | True    | LabeledSystem | 'qe/cp/traj'  |
