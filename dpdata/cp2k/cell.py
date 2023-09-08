@@ -28,24 +28,18 @@ def cell_to_low_triangle(A, B, C, alpha, beta, gamma):
     """
     if not np.pi * 5 / 180 < alpha < np.pi * 175 / 180:
         raise RuntimeError(
-            "alpha=={}: must be a radian, and \
-            must be in np.pi*5/180 < alpha < np.pi*175/180".format(
-                alpha
-            )
+            f"alpha=={alpha}: must be a radian, and \
+            must be in np.pi*5/180 < alpha < np.pi*175/180"
         )
     if not np.pi * 5 / 180 < beta < np.pi * 175 / 180:
         raise RuntimeError(
-            "beta=={}: must be a radian, and \
-            must be in np.pi*5/180 < beta < np.pi*175/180".format(
-                beta
-            )
+            f"beta=={beta}: must be a radian, and \
+            must be in np.pi*5/180 < beta < np.pi*175/180"
         )
     if not np.pi * 5 / 180 < gamma < np.pi * 175 / 180:
         raise RuntimeError(
-            "gamma=={}: must be a radian, and \
-                must be in np.pi*5/180 < gamma < np.pi*175/180".format(
-                gamma
-            )
+            f"gamma=={gamma}: must be a radian, and \
+                must be in np.pi*5/180 < gamma < np.pi*175/180"
         )
     if not A > 0.2:
         raise RuntimeError(f"A=={A}, must be greater than 0.2")

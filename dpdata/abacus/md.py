@@ -43,13 +43,20 @@ def get_coord_dump_freq(inlines):
 def get_coords_from_dump(dumplines, natoms):
     nlines = len(dumplines)
     total_natoms = sum(natoms)
+    # The output of VIRIAL, FORCE, and VELOCITY are controlled by INPUT parameters dump_virial, dump_force, and dump_vel, respectively.
+    # So the search of keywords can determine whether these datas are printed into MD_dump.
     calc_stress = False
+    calc_force = False
+    check_line = 6
     if "VIRIAL" in dumplines[6]:
         calc_stress = True
-    else:
-        assert (
-            "POSITIONS" in dumplines[6] and "FORCE" in dumplines[6]
-        ), "keywords 'POSITIONS' and 'FORCE' cannot be found in the 6th line. Please check."
+        check_line = 10
+    assert (
+        "POSITION" in dumplines[check_line]
+    ), "keywords 'POSITION' cannot be found in the 6th line. Please check."
+    if "FORCE" in dumplines[check_line]:
+        calc_force = True
+
     nframes_dump = -1
     if calc_stress:
         nframes_dump = int(nlines / (total_natoms + 13))
@@ -104,9 +111,13 @@ def get_coords_from_dump(dumplines, natoms):
                 if not newversion:
                     coords[iframe, iat] *= celldm
 
-                forces[iframe, iat] = np.array(
-                    [float(i) for i in dumplines[iline + skipline + iat].split()[5:8]]
-                )
+                if calc_force:
+                    forces[iframe, iat] = np.array(
+                        [
+                            float(i)
+                            for i in dumplines[iline + skipline + iat].split()[5:8]
+                        ]
+                    )
             iframe += 1
     assert iframe == nframes_dump, (
         "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."
@@ -137,7 +148,7 @@ def get_energy(outlines, ndump, dump_freq):
 
 
 def get_frame(fname):
-    if type(fname) == str:
+    if isinstance(fname, str):
         # if the input parameter is only one string, it is assumed that it is the
         # base directory containing INPUT file;
         path_in = os.path.join(fname, "INPUT")
@@ -195,7 +206,7 @@ def get_frame(fname):
     data["energies"] = energy
     data["forces"] = force
     data["virials"] = stress
-    if type(data["virials"]) != np.ndarray:
+    if not isinstance(data["virials"], np.ndarray):
         del data["virials"]
     data["orig"] = np.zeros(3)
 
