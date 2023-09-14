@@ -1,7 +1,6 @@
 # %%
 import glob
 import os
-import warning
 from copy import deepcopy
 from typing import Any, Dict, Optional, Tuple, Union
 
@@ -968,7 +967,10 @@ class System(MSONable):
         dtypes_dict = {}
         for dt in all_dtypes:
             if dt.name in dtypes_dict:
-                warnings.warn(f"Data type {dt.name} is registered twice; only the newly registered one will be used.", UserWarning)
+                warnings.warn(
+                    f"Data type {dt.name} is registered twice; only the newly registered one will be used.",
+                    UserWarning,
+                )
             dtypes_dict[dt.name] = dt
         cls.DTYPES = tuple(dtypes_dict.values())
 
