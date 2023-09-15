@@ -53,6 +53,7 @@ class TestDeepmdLoadDumpComp(unittest.TestCase):
         n_dtypes_new = len(dpdata.LabeledSystem.DTYPES)
         self.assertEqual(n_dtypes_old, n_dtypes_new)
 
+
 class TestDeepmdLoadDumpCompAny(unittest.TestCase):
     def setUp(self):
         self.system = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
