@@ -4,6 +4,7 @@ import h5py
 import numpy as np
 
 import dpdata
+from dpdata.data_type import Axis, DataType
 
 
 class TestDeepmdLoadDumpComp(unittest.TestCase):
@@ -43,6 +44,14 @@ class TestDeepmdLoadDumpComp(unittest.TestCase):
         self.system.to_deepmd_hdf5("data_foo.h5")
         x = dpdata.LabeledSystem("data_foo.h5", fmt="deepmd/hdf5")
         np.testing.assert_allclose(x.data["foo"], self.foo)
+
+    def test_duplicated_data_type(self):
+        dt = DataType("foo", np.ndarray, (Axis.NFRAMES, 2, 4), required=False)
+        n_dtypes_old = len(dpdata.LabeledSystem.DTYPES)
+        with self.assertWarns(UserWarning):
+            dpdata.LabeledSystem.register_data_type(dt)
+        n_dtypes_new = len(dpdata.LabeledSystem.DTYPES)
+        self.assertEqual(n_dtypes_old, n_dtypes_new)
 
 
 class TestDeepmdLoadDumpCompAny(unittest.TestCase):
