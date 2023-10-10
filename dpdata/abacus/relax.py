@@ -159,7 +159,7 @@ def get_coords_from_log(loglines, natoms):
     coords *= bohr2ang
 
     virial = np.zeros([len(cells), 3, 3])
-    for i in range(len(cells)):
+    for i in range(len(stress)):
         volume = np.linalg.det(cells[i, :, :].reshape([3, 3]))
         virial[i] = stress[i] * kbar2evperang3 * volume
 
