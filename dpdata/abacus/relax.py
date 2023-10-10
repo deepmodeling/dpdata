@@ -157,7 +157,7 @@ def get_coords_from_log(loglines, natoms):
     # transfer bohrium to angstrom
     cells *= bohr2ang
     coords *= bohr2ang
-    
+
     if len(stress) > 0:
         virial = np.zeros([len(cells), 3, 3])
         for i in range(len(cells)):

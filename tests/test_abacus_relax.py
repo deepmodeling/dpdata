@@ -133,5 +133,6 @@ class TestABACUSRelaxLabeledOutputNoStress(unittest.TestCase):
             "abacus.relax/STRU",
         )
 
+
 if __name__ == "__main__":
     unittest.main()
