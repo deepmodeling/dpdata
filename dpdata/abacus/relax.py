@@ -206,7 +206,7 @@ def get_frame(fname):
     data["coords"] = coords
     data["energies"] = energy
     data["forces"] = force
-    if virial != None:
+    if isinstance(virial, np.ndarray):
         data["virials"] = virial
     data["stress"] = stress
     data["orig"] = np.zeros(3)

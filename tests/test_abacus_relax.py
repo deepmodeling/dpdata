@@ -106,5 +106,32 @@ class TestABACUSRelaxLabeledOutputAbnormal(unittest.TestCase):
             os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
 
 
+class TestABACUSRelaxLabeledOutputNoStress(unittest.TestCase):
+    def setUp(self):
+        shutil.copy(
+            "abacus.relax/OUT.abacus/running_cell-relax.log.nostress",
+            "abacus.relax/OUT.abacus/running_cell-relax.log",
+        )
+        shutil.move(
+            "abacus.relax/STRU",
+            "abacus.relax/STRU.bak",
+        )
+        shutil.copy(
+            "abacus.relax/STRU.Si",
+            "abacus.relax/STRU",
+        )
+
+    def test_result(self):
+        system = dpdata.LabeledSystem("abacus.relax", fmt="abacus/relax")
+        self.assertRaises(KeyError, lambda: system.data["virials"])
+
+    def tearDown(self):
+        if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
+            os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
+        shutil.move(
+            "abacus.relax/STRU.bak",
+            "abacus.relax/STRU",
+        )
+
 if __name__ == "__main__":
     unittest.main()
