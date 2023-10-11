@@ -543,6 +543,7 @@ class System(MSONable):
                 for symbol, numb in zip(
                     self.data["atom_names"], self.data["atom_numbs"]
                 )
+                if numb > 0
             ]
         )
 
@@ -558,6 +559,7 @@ class System(MSONable):
                 for symbol, numb in sorted(
                     zip(self.data["atom_names"], self.data["atom_numbs"])
                 )
+                if numb > 0
             ]
         )
 
