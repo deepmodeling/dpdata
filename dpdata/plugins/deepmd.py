@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional, Union
 
 try:
     import h5py
@@ -175,8 +174,8 @@ class DeePMDHDF5Format(Format):
 
     def _from_system(
         self,
-        file_name: Union[str, h5py.Group, h5py.File],
-        type_map: List[str],
+        file_name: str | (h5py.Group | h5py.File),
+        type_map: list[str],
         labels: bool,
     ):
         """Convert HDF5 file to System or LabeledSystem data.
@@ -219,8 +218,8 @@ class DeePMDHDF5Format(Format):
 
     def from_system(
         self,
-        file_name: Union[str, h5py.Group, h5py.File],
-        type_map: Optional[List[str]] = None,
+        file_name: str | (h5py.Group | h5py.File),
+        type_map: list[str] | None = None,
         **kwargs,
     ) -> dict:
         """Convert HDF5 file to System data.
@@ -249,8 +248,8 @@ class DeePMDHDF5Format(Format):
 
     def from_labeled_system(
         self,
-        file_name: Union[str, h5py.Group, h5py.File],
-        type_map: Optional[List[str]] = None,
+        file_name: str | (h5py.Group | h5py.File),
+        type_map: list[str] | None = None,
         **kwargs,
     ) -> dict:
         """Convert HDF5 file to LabeledSystem data.
@@ -280,7 +279,7 @@ class DeePMDHDF5Format(Format):
     def to_system(
         self,
         data: dict,
-        file_name: Union[str, h5py.Group, h5py.File],
+        file_name: str | (h5py.Group | h5py.File),
         set_size: int = 5000,
         comp_prec: np.dtype = np.float64,
         **kwargs,
@@ -336,7 +335,7 @@ class DeePMDHDF5Format(Format):
                 yield f[ff]
 
     def to_multi_systems(
-        self, formulas: List[str], directory: str, **kwargs
+        self, formulas: list[str], directory: str, **kwargs
     ) -> h5py.Group:
         """Generate HDF5 groups, which will be passed to `to_system`.
 

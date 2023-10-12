@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import warnings
-from typing import Optional, Union
 
 try:
     import h5py
@@ -17,9 +16,9 @@ __all__ = ["to_system_data", "dump"]
 
 
 def to_system_data(
-    f: Union[h5py.File, h5py.Group],
+    f: h5py.File | h5py.Group,
     folder: str,
-    type_map: Optional[list] = None,
+    type_map: list | None = None,
     labels: bool = True,
 ):
     """Load a HDF5 file.
@@ -156,7 +155,7 @@ def to_system_data(
 
 
 def dump(
-    f: Union[h5py.File, h5py.Group],
+    f: h5py.File | h5py.Group,
     folder: str,
     data: dict,
     set_size=5000,

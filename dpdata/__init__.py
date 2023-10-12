@@ -3,10 +3,13 @@
 try:
     import lzma
 except ImportError:
+
     class fakemodule:
         pass
+
     import sys
-    sys.modules['lzma'] = fakemodule
+
+    sys.modules["lzma"] = fakemodule
 
 from . import lammps, md, vasp
 from .system import LabeledSystem, MultiSystems, System
