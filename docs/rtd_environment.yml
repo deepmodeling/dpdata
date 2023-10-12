@@ -1,0 +1,6 @@
+name: dpdata
+channels:
+  - https://repo.mamba.pm/conda-forge
+dependencies:
+  - pip:
+    - ..[docs]
