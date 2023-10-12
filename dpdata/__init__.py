@@ -1,7 +1,7 @@
 # monty needs lzma
 # See https://github.com/pandas-dev/pandas/pull/27882
 try:
-    import lzma
+    import lzma # noqa: F401
 except ImportError:
 
     class fakemodule:
