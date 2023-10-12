@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 import os
 from typing import List, Optional, Union
 
-import h5py
+try:
+    import h5py
+except ImportError:
+    pass
 import numpy as np
 
 import dpdata

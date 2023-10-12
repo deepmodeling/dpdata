@@ -1,8 +1,13 @@
 """Utils for deepmd/hdf5 format."""
+from __future__ import annotations
+
 import warnings
 from typing import Optional, Union
 
-import h5py
+try:
+    import h5py
+except ImportError:
+    pass
 import numpy as np
 from wcmatch.glob import globfilter
 

@@ -55,6 +55,8 @@ docs = [
     'deepmodeling-sphinx>=0.1.1',
     'sphinx-argparse',
     'rdkit',
+    'jupyterlite-sphinx',
+    'jupyterlite-xeus-python',
 ]
 
 [tool.setuptools.packages.find]
