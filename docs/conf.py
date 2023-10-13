@@ -206,3 +206,4 @@ intersphinx_mapping = {
 
 # jupyterlite
 jupyterlite_contents = "./nb"
+jupyterlite_bind_ipynb_suffix = False
