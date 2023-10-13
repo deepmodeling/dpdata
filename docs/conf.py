@@ -49,6 +49,7 @@ extensions = [
     "numpydoc",
     "m2r2",
     "sphinxarg.ext",
+    "jupyterlite_sphinx",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -202,3 +203,7 @@ intersphinx_mapping = {
     "monty": ("https://guide.materialsvirtuallab.org/monty/", None),
     "h5py": ("https://docs.h5py.org/en/stable/", None),
 }
+
+# jupyterlite
+jupyterlite_contents = "./nb"
+jupyterlite_bind_ipynb_suffix = False

@@ -1,8 +1,12 @@
 """Utils for deepmd/hdf5 format."""
-import warnings
-from typing import Optional, Union
+from __future__ import annotations
 
-import h5py
+import warnings
+
+try:
+    import h5py
+except ImportError:
+    pass
 import numpy as np
 from wcmatch.glob import globfilter
 
@@ -12,9 +16,9 @@ __all__ = ["to_system_data", "dump"]
 
 
 def to_system_data(
-    f: Union[h5py.File, h5py.Group],
+    f: h5py.File | h5py.Group,
     folder: str,
-    type_map: Optional[list] = None,
+    type_map: list | None = None,
     labels: bool = True,
 ):
     """Load a HDF5 file.
@@ -151,7 +155,7 @@ def to_system_data(
 
 
 def dump(
-    f: Union[h5py.File, h5py.Group],
+    f: h5py.File | h5py.Group,
     folder: str,
     data: dict,
     set_size=5000,
