@@ -20,7 +20,13 @@ from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 from dpdata.plugin import Plugin
-from dpdata.utils import add_atom_names, elements_index_map, remove_pbc, sort_atom_names, utf8len
+from dpdata.utils import (
+    add_atom_names,
+    elements_index_map,
+    remove_pbc,
+    sort_atom_names,
+    utf8len,
+)
 
 
 def load_format(fmt):
@@ -566,13 +572,15 @@ class System(MSONable):
     @property
     def short_formula(self) -> str:
         """Return the short formula of this system. Elements with zero number
-        will be removed."""
+        will be removed.
+        """
         return "".join(
             [
                 f"{symbol}{numb}"
                 for symbol, numb in zip(
                     self.data["atom_names"], self.data["atom_numbs"]
-                ) if numb
+                )
+                if numb
             ]
         )
 
@@ -587,7 +595,7 @@ class System(MSONable):
         the following order:
             - formula
             - short_formula
-            - formula_hash
+            - formula_hash.
         """
         formula = self.formula
         if utf8len(formula) <= 255:
@@ -1282,7 +1290,9 @@ class MultiSystems:
     def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
             for fn, ss in zip(
-                fmtobj.to_multi_systems([ss.short_name for ss in self.systems.values()], directory, **kwargs),
+                fmtobj.to_multi_systems(
+                    [ss.short_name for ss in self.systems.values()], directory, **kwargs
+                ),
                 self.systems.values(),
             ):
                 ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)

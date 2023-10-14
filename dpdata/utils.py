@@ -103,4 +103,4 @@ def uniq_atom_names(data):
 
 def utf8len(s: str) -> int:
     """Return the byte length of a string."""
-    return len(s.encode('utf-8'))
+    return len(s.encode("utf-8"))

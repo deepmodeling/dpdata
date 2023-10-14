@@ -4,7 +4,6 @@ import unittest
 from itertools import permutations
 
 import numpy as np
-
 from comp_sys import CompLabeledSys, IsNoPBC, MultiSystems
 from context import dpdata
 
@@ -206,7 +205,7 @@ class TestMultiSystemsTo(unittest.TestCase, MultiSystems):
 class TestLongFilename(unittest.TestCase):
     def test_long_filename1(self):
         system = dpdata.System(
-            data = {
+            data={
                 "atom_names": [f"TYPE{ii}" for ii in range(200)],
                 "atom_numbs": [1] + [0 for _ in range(199)],
                 "atom_types": np.arange(1),
@@ -221,7 +220,7 @@ class TestLongFilename(unittest.TestCase):
 
     def test_long_filename2(self):
         system = dpdata.System(
-            data = {
+            data={
                 "atom_names": [f"TYPE{ii}" for ii in range(200)],
                 "atom_numbs": [1 for _ in range(200)],
                 "atom_types": np.arange(200),
@@ -233,6 +232,7 @@ class TestLongFilename(unittest.TestCase):
         ms = dpdata.MultiSystems(system)
         with tempfile.TemporaryDirectory() as tmpdir:
             ms.to_deepmd_npy(tmpdir)
+
 
 if __name__ == "__main__":
     unittest.main()
