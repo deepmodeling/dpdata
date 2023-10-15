@@ -2,7 +2,7 @@ import os
 import re
 
 import numpy as np
-from scipy.io import netcdf
+from scipy.io import netcdf_file
 
 from dpdata.amber.mask import pick_by_amber_mask
 from dpdata.unit import EnergyConversion
@@ -77,7 +77,7 @@ def read_amber_traj(
         for ii in use_element_symbols:
             amber_types[ii] = symbols[atomic_number[ii]]
 
-    with netcdf.netcdf_file(nc_file, "r") as f:
+    with netcdf_file(nc_file, "r") as f:
         coords = np.array(f.variables["coordinates"][:])
         cell_lengths = np.array(f.variables["cell_lengths"][:])
         cell_angles = np.array(f.variables["cell_angles"][:])
@@ -92,7 +92,7 @@ def read_amber_traj(
             raise RuntimeError("Unsupported cells")
 
     if labeled:
-        with netcdf.netcdf_file(mdfrc_file, "r") as f:
+        with netcdf_file(mdfrc_file, "r") as f:
             forces = np.array(f.variables["forces"][:])
 
         # load energy from mden_file or mdout_file
