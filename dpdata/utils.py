@@ -99,3 +99,8 @@ def uniq_atom_names(data):
         sum(ii == data["atom_types"]) for ii in range(len(data["atom_names"]))
     ]
     return data
+
+
+def utf8len(s: str) -> int:
+    """Return the byte length of a string."""
+    return len(s.encode("utf-8"))
