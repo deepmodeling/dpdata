@@ -1,6 +1,5 @@
 name: Generic issue
 description: For issues that do not fit any of the other categories.
-title: ""
 labels: wontfix
 assignees: []
 body:
