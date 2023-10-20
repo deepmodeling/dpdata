@@ -4,15 +4,15 @@ import dpdata.cp2k.output
 from dpdata.cp2k.output import Cp2kSystems
 from dpdata.format import Format
 
-
 string_warning = """
-Hi, you got an error from dpdata, 
+Hi, you got an error from dpdata,
 please check if your cp2k files include full information,
 otherwise its version is not supported by dpdata.
 Try use dpdata plugin from cp2kdata package,
 for details, please refer to
 https://robinzyb.github.io/cp2kdata/
 """
+
 
 @Format.register("cp2k/aimd_output")
 class CP2KAIMDOutputFormat(Format):
@@ -21,7 +21,7 @@ class CP2KAIMDOutputFormat(Format):
             xyz_file = sorted(glob.glob(f"{file_name}/*pos*.xyz"))[0]
             log_file = sorted(glob.glob(f"{file_name}/*.log"))[0]
             return tuple(Cp2kSystems(log_file, xyz_file, restart))
-        except :
+        except:
             raise PendingDeprecationWarning(string_warning)
 
 
@@ -45,4 +45,3 @@ class CP2KOutputFormat(Format):
             return data
         except:
             raise PendingDeprecationWarning(string_warning)
-        
