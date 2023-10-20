@@ -158,10 +158,13 @@ def get_coords_from_log(loglines, natoms):
     cells *= bohr2ang
     coords *= bohr2ang
 
-    virial = np.zeros([len(cells), 3, 3])
-    for i in range(len(cells)):
-        volume = np.linalg.det(cells[i, :, :].reshape([3, 3]))
-        virial[i] = stress[i] * kbar2evperang3 * volume
+    if len(stress) > 0:
+        virial = np.zeros([len(cells), 3, 3])
+        for i in range(len(cells)):
+            volume = np.linalg.det(cells[i, :, :].reshape([3, 3]))
+            virial[i] = stress[i] * kbar2evperang3 * volume
+    else:
+        virial = None
 
     return energy, cells, coords, force, stress, virial
 
@@ -203,7 +206,8 @@ def get_frame(fname):
     data["coords"] = coords
     data["energies"] = energy
     data["forces"] = force
-    data["virials"] = virial
+    if isinstance(virial, np.ndarray):
+        data["virials"] = virial
     data["stress"] = stress
     data["orig"] = np.zeros(3)
 
