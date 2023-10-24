@@ -752,11 +752,7 @@ class System(MSONable):
 
         if replace_num > max_replace_num:
             raise RuntimeError(
-                "not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check.".format(
-                    initial_atom_type=initial_atom_type,
-                    max_replace_num=max_replace_num,
-                    replace_num=replace_num,
-                )
+                f"not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check."
             )
 
         may_replace_indices = [
