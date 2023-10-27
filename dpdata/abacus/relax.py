@@ -2,7 +2,15 @@ import os
 
 import numpy as np
 
-from .scf import bohr2ang, get_cell, get_coords, get_geometry_in, kbar2evperang3, collect_force, collect_stress
+from .scf import (
+    bohr2ang,
+    collect_force,
+    collect_stress,
+    get_cell,
+    get_coords,
+    get_geometry_in,
+    kbar2evperang3,
+)
 
 # Read in geometries from an ABACUS RELAX(CELL-RELAX) trajectory in OUT.XXXX/runnning_relax/cell-relax.log.
 
@@ -91,7 +99,7 @@ def get_coords_from_log(loglines, natoms):
 
     force = collect_force(loglines)
     stress = collect_stress(loglines)
-    
+
     # delete last structures which has no energy
     while len(energy) < len(coords):
         del coords[-1]

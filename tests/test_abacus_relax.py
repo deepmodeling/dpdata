@@ -132,7 +132,8 @@ class TestABACUSRelaxLabeledOutputNoStress(unittest.TestCase):
             "abacus.relax/STRU.bak",
             "abacus.relax/STRU",
         )
-        
+
+
 class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
     # Since ABACUS v3.4.1, the output format of force and stress has been changed.
     def setUp(self):
@@ -151,7 +152,7 @@ class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
         self.system = dpdata.LabeledSystem("abacus.relax", fmt="abacus/relax")
 
     def test_force(self):
-        #with open("abacus.relax/force.v341.ref","w") as fp:
+        # with open("abacus.relax/force.v341.ref","w") as fp:
         #    for i in self.system.data["forces"]:
         #        for j in i:
         #            fp.write("%f %f %f\n" % tuple(j.tolist()))
@@ -162,9 +163,9 @@ class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
             ref = np.array(ref)
             ref = ref.reshape([4, 2, 3])
             np.testing.assert_almost_equal(self.system.data["forces"], ref, decimal=5)
-        
+
     def test_stress(self):
-        #with open("abacus.relax/stress.v341.ref","w") as fp:
+        # with open("abacus.relax/stress.v341.ref","w") as fp:
         #    for i in self.system.data["stress"]:
         #        for j in i:
         #            fp.write("%f %f %f\n" % tuple(j.tolist()))
@@ -175,14 +176,14 @@ class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
             ref = np.array(ref)
             ref = ref.reshape([4, 3, 3])
             np.testing.assert_almost_equal(self.system.data["stress"], ref, decimal=5)
-            
+
     def tearDown(self):
         if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
             os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
         shutil.move(
             "abacus.relax/STRU.bak",
             "abacus.relax/STRU",
-        )        
+        )
 
 
 if __name__ == "__main__":
