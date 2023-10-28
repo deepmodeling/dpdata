@@ -1,5 +1,6 @@
 import os
 import re
+import warnings
 
 import numpy as np
 
@@ -138,7 +139,7 @@ def collect_force(outlines):
                 if (
                     j >= i + 10
                 ):  # if can not find the first line of force in 10 lines, then stop
-                    print("Warning: can not find the first line of force")
+                    warnings.warn("Warning: can not find the first line of force")
                     noforce = True
                     break
             if noforce:
@@ -173,7 +174,7 @@ def collect_stress(outlines):
                 if (
                     j >= i + 10
                 ):  # if can not find the first line of stress in 10 lines, then stop
-                    print("Warning: can not find the first line of stress")
+                    warnings.warn("Warning: can not find the first line of stress")
                     nostress = True
                     break
             if nostress:
