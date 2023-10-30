@@ -44,8 +44,8 @@ class CP2KOutputFormat(Format):
             if tmp_virial is not None:
                 data["virials"] = tmp_virial
             return data
-        #TODO: in the future, we should add exact error type here 
-        #TODO: when pattern match is failed
-        #TODO: For now just use RuntimeError as a placeholder.
+        # TODO: in the future, we should add exact error type here
+        # TODO: when pattern match is failed
+        # TODO: For now just use RuntimeError as a placeholder.
         except RuntimeError:
             print(string_warning)
