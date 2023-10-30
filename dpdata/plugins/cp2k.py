@@ -21,8 +21,9 @@ class CP2KAIMDOutputFormat(Format):
             xyz_file = sorted(glob.glob(f"{file_name}/*pos*.xyz"))[0]
             log_file = sorted(glob.glob(f"{file_name}/*.log"))[0]
             return tuple(Cp2kSystems(log_file, xyz_file, restart))
-        except:
-            raise PendingDeprecationWarning(string_warning)
+        except (StopIteration, RuntimeError):
+            # StopIteration is raised when pattern match is failed
+            print(string_warning)
 
 
 @Format.register("cp2k/output")
@@ -43,5 +44,8 @@ class CP2KOutputFormat(Format):
             if tmp_virial is not None:
                 data["virials"] = tmp_virial
             return data
-        except:
-            raise PendingDeprecationWarning(string_warning)
+        #TODO: in the future, we should add exact error type here 
+        #TODO: when pattern match is failed
+        #TODO: For now just use RuntimeError as a placeholder.
+        except RuntimeError:
+            print(string_warning)
