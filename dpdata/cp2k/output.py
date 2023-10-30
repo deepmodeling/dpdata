@@ -83,6 +83,7 @@ class Cp2kSystems:
                 lines.append(line)
                 if any(p.match(line) for p in delimiter_patterns):
                     if delimiter_flag is True:
+                        yield_flag = True
                         yield lines
                         lines = []
                         delimiter_flag = False
@@ -108,6 +109,7 @@ class Cp2kSystems:
                     raise StopIteration("None of the xyz patterns are matched")
                 break
             if p3.match(line):
+                yield_flag = True
                 atom_num = int(p3.match(line).group(1))
                 lines = []
                 lines.append(line)
