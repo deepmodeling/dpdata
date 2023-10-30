@@ -17,13 +17,13 @@ https://robinzyb.github.io/cp2kdata/
 @Format.register("cp2k/aimd_output")
 class CP2KAIMDOutputFormat(Format):
     def from_labeled_system(self, file_name, restart=False, **kwargs):
+        xyz_file = sorted(glob.glob(f"{file_name}/*pos*.xyz"))[0]
+        log_file = sorted(glob.glob(f"{file_name}/*.log"))[0]
         try:
-            xyz_file = sorted(glob.glob(f"{file_name}/*pos*.xyz"))[0]
-            log_file = sorted(glob.glob(f"{file_name}/*.log"))[0]
             return tuple(Cp2kSystems(log_file, xyz_file, restart))
-        except (StopIteration, RuntimeError):
+        except (StopIteration, RuntimeError) as e:
             # StopIteration is raised when pattern match is failed
-            print(string_warning)
+            raise PendingDeprecationWarning(string_warning) from e
 
 
 @Format.register("cp2k/output")
@@ -47,5 +47,5 @@ class CP2KOutputFormat(Format):
         # TODO: in the future, we should add exact error type here
         # TODO: when pattern match is failed
         # TODO: For now just use RuntimeError as a placeholder.
-        except RuntimeError:
-            print(string_warning)
+        except RuntimeError as e:
+            raise PendingDeprecationWarning(string_warning) from e
