@@ -55,8 +55,7 @@ class PSI4OutFormat(Format):
 
 @Format.register("psi4/inp")
 class PSI4InputFormat(Format):
-    """Psi4 input file.
-    """
+    """Psi4 input file."""
 
     def to_system(
         self,
