@@ -1,5 +1,6 @@
 import os
 import re
+import warnings
 
 import numpy as np
 
@@ -123,31 +124,77 @@ def get_energy(outlines):
     return Etot, False
 
 
-def get_force(outlines, natoms):
+def collect_force(outlines):
     force = []
-    force_inlines = get_block(
-        outlines, "TOTAL-FORCE (eV/Angstrom)", skip=4, nlines=np.sum(natoms)
-    )
-    if force_inlines is None:
-        print(
-            "TOTAL-FORCE (eV/Angstrom) is not found in OUT.XXX/running_scf.log. May be you haven't set 'cal_force 1' in the INPUT."
-        )
+    for i, line in enumerate(outlines):
+        if "TOTAL-FORCE (eV/Angstrom)" in line:
+            value_pattern = re.compile(
+                r"^\s*[A-Z][a-z]?[1-9][0-9]*\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
+            )
+            j = i
+            # find the first line of force
+            noforce = False
+            while not value_pattern.match(outlines[j]):
+                j += 1
+                if (
+                    j >= i + 10
+                ):  # if can not find the first line of force in 10 lines, then stop
+                    warnings.warn("Warning: can not find the first line of force")
+                    noforce = True
+                    break
+            if noforce:
+                break
+
+            force.append([])
+            while value_pattern.match(outlines[j]):
+                force[-1].append([float(ii) for ii in outlines[j].split()[1:4]])
+                j += 1
+    return force  # only return the last force
+
+
+def get_force(outlines, natoms):
+    force = collect_force(outlines)
+    if len(force) == 0:
         return [[]]
-    for line in force_inlines:
-        force.append([float(f) for f in line.split()[1:4]])
-    force = np.array(force)
-    return force
+    else:
+        return np.array(force[-1])  # only return the last force
+
+
+def collect_stress(outlines):
+    stress = []
+    for i, line in enumerate(outlines):
+        if "TOTAL-STRESS (KBAR)" in line:
+            value_pattern = re.compile(
+                r"^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
+            )
+            j = i
+            nostress = False
+            while not value_pattern.match(outlines[j]):
+                j += 1
+                if (
+                    j >= i + 10
+                ):  # if can not find the first line of stress in 10 lines, then stop
+                    warnings.warn("Warning: can not find the first line of stress")
+                    nostress = True
+                    break
+            if nostress:
+                break
+
+            stress.append([])
+            while value_pattern.match(outlines[j]):
+                stress[-1].append(
+                    list(map(lambda x: float(x), outlines[j].split()[0:3]))
+                )
+                j += 1
+    return stress
 
 
 def get_stress(outlines):
-    stress = []
-    stress_inlines = get_block(outlines, "TOTAL-STRESS (KBAR)", skip=3, nlines=3)
-    if stress_inlines is None:
+    stress = collect_stress(outlines)
+    if len(stress) == 0:
         return None
-    for line in stress_inlines:
-        stress.append([float(f) for f in line.split()])
-    stress = np.array(stress) * kbar2evperang3
-    return stress
+    else:
+        return np.array(stress[-1]) * kbar2evperang3  # only return the last stress
 
 
 def get_frame(fname):
