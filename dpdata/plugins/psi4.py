@@ -2,6 +2,7 @@ import numpy as np
 
 from dpdata.format import Format
 from dpdata.psi4.output import read_psi4_output
+from dpdata.psi4.input import write_psi4_input
 from dpdata.unit import EnergyConversion, ForceConversion, LengthConversion
 
 length_convert = LengthConversion("bohr", "angstrom").value()
@@ -50,3 +51,45 @@ class PSI4OutFormat(Format):
             "orig": np.zeros(3),
             "nopbc": True,
         }
+
+
+@Format.register("psi4/inp")
+class PSI4InputFormat(Format):
+    """Psi4 output.
+
+    Note that both the energy and the gradient should be
+    printed into the output file.
+    """
+
+    def to_system(self, data: dict, file_name: str, method: str, basis: str, charge: int = 0, multiplicity: int = 1,frame_idx=0, **kwargs):
+        """Write PSI4 input.
+
+        Parameters
+        ----------
+        data : dict
+            system data
+        file_name : str
+            file name
+        method : str
+            computational method
+        basis : str
+            basis set; see https://psicode.org/psi4manual/master/basissets_tables.html
+        charge : int, default=0
+            charge of system
+        multiplicity : int, default=1
+            multiplicity of system
+        frame_idx : int, default=0
+            The index of the frame to dump
+        **kwargs
+            keyword arguments
+        """
+        types = np.array(data["atom_names"])[data["atom_types"]]
+        with open(file_name, "w") as fout:
+            fout.write(write_psi4_input(
+                types = types,
+                coords=data["coords"][frame_idx],
+                method=method,
+                basis=basis,
+                charge=charge,
+                multiplicity=multiplicity,
+            ))
