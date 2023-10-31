@@ -83,7 +83,7 @@ class TestPsi4Input(unittest.TestCase):
                 H     -1.459385451     -0.498843014     -0.292862623
                 H     -0.623545813      0.873377524     -1.085142510
                 H     -1.005665735      0.946387574      0.663566976
-                0 1 
+                0 1
                 }
                 set basis def2-TZVPPD
                 set gradient_write on
