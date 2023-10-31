@@ -224,8 +224,9 @@ def generate_sub_format_pages(formats: dict):
                     buff.append("""   :noindex:""")
                 buff.append("")
                 if docstring is None or method not in format.__dict__:
-                    docstring = """   Convert this format to :class:`%s`.""" % (
-                        method_classes[method]
+                    docstring = (
+                        """   Convert this format to :class:`%s`."""
+                        % (method_classes[method])
                     )
                 doc_obj = SphinxDocString(docstring)
                 if len(doc_obj["Parameters"]) > 0:
@@ -293,8 +294,8 @@ def generate_sub_format_pages(formats: dict):
                         and "to_system" in format.__dict__
                     )
                 ):
-                    docstring = "Convert :class:`%s` to this format." % (
-                        method_classes[method]
+                    docstring = (
+                        "Convert :class:`%s` to this format." % (method_classes[method])
                     )
                 doc_obj = SphinxDocString(docstring)
                 if len(doc_obj["Parameters"]) > 0:
