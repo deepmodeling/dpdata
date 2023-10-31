@@ -76,12 +76,14 @@ class Cp2kSystems:
     def get_log_block_generator(self):
         lines = []
         delimiter_flag = False
+        yield_flag = False
         while True:
             line = self.log_file_object.readline()
             if line:
                 lines.append(line)
                 if any(p.match(line) for p in delimiter_patterns):
                     if delimiter_flag is True:
+                        yield_flag = True
                         yield lines
                         lines = []
                         delimiter_flag = False
@@ -91,17 +93,23 @@ class Cp2kSystems:
                         if any(p.match(line) for p in avail_patterns):
                             delimiter_flag = True
             else:
+                if not yield_flag:
+                    raise StopIteration("None of the delimiter patterns are matched")
                 break
         if delimiter_flag is True:
             raise RuntimeError("This file lacks some content, please check")
 
     def get_xyz_block_generator(self):
         p3 = re.compile(r"^\s*(\d+)\s*")
+        yield_flag = False
         while True:
             line = self.xyz_file_object.readline()
             if not line:
+                if not yield_flag:
+                    raise StopIteration("None of the xyz patterns are matched")
                 break
             if p3.match(line):
+                yield_flag = True
                 atom_num = int(p3.match(line).group(1))
                 lines = []
                 lines.append(line)

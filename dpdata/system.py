@@ -1,6 +1,8 @@
 # %%
 import glob
+import hashlib
 import os
+import warnings
 from copy import deepcopy
 from typing import Any, Dict, Optional, Tuple, Union
 
@@ -18,7 +20,13 @@ from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 from dpdata.plugin import Plugin
-from dpdata.utils import add_atom_names, elements_index_map, remove_pbc, sort_atom_names
+from dpdata.utils import (
+    add_atom_names,
+    elements_index_map,
+    remove_pbc,
+    sort_atom_names,
+    utf8len,
+)
 
 
 def load_format(fmt):
@@ -561,6 +569,42 @@ class System(MSONable):
             ]
         )
 
+    @property
+    def short_formula(self) -> str:
+        """Return the short formula of this system. Elements with zero number
+        will be removed.
+        """
+        return "".join(
+            [
+                f"{symbol}{numb}"
+                for symbol, numb in zip(
+                    self.data["atom_names"], self.data["atom_numbs"]
+                )
+                if numb
+            ]
+        )
+
+    @property
+    def formula_hash(self) -> str:
+        """Return the hash of the formula of this system."""
+        return hashlib.sha256(self.formula.encode("utf-8")).hexdigest()
+
+    @property
+    def short_name(self) -> str:
+        """Return the short name of this system (no more than 255 bytes), in
+        the following order:
+            - formula
+            - short_formula
+            - formula_hash.
+        """
+        formula = self.formula
+        if utf8len(formula) <= 255:
+            return formula
+        short_formula = self.short_formula
+        if utf8len(short_formula) <= 255:
+            return short_formula
+        return self.formula_hash
+
     def extend(self, systems):
         """Extend a system list to this system.
 
@@ -708,11 +752,7 @@ class System(MSONable):
 
         if replace_num > max_replace_num:
             raise RuntimeError(
-                "not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check.".format(
-                    initial_atom_type=initial_atom_type,
-                    max_replace_num=max_replace_num,
-                    replace_num=replace_num,
-                )
+                f"not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check."
             )
 
         may_replace_indices = [
@@ -963,7 +1003,16 @@ class System(MSONable):
         *data_type : tuple[DataType]
             data type to be regiestered
         """
-        cls.DTYPES = cls.DTYPES + tuple(data_type)
+        all_dtypes = cls.DTYPES + tuple(data_type)
+        dtypes_dict = {}
+        for dt in all_dtypes:
+            if dt.name in dtypes_dict:
+                warnings.warn(
+                    f"Data type {dt.name} is registered twice; only the newly registered one will be used.",
+                    UserWarning,
+                )
+            dtypes_dict[dt.name] = dt
+        cls.DTYPES = tuple(dtypes_dict.values())
 
 
 def get_cell_perturb_matrix(cell_pert_fraction):
@@ -1237,7 +1286,9 @@ class MultiSystems:
     def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
             for fn, ss in zip(
-                fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs),
+                fmtobj.to_multi_systems(
+                    [ss.short_name for ss in self.systems.values()], directory, **kwargs
+                ),
                 self.systems.values(),
             ):
                 ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)

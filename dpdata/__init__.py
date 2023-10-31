@@ -1,3 +1,16 @@
+# monty needs lzma
+# See https://github.com/pandas-dev/pandas/pull/27882
+try:
+    import lzma  # noqa: F401
+except ImportError:
+
+    class fakemodule:
+        pass
+
+    import sys
+
+    sys.modules["lzma"] = fakemodule
+
 from . import lammps, md, vasp
 from .system import LabeledSystem, MultiSystems, System
 

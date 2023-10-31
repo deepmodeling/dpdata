@@ -11,6 +11,7 @@ Welcome to dpdata's documentation!
    :caption: Contents:
 
    Overview <self>
+   try_dpdata
    cli
    formats
    drivers
