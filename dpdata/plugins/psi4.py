@@ -1,8 +1,8 @@
 import numpy as np
 
 from dpdata.format import Format
-from dpdata.psi4.output import read_psi4_output
 from dpdata.psi4.input import write_psi4_input
+from dpdata.psi4.output import read_psi4_output
 from dpdata.unit import EnergyConversion, ForceConversion, LengthConversion
 
 length_convert = LengthConversion("bohr", "angstrom").value()
@@ -61,7 +61,17 @@ class PSI4InputFormat(Format):
     printed into the output file.
     """
 
-    def to_system(self, data: dict, file_name: str, method: str, basis: str, charge: int = 0, multiplicity: int = 1,frame_idx=0, **kwargs):
+    def to_system(
+        self,
+        data: dict,
+        file_name: str,
+        method: str,
+        basis: str,
+        charge: int = 0,
+        multiplicity: int = 1,
+        frame_idx=0,
+        **kwargs,
+    ):
         """Write PSI4 input.
 
         Parameters
@@ -85,11 +95,13 @@ class PSI4InputFormat(Format):
         """
         types = np.array(data["atom_names"])[data["atom_types"]]
         with open(file_name, "w") as fout:
-            fout.write(write_psi4_input(
-                types = types,
-                coords=data["coords"][frame_idx],
-                method=method,
-                basis=basis,
-                charge=charge,
-                multiplicity=multiplicity,
-            ))
+            fout.write(
+                write_psi4_input(
+                    types=types,
+                    coords=data["coords"][frame_idx],
+                    method=method,
+                    basis=basis,
+                    charge=charge,
+                    multiplicity=multiplicity,
+                )
+            )

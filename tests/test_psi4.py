@@ -67,12 +67,13 @@ class TestPsi4Output(unittest.TestCase, CompLabeledSys, IsNoPBC):
 class TestPsi4Input(unittest.TestCase):
     def test_psi4_input(self):
         system = dpdata.LabeledSystem("psi4/psi4.out", fmt="psi4/out")
-        with tempfile.NamedTemporaryFile('r') as f:
+        with tempfile.NamedTemporaryFile("r") as f:
             system.to_psi4_inp(f.name, method="WB97M-D3BJ", basis="def2-TZVPPD")
             content = f.read()
         self.assertEqual(
             content,
-            textwrap.dedent("""\
+            textwrap.dedent(
+                """\
                 molecule {
                 C      0.692724290     -0.280972290      0.149966626
                 C     -0.690715864      0.280527594     -0.157432416
@@ -90,4 +91,5 @@ class TestPsi4Input(unittest.TestCase):
                 wfn.energy()
                 wfn.gradient().print_out()
             """
-        ))
+            ),
+        )

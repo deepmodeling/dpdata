@@ -1,11 +1,9 @@
-from typing import List
 import numpy as np
-
 
 # Angston is used in Psi4 by default
 template = """molecule {{
 {atoms:s}
-{charge:d} {multiplicity:d} 
+{charge:d} {multiplicity:d}
 }}
 set basis {basis:s}
 set gradient_write on
@@ -13,6 +11,7 @@ G, wfn = gradient("WB97M-D3BJ", return_wfn=True)
 wfn.energy()
 wfn.gradient().print_out()
 """
+
 
 def write_psi4_input(
     types: np.ndarray,
@@ -45,9 +44,14 @@ def write_psi4_input(
         content of Psi4 input file
     """
     return template.format(
-        atoms = "\n".join(["{:s} {:16.9f} {:16.9f} {:16.9f}".format(*ii) for ii in zip(types, *coords.T)]),
-        charge = charge,
-        multiplicity = multiplicity,
-        method = method,
-        basis = basis,
+        atoms="\n".join(
+            [
+                "{:s} {:16.9f} {:16.9f} {:16.9f}".format(*ii)
+                for ii in zip(types, *coords.T)
+            ]
+        ),
+        charge=charge,
+        multiplicity=multiplicity,
+        method=method,
+        basis=basis,
     )
