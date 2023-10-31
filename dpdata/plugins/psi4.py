@@ -55,10 +55,7 @@ class PSI4OutFormat(Format):
 
 @Format.register("psi4/inp")
 class PSI4InputFormat(Format):
-    """Psi4 output.
-
-    Note that both the energy and the gradient should be
-    printed into the output file.
+    """Psi4 input file.
     """
 
     def to_system(
