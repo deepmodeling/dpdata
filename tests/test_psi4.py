@@ -1,3 +1,5 @@
+import tempfile
+import textwrap
 import unittest
 
 import numpy as np
@@ -5,7 +7,7 @@ from comp_sys import CompLabeledSys, IsNoPBC
 from context import dpdata
 
 
-class TestDeepmdLoadDumpHDF5(unittest.TestCase, CompLabeledSys, IsNoPBC):
+class TestPsi4Output(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp(self):
         length_convert = dpdata.unit.LengthConversion("bohr", "angstrom").value()
         energy_convert = dpdata.unit.EnergyConversion("hartree", "eV").value()
@@ -60,3 +62,34 @@ class TestDeepmdLoadDumpHDF5(unittest.TestCase, CompLabeledSys, IsNoPBC):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 6
+
+
+class TestPsi4Input(unittest.TestCase):
+    def test_psi4_input(self):
+        system = dpdata.LabeledSystem("psi4/psi4.out", fmt="psi4/out")
+        with tempfile.NamedTemporaryFile("r") as f:
+            system.to_psi4_inp(f.name, method="WB97M-D3BJ", basis="def2-TZVPPD")
+            content = f.read()
+        self.assertEqual(
+            content,
+            textwrap.dedent(
+                """\
+                molecule {
+                C      0.692724290     -0.280972290      0.149966626
+                C     -0.690715864      0.280527594     -0.157432416
+                H      1.241584247     -0.707702380     -0.706342645
+                H      0.492994289     -1.086482665      0.876517411
+                H      1.330104482      0.478557878      0.633157279
+                H     -1.459385451     -0.498843014     -0.292862623
+                H     -0.623545813      0.873377524     -1.085142510
+                H     -1.005665735      0.946387574      0.663566976
+                0 1
+                }
+                set basis def2-TZVPPD
+                set gradient_write on
+                G, wfn = gradient("WB97M-D3BJ", return_wfn=True)
+                wfn.energy()
+                wfn.gradient().print_out()
+            """
+            ),
+        )

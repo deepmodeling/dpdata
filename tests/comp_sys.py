@@ -47,6 +47,9 @@ class CompSys:
     def test_coord(self):
         self.assertEqual(self.system_1.get_nframes(), self.system_2.get_nframes())
         # think about direct coord
+        if self.system_1.nopbc:
+            # nopbc doesn't need to test cells
+            return
         tmp_cell = self.system_1.data["cells"]
         tmp_cell = np.reshape(tmp_cell, [-1, 3])
         tmp_cell_norm = np.reshape(np.linalg.norm(tmp_cell, axis=1), [-1, 1, 3])
