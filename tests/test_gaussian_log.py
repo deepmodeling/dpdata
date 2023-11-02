@@ -102,6 +102,7 @@ class TestGaussianLoadPBCLog(unittest.TestCase, TestGaussianLog):
     def test_nopbc(self):
         self.assertEqual(self.system.nopbc, False)
 
+
 class TestGaussianNoInputOrientation(unittest.TestCase):
     """Raise Error when there is no input orientation."""
 
@@ -110,6 +111,7 @@ class TestGaussianNoInputOrientation(unittest.TestCase):
             self.system = dpdata.LabeledSystem(
                 "gaussian/no_input_orient.gaussianlog", fmt="gaussian/log"
             )
+
 
 if __name__ == "__main__":
     unittest.main()
