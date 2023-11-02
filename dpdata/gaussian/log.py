@@ -12,7 +12,7 @@ symbols = ["X"] + ELEMENTS
 
 def to_system_data(file_name, md=False):
     """Read Gaussian log file.
-    
+
     Parameters
     ----------
     file_name : str
@@ -24,7 +24,7 @@ def to_system_data(file_name, md=False):
     -------
     data : dict
         system data
-    
+
     Raises
     ------
     RuntimeError
@@ -68,7 +68,8 @@ def to_system_data(file_name, md=False):
                         raise RuntimeError(
                             "Input orientation is not found. Using Gaussian keyword "
                             "`Geom=PrintInputOrient` to always print the input orientation. "
-                            "See https://gaussian.com/geom/ for more details.")
+                            "See https://gaussian.com/geom/ for more details."
+                        )
                     forces_t.append(forces)
                     energy_t.append(energy)
                     coords_t.append(coords)
