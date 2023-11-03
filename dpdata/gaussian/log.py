@@ -11,6 +11,25 @@ symbols = ["X"] + ELEMENTS
 
 
 def to_system_data(file_name, md=False):
+    """Read Gaussian log file.
+
+    Parameters
+    ----------
+    file_name : str
+        file name
+    md : bool, default False
+        whether to read multiple frames
+
+    Returns
+    -------
+    data : dict
+        system data
+
+    Raises
+    ------
+    RuntimeError
+        if the input orientation is not found
+    """
     data = {}
     # read from log lines
     flag = 0
@@ -20,6 +39,7 @@ def to_system_data(file_name, md=False):
     forces_t = []
     cells_t = []
     nopbc = True
+    coords = None
 
     with open(file_name) as fp:
         for line in fp:
@@ -44,6 +64,12 @@ def to_system_data(file_name, md=False):
             elif flag == 4:
                 # forces
                 if line.startswith(" -------"):
+                    if coords is None:
+                        raise RuntimeError(
+                            "Input orientation is not found. Using Gaussian keyword "
+                            "`Geom=PrintInputOrient` to always print the input orientation. "
+                            "See https://gaussian.com/geom/ for more details."
+                        )
                     forces_t.append(forces)
                     energy_t.append(energy)
                     coords_t.append(coords)
@@ -55,6 +81,7 @@ def to_system_data(file_name, md=False):
                             [[100.0, 0.0, 0.0], [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]]
                         )
                     flag = 0
+                    coords = None
                 else:
                     s = line.split()
                     if line[14:16] == "-2":
