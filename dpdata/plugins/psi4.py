@@ -3,7 +3,7 @@ import numpy as np
 from dpdata.format import Format
 from dpdata.psi4.input import write_psi4_input
 from dpdata.psi4.output import read_psi4_output
-from dpdata.unit import EnergyConversion, ForceConversion, LengthConversion
+from dpdata.unit import EnergyConversion, ForceConversion
 
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
