@@ -46,6 +46,8 @@ class QECPPWSCFFormat(Format):
             data["coords"],
             data["energies"],
             data["forces"],
-            data["virials"],
+            tmp_virial,
         ) = dpdata.qe.scf.get_frame(file_name)
+        if tmp_virial is not None:
+            data["virials"] = tmp_virial
         return data
