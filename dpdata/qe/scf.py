@@ -150,7 +150,7 @@ def get_frame(fname):
     atom_names, natoms, types, coords = get_coords(inlines, cell)
     energy = get_energy(outlines)
     force = get_force(outlines, natoms)
-    stress = get_stress(outlines) 
+    stress = get_stress(outlines)
     if stress is not None:
         stress = (stress * np.linalg.det(cell))[np.newaxis, :, :]
     return (
