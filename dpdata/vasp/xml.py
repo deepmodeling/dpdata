@@ -22,9 +22,13 @@ def analyze_atominfo(atominfo_xml):
     check_name(atominfo_xml.find("array"), "atoms")
     eles = []
     types = []
+    visited = set()
     for ii in atominfo_xml.find("array").find("set"):
-        eles.append(ii.findall("c")[0].text.strip())
-        types.append(int(ii.findall("c")[1].text))
+        atom_type = int(ii.findall("c")[1].text)
+        if atom_type not in visited:
+            eles.append(ii.findall("c")[0].text.strip())
+            visited.add(atom_type)
+        types.append(atom_type)
     return eles, types
 
 
