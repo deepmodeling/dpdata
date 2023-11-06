@@ -25,11 +25,7 @@ def analyze_atominfo(atominfo_xml):
     for ii in atominfo_xml.find("array").find("set"):
         eles.append(ii.findall("c")[0].text.strip())
         types.append(int(ii.findall("c")[1].text))
-    uniq_ele = []
-    for ii in eles:
-        if ii not in uniq_ele:
-            uniq_ele.append(ii)
-    return uniq_ele, types
+    return eles, types
 
 
 def analyze_calculation(cc):
