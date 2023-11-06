@@ -57,5 +57,6 @@ class TestVaspXmlNoVirial(unittest.TestCase, CompSys, IsPBC):
         self.system_1 = finl_sys
         self.system_2 = xml_sys.sub_system([-1])
 
+
 if __name__ == "__main__":
     unittest.main()
