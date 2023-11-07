@@ -47,5 +47,16 @@ class TestVaspXmlSkip(unittest.TestCase, CompLabeledSys, IsPBC):
         ).sub_system(np.arange(2, 10, 3))
 
 
+class TestVaspXmlNoVirial(unittest.TestCase, CompSys, IsPBC):
+    def setUp(self):
+        self.places = 6
+        xml_sys = dpdata.LabeledSystem()
+        xml_sys.from_vasp_xml("poscars/vasprun.h2o.md.novirial.xml")
+        finl_sys = dpdata.System()
+        finl_sys.from_vasp_poscar("poscars/CONTCAR.h2o.md")
+        self.system_1 = finl_sys
+        self.system_2 = xml_sys.sub_system([-1])
+
+
 if __name__ == "__main__":
     unittest.main()
