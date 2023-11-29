@@ -1,7 +1,11 @@
-import os
-from typing import List, Optional, Union
+from __future__ import annotations
 
-import h5py
+import os
+
+try:
+    import h5py
+except ImportError:
+    pass
 import numpy as np
 
 import dpdata
@@ -82,10 +86,12 @@ class DeePMDMixedFormat(Format):
     Examples
     --------
     Dump a MultiSystems into a mixed type numpy directory:
+
     >>> import dpdata
     >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir")
 
     Load a mixed type data into a MultiSystems:
+
     >>> import dpdata
     >>> dpdata.MultiSystems().load_systems_from_file("mixed_dir", fmt="deepmd/npy/mixed")
     """
@@ -95,7 +101,9 @@ class DeePMDMixedFormat(Format):
             file_name, type_map=type_map, labels=False
         )
 
-    def to_system(self, data, file_name, prec=np.float64, **kwargs):
+    def to_system(
+        self, data, file_name, set_size: int = 2000, prec=np.float64, **kwargs
+    ):
         """Dump the system in deepmd mixed type format (numpy binary) to `folder`.
 
         The frames were already split to different systems, so these frames can be dumped to one single subfolders
@@ -107,12 +115,14 @@ class DeePMDMixedFormat(Format):
             System data
         file_name : str
             The output folder
+        set_size : int, default=2000
+            set size
         prec : {numpy.float32, numpy.float64}
             The floating point precision of the compressed data
         **kwargs : dict
             other parameters
         """
-        dpdata.deepmd.mixed.dump(file_name, data, comp_prec=prec)
+        dpdata.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
 
     def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
         return dpdata.deepmd.mixed.to_system_data(
@@ -157,14 +167,15 @@ class DeePMDHDF5Format(Format):
     Examples
     --------
     Dump a MultiSystems to a HDF5 file:
+
     >>> import dpdata
     >>> dpdata.MultiSystems().from_deepmd_npy("data").to_deepmd_hdf5("data.hdf5")
     """
 
     def _from_system(
         self,
-        file_name: Union[str, h5py.Group, h5py.File],
-        type_map: List[str],
+        file_name: str | (h5py.Group | h5py.File),
+        type_map: list[str],
         labels: bool,
     ):
         """Convert HDF5 file to System or LabeledSystem data.
@@ -207,8 +218,8 @@ class DeePMDHDF5Format(Format):
 
     def from_system(
         self,
-        file_name: Union[str, h5py.Group, h5py.File],
-        type_map: Optional[List[str]] = None,
+        file_name: str | (h5py.Group | h5py.File),
+        type_map: list[str] | None = None,
         **kwargs,
     ) -> dict:
         """Convert HDF5 file to System data.
@@ -237,8 +248,8 @@ class DeePMDHDF5Format(Format):
 
     def from_labeled_system(
         self,
-        file_name: Union[str, h5py.Group, h5py.File],
-        type_map: Optional[List[str]] = None,
+        file_name: str | (h5py.Group | h5py.File),
+        type_map: list[str] | None = None,
         **kwargs,
     ) -> dict:
         """Convert HDF5 file to LabeledSystem data.
@@ -268,7 +279,7 @@ class DeePMDHDF5Format(Format):
     def to_system(
         self,
         data: dict,
-        file_name: Union[str, h5py.Group, h5py.File],
+        file_name: str | (h5py.Group | h5py.File),
         set_size: int = 5000,
         comp_prec: np.dtype = np.float64,
         **kwargs,
@@ -324,7 +335,7 @@ class DeePMDHDF5Format(Format):
                 yield f[ff]
 
     def to_multi_systems(
-        self, formulas: List[str], directory: str, **kwargs
+        self, formulas: list[str], directory: str, **kwargs
     ) -> h5py.Group:
         """Generate HDF5 groups, which will be passed to `to_system`.
 
@@ -394,8 +405,10 @@ class DPDriver(Driver):
         type_map = self.dp.get_type_map()
 
         ori_sys = dpdata.System.from_dict({"data": data})
+        ori_sys_copy = ori_sys.copy()
         ori_sys.sort_atom_names(type_map=type_map)
         atype = ori_sys["atom_types"]
+        ori_sys = ori_sys_copy
 
         if not self.enable_auto_batch_size:
             labeled_sys = dpdata.LabeledSystem()

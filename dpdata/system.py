@@ -1,8 +1,9 @@
 # %%
 import glob
+import hashlib
 import os
+import warnings
 from copy import deepcopy
-from enum import Enum, unique
 from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
@@ -15,10 +16,17 @@ import dpdata.md.pbc
 # ensure all plugins are loaded!
 import dpdata.plugins
 from dpdata.amber.mask import load_param_file, pick_by_amber_mask
+from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 from dpdata.plugin import Plugin
-from dpdata.utils import add_atom_names, elements_index_map, remove_pbc, sort_atom_names
+from dpdata.utils import (
+    add_atom_names,
+    elements_index_map,
+    remove_pbc,
+    sort_atom_names,
+    utf8len,
+)
 
 
 def load_format(fmt):
@@ -31,112 +39,6 @@ def load_format(fmt):
             fmt, " ".join(formats)
         )
     )
-
-
-@unique
-class Axis(Enum):
-    """Data axis."""
-
-    NFRAMES = "nframes"
-    NATOMS = "natoms"
-    NTYPES = "ntypes"
-    NBONDS = "nbonds"
-
-
-class DataError(Exception):
-    """Data is not correct."""
-
-
-class DataType:
-    """DataType represents a type of data, like coordinates, energies, etc.
-
-    Parameters
-    ----------
-    name : str
-        name of data
-    dtype : type or tuple[type]
-        data type, e.g. np.ndarray
-    shape : tuple[int], optional
-        shape of data. Used when data is list or np.ndarray. Use Axis to
-        represents numbers
-    required : bool, default=True
-        whether this data is required
-    """
-
-    def __init__(
-        self,
-        name: str,
-        dtype: type,
-        shape: Tuple[int, Axis] = None,
-        required: bool = True,
-    ) -> None:
-        self.name = name
-        self.dtype = dtype
-        self.shape = shape
-        self.required = required
-
-    def real_shape(self, system: "System") -> Tuple[int]:
-        """Returns expected real shape of a system."""
-        shape = []
-        for ii in self.shape:
-            if ii is Axis.NFRAMES:
-                shape.append(system.get_nframes())
-            elif ii is Axis.NTYPES:
-                shape.append(system.get_ntypes())
-            elif ii is Axis.NATOMS:
-                shape.append(system.get_natoms())
-            elif ii is Axis.NBONDS:
-                # BondOrderSystem
-                shape.append(system.get_nbonds())
-            elif isinstance(ii, int):
-                shape.append(ii)
-            else:
-                raise RuntimeError("Shape is not an int!")
-        return tuple(shape)
-
-    def check(self, system: "System"):
-        """Check if a system has correct data of this type.
-
-        Parameters
-        ----------
-        system : System
-            checked system
-
-        Raises
-        ------
-        DataError
-            type or shape of data is not correct
-        """
-        # check if exists
-        if self.name in system.data:
-            data = system.data[self.name]
-            # check dtype
-            # allow list for empty np.ndarray
-            if isinstance(data, list) and not len(data):
-                pass
-            elif not isinstance(data, self.dtype):
-                raise DataError(
-                    f"Type of {self.name} is {type(data).__name__}, but expected {self.dtype.__name__}"
-                )
-            # check shape
-            if self.shape is not None:
-                shape = self.real_shape(system)
-                # skip checking empty list of np.ndarray
-                if isinstance(data, np.ndarray):
-                    if data.size and shape != data.shape:
-                        raise DataError(
-                            f"Shape of {self.name} is {data.shape}, but expected {shape}"
-                        )
-                elif isinstance(data, list):
-                    if len(shape) and shape[0] != len(data):
-                        raise DataError(
-                            "Length of %s is %d, but expected %d"
-                            % (self.name, len(data), shape[0])
-                        )
-                else:
-                    raise RuntimeError("Unsupported type to check shape")
-        elif self.required:
-            raise DataError("%s not found in data" % self.name)
 
 
 class System(MSONable):
@@ -521,17 +423,21 @@ class System(MSONable):
             return False
         elif not len(self.data["atom_numbs"]):
             # this system is non-converged but the system to append is converged
-            self.data = system.data
+            self.data = system.data.copy()
             return False
         if system.uniq_formula != self.uniq_formula:
             raise RuntimeError(
                 f"systems with inconsistent formula could not be append: {self.uniq_formula} v.s. {system.uniq_formula}"
             )
         if system.data["atom_names"] != self.data["atom_names"]:
+            # prevent original system to be modified
+            system = system.copy()
             # allow to append a system with different atom_names order
             system.sort_atom_names()
             self.sort_atom_names()
         if (system.data["atom_types"] != self.data["atom_types"]).any():
+            # prevent original system to be modified
+            system = system.copy()
             # allow to append a system with different atom_types order
             system.sort_atom_types()
             self.sort_atom_types()
@@ -611,7 +517,7 @@ class System(MSONable):
             self.sort_atom_names(type_map=type_map)
 
     def apply_type_map(self, type_map):
-        if type_map is not None and type(type_map) is list:
+        if type_map is not None and isinstance(type_map, list):
             self.check_type_map(type_map)
         else:
             raise RuntimeError("invalid type map, cannot be applied")
@@ -624,7 +530,7 @@ class System(MSONable):
         idx : np.ndarray
             new atom index in the Axis.NATOMS
         """
-        idx = np.argsort(self.data["atom_types"])
+        idx = np.argsort(self.data["atom_types"], kind="stable")
         for tt in self.DTYPES:
             if tt.name not in self.data:
                 # skip optional data
@@ -662,6 +568,42 @@ class System(MSONable):
                 )
             ]
         )
+
+    @property
+    def short_formula(self) -> str:
+        """Return the short formula of this system. Elements with zero number
+        will be removed.
+        """
+        return "".join(
+            [
+                f"{symbol}{numb}"
+                for symbol, numb in zip(
+                    self.data["atom_names"], self.data["atom_numbs"]
+                )
+                if numb
+            ]
+        )
+
+    @property
+    def formula_hash(self) -> str:
+        """Return the hash of the formula of this system."""
+        return hashlib.sha256(self.formula.encode("utf-8")).hexdigest()
+
+    @property
+    def short_name(self) -> str:
+        """Return the short name of this system (no more than 255 bytes), in
+        the following order:
+            - formula
+            - short_formula
+            - formula_hash.
+        """
+        formula = self.formula
+        if utf8len(formula) <= 255:
+            return formula
+        short_formula = self.short_formula
+        if utf8len(short_formula) <= 255:
+            return short_formula
+        return self.formula_hash
 
     def extend(self, systems):
         """Extend a system list to this system.
@@ -756,7 +698,7 @@ class System(MSONable):
         if len(ncopy) != 3:
             raise RuntimeError("ncopy must be a list or tuple with 3 int")
         for ii in ncopy:
-            if type(ii) is not int:
+            if not isinstance(ii, int):
                 raise RuntimeError("ncopy must be a list or tuple must with 3 int")
 
         tmp = System()
@@ -767,7 +709,7 @@ class System(MSONable):
             np.array(np.copy(data["atom_numbs"])) * np.prod(ncopy)
         )
         tmp.data["atom_types"] = np.sort(
-            np.tile(np.copy(data["atom_types"]), np.prod(ncopy))
+            np.tile(np.copy(data["atom_types"]), np.prod(ncopy)), kind="stable"
         )
         tmp.data["cells"] = np.copy(data["cells"])
         for ii in range(3):
@@ -792,18 +734,10 @@ class System(MSONable):
             raise RuntimeError(
                 "Must use method replace() of the instance of class dpdata.System"
             )
-        if type(replace_num) is not int:
-            raise ValueError(
-                "replace_num must be a integer. Now is {replace_num}".format(
-                    replace_num=replace_num
-                )
-            )
+        if not isinstance(replace_num, int):
+            raise ValueError(f"replace_num must be a integer. Now is {replace_num}")
         if replace_num <= 0:
-            raise ValueError(
-                "replace_num must be larger than 0.Now is {replace_num}".format(
-                    replace_num=replace_num
-                )
-            )
+            raise ValueError(f"replace_num must be larger than 0.Now is {replace_num}")
 
         try:
             initial_atom_index = self.data["atom_names"].index(initial_atom_type)
@@ -818,11 +752,7 @@ class System(MSONable):
 
         if replace_num > max_replace_num:
             raise RuntimeError(
-                "not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check.".format(
-                    initial_atom_type=initial_atom_type,
-                    max_replace_num=max_replace_num,
-                    replace_num=replace_num,
-                )
+                f"not enough {initial_atom_type} atom, only {max_replace_num} available, less than {replace_num}.Please check."
             )
 
         may_replace_indices = [
@@ -941,6 +871,7 @@ class System(MSONable):
         Examples
         --------
         The default driver is DP:
+
         >>> labeled_sys = ori_sys.predict("frozen_model_compressed.pb")
         """
         if not isinstance(driver, Driver):
@@ -1062,6 +993,26 @@ class System(MSONable):
         else:
             idx = pick_by_amber_mask(parm, maskstr)
             return self.pick_atom_idx(idx, nopbc=nopbc)
+
+    @classmethod
+    def register_data_type(cls, *data_type: Tuple[DataType]):
+        """Register data type.
+
+        Parameters
+        ----------
+        *data_type : tuple[DataType]
+            data type to be regiestered
+        """
+        all_dtypes = cls.DTYPES + tuple(data_type)
+        dtypes_dict = {}
+        for dt in all_dtypes:
+            if dt.name in dtypes_dict:
+                warnings.warn(
+                    f"Data type {dt.name} is registered twice; only the newly registered one will be used.",
+                    UserWarning,
+                )
+            dtypes_dict[dt.name] = dt
+        cls.DTYPES = tuple(dtypes_dict.values())
 
 
 def get_cell_perturb_matrix(cell_pert_fraction):
@@ -1335,7 +1286,9 @@ class MultiSystems:
     def to_fmt_obj(self, fmtobj, directory, *args, **kwargs):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
             for fn, ss in zip(
-                fmtobj.to_multi_systems(self.systems.keys(), directory, **kwargs),
+                fmtobj.to_multi_systems(
+                    [ss.short_name for ss in self.systems.values()], directory, **kwargs
+                ),
                 self.systems.values(),
             ):
                 ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
@@ -1440,6 +1393,8 @@ class MultiSystems:
     def __append(self, system):
         if not system.formula:
             return
+        # prevent changing the original system
+        system = system.copy()
         self.check_atom_names(system)
         formula = system.formula
         if formula in self.systems:
@@ -1514,9 +1469,10 @@ class MultiSystems:
         Examples
         --------
         Minimize a system using ASE BFGS along with a DP driver:
+
         >>> from dpdata.driver import Driver
         >>> from ase.optimize import BFGS
-        >>> driver = driver.get_driver("dp")("some_model.pb")
+        >>> driver = Driver.get_driver("dp")("some_model.pb")
         >>> some_system.minimize(minimizer="ase", driver=driver, optimizer=BFGS, fmax=1e-5)
         """
         if not isinstance(minimizer, Minimizer):
@@ -1659,7 +1615,8 @@ def get_cls_name(cls: object) -> str:
 
 
 def add_format_methods():
-    """Add format methods to System, LabeledSystem, and MultiSystems.
+    """Add format methods to System, LabeledSystem, and MultiSystems; add data types
+    to System and LabeledSystem.
 
     Notes
     -----
@@ -1702,6 +1659,11 @@ def add_format_methods():
         setattr(System, method, get_func(formatcls))
         setattr(LabeledSystem, method, get_func(formatcls))
         setattr(MultiSystems, method, get_func(formatcls))
+
+    # at this point, System.DTYPES and LabeledSystem.DTYPES has been initialized
+    System.register_data_type(*get_data_types(labeled=False))
+    LabeledSystem.register_data_type(*get_data_types(labeled=False))
+    LabeledSystem.register_data_type(*get_data_types(labeled=True))
 
 
 add_format_methods()

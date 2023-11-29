@@ -24,4 +24,7 @@ _version.py
 __pycache__
 docs/_build
 docs/formats.csv
+docs/drivers.csv
+docs/minimizers.csv
 docs/api/
+docs/formats/

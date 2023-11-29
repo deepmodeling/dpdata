@@ -76,12 +76,14 @@ class Cp2kSystems:
     def get_log_block_generator(self):
         lines = []
         delimiter_flag = False
+        yield_flag = False
         while True:
             line = self.log_file_object.readline()
             if line:
                 lines.append(line)
                 if any(p.match(line) for p in delimiter_patterns):
                     if delimiter_flag is True:
+                        yield_flag = True
                         yield lines
                         lines = []
                         delimiter_flag = False
@@ -91,17 +93,23 @@ class Cp2kSystems:
                         if any(p.match(line) for p in avail_patterns):
                             delimiter_flag = True
             else:
+                if not yield_flag:
+                    raise StopIteration("None of the delimiter patterns are matched")
                 break
         if delimiter_flag is True:
             raise RuntimeError("This file lacks some content, please check")
 
     def get_xyz_block_generator(self):
         p3 = re.compile(r"^\s*(\d+)\s*")
+        yield_flag = False
         while True:
             line = self.xyz_file_object.readline()
             if not line:
+                if not yield_flag:
+                    raise StopIteration("None of the xyz patterns are matched")
                 break
             if p3.match(line):
+                yield_flag = True
                 atom_num = int(p3.match(line).group(1))
                 lines = []
                 lines.append(line)
@@ -327,9 +335,7 @@ class Cp2kSystems:
         atom_num = int(lines[0].strip("\n").strip())
         if len(lines) != atom_num + 2:
             raise RuntimeError(
-                "format error, atom_num=={}, {}!=atom_num+2".format(
-                    atom_num, len(lines)
-                )
+                f"format error, atom_num=={atom_num}, {len(lines)}!=atom_num+2"
             )
         data_format_line = lines[1].strip("\n").strip() + " "
         prop_pattern = re.compile(r"(?P<prop>\w+)\s*=\s*(?P<number>.*?)[, ]")
@@ -411,18 +417,18 @@ def get_frames(fname):
                 cell.append(ii.split()[4:7])
             if "Atomic kind:" in ii:
                 atom_symbol_list.append(ii.split()[3])
-            if "Atom  Kind  Element" in ii:
-                coord_flag = True
-                coord_idx = idx
 
-            # get the coord block info
-            if coord_flag:
-                if idx > coord_idx + 1:
-                    if ii == "\n":
-                        coord_flag = False
-                    else:
-                        coord.append(ii.split()[4:7])
-                        atom_symbol_idx_list.append(ii.split()[1])
+            # beginning of coords block
+            if "Atom  Kind  Element" in ii or "Atom Kind Element" in ii:
+                coord_flag = True
+            # parse coords lines
+            elif coord_flag:
+                if ii == "\n":
+                    coord_flag = len(coord) == 0  # skip empty line at the beginning
+                else:
+                    coord.append(ii.split()[4:7])
+                    atom_symbol_idx_list.append(ii.split()[1])
+
             if "ENERGY|" in ii:
                 energy = ii.split()[8]
             if " Atom   Kind " in ii:
@@ -488,7 +494,7 @@ def get_frames(fname):
     atom_types = []
     atom_numbs = []
     # preserve the atom_name order
-    atom_names = atom_symbol_list[np.sort(symbol_idx)]
+    atom_names = atom_symbol_list[np.sort(symbol_idx, kind="stable")]
     for jj in atom_symbol_list:
         for idx, ii in enumerate(atom_names):
             if jj == ii:

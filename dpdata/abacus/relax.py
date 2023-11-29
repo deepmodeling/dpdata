@@ -2,7 +2,15 @@ import os
 
 import numpy as np
 
-from .scf import bohr2ang, get_cell, get_coords, get_geometry_in, kbar2evperang3
+from .scf import (
+    bohr2ang,
+    collect_force,
+    collect_stress,
+    get_cell,
+    get_coords,
+    get_geometry_in,
+    kbar2evperang3,
+)
 
 # Read in geometries from an ABACUS RELAX(CELL-RELAX) trajectory in OUT.XXXX/runnning_relax/cell-relax.log.
 
@@ -40,8 +48,6 @@ def get_coords_from_log(loglines, natoms):
     energy = []
     cells = []
     coords = []
-    force = []
-    stress = []
     coord_direct = []  # if the coordinate is direct type or not
 
     for i in range(len(loglines)):
@@ -91,18 +97,8 @@ def get_coords_from_log(loglines, natoms):
             # get the energy of current structure
             energy.append(float(line.split()[-2]))
 
-        elif line[4:15] == "TOTAL-FORCE":
-            force.append([])
-            for j in range(5, 5 + natoms):
-                force[-1].append(
-                    list(map(lambda x: float(x), loglines[i + j].split()[1:4]))
-                )
-        elif line[1:13] == "TOTAL-STRESS":
-            stress.append([])
-            for j in range(4, 7):
-                stress[-1].append(
-                    list(map(lambda x: float(x), loglines[i + j].split()[0:3]))
-                )
+    force = collect_force(loglines)
+    stress = collect_stress(loglines)
 
     # delete last structures which has no energy
     while len(energy) < len(coords):
@@ -158,16 +154,19 @@ def get_coords_from_log(loglines, natoms):
     cells *= bohr2ang
     coords *= bohr2ang
 
-    virial = np.zeros([len(cells), 3, 3])
-    for i in range(len(cells)):
-        volume = np.linalg.det(cells[i, :, :].reshape([3, 3]))
-        virial[i] = stress[i] * kbar2evperang3 * volume
+    if len(stress) > 0:
+        virial = np.zeros([len(cells), 3, 3])
+        for i in range(len(cells)):
+            volume = np.linalg.det(cells[i, :, :].reshape([3, 3]))
+            virial[i] = stress[i] * kbar2evperang3 * volume
+    else:
+        virial = None
 
     return energy, cells, coords, force, stress, virial
 
 
 def get_frame(fname):
-    if type(fname) == str:
+    if isinstance(fname, str):
         # if the input parameter is only one string, it is assumed that it is the
         # base directory containing INPUT file;
         path_in = os.path.join(fname, "INPUT")
@@ -203,7 +202,8 @@ def get_frame(fname):
     data["coords"] = coords
     data["energies"] = energy
     data["forces"] = force
-    data["virials"] = virial
+    if isinstance(virial, np.ndarray):
+        data["virials"] = virial
     data["stress"] = stress
     data["orig"] = np.zeros(3)
 

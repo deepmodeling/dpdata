@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dpdata_plugin_test"
+version = "0.0.0"
+description = "A test for dpdata plugin"
+dependencies = [
+    'numpy',
+    'dpdata',
+]
+readme = "README.md"
+requires-python = ">=3.7"
+
+[project.entry-points.'dpdata.plugins']
+random = "dpdata_plugin_test:ep"
