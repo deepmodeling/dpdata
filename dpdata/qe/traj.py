@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import warnings
+import os
 
 import numpy as np
 
@@ -16,6 +17,7 @@ kbar2evperang3 = PressureConversion("kbar", "eV/angstrom^3").value()
 length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
+stress_convert = PressureConversion("GPa", "eV/angstrom^3").value()
 
 
 def load_key(lines, key):
@@ -233,8 +235,15 @@ def to_system_label(input_name, prefix, begin=0, step=1):
         step=step,
         convert=force_convert,
     )
-    assert esteps == fsteps, "the step key between files are not consistent "
-    return energy, force, esteps
+    # Load stress from .str file if it exists
+    if os.path.isfile(prefix + ".str"):
+        stress, vsteps = load_data(
+            prefix + ".str", 3, begin=begin, step=step, convert=stress_convert
+        )
+    else:
+        stress, vsteps = None, esteps
+    assert esteps == fsteps == vsteps, "the step key between files are not consistent "
+    return energy, force, stress, esteps
 
 
 if __name__ == "__main__":
