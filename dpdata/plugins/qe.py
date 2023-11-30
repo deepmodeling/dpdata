@@ -1,8 +1,9 @@
+import numpy as np
+
 import dpdata.md.pbc
 import dpdata.qe.scf
 import dpdata.qe.traj
 from dpdata.format import Format
-import numpy as np
 
 
 @Format.register("qe/cp/traj")

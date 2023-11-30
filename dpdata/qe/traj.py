@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-import warnings
 import os
+import warnings
 
 import numpy as np
 
