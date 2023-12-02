@@ -67,27 +67,4 @@ class TestConverCellDim(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    with open("qe.traj/oh-md.pos") as fp:
-            lines = fp.read().rstrip("\n").split("\n")
-    lines = lines[-191:]
-    # print(len(lines))
-    coords = []
-    for ii in lines:
-        coords.append([float(jj) for jj in ii.split()])
-    coords = bohr2ang * np.array(coords)
-    print(coords.shape)
-    celll = bohr2ang * 23.5170
-    for ii in range(coords.shape[0]):
-        # print(coords.shape[0])
-        for jj in range(coords[ii].size):
-            # print(coords[ii].size)
-            if coords[ii][jj] < 0:
-                coords[ii][jj] += celll
-            elif coords[ii][jj] >= celll:
-                coords[ii][jj] -= celll
-            # print(coords[ii][jj])
-            # self.assertAlmostEqual(
-            #     self.system["coords"][-1][ii][jj], coords[ii][jj]
-            # )
-    pass
-    # unittest.main()
+    unittest.main()

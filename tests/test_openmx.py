@@ -3,14 +3,7 @@ import unittest
 import numpy as np
 from context import dpdata
 
-bohr2ang = dpdata.unit.LengthConversion("bohr", "angstrom").value()
-
-### testing result ###
-# ['C', 'H']
-# [1, 4]
-# [0 1 1 1 1]
-
-class TestOPENMXProps:
+class TestOPENMXTRAJProps:
     def test_atom_names(self):
         self.assertEqual(self.system.data["atom_names"], ["C", "H"])
 
@@ -35,15 +28,11 @@ class TestOPENMXProps:
         with open("openmx/Methane.md") as md_file:
             lines = md_file.readlines()
         lines = lines[-5:]
-        atom_names=["C","H"]
         coords=[]
-        for index, line in enumerate(lines):
-            for atom_name in atom_names:
-                atom_name += " "
-                if atom_name in line:
-                    parts = line.split()
-                    for_line = [float(parts[1]), float(parts[2]), float(parts[3])]
-                    coords.append(for_line)
+        for line in lines:
+            parts=line.split()
+            for_line = [float(parts[1]), float(parts[2]), float(parts[3])]
+            coords.append(for_line)
         coords=np.array(coords)
         celll=10.0
         ## Applying PBC ##
@@ -57,14 +46,13 @@ class TestOPENMXProps:
                     self.system["coords"][-1][ii][jj], coords[ii][jj]
                 )
 
-class TestOPENMXTraj(unittest.TestCase, TestOPENMXProps):
+class TestOPENMXTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
         self.system = dpdata.System("openmx/Methane", fmt="openmx")
 
-class TestOPENMXLabeledTraj(unittest.TestCase, TestOPENMXProps):
+class TestOPENMXLabeledTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
         self.system = dpdata.LabeledSystem("openmx/Methane", fmt="openmx")
 
 if __name__ == "__main__":
-    # pass
     unittest.main()
