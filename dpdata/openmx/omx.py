@@ -19,30 +19,19 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 from collections import OrderedDict
 
-# | key		|  type		| dimension		| are labels	| description
-# | ---		| ---		| ---			| ---		| ---
-# | 'atom_names'	| list of str	| ntypes		| False		| The name of each atom type
-# | 'atom_numbs'	| list of int	| ntypes		| False		| The number of atoms of each atom type
-# | 'atom_types'	| np.ndarray	| natoms		| False		| Array assigning type to each atom
-# | 'cells'	| np.ndarray	| nframes x 3 x 3	| False		| The cell tensor of each frame
-# | 'coords'	| np.ndarray	| nframes x natoms x 3	| False		| The atom coordinates
-# | 'energies'	| np.ndarray	| nframes		| True		| The frame energies
-# | 'forces'	| np.ndarray	| nframes x natoms x 3	| True		| The atom forces
-# | 'virials'	| np.ndarray	| nframes x 3 x 3	| True		| The virial tensor of each frame
-
-# // iterout.c from OpenMX soure code
+### iterout.c from OpenMX soure code: column numbers and physical quantities ###
 # /* 1: */
-# /* 5,6,7: force */
+# /* 2,3,4: */
+# /* 5,6,7: force *   
 # /* 8: x-component of velocity */
 # /* 9: y-component of velocity */
 # /* 10: z-component of velocity */
 # /* 11: Net charge, electron charge is defined to be negative. */
 # /* 12: magnetic moment (muB) */
-# /* 13,14: angles of spin */
+# /* 13,14: angles of spin */  
 
 # load atom_names, atom_numbs, atom_types, cells
 def load_param_file(fname, mdname):
-    ### future request: read from .md not .dat ###
     with open(fname) as dat_file:
         lines = dat_file.readlines()
     atom_names = []
@@ -172,14 +161,7 @@ if __name__ == "__main__":
     print(atom_names)
     print(atom_numbs)
     print(atom_types)
-    # print(cells)
     # print(cells.shape)
     # print(coords.shape)
-    # print(data["coords"].shape)
-    # print(data["cells"])
-    # print(data["cells"].shape)
-    # print(csteps)
-    # print(energy)
     # print(len(energy))
-    # print(force)
     # print(force.shape)
