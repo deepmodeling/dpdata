@@ -31,6 +31,6 @@ class OPENMXFormat(Format):
             data["cells"],
         )
         data["energies"], data["forces"] = dpdata.openmx.omx.to_system_label(
-            fname, mdname, data
+            fname, mdname
         )
         return data

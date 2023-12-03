@@ -30,10 +30,7 @@ from collections import OrderedDict
 # /* 12: magnetic moment (muB) */
 # /* 13,14: angles of spin */  
 
-# load atom_names, atom_numbs, atom_types, cells
-def load_param_file(fname, mdname):
-    with open(fname) as dat_file:
-        lines = dat_file.readlines()
+def load_atom(lines):
     atom_names = []
     atom_names_mode = False
     for line in lines:
@@ -64,9 +61,9 @@ def load_param_file(fname, mdname):
                     atom_numbs[i] += 1
                     atom_types.append(i)
     atom_types=np.array(atom_types)
+    return atom_names, atom_types, atom_numbs
 
-    with open(mdname) as md_file:
-        lines = md_file.readlines()
+def load_cells(lines):
     cell, cells = [], []
     for index, line in enumerate(lines):
         if "Cell_Vectors=" in line:
@@ -77,12 +74,20 @@ def load_param_file(fname, mdname):
             cells.append(cell)
             cell = []
     cells = np.array(cells)
-    return atom_names, atom_numbs, atom_types, cells
+    return cells
 
-# load coords, energies, forces
-def load_data(mdname, atom_names, natoms):
+# load atom_names, atom_numbs, atom_types, cells
+def load_param_file(fname, mdname):
+    with open(fname) as dat_file:
+        lines = dat_file.readlines()
+    atom_names, atom_types, atom_numbs=load_atom(lines)
+
     with open(mdname) as md_file:
         lines = md_file.readlines()
+    cells=load_cells(lines)
+    return atom_names, atom_numbs, atom_types, cells
+
+def load_coords(lines,atom_names,natoms):
     cnt = 0
     coord, coords = [], []
     for index, line in enumerate(lines):
@@ -100,6 +105,12 @@ def load_data(mdname, atom_names, natoms):
             cnt = 0
             coord = []
     coords = np.array(coords)
+    return coords
+
+def load_data(mdname, atom_names, natoms):
+    with open(mdname) as md_file:
+        lines = md_file.readlines()
+    coords=load_coords(lines, atom_names, natoms)
     steps = [str(i) for i in range(1, coords.shape[0] + 1)]
     return coords, steps
 
@@ -119,19 +130,22 @@ def to_system_data(fname, mdname):
     data["orig"] = np.zeros(3)
     return data, steps
 
-
-def to_system_label(fname, mdname, data):
-    atom_names, atom_numbs, atom_types, cells = load_param_file(fname, mdname)
-    with open(mdname) as md_file:
-        lines = md_file.readlines()
-    cnt = 0
+def load_energy(lines):
     energy = []
-    field, fields = [], []
-    for index, line in enumerate(lines):
+    for line in lines:
         if "time=" in line:
             parts = line.split()
             ene_line = float(parts[4])  # Hartree
             energy.append(ene_line)
+            continue
+    energy = energy_convert * np.array(energy)  # Hartree -> eV
+    return energy
+
+def load_force(lines,atom_names,atom_numbs):
+    cnt = 0
+    field, fields = [], []
+    for index, line in enumerate(lines):
+        if "time=" in line:
             continue
         for atom_name in atom_names:
             atom_name += " "
@@ -140,24 +154,31 @@ def to_system_label(fname, mdname, data):
                 parts = line.split()
                 for_line = [float(parts[4]), float(parts[5]), float(parts[6])]
                 field.append(for_line)
-        if cnt == np.sum(data["atom_numbs"]):
+        if cnt == np.sum(atom_numbs):
             fields.append(field)
             cnt = 0
             field = []
-    energy = energy_convert * np.array(energy)  # Hartree -> eV
     force = force_convert * np.array(fields)
+    return force
+
+# load energy, force
+def to_system_label(fname, mdname):
+    atom_names, atom_numbs, atom_types, cells = load_param_file(fname, mdname)
+    with open(mdname) as md_file:
+        lines = md_file.readlines()
+    energy=load_energy(lines)
+    force=load_force(lines,atom_names,atom_numbs)
     return energy, force
 
 
 if __name__ == "__main__":
-    label = 1
-    file_name = "Methane"
-    fname = f"../../{label}0.data/{file_name}.dat"
-    mdname = f"../../{label}0.data/{file_name}.md"
+    file_name = "Cdia"
+    fname = f"{file_name}.dat"
+    mdname = f"{file_name}.md"
     atom_names, atom_numbs, atom_types, cells = load_param_file(fname, mdname)
     coords, steps = load_data(mdname, atom_names, np.sum(atom_numbs))
     data, steps = to_system_data(fname, mdname)
-    energy, force = to_system_label(fname, mdname, data)
+    energy, force = to_system_label(fname, mdname)
     print(atom_names)
     print(atom_numbs)
     print(atom_types)
