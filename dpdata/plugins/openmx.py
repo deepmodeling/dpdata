@@ -3,7 +3,7 @@ import dpdata.openmx.omx
 from dpdata.format import Format
 
 
-@Format.register("openmx")
+@Format.register("openmx/out")
 class OPENMXFormat(Format):
     """Format for the `OpenMX <https://www.openmx-square.org/>`.
 

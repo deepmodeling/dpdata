@@ -50,12 +50,12 @@ class TestOPENMXTRAJProps:
 
 class TestOPENMXTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
-        self.system = dpdata.System("openmx/Methane", fmt="openmx")
+        self.system = dpdata.System("openmx/Methane", fmt="openmx/out")
 
 
 class TestOPENMXLabeledTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
-        self.system = dpdata.LabeledSystem("openmx/Methane", fmt="openmx")
+        self.system = dpdata.LabeledSystem("openmx/Methane", fmt="openmx/out")
 
 
 if __name__ == "__main__":
