@@ -2,6 +2,7 @@ import dpdata.md.pbc
 import dpdata.openmx.omx
 from dpdata.format import Format
 
+
 @Format.register("openmx")
 class OPENMXFormat(Format):
     @Format.post("rot_lower_triangular")

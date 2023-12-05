@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-import warnings
-
 import numpy as np
 
 from ..unit import (

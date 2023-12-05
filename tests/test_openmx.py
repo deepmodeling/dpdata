@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 from context import dpdata
 
+
 class TestOPENMXTRAJProps:
     def test_atom_names(self):
         self.assertEqual(self.system.data["atom_names"], ["C", "H"])
