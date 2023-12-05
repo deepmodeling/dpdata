@@ -29,31 +29,34 @@ class TestOPENMXTRAJProps:
         with open("openmx/Methane.md") as md_file:
             lines = md_file.readlines()
         lines = lines[-5:]
-        coords=[]
+        coords = []
         for line in lines:
-            parts=line.split()
+            parts = line.split()
             for_line = [float(parts[1]), float(parts[2]), float(parts[3])]
             coords.append(for_line)
-        coords=np.array(coords)
-        celll=10.0
+        coords = np.array(coords)
+        celll = 10.0
         ## Applying PBC ##
         for ii in range(5):
             for jj in range(3):
                 if coords[ii][jj] < 0:
                     coords[ii][jj] += celll
                 elif coords[ii][jj] >= celll:
-                    coords[ii][jj] -= celll                
+                    coords[ii][jj] -= celll
                 self.assertAlmostEqual(
                     self.system["coords"][-1][ii][jj], coords[ii][jj]
                 )
+
 
 class TestOPENMXTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
         self.system = dpdata.System("openmx/Methane", fmt="openmx")
 
+
 class TestOPENMXLabeledTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
         self.system = dpdata.LabeledSystem("openmx/Methane", fmt="openmx")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -7,12 +7,10 @@ from dpdata.format import Format
 class OPENMXFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_system(self, file_name, begin=0, step=1, **kwargs):
-        fname=f"{file_name}.dat"
-        mdname=f"{file_name}.md"
+        fname = f"{file_name}.dat"
+        mdname = f"{file_name}.md"
 
-        data, _ = dpdata.openmx.omx.to_system_data(
-            fname, mdname
-        )
+        data, _ = dpdata.openmx.omx.to_system_data(fname, mdname)
         data["coords"] = dpdata.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
@@ -21,12 +19,10 @@ class OPENMXFormat(Format):
 
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
-        fname=f"{file_name}.dat"
-        mdname=f"{file_name}.md"
+        fname = f"{file_name}.dat"
+        mdname = f"{file_name}.md"
 
-        data, cs = dpdata.openmx.omx.to_system_data(
-            fname, mdname
-        )
+        data, cs = dpdata.openmx.omx.to_system_data(fname, mdname)
         data["coords"] = dpdata.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
