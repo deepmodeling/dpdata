@@ -10,6 +10,15 @@ bohr2ang = LengthConversion("bohr", "angstrom").value()
 ry2ev = EnergyConversion("rydberg", "eV").value()
 kbar2evperang3 = PressureConversion("kbar", "eV/angstrom^3").value()
 
+ABACUS_STRU_KEYS = [
+    "ATOMIC_SPECIES",
+    "NUMERICAL_ORBITAL",
+    "LATTICE_CONSTANT",
+    "LATTICE_VECTORS",
+    "ATOMIC_POSITIONS",
+    "NUMERICAL_DESCRIPTOR",
+    "PAW_FILES"
+]
 
 def CheckFile(ifile):
     if not os.path.isfile(ifile):
@@ -42,6 +51,27 @@ def get_block(lines, keyword, skip=0, nlines=None):
         return None
     return ret
 
+def get_stru_block(lines, keyword):
+    # return the block of lines after keyword in STRU file, and skip the blank lines
+    
+    def clean_comment(line):
+        return re.split("[#]", line)[0]
+        
+    ret = []
+    found = False
+    for i in range(len(lines)):
+        if clean_comment(lines[i]).strip() == keyword:
+            found = True
+            for j in range(i+1, len(lines)):
+                if clean_comment(lines[j]).strip() == '':
+                    continue
+                elif clean_comment(lines[j]).strip() in ABACUS_STRU_KEYS:
+                    break
+                else:
+                    ret.append(clean_comment(lines[j]))            
+    if not found:
+        return None
+    return ret
 
 def get_geometry_in(fname, inlines):
     geometry_path_in = os.path.join(fname, "STRU")
@@ -64,8 +94,8 @@ def get_path_out(fname, inlines):
 
 
 def get_cell(geometry_inlines):
-    cell_lines = get_block(geometry_inlines, "LATTICE_VECTORS", skip=0, nlines=3)
-    celldm_lines = get_block(geometry_inlines, "LATTICE_CONSTANT", skip=0, nlines=1)
+    cell_lines = get_stru_block(geometry_inlines, "LATTICE_VECTORS")
+    celldm_lines = get_stru_block(geometry_inlines, "LATTICE_CONSTANT")
 
     celldm = float(celldm_lines[0].split()[0]) * bohr2ang  # lattice const is in Bohr
     cell = []
@@ -76,7 +106,7 @@ def get_cell(geometry_inlines):
 
 
 def get_coords(celldm, cell, geometry_inlines, inlines=None):
-    coords_lines = get_block(geometry_inlines, "ATOMIC_POSITIONS", skip=0)
+    coords_lines = get_stru_block(geometry_inlines, "ATOMIC_POSITIONS")
     # assuming that ATOMIC_POSITIONS is at the bottom of the STRU file
     coord_type = coords_lines[0].split()[0].lower()  # cartisan or direct
     atom_names = []  # element abbr in periodic table
