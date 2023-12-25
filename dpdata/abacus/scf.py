@@ -17,8 +17,9 @@ ABACUS_STRU_KEYS = [
     "LATTICE_VECTORS",
     "ATOMIC_POSITIONS",
     "NUMERICAL_DESCRIPTOR",
-    "PAW_FILES"
+    "PAW_FILES",
 ]
+
 
 def CheckFile(ifile):
     if not os.path.isfile(ifile):
@@ -51,27 +52,29 @@ def get_block(lines, keyword, skip=0, nlines=None):
         return None
     return ret
 
+
 def get_stru_block(lines, keyword):
     # return the block of lines after keyword in STRU file, and skip the blank lines
-    
+
     def clean_comment(line):
         return re.split("[#]", line)[0]
-        
+
     ret = []
     found = False
     for i in range(len(lines)):
         if clean_comment(lines[i]).strip() == keyword:
             found = True
-            for j in range(i+1, len(lines)):
-                if clean_comment(lines[j]).strip() == '':
+            for j in range(i + 1, len(lines)):
+                if clean_comment(lines[j]).strip() == "":
                     continue
                 elif clean_comment(lines[j]).strip() in ABACUS_STRU_KEYS:
                     break
                 else:
-                    ret.append(clean_comment(lines[j]))            
+                    ret.append(clean_comment(lines[j]))
     if not found:
         return None
     return ret
+
 
 def get_geometry_in(fname, inlines):
     geometry_path_in = os.path.join(fname, "STRU")
