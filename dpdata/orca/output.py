@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 
 
-def read_orca_sp_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
+def read_orca_sp_output(fn: str) -> Tuple[np.ndarray, np.ndarray, float, np.ndarray]:
     """Read from ORCA output.
 
     Note that both the energy and the gradient should be printed.
@@ -15,7 +15,7 @@ def read_orca_sp_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
 
     Returns
     -------
-    str
+    np.ndarray
         atomic symbols
     np.ndarray
         atomic coordinates
