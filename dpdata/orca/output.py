@@ -46,9 +46,7 @@ def read_orca_sp_output(fn: str) -> Tuple[np.ndarray, np.ndarray, float, np.ndar
                     flag = 0
                 else:
                     forces.append([float(s[3]), float(s[4]), float(s[5])])
-            elif line.startswith(
-                "CARTESIAN COORDINATES (ANGSTROEM)"
-            ):
+            elif line.startswith("CARTESIAN COORDINATES (ANGSTROEM)"):
                 # coord
                 flag = 1
                 coord = []
