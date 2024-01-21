@@ -143,11 +143,11 @@ def analyze_block(lines, ntot, nelm, ml=False):
         elif energy_token[ml_index] in ii:
             energy = float(ii.split()[energy_index[ml_index]])
             if len(force) == 0:
-              raise ValueError("cannot find forces in OUTCAR block")
+                raise ValueError("cannot find forces in OUTCAR block")
             if len(coord) == 0:
-              raise ValueError("cannot find coordinates in OUTCAR block")
+                raise ValueError("cannot find coordinates in OUTCAR block")
             if len(cell) == 0:
-              raise ValueError("cannot find cell in OUTCAR block")
+                raise ValueError("cannot find cell in OUTCAR block")
             return coord, cell, energy, force, virial, is_converge
         elif cell_token[ml_index] in ii:
             for dd in range(3):
