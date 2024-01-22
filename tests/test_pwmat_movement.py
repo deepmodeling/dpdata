@@ -63,5 +63,10 @@ class TestpwmatLabeledOutput(unittest.TestCase, TestpwmatSinglePointEnergy):
         self.system = dpdata.LabeledSystem("pwmat/MOVEMENT", fmt="pwmat/MOVEMENT")
 
 
+class TestpwmatLabeledOutput1(unittest.TestCase):
+    def setUp(self):
+        self.system = dpdata.LabeledSystem("pwmat/MOVEMENT_1", fmt="pwmat/MOVEMENT_1")
+
+
 if __name__ == "__main__":
     unittest.main()
