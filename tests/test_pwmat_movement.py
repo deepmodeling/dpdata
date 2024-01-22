@@ -81,7 +81,7 @@ class TestpwmatSinglePointEnergy1:
             for jj in range(cell.shape[1]):
                 self.assertEqual(self.system.data["cells"][0][ii][jj], cell[ii][jj])
         fp.close()
-    
+
     def test_coord(self):
         fp = open("pwmat/ref_coord_1")
         fp_cell = open("pwmat/ref_cell_1")
@@ -96,12 +96,10 @@ class TestpwmatSinglePointEnergy1:
         coord = np.matmul(coord, cell)
         for ii in range(coord.shape[0]):
             for jj in range(coord.shape[1]):
-                self.assertEqual(
-                    self.system.data["coords"][0][ii][jj], coord[ii][jj]
-                )
+                self.assertEqual(self.system.data["coords"][0][ii][jj], coord[ii][jj])
         fp_cell.close()
         fp.close()
-    
+
     def test_force(self):
         fp = open("pwmat/ref_force_1")
         force = []
@@ -114,7 +112,7 @@ class TestpwmatSinglePointEnergy1:
         fp.close()
 
     def test_energy(self):
-        ref_energy = -0.3576828045E+06
+        ref_energy = -0.3576828045e06
         self.assertEqual(self.system.data["energies"][0], ref_energy)
 
 
