@@ -6,11 +6,11 @@ class Plugin:
 
     Examples
     --------
-    >>> Plugin = Register()
-    >>> @Plugin.register("xx")
+    >>> example_plugin = Plugin()
+    >>> @example_plugin.register("xx")
         def xxx():
             pass
-    >>> print(Plugin.plugins['xx'])
+    >>> print(example_plugin.plugins['xx'])
     """
 
     def __init__(self):
