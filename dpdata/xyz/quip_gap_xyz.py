@@ -4,13 +4,18 @@ import re
 from collections import OrderedDict
 
 import numpy as np
-from ..unit import EnergyConversion, ForceConversion, LengthConversion
+
+from ..unit import EnergyConversion, ForceConversion
 
 e_conv_kcalpermol2eV = EnergyConversion("kcal_mol", "eV").value()
 e_conv_au2eV = EnergyConversion("hartree", "eV").value()
-f_conv_kcalpermolperang2eVperang = ForceConversion("kcal_mol/angstrom", "eV/angstrom").value()
+f_conv_kcalpermolperang2eVperang = ForceConversion(
+    "kcal_mol/angstrom", "eV/angstrom"
+).value()
 f_conv_auperang2eVperang = ForceConversion("hartree/angstrom", "eV/angstrom").value()
-f_conv_kcalpermolperbohr2eVperang = ForceConversion("kcal_mol/bohr", "eV/angstrom").value()
+f_conv_kcalpermolperbohr2eVperang = ForceConversion(
+    "kcal_mol/bohr", "eV/angstrom"
+).value()
 f_conv_au2eVperang = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 
@@ -172,13 +177,13 @@ class QuipGapxyzSystems:
             ).astype("float32")
         else:
             virials = None
-        '''
+        """
         info_dict = {}
         info_dict["atom_names"] = list(type_num_array[:, 0])
         info_dict["atom_numbs"] = list(type_num_array[:, 1].astype(int))
         #info_dict["nopbc"] = False
         info_dict["atom_types"] = np.array(atom_type_list).astype(int)
-        
+
         info_dict["cells"] = np.array(
             [
                 np.array(list(filter(bool, field_dict["Lattice"].split(" ")))).reshape(
@@ -186,7 +191,7 @@ class QuipGapxyzSystems:
                 )
             ]
         ).astype("float32")
-        
+
         if "Lattice" in field_dict:
             info_dict["cells"] = np.array(
                 [
@@ -198,7 +203,7 @@ class QuipGapxyzSystems:
         else:
             #info_dict["nopbc"] = True
             info_dict["cell"] = [[100.0, 0.0, 0.0], [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]]
-            #info_dict["cells"] = None  
+            #info_dict["cells"] = None
 
         info_dict["coords"] = np.array([coords_array]).astype("float32")
         info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
@@ -207,11 +212,10 @@ class QuipGapxyzSystems:
             info_dict["virials"] = virials
         info_dict["orig"] = np.zeros(3)
         return info_dict
-        '''
+        """
         e_units = np.array([field_dict["energy-unit"]])
         f_units = np.array([field_dict["force-unit"]])
-        #print(e_units, f_units)
-
+        # print(e_units, f_units)
 
         info_dict = {}
         info_dict["nopbc"] = False
@@ -220,34 +224,56 @@ class QuipGapxyzSystems:
         info_dict["atom_types"] = np.array(atom_type_list).astype(int)
 
         info_dict["coords"] = np.array([coords_array]).astype("float32")
-        '''
+        """
         info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
         info_dict["forces"] = np.array([force_array]).astype("float32")
-        '''
+        """
         if e_units == "kcal/mol":
-            info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32") * e_conv_kcalpermol2eV
-        elif e_units == "hartree" or e_units == "au" or e_units == "a.u." :
-            info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32") * e_conv_au2eV
+            info_dict["energies"] = (
+                np.array([field_dict["energy"]]).astype("float32")
+                * e_conv_kcalpermol2eV
+            )
+        elif e_units == "hartree" or e_units == "au" or e_units == "a.u.":
+            info_dict["energies"] = (
+                np.array([field_dict["energy"]]).astype("float32") * e_conv_au2eV
+            )
         elif e_units == "ev":
             info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
         else:
             info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
-            print(f'Warning: The units is {e_units} , but is read as default (eV). Please check carefully!')
+            print(
+                f"Warning: The units is {e_units} , but is read as default (eV). Please check carefully!"
+            )
 
         if f_units == "kcal/mol/angstrom":
-            info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_kcalpermolperang2eVperang
-        elif f_units == "hartree/angstrom" or f_units == "hartree/ang" or f_units == "hartree/ang.":
-            info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_auperang2eVperang
-        elif f_units == "kcal/mol/bohr":    
-            info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_kcalpermolperbohr2eVperang
-        elif f_units == "kcal/mol/bohr":    
-            info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_au2eVperang
+            info_dict["forces"] = (
+                np.array([force_array]).astype("float32")
+                * f_conv_kcalpermolperang2eVperang
+            )
+        elif (
+            f_units == "hartree/angstrom"
+            or f_units == "hartree/ang"
+            or f_units == "hartree/ang."
+        ):
+            info_dict["forces"] = (
+                np.array([force_array]).astype("float32") * f_conv_auperang2eVperang
+            )
+        elif f_units == "kcal/mol/bohr":
+            info_dict["forces"] = (
+                np.array([force_array]).astype("float32")
+                * f_conv_kcalpermolperbohr2eVperang
+            )
+        elif f_units == "kcal/mol/bohr":
+            info_dict["forces"] = (
+                np.array([force_array]).astype("float32") * f_conv_au2eVperang
+            )
         elif f_units == "ev/angstrom" or f_units == "ev/ang" or f_units == "ev/ang.":
-            info_dict["forces"] = np.array([force_array]).astype("float32") 
+            info_dict["forces"] = np.array([force_array]).astype("float32")
         else:
-            info_dict["forces"] = np.array([force_array]).astype("float32") 
-            print(f'Warning: The units is {f_units}, but is read as default (eV/angstrom). Please check carefully!')
-
+            info_dict["forces"] = np.array([force_array]).astype("float32")
+            print(
+                f"Warning: The units is {f_units}, but is read as default (eV/angstrom). Please check carefully!"
+            )
 
         if virials is not None:
             info_dict["virials"] = virials
@@ -258,7 +284,9 @@ class QuipGapxyzSystems:
                 [np.array(lattice_values).reshape(3, 3)]
             ).astype("float32")
         else:
-            lattice_values = np.array([[100.0, 0.0, 0.0], [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]])
+            lattice_values = np.array(
+                [[100.0, 0.0, 0.0], [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]]
+            )
 
             info_dict["nopbc"] = True
             info_dict["cells"] = np.array(
