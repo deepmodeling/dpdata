@@ -18,7 +18,7 @@ def system_info(lines, type_idx_zero=False):
         nelm = 100
     atomic_number = []
     for idx, ii in enumerate(lines):
-        if "Position" in ii:
+        if ("Position" in ii) and ("nonperiodic_Position" not in ii):
             for kk in range(idx + 1, idx + 1 + natoms):
                 min = kk
                 for jj in range(kk + 1, idx + 1 + natoms):
@@ -175,7 +175,7 @@ def analyze_block(lines, ntot, nelm):
         #                    cell.append([float(ss)
         #                                 for ss in tmp_l.split()[0:3]])
         #                virial = np.zeros([3,3])
-        elif "Position" in ii:
+        elif ("Position" in ii) and ("nonperiodic_Position" not in ii):
             for kk in range(idx + 1, idx + 1 + ntot):
                 min = kk
                 for jj in range(kk + 1, idx + 1 + ntot):

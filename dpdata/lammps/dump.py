@@ -121,8 +121,8 @@ def safe_get_posi(lines, cell, orig=np.zeros(3), unwrap=False):
                 category=UnwrapWarning,
             )
         return (
-            posis % 1
-        ) @ cell  # Convert scaled coordinates back to Cartesien coordinates with wraping at periodic boundary conditions
+            (posis % 1) @ cell
+        )  # Convert scaled coordinates back to Cartesien coordinates with wraping at periodic boundary conditions
 
 
 def get_dumpbox(lines):

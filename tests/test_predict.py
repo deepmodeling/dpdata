@@ -72,7 +72,7 @@ class TestHybridDriver(unittest.TestCase, CompLabeledSys):
         self.system_2 = dpdata.LabeledSystem(
             "poscars/deepmd.h2o.md", fmt="deepmd/raw", type_map=["O", "H"]
         )
-        for pp in ("energies", "forces"):
+        for pp in ("energies", "forces", "virials"):
             self.system_2.data[pp][:] = 3.0
 
         self.places = 6

@@ -47,6 +47,9 @@ class CompSys:
     def test_coord(self):
         self.assertEqual(self.system_1.get_nframes(), self.system_2.get_nframes())
         # think about direct coord
+        if self.system_1.nopbc:
+            # nopbc doesn't need to test cells
+            return
         tmp_cell = self.system_1.data["cells"]
         tmp_cell = np.reshape(tmp_cell, [-1, 3])
         tmp_cell_norm = np.reshape(np.linalg.norm(tmp_cell, axis=1), [-1, 1, 3])
@@ -89,8 +92,8 @@ class CompLabeledSys(CompSys):
         # if len(self.system_1['virials']) == 0:
         #     self.assertEqual(len(self.system_1['virials']), 0)
         #     return
-        if "virials" not in self.system_1:
-            self.assertFalse("virials" in self.system_2)
+        if not self.system_1.has_virial():
+            self.assertFalse(self.system_2.has_virial())
             return
         np.testing.assert_almost_equal(
             self.system_1["virials"],

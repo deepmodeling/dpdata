@@ -109,7 +109,7 @@ class VASPXMLFormat(Format):
             data["coords"],
             data["energies"],
             data["forces"],
-            data["virials"],
+            tmp_virial,
         ) = dpdata.vasp.xml.analyze(
             file_name, type_idx_zero=True, begin=begin, step=step
         )
@@ -121,9 +121,11 @@ class VASPXMLFormat(Format):
         for ii in range(data["cells"].shape[0]):
             data["coords"][ii] = np.matmul(data["coords"][ii], data["cells"][ii])
         # scale virial to the unit of eV
-        v_pref = 1 * 1e3 / 1.602176621e6
-        for ii in range(data["cells"].shape[0]):
-            vol = np.linalg.det(np.reshape(data["cells"][ii], [3, 3]))
-            data["virials"][ii] *= v_pref * vol
+        if tmp_virial.size > 0:
+            data["virials"] = tmp_virial
+            v_pref = 1 * 1e3 / 1.602176621e6
+            for ii in range(data["cells"].shape[0]):
+                vol = np.linalg.det(np.reshape(data["cells"][ii], [3, 3]))
+                data["virials"][ii] *= v_pref * vol
         data = uniq_atom_names(data)
         return data
