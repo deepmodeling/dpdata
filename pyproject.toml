@@ -71,7 +71,7 @@ write_to = "dpdata/_version.py"
 [tool.isort]
 profile = "black"
 
-[tool.ruff]
+[tool.ruff.lint]
 select = [
     "E", # errors
     "F", # pyflakes
@@ -101,5 +101,5 @@ ignore = [
 ]
 ignore-init-module-imports = true
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
