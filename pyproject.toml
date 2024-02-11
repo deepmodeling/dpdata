@@ -78,7 +78,6 @@ select = [
     "D", # pydocstyle
     "UP", # pyupgrade
     "I", # isort
-    "NPY", # numpy
 ]
 ignore = [
     "E501", # line too long
