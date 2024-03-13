@@ -5,7 +5,6 @@ import numpy as np
 import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-from ase.io import Trajectory
 
 try:
     import ase.io
@@ -15,6 +14,8 @@ try:
         from ase.optimize.optimize import Optimizer
 except ImportError:
     pass
+
+from ase.io import Trajectory
 
 
 @Format.register("ase/structure")
