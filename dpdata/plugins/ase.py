@@ -228,9 +228,10 @@ class ASETrajFormat(Format):
                        "orig": [],
                        "nopbc": []}
         sub_traj = traj[begin:end:step]
-        for atoms in sub_traj:
+        for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_system(atoms)
-            dict_frames["atom_names"].append(tmp["atom_names"])
+            if i == 0:
+                dict_frames["atom_names"] = tmp["atom_names"]
             dict_frames["atom_numbs"].append(tmp["atom_numbs"])
             dict_frames["atom_types"].append(tmp["atom_types"])
             dict_frames["cells"].append(tmp["cells"])
@@ -277,9 +278,10 @@ class ASETrajFormat(Format):
                        "forces": [],
                        "virials": []}
         sub_traj = traj[begin:end:step]
-        for atoms in sub_traj:
+        for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_labeled_system(atoms)
-            dict_frames["atom_names"].append(tmp["atom_names"])
+            if i == 0:
+                dict_frames["atom_names"] = tmp["atom_names"]
             dict_frames["atom_numbs"].append(tmp["atom_numbs"])
             dict_frames["atom_types"].append(tmp["atom_types"])
             dict_frames["cells"].append(tmp["cells"])
