@@ -16,8 +16,6 @@ try:
 except ImportError:
     pass
 
-from ase.io import Trajectory
-
 
 @Format.register("ase/structure")
 class ASEStructureFormat(Format):
