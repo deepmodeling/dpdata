@@ -196,7 +196,7 @@ class ASETrajFormat(Format):
 
     def from_system(self, file_name: str,
                     begin: Optional[int] = 0,
-                    end: Optional[int] = -1,
+                    end: Optional[int] = None,
                     step: Optional[int] = 1,
                     **kwargs) -> dict:
         """Read ASE's trajectory file to `System` of multiple frames.
@@ -220,13 +220,13 @@ class ASETrajFormat(Format):
             a dictionary containing data of multiple frames
         """
         traj = Trajectory(file_name)
-        dict_frames = {"atom_names": [],
-                       "atom_numbs": [],
-                       "atom_types": [],
+        dict_frames = {"atom_names": None,
+                       "atom_numbs": None,
+                       "atom_types": None,
+                       "orig": None,
+                       "nopbc": None,
                        "cells": [],
-                       "coords": [],
-                       "orig": [],
-                       "nopbc": []}
+                       "coords": []}
         sub_traj = traj[begin:end:step]
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_system(atoms)
@@ -234,16 +234,20 @@ class ASETrajFormat(Format):
                 dict_frames["atom_names"] = tmp["atom_names"]
                 dict_frames["atom_numbs"] = tmp["atom_numbs"]
                 dict_frames["atom_types"] = tmp["atom_types"]
-                dict_frames["orig"].append(tmp["orig"])
-            dict_frames["cells"].append(tmp["cells"])
-            dict_frames["coords"].append(tmp["coords"])
-            dict_frames["nopbc"].append(tmp["nopbc"])
+                dict_frames["orig"] = tmp["orig"]
+                dict_frames["nopbc"] = tmp["nopbc"]
+            dict_frames["cells"].append(tmp["cells"][0])
+            dict_frames["coords"].append(tmp["coords"][0])
+
+        ## Covert to numpy array
+        dict_frames["cells"] = np.asarray(dict_frames["cells"])
+        dict_frames["coords"] = np.asarray(dict_frames["coords"])
 
         return dict_frames
 
     def from_labeled_system(self, file_name: str,
                             begin: Optional[int] = 0,
-                            end: Optional[int] = -1,
+                            end: Optional[int] = None,
                             step: Optional[int] = 1,
                             **kwargs) -> dict:
         """Read ASE's trajectory file to `System` of multiple frames.
@@ -267,13 +271,13 @@ class ASETrajFormat(Format):
             a dictionary containing data of multiple frames
         """
         traj = Trajectory(file_name)
-        dict_frames = {"atom_names": [],
-                       "atom_numbs": [],
-                       "atom_types": [],
+        dict_frames = {"atom_names": None,
+                       "atom_numbs": None,
+                       "atom_types": None,
+                       "orig": None,
+                       "nopbc": None,
                        "cells": [],
                        "coords": [],
-                       "orig": [],
-                       "nopbc": [],
                        "energies": [],
                        "forces": [],
                        "virials": []}
@@ -284,16 +288,23 @@ class ASETrajFormat(Format):
                 dict_frames["atom_names"] = tmp["atom_names"]
                 dict_frames["atom_numbs"] = tmp["atom_numbs"]
                 dict_frames["atom_types"] = tmp["atom_types"]
-                dict_frames["orig"].append(tmp["orig"])
-            dict_frames["cells"].append(tmp["cells"])
-            dict_frames["coords"].append(tmp["coords"])
-            dict_frames["nopbc"].append(tmp["nopbc"])
-            dict_frames["energies"].append(tmp["energies"])
-            dict_frames["forces"].append(tmp["forces"])
+                dict_frames["orig"] = tmp["orig"]
+                dict_frames["nopbc"] = tmp["nopbc"]
+            dict_frames["cells"].append(tmp["cells"][0])
+            dict_frames["coords"].append(tmp["coords"][0])
+            dict_frames["energies"].append(tmp["energies"][0])
+            dict_frames["forces"].append(tmp["forces"][0])
             if "virials" in tmp.keys():
-                dict_frames["virials"].append(tmp["virials"])
+                dict_frames["virials"].append(tmp["virials"][0])
             else:
                 dict_frames["virials"].append(None)
+
+        ## Covert to numpy array
+        dict_frames["cells"] = np.asarray(dict_frames["cells"])
+        dict_frames["coords"] = np.asarray(dict_frames["coords"])
+        dict_frames["energies"] = np.asarray(dict_frames["energies"])
+        dict_frames["forces"] = np.asarray(dict_frames["forces"])
+        dict_frames["virials"] = np.asarray(dict_frames["virials"])
 
         return dict_frames
 
