@@ -5,6 +5,7 @@ import numpy as np
 import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
+from ase.io import Trajectory
 
 try:
     import ase.io
@@ -185,6 +186,114 @@ class ASEStructureFormat(Format):
             structures.append(structure)
 
         return structures
+
+
+@Format.register("ase/traj")
+class ASETrajFormat(Format):
+    """Format for the ASE's trajectory format <https://wiki.fysik.dtu.dk/ase/ase/io/trajectory.html#module-ase.io.trajectory>`_ (ase).'
+    a `traj' contains a sequence of frames, each of which is an `Atoms' object.
+    """
+
+    def from_system(self, file_name: str,
+                    begin: Optional[int] = 0,
+                    end: Optional[int] = -1,
+                    step: Optional[int] = 1,
+                    **kwargs) -> dict:
+        """Read ASE's trajectory file to `System` of multiple frames.
+
+        Parameters
+        ----------
+        file_name : str
+            ASE's trajectory file
+        begin : int, optional
+            begin frame index
+        end : int, optional
+            end frame index
+        step : int, optional
+            frame index step
+        **kwargs : dict
+            other parameters
+
+        Returns
+        -------
+        dict_frames: dict
+            a dictionary containing data of multiple frames
+        """
+        traj = Trajectory(file_name)
+        dict_frames = {"atom_names": [],
+                       "atom_numbs": [],
+                       "atom_types": [],
+                       "cells": [],
+                       "coords": [],
+                       "orig": [],
+                       "nopbc": []}
+        sub_traj = traj[begin:end:step]
+        for atoms in sub_traj:
+            tmp = ASEStructureFormat().from_system(atoms)
+            dict_frames["atom_names"].append(tmp["atom_names"])
+            dict_frames["atom_numbs"].append(tmp["atom_numbs"])
+            dict_frames["atom_types"].append(tmp["atom_types"])
+            dict_frames["cells"].append(tmp["cells"])
+            dict_frames["coords"].append(tmp["coords"])
+            dict_frames["orig"].append(tmp["orig"])
+            dict_frames["nopbc"].append(tmp["nopbc"])
+
+        return dict_frames
+
+    def from_labeled_system(self, file_name: str,
+                            begin: Optional[int] = 0,
+                            end: Optional[int] = -1,
+                            step: Optional[int] = 1,
+                            **kwargs) -> dict:
+        """Read ASE's trajectory file to `System` of multiple frames.
+
+        Parameters
+        ----------
+        file_name : str
+            ASE's trajectory file
+        begin : int, optional
+            begin frame index
+        end : int, optional
+            end frame index
+        step : int, optional
+            frame index step
+        **kwargs : dict
+            other parameters
+
+        Returns
+        -------
+        dict_frames: dict
+            a dictionary containing data of multiple frames
+        """
+        traj = Trajectory(file_name)
+        dict_frames = {"atom_names": [],
+                       "atom_numbs": [],
+                       "atom_types": [],
+                       "cells": [],
+                       "coords": [],
+                       "orig": [],
+                       "nopbc": [],
+                       "energies": [],
+                       "forces": [],
+                       "virials": []}
+        sub_traj = traj[begin:end:step]
+        for atoms in sub_traj:
+            tmp = ASEStructureFormat().from_labeled_system(atoms)
+            dict_frames["atom_names"].append(tmp["atom_names"])
+            dict_frames["atom_numbs"].append(tmp["atom_numbs"])
+            dict_frames["atom_types"].append(tmp["atom_types"])
+            dict_frames["cells"].append(tmp["cells"])
+            dict_frames["coords"].append(tmp["coords"])
+            dict_frames["orig"].append(tmp["orig"])
+            dict_frames["nopbc"].append(tmp["nopbc"])
+            dict_frames["energies"].append(tmp["energies"])
+            dict_frames["forces"].append(tmp["forces"])
+            if "virials" in tmp.keys():
+                dict_frames["virials"].append(tmp["virials"])
+            else:
+                dict_frames["virials"].append(None)
+
+        return dict_frames
 
 
 @Driver.register("ase")
