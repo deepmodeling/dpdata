@@ -1,8 +1,6 @@
 from typing import TYPE_CHECKING, Optional, Type
 
 import numpy as np
-from ase.io import Trajectory
-
 import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
@@ -222,6 +220,7 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
+        from ase.io import Trajectory
         traj = Trajectory(file_name)
         dict_frames = {
             "atom_names": None,
@@ -278,6 +277,7 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
+        from ase.io import Trajectory
         traj = Trajectory(file_name)
         dict_frames = {
             "atom_names": None,
