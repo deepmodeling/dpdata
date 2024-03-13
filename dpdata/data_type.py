@@ -16,6 +16,8 @@ class Axis(Enum):
     NFRAMES = "nframes"
     NATOMS = "natoms"
     NTYPES = "ntypes"
+    NTYPES_SPIN = 'ntypes_spin'
+    NSPIN = 'nspin'
     NBONDS = "nbonds"
 
 
@@ -66,6 +68,10 @@ class DataType:
                 shape.append(system.get_nframes())
             elif ii is Axis.NTYPES:
                 shape.append(system.get_ntypes())
+            elif ii is Axis.NTYPES_SPIN:
+                shape.append(system.get_ntypes_spin())
+            elif ii is Axis.NSPIN:
+                shape.append(system.get_nspin())
             elif ii is Axis.NATOMS:
                 shape.append(system.get_natoms())
             elif ii is Axis.NBONDS:

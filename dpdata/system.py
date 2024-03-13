@@ -72,11 +72,14 @@ class System(MSONable):
 
     DTYPES = (
         DataType("atom_numbs", list, (Axis.NTYPES,)),
+        DataType("atom_numbs_spin", np.ndarray, (Axis.NTYPES_SPIN,), required=False),
         DataType("atom_names", list, (Axis.NTYPES,)),
+        DataType("atom_names_spin", np.ndarray, (Axis.NTYPES_SPIN,), required=False),
         DataType("atom_types", np.ndarray, (Axis.NATOMS,)),
         DataType("orig", np.ndarray, (3,)),
         DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
         DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("spin", np.ndarray, (Axis.NFRAMES, Axis.NSPIN, 3), required=False),
         DataType(
             "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
         ),
@@ -168,11 +171,14 @@ class System(MSONable):
         """
         self.data = {}
         self.data["atom_numbs"] = []
+        self.data["atom_numbs_spin"] = []
         self.data["atom_names"] = []
+        self.data["atom_names_spin"] = []
         self.data["atom_types"] = []
         self.data["orig"] = np.array([0, 0, 0])
         self.data["cells"] = []
         self.data["coords"] = []
+        self.data['spin'] = []
 
         if data:
             self.data = data
@@ -355,6 +361,10 @@ class System(MSONable):
         """Returns name of atoms."""
         return self.data["atom_names"]
 
+    def get_atom_names_spin(self):
+        """Returns name of atoms."""
+        return self.data["atom_names_spin"]
+
     def get_atom_types(self):
         """Returns type of atoms."""
         return self.data["atom_types"]
@@ -371,9 +381,17 @@ class System(MSONable):
         """Returns total number of atoms in the system."""
         return len(self.data["atom_types"])
 
+    def get_nspin(self):
+        """Returns total number of magnetic atoms in the system."""
+        return sum(self.data['atom_numbs'][:self.get_ntypes_spin()])
+
     def get_ntypes(self) -> int:
         """Returns total number of atom types in the system."""
         return len(self.data["atom_names"])
+
+    def get_ntypes_spin(self) -> int:
+        """Returns total number of magnetic atom types in the system."""
+        return len(self.data["atom_names_spin"])
 
     def copy(self):
         """Returns a copy of the system."""
@@ -1667,3 +1685,5 @@ def add_format_methods():
 
 
 add_format_methods()
+
+# %%
