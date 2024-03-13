@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Optional, Type
 
 import numpy as np
+from ase.io import Trajectory
 
 import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
-from ase.io import Trajectory
 
 try:
     import ase.io
@@ -194,11 +194,14 @@ class ASETrajFormat(Format):
     a `traj' contains a sequence of frames, each of which is an `Atoms' object.
     """
 
-    def from_system(self, file_name: str,
-                    begin: Optional[int] = 0,
-                    end: Optional[int] = None,
-                    step: Optional[int] = 1,
-                    **kwargs) -> dict:
+    def from_system(
+        self,
+        file_name: str,
+        begin: Optional[int] = 0,
+        end: Optional[int] = None,
+        step: Optional[int] = 1,
+        **kwargs,
+    ) -> dict:
         """Read ASE's trajectory file to `System` of multiple frames.
 
         Parameters
@@ -220,13 +223,15 @@ class ASETrajFormat(Format):
             a dictionary containing data of multiple frames
         """
         traj = Trajectory(file_name)
-        dict_frames = {"atom_names": None,
-                       "atom_numbs": None,
-                       "atom_types": None,
-                       "orig": None,
-                       "nopbc": None,
-                       "cells": [],
-                       "coords": []}
+        dict_frames = {
+            "atom_names": None,
+            "atom_numbs": None,
+            "atom_types": None,
+            "orig": None,
+            "nopbc": None,
+            "cells": [],
+            "coords": [],
+        }
         sub_traj = traj[begin:end:step]
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_system(atoms)
@@ -245,11 +250,14 @@ class ASETrajFormat(Format):
 
         return dict_frames
 
-    def from_labeled_system(self, file_name: str,
-                            begin: Optional[int] = 0,
-                            end: Optional[int] = None,
-                            step: Optional[int] = 1,
-                            **kwargs) -> dict:
+    def from_labeled_system(
+        self,
+        file_name: str,
+        begin: Optional[int] = 0,
+        end: Optional[int] = None,
+        step: Optional[int] = 1,
+        **kwargs,
+    ) -> dict:
         """Read ASE's trajectory file to `System` of multiple frames.
 
         Parameters
@@ -271,16 +279,18 @@ class ASETrajFormat(Format):
             a dictionary containing data of multiple frames
         """
         traj = Trajectory(file_name)
-        dict_frames = {"atom_names": None,
-                       "atom_numbs": None,
-                       "atom_types": None,
-                       "orig": None,
-                       "nopbc": None,
-                       "cells": [],
-                       "coords": [],
-                       "energies": [],
-                       "forces": [],
-                       "virials": []}
+        dict_frames = {
+            "atom_names": None,
+            "atom_numbs": None,
+            "atom_types": None,
+            "orig": None,
+            "nopbc": None,
+            "cells": [],
+            "coords": [],
+            "energies": [],
+            "forces": [],
+            "virials": [],
+        }
         sub_traj = traj[begin:end:step]
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_labeled_system(atoms)
