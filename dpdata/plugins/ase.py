@@ -284,9 +284,9 @@ class ASETrajFormat(Format):
                 dict_frames["atom_names"] = tmp["atom_names"]
                 dict_frames["atom_numbs"] = tmp["atom_numbs"]
                 dict_frames["atom_types"] = tmp["atom_types"]
+                dict_frames["orig"].append(tmp["orig"])
             dict_frames["cells"].append(tmp["cells"])
             dict_frames["coords"].append(tmp["coords"])
-            dict_frames["orig"].append(tmp["orig"])
             dict_frames["nopbc"].append(tmp["nopbc"])
             dict_frames["energies"].append(tmp["energies"])
             dict_frames["forces"].append(tmp["forces"])
