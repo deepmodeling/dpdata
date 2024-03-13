@@ -232,8 +232,8 @@ class ASETrajFormat(Format):
             tmp = ASEStructureFormat().from_system(atoms)
             if i == 0:
                 dict_frames["atom_names"] = tmp["atom_names"]
-            dict_frames["atom_numbs"].append(tmp["atom_numbs"])
-            dict_frames["atom_types"].append(tmp["atom_types"])
+                dict_frames["atom_numbs"] = tmp["atom_numbs"]
+                dict_frames["atom_types"] = tmp["atom_types"]
             dict_frames["cells"].append(tmp["cells"])
             dict_frames["coords"].append(tmp["coords"])
             dict_frames["orig"].append(tmp["orig"])
@@ -282,8 +282,8 @@ class ASETrajFormat(Format):
             tmp = ASEStructureFormat().from_labeled_system(atoms)
             if i == 0:
                 dict_frames["atom_names"] = tmp["atom_names"]
-            dict_frames["atom_numbs"].append(tmp["atom_numbs"])
-            dict_frames["atom_types"].append(tmp["atom_types"])
+                dict_frames["atom_numbs"] = tmp["atom_numbs"]
+                dict_frames["atom_types"] = tmp["atom_types"]
             dict_frames["cells"].append(tmp["cells"])
             dict_frames["coords"].append(tmp["coords"])
             dict_frames["orig"].append(tmp["orig"])
