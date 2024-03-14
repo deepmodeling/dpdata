@@ -85,23 +85,24 @@ class ASEStructureFormat(Format):
             have a calculator
         """
         info_dict = self.from_system(atoms)
-        try:
-            energies = atoms.get_potential_energy(force_consistent=True)
-        except PropertyNotImplementedError:
-            energies = atoms.get_potential_energy()
-        forces = atoms.get_forces()
-        info_dict = {
-            **info_dict,
-            "energies": np.array([energies]),
-            "forces": np.array([forces]),
-        }
-        try:
-            stress = atoms.get_stress(False)
-        except PropertyNotImplementedError:
-            pass
-        else:
-            virials = np.array([-atoms.get_volume() * stress])
-            info_dict["virials"] = virials
+        if atoms.calc is not None:
+            try:
+                energies = atoms.get_potential_energy(force_consistent=True)
+            except PropertyNotImplementedError:
+                energies = atoms.get_potential_energy()
+            forces = atoms.get_forces()
+            info_dict = {
+                **info_dict,
+                "energies": np.array([energies]),
+                "forces": np.array([forces]),
+            }
+            try:
+                stress = atoms.get_stress(False)
+            except PropertyNotImplementedError:
+                pass
+            else:
+                virials = np.array([-atoms.get_volume() * stress])
+                info_dict["virials"] = virials
         return info_dict
 
     def from_multi_systems(
@@ -302,8 +303,10 @@ class ASETrajFormat(Format):
                 dict_frames["nopbc"] = tmp["nopbc"]
             dict_frames["cells"][i] = tmp["cells"][0]
             dict_frames["coords"][i] = tmp["coords"][0]
-            dict_frames["energies"][i] = tmp["energies"][0]
-            dict_frames["forces"][i] = tmp["forces"][0]
+            if "energies" in tmp.keys():
+                dict_frames["energies"][i] = tmp["energies"][0]
+            if "forces" in tmp.keys():
+                dict_frames["forces"][i] = tmp["forces"][0]
             if "virials" in tmp.keys():
                 dict_frames["virials"][i] = tmp["virials"][0]
 
