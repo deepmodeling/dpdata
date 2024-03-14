@@ -46,8 +46,8 @@ class TestASEtraj2(unittest.TestCase, CompLabeledSys, IsPBC):
 @unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
 class TestASEtraj3(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
-        # self.system_1 = dpdata.System("ase_traj/HeAlO.traj", fmt="ase/traj")
-        # self.system_2 = dpdata.LabeledSystem("ase_traj/HeAlO.traj", fmt="ase/traj")
+        self.system_1 = dpdata.System("ase_traj/Cu.traj", fmt="ase/traj")
+        self.system_2 = dpdata.LabeledSystem("ase_traj/Cu.traj", fmt="ase/traj")
         self.system_3 = dpdata.System("ase_traj/Cu_unlabel.traj", fmt="ase/traj")
         self.system_4 = dpdata.LabeledSystem("ase_traj/Cu_unlabel.traj", fmt="ase/traj")
 
