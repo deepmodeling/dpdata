@@ -49,7 +49,9 @@ class TestASEtraj3(unittest.TestCase, CompLabeledSys, IsPBC):
         self.system_1 = dpdata.System("ase_traj/HeAlO.traj", fmt="ase/traj")
         self.system_2 = dpdata.LabeledSystem("ase_traj/HeAlO.traj", fmt="ase/traj")
         self.system_3 = dpdata.System("ase_traj/MoS2_unlabeled.traj", fmt="ase/traj")
-        self.system_4 = dpdata.LabeledSystem("ase_traj/MoS2_unlabeled.traj", fmt="ase/traj")
+        self.system_4 = dpdata.LabeledSystem(
+            "ase_traj/MoS2_unlabeled.traj", fmt="ase/traj"
+        )
 
 
 if __name__ == "__main__":
