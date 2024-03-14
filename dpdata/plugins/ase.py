@@ -9,6 +9,7 @@ from dpdata.format import Format
 try:
     import ase.io
     from ase.calculators.calculator import PropertyNotImplementedError
+    from ase.io import Trajectory
 
     if TYPE_CHECKING:
         from ase.optimize.optimize import Optimizer
@@ -221,8 +222,6 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
-        from ase.io import Trajectory
-
         traj = Trajectory(file_name)
         sub_traj = traj[begin:end:step]
         dict_frames = {
@@ -279,8 +278,6 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
-        from ase.io import Trajectory
-
         traj = Trajectory(file_name)
         sub_traj = traj[begin:end:step]
         dict_frames = {
