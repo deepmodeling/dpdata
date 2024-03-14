@@ -125,6 +125,17 @@ def get_posi(lines):
         posis.append([float(jj) for jj in ii.split()[2:5]])
     return np.array(posis)
 
+def get_spin(lines):
+    atom_lines = get_atoms(lines)
+    if len(atom_lines[0].split()) < 8:
+        return None
+    spin_ori = []
+    spin_norm = []
+    for ii in atom_lines:
+        spin_ori.append([float(jj) for jj in ii.split()[5:8]])
+        spin_norm.append([float(jj) for jj in ii.split()[-1:]])
+    spin = np.array(spin_ori) * np.array(spin_norm)
+    return spin
 
 def get_lmpbox(lines):
     box_info = []
@@ -150,6 +161,9 @@ def get_lmpbox(lines):
 def system_data(lines, type_map=None, type_idx_zero=True):
     system = {}
     system["atom_numbs"] = get_natoms_vec(lines)
+    spin = get_spin(lines)
+    if spin is not None: 
+        system['spin'] = np.array([spin])
     system["atom_names"] = []
     if type_map is None:
         for ii in range(len(system["atom_numbs"])):
@@ -215,14 +229,41 @@ def from_system_data(system, f_idx=0):
         + ptr_float_fmt
         + "\n"
     )
-    for ii in range(natoms):
-        ret += coord_fmt % (
-            ii + 1,
-            system["atom_types"][ii] + 1,
-            system["coords"][f_idx][ii][0] - system["orig"][0],
-            system["coords"][f_idx][ii][1] - system["orig"][1],
-            system["coords"][f_idx][ii][2] - system["orig"][2],
+    if 'spin' in system.keys():
+        coord_fmt = (
+            coord_fmt.strip('\n') 
+            + " "
+            + ptr_float_fmt
+            + " "
+            + ptr_float_fmt
+            + " "
+            + ptr_float_fmt
+            + " "
+            + ptr_float_fmt
+            + "\n"
         )
+        spin_norm = np.linalg.norm(system['spin'][f_idx], axis=1)
+    for ii in range(natoms):
+        if 'spin' in  system.keys():
+            ret += coord_fmt % (
+                ii + 1,
+                system["atom_types"][ii] + 1,
+                system["coords"][f_idx][ii][0] - system["orig"][0],
+                system["coords"][f_idx][ii][1] - system["orig"][1],
+                system["coords"][f_idx][ii][2] - system["orig"][2],
+                system['spin'][f_idx][ii][0]/spin_norm[ii],
+                system['spin'][f_idx][ii][1]/spin_norm[ii],
+                system['spin'][f_idx][ii][2]/spin_norm[ii],
+                spin_norm[ii],
+            )
+        else:
+            ret += coord_fmt % (
+                ii + 1,
+                system["atom_types"][ii] + 1,
+                system["coords"][f_idx][ii][0] - system["orig"][0],
+                system["coords"][f_idx][ii][1] - system["orig"][1],
+                system["coords"][f_idx][ii][2] - system["orig"][2],
+            )
     return ret
 
 

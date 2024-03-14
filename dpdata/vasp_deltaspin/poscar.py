@@ -39,13 +39,14 @@ def _to_system_data_lower(lines, lines_incar, cartesian=True):
             start_index = idx
         elif 'M_CONSTR' in incar_param:
             end_index = idx
-    spin_idx = np.where(np.cumsum(system['atom_numbs']) <= (end_index - start_index))
+    system['spin'] = [lines_incar[start_index].replace('=', '').strip().split()[1:4]]
+    for idx in range(start_index+1, end_index-1):
+        system['spin'].append(lines_incar[idx].strip().split()[:3])
+    system['spin'] = np.array([system['spin']]).astype('float64')
+    count = np.sum(np.linalg.norm(system['spin'][0], axis=1) > 0)
+    spin_idx = np.where(np.cumsum(system['atom_numbs']) <= count)
     system['atom_numbs_spin'] = np.array(system['atom_numbs'])[spin_idx]
     system['atom_names_spin'] = np.array(system['atom_names'])[spin_idx]
-    system['spin'] = [lines_incar[start_index].strip().split(' ')[1:4]]
-    for idx in range(start_index+1, end_index-1):
-        system['spin'].append(lines_incar[idx].strip().split(' ')[:3])
-    system['spin'] = np.array([system['spin']]).astype('float64')
     return system
 
 

@@ -3,7 +3,6 @@ import re
 
 import dpdata.vasp_deltaspin.outcar
 import dpdata.vasp_deltaspin.poscar
-import dpdata.vasp_deltaspin.xml
 from dpdata.format import Format
 from dpdata.utils import uniq_atom_names
 
@@ -65,8 +64,7 @@ class VASPStringFormat(Format):
 
 
 # rotate the system to lammps convention
-@Format.register("outcar")
-@Format.register("vasp/outcar")
+@Format.register("vasp_deltaspin/outcar")
 class VASPOutcarFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_labeled_system(
@@ -80,10 +78,12 @@ class VASPOutcarFormat(Format):
             data["atom_types"],
             data["cells"],
             data["coords"],
+            data['spin'],
             data["energies"],
             data["forces"],
+            data['mag_forces'],
             tmp_virial,
-        ) = dpdata.vasp.outcar.get_frames(
+        ) = dpdata.vasp_deltaspin.outcar.get_frames(
             file_name,
             begin=begin,
             step=step,
@@ -102,37 +102,3 @@ class VASPOutcarFormat(Format):
         return data
 
 
-# rotate the system to lammps convention
-@Format.register("xml")
-@Format.register("vasp/xml")
-class VASPXMLFormat(Format):
-    @Format.post("rot_lower_triangular")
-    def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
-        data = {}
-        (
-            data["atom_names"],
-            data["atom_types"],
-            data["cells"],
-            data["coords"],
-            data["energies"],
-            data["forces"],
-            tmp_virial,
-        ) = dpdata.vasp.xml.analyze(
-            file_name, type_idx_zero=True, begin=begin, step=step
-        )
-        data["atom_numbs"] = []
-        for ii in range(len(data["atom_names"])):
-            data["atom_numbs"].append(sum(data["atom_types"] == ii))
-        # the vasp xml assumes the direct coordinates
-        # apply the transform to the cartesan coordinates
-        for ii in range(data["cells"].shape[0]):
-            data["coords"][ii] = np.matmul(data["coords"][ii], data["cells"][ii])
-        # scale virial to the unit of eV
-        if tmp_virial.size > 0:
-            data["virials"] = tmp_virial
-            v_pref = 1 * 1e3 / 1.602176621e6
-            for ii in range(data["cells"].shape[0]):
-                vol = np.linalg.det(np.reshape(data["cells"][ii], [3, 3]))
-                data["virials"][ii] *= v_pref * vol
-        data = uniq_atom_names(data)
-        return data
