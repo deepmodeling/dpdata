@@ -245,7 +245,7 @@ class ASETrajFormat(Format):
             dict_frames["cells"][i] = tmp["cells"][0]
             dict_frames["coords"][i] = tmp["coords"][0]
 
-        ## Covert to numpy array
+        ## Convert to numpy array
         dict_frames["cells"] = np.asarray(dict_frames["cells"])
         dict_frames["coords"] = np.asarray(dict_frames["coords"])
 
@@ -293,7 +293,7 @@ class ASETrajFormat(Format):
             "coords": [None] * len(sub_traj),
             "energies": [None] * len(sub_traj),
             "forces": [None] * len(sub_traj),
-            "virials": [None] * len(sub_traj),
+            "virials": [None] * len(sub_traj)
         }
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_labeled_system(atoms)
@@ -310,7 +310,7 @@ class ASETrajFormat(Format):
             if "virials" in tmp.keys():
                 dict_frames["virials"][i] = tmp["virials"][0]
 
-        ## Covert to numpy array
+        ## Convert to numpy array
         dict_frames["cells"] = np.asarray(dict_frames["cells"])
         dict_frames["coords"] = np.asarray(dict_frames["coords"])
         dict_frames["energies"] = np.asarray(dict_frames["energies"])
