@@ -293,7 +293,7 @@ class ASETrajFormat(Format):
             "coords": [None] * len(sub_traj),
             "energies": [None] * len(sub_traj),
             "forces": [None] * len(sub_traj),
-            "virials": [None] * len(sub_traj)
+            "virials": [None] * len(sub_traj),
         }
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_labeled_system(atoms)
