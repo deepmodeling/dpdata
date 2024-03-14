@@ -85,6 +85,7 @@ class ASEStructureFormat(Format):
             have a calculator
         """
         info_dict = self.from_system(atoms)
+
         if atoms.calc is not None:
             try:
                 energies = atoms.get_potential_energy(force_consistent=True)
@@ -103,6 +104,7 @@ class ASEStructureFormat(Format):
             else:
                 virials = np.array([-atoms.get_volume() * stress])
                 info_dict["virials"] = virials
+
         return info_dict
 
     def from_multi_systems(
