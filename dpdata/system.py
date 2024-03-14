@@ -1104,7 +1104,7 @@ class LabeledSystem(System):
     DTYPES = System.DTYPES + (
         DataType("energies", np.ndarray, (Axis.NFRAMES,)),
         DataType("forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
-        DataType("mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False),
         DataType("virials", np.ndarray, (Axis.NFRAMES, 3, 3), required=False),
         DataType("atom_pref", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False),
     )

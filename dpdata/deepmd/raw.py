@@ -58,6 +58,12 @@ def to_system_data(folder, type_map=None, labels=True):
             if os.path.exists(os.path.join(folder, "virial.raw")):
                 data["virials"] = np.loadtxt(os.path.join(folder, "virial.raw"))
                 data["virials"] = np.reshape(data["virials"], [nframes, 3, 3])
+            if os.path.exists(os.path.join(folder, "spin.raw")):
+                data["spin"] = np.loadtxt(os.path.join(folder, "spin.raw"))
+                data["spin"] = np.reshape(data["spin"], [nframes, -1, 3])
+            if os.path.exists(os.path.join(folder, "force_mag.raw")):
+                data["mag_forces"] = np.loadtxt(os.path.join(folder, "force_mag.raw"))
+                data["mag_forces"] = np.reshape(data["mag_forces"], [nframes, -1, 3])
         if os.path.isfile(os.path.join(folder, "nopbc")):
             data["nopbc"] = True
         # allow custom dtypes
@@ -76,6 +82,8 @@ def to_system_data(folder, type_map=None, labels=True):
                     "energies",
                     "forces",
                     "virials",
+                    "mag_forces",
+                    "spin"
                 ):
                     # skip as these data contains specific rules
                     continue
@@ -134,6 +142,16 @@ def dump(folder, data):
             os.path.join(folder, "virial.raw"),
             np.reshape(data["virials"], [nframes, 9]),
         )
+    if "spin" in data:
+        np.savetxt(
+            os.path.join(folder, "spin.raw"),
+            np.reshape(data["spin"], [nframes, -1]),
+        )
+    if "mag_forces" in data:
+        np.savetxt(
+            os.path.join(folder, "force_mag.raw"),
+            np.reshape(data["mag_forces"], [nframes, -1]),
+        )
     try:
         os.remove(os.path.join(folder, "nopbc"))
     except OSError:
@@ -156,6 +174,8 @@ def dump(folder, data):
             "energies",
             "forces",
             "virials",
+            "mag_forces",
+            "spin"
         ):
             # skip as these data contains specific rules
             continue

@@ -25,8 +25,10 @@ def _load_set(folder, nopbc: bool):
         cells = np.load(os.path.join(folder, "box.npy"))
     eners = _cond_load_data(os.path.join(folder, "energy.npy"))
     forces = _cond_load_data(os.path.join(folder, "force.npy"))
+    mag_forces = _cond_load_data(os.path.join(folder, "force_mag.npy"))
     virs = _cond_load_data(os.path.join(folder, "virial.npy"))
-    return cells, coords, eners, forces, virs
+    spin = _cond_load_data(os.path.join(folder, "spin.npy"))
+    return cells, coords, eners, forces, virs, mag_forces, spin
 
 
 def to_system_data(folder, type_map=None, labels=True):
@@ -40,12 +42,16 @@ def to_system_data(folder, type_map=None, labels=True):
     all_coords = []
     all_eners = []
     all_forces = []
+    all_mag_forces = []
     all_virs = []
+    all_spin = []
     for ii in sets:
-        cells, coords, eners, forces, virs = _load_set(ii, data.get("nopbc", False))
+        cells, coords, eners, forces, virs, mag_forces, spin = _load_set(ii, data.get("nopbc", False))
         nframes = np.reshape(cells, [-1, 3, 3]).shape[0]
         all_cells.append(np.reshape(cells, [nframes, 3, 3]))
         all_coords.append(np.reshape(coords, [nframes, -1, 3]))
+        if spin is not None:
+            all_spin.append(np.reshape(spin, [nframes, -1, 3]))
         if eners is not None:
             eners = np.reshape(eners, [nframes])
         if labels:
@@ -55,14 +61,20 @@ def to_system_data(folder, type_map=None, labels=True):
                 all_forces.append(np.reshape(forces, [nframes, -1, 3]))
             if virs is not None and virs.size > 0:
                 all_virs.append(np.reshape(virs, [nframes, 3, 3]))
+            if mag_forces is not None and mag_forces.size > 0:
+                all_mag_forces.append(np.reshape(mag_forces, [nframes, -1, 3]))
     data["cells"] = np.concatenate(all_cells, axis=0)
     data["coords"] = np.concatenate(all_coords, axis=0)
+    if len(all_spin) > 0:
+        data["spin"] = np.concatenate(all_spin, axis=0)
     if len(all_eners) > 0:
         data["energies"] = np.concatenate(all_eners, axis=0)
     if len(all_forces) > 0:
         data["forces"] = np.concatenate(all_forces, axis=0)
     if len(all_virs) > 0:
         data["virials"] = np.concatenate(all_virs, axis=0)
+    if len(all_mag_forces) > 0:
+        data["mag_forces"] = np.concatenate(all_mag_forces, axis=0)
     # allow custom dtypes
     if labels:
         for dtype in dpdata.system.LabeledSystem.DTYPES:
@@ -79,6 +91,8 @@ def to_system_data(folder, type_map=None, labels=True):
                 "energies",
                 "forces",
                 "virials",
+                "spin",
+                "mag_forces"
             ):
                 # skip as these data contains specific rules
                 continue
@@ -136,6 +150,8 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     eners = None
     forces = None
     virials = None
+    mag_forces = None
+    spin = None
     if "energies" in data:
         eners = np.reshape(data["energies"], [nframes]).astype(comp_prec)
     if "forces" in data:
@@ -144,6 +160,10 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
         virials = np.reshape(data["virials"], [nframes, 9]).astype(comp_prec)
     if "atom_pref" in data:
         atom_pref = np.reshape(data["atom_pref"], [nframes, -1]).astype(comp_prec)
+    if "mag_forces" in data:
+        mag_forces = np.reshape(data["mag_forces"], [nframes, -1]).astype(comp_prec)
+    if "spin" in data:
+        spin = np.reshape(data["spin"], [nframes, -1]).astype(comp_prec)
     # dump frame properties: cell, coord, energy, force and virial
     nsets = nframes // set_size
     if set_size * nsets < nframes:
@@ -163,6 +183,10 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
             np.save(os.path.join(set_folder, "virial"), virials[set_stt:set_end])
         if "atom_pref" in data:
             np.save(os.path.join(set_folder, "atom_pref"), atom_pref[set_stt:set_end])
+        if mag_forces is not None:
+            np.save(os.path.join(set_folder, "force_mag"), mag_forces[set_stt:set_end])
+        if spin is not None:
+            np.save(os.path.join(set_folder, "spin"), spin[set_stt:set_end])
     try:
         os.remove(os.path.join(folder, "nopbc"))
     except OSError:
@@ -185,6 +209,8 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
             "energies",
             "forces",
             "virials",
+            "mag_forces",
+            "spin"
         ):
             # skip as these data contains specific rules
             continue
