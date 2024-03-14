@@ -224,16 +224,16 @@ class ASETrajFormat(Format):
         from ase.io import Trajectory
 
         traj = Trajectory(file_name)
+        sub_traj = traj[begin:end:step]
         dict_frames = {
             "atom_names": None,
             "atom_numbs": None,
             "atom_types": None,
             "orig": None,
             "nopbc": None,
-            "cells": [],
-            "coords": [],
+            "cells": [None] * len(sub_traj),
+            "coords": [None] * len(sub_traj)
         }
-        sub_traj = traj[begin:end:step]
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_system(atoms)
             if i == 0:
@@ -242,8 +242,8 @@ class ASETrajFormat(Format):
                 dict_frames["atom_types"] = tmp["atom_types"]
                 dict_frames["orig"] = tmp["orig"]
                 dict_frames["nopbc"] = tmp["nopbc"]
-            dict_frames["cells"].append(tmp["cells"][0])
-            dict_frames["coords"].append(tmp["coords"][0])
+            dict_frames["cells"][i] = tmp["cells"][0]
+            dict_frames["coords"][i] = tmp["coords"][0]
 
         ## Covert to numpy array
         dict_frames["cells"] = np.asarray(dict_frames["cells"])
@@ -282,19 +282,19 @@ class ASETrajFormat(Format):
         from ase.io import Trajectory
 
         traj = Trajectory(file_name)
+        sub_traj = traj[begin:end:step]
         dict_frames = {
             "atom_names": None,
             "atom_numbs": None,
             "atom_types": None,
             "orig": None,
             "nopbc": None,
-            "cells": [],
-            "coords": [],
-            "energies": [],
-            "forces": [],
-            "virials": [],
+            "cells": [None] * len(sub_traj),
+            "coords": [None] * len(sub_traj),
+            "energies": [None] * len(sub_traj),
+            "forces": [None] * len(sub_traj),
+            "virials": [None] * len(sub_traj)
         }
-        sub_traj = traj[begin:end:step]
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_labeled_system(atoms)
             if i == 0:
@@ -303,14 +303,12 @@ class ASETrajFormat(Format):
                 dict_frames["atom_types"] = tmp["atom_types"]
                 dict_frames["orig"] = tmp["orig"]
                 dict_frames["nopbc"] = tmp["nopbc"]
-            dict_frames["cells"].append(tmp["cells"][0])
-            dict_frames["coords"].append(tmp["coords"][0])
-            dict_frames["energies"].append(tmp["energies"][0])
-            dict_frames["forces"].append(tmp["forces"][0])
+            dict_frames["cells"][i] = tmp["cells"][0]
+            dict_frames["coords"][i] = tmp["coords"][0]
+            dict_frames["energies"][i] = tmp["energies"][0]
+            dict_frames["forces"][i] = tmp["forces"][0]
             if "virials" in tmp.keys():
-                dict_frames["virials"].append(tmp["virials"][0])
-            else:
-                dict_frames["virials"].append(None)
+                dict_frames["virials"][i] = tmp["virials"][0]
 
         ## Covert to numpy array
         dict_frames["cells"] = np.asarray(dict_frames["cells"])
