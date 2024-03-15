@@ -280,6 +280,11 @@ class ASETrajFormat(Format):
         """
         traj = Trajectory(file_name)
         sub_traj = traj[begin:end:step]
+
+        ## check if the first frame has a calculator
+        if sub_traj[0].calc is None:
+            raise ValueError("The input trajectory does not contain energies and forces.")
+
         dict_frames = {
             "atom_names": None,
             "atom_numbs": None,
@@ -302,10 +307,8 @@ class ASETrajFormat(Format):
                 dict_frames["nopbc"] = tmp["nopbc"]
             dict_frames["cells"][i] = tmp["cells"][0]
             dict_frames["coords"][i] = tmp["coords"][0]
-            if "energies" in tmp.keys():
-                dict_frames["energies"][i] = tmp["energies"][0]
-            if "forces" in tmp.keys():
-                dict_frames["forces"][i] = tmp["forces"][0]
+            dict_frames["energies"][i] = tmp["energies"][0]
+            dict_frames["forces"][i] = tmp["forces"][0]
             if "virials" in tmp.keys():
                 dict_frames["virials"][i] = tmp["virials"][0]
 
