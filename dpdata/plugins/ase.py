@@ -278,10 +278,14 @@ class ASETrajFormat(Format):
             tmp = ASEStructureFormat().from_labeled_system(atoms)
             dict_frames["cells"] = np.append(dict_frames["cells"], tmp["cells"][0])
             dict_frames["coords"] = np.append(dict_frames["coords"], tmp["coords"][0])
-            dict_frames["energies"] = np.append(dict_frames["energies"], tmp["energies"][0])
+            dict_frames["energies"] = np.append(
+                dict_frames["energies"], tmp["energies"][0]
+            )
             dict_frames["forces"] = np.append(dict_frames["forces"], tmp["forces"][0])
             if "virials" in tmp.keys() and "virials" in dict_frames.keys():
-                dict_frames["virials"] = np.append(dict_frames["virials"], tmp["virials"][0])
+                dict_frames["virials"] = np.append(
+                    dict_frames["virials"], tmp["virials"][0]
+                )
 
         ## Correct the shape of numpy arrays
         dict_frames["cells"] = dict_frames["cells"].reshape(-1, 3, 3)
