@@ -283,7 +283,9 @@ class ASETrajFormat(Format):
 
         ## check if the first frame has a calculator
         if sub_traj[0].calc is None:
-            raise ValueError("The input trajectory does not contain energies and forces.")
+            raise ValueError(
+                "The input trajectory does not contain energies and forces."
+            )
 
         dict_frames = {
             "atom_names": None,
