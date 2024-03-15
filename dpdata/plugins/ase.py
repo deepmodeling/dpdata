@@ -230,8 +230,8 @@ class ASETrajFormat(Format):
             "atom_types": None,
             "orig": None,
             "nopbc": None,
-            "cells": [None] * len(sub_traj),
-            "coords": [None] * len(sub_traj),
+            "cells": np.array([None] * len(sub_traj)),
+            "coords": np.array([None] * len(sub_traj)),
         }
         for i, atoms in enumerate(sub_traj):
             tmp = ASEStructureFormat().from_system(atoms)
