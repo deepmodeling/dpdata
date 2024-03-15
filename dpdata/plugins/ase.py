@@ -284,7 +284,7 @@ class ASETrajFormat(Format):
         ## check if the first frame has a calculator
         if sub_traj[0].calc is None:
             raise ValueError(
-                "The input trajectory does not contain energies and forces."
+                "The labeled input is expected. However, the input trajectory does not contain energies and forces, please check it."
             )
 
         dict_frames = {
