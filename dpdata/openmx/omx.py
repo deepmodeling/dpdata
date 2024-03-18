@@ -70,9 +70,12 @@ def load_cells(lines):
     for index, line in enumerate(lines):
         if "Cell_Vectors=" in line:
             parts = line.split()
-            cell.append([float(parts[12]), float(parts[13]), float(parts[14])])
-            cell.append([float(parts[15]), float(parts[16]), float(parts[17])])
-            cell.append([float(parts[18]), float(parts[19]), float(parts[20])])
+            try:
+                cell.append([float(parts[12]), float(parts[13]), float(parts[14])])
+                cell.append([float(parts[15]), float(parts[16]), float(parts[17])])
+                cell.append([float(parts[18]), float(parts[19]), float(parts[20])])
+            except IndexError:
+                print("Does the file System.Name.md contain any calculation results other than MD? It may not be supported yet.")
             cells.append(cell)
             cell = []
     cells = np.array(cells)
