@@ -44,9 +44,7 @@ class ASEStructureFormat(Format):
             data dict
         """
         symbols = atoms.get_chemical_symbols()
-        atom_names = list(
-            dict.fromkeys(symbols)
-        )  # use: list(set(symbols)) cannot maintain the order of items
+        atom_names = list(dict.fromkeys(symbols))
         atom_numbs = [symbols.count(symbol) for symbol in atom_names]
         atom_types = np.array([atom_names.index(symbol) for symbol in symbols]).astype(
             int
