@@ -30,6 +30,10 @@ from collections import OrderedDict
 # /* 13,14: angles of spin */
 
 # 15: scf_convergence_flag (optional)
+# 
+# 1. Move the declaration of `scf_convergence_flag` in `DFT.c` to `openmx_common.h`.
+# 2. Add `scf_convergence_flag` output to the end of `iterout.c` where `*.md` is written.
+# 3. Recompile OpenMX.
 
 
 def load_atom(lines):
