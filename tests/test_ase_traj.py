@@ -1,6 +1,6 @@
 import unittest
 
-from comp_sys import CompSys, CompLabeledSys, IsPBC
+from comp_sys import CompLabeledSys, CompSys, IsPBC
 from context import dpdata
 
 try:
