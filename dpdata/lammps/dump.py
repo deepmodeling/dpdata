@@ -265,6 +265,8 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False):
         )
         if contain_spin:
             system['spin'].append(safe_get_spin_force(array_lines[ii])[:, :1] * safe_get_spin_force(array_lines[ii])[:, 1:4])
+    if contain_spin:
+        system["spin"] = np.array(system["spin"])
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
     return system

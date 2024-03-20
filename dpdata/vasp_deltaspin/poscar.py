@@ -106,7 +106,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
         if idx == 0:
             magmom_incar  += f"{tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
             mconstr_incar += f"{tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
-        elif idx == len(system['spin'] - 1):
+        elif idx == len(system['spin'][f_idx]) - 1:
             magmom_incar  += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \n"
             mconstr_incar += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \n"
         else:
