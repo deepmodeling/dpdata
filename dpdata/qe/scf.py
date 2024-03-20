@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 
 import numpy as np
 
@@ -55,7 +54,7 @@ def get_cell(lines):
             raise RuntimeError("parameter 'a' or 'celldm(1)' cannot be found.")
         ret = np.array([[a, 0.0, 0.0], [0.0, a, 0.0], [0.0, 0.0, a]])
     else:
-        sys.exit("ibrav > 1 not supported yet.")
+        raise RuntimeError("ibrav > 1 not supported yet.")
     return ret
 
 
