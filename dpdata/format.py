@@ -1,4 +1,5 @@
 """Implement the format plugin system."""
+
 import os
 from abc import ABC
 

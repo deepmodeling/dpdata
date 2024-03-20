@@ -117,9 +117,7 @@ class Cp2kSystems:
                     lines.append(self.xyz_file_object.readline())
                 if not lines[-1]:
                     raise RuntimeError(
-                        "this xyz file may lack of lines, should be {};lines:{}".format(
-                            atom_num + 2, lines
-                        )
+                        f"this xyz file may lack of lines, should be {atom_num + 2};lines:{lines}"
                     )
                 yield lines
 

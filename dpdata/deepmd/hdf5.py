@@ -1,4 +1,5 @@
 """Utils for deepmd/hdf5 format."""
+
 from __future__ import annotations
 
 import warnings

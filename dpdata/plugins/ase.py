@@ -9,6 +9,7 @@ from dpdata.format import Format
 try:
     import ase.io
     from ase.calculators.calculator import PropertyNotImplementedError
+    from ase.io import Trajectory
 
     if TYPE_CHECKING:
         from ase.optimize.optimize import Optimizer
@@ -43,7 +44,7 @@ class ASEStructureFormat(Format):
             data dict
         """
         symbols = atoms.get_chemical_symbols()
-        atom_names = list(set(symbols))
+        atom_names = list(dict.fromkeys(symbols))
         atom_numbs = [symbols.count(symbol) for symbol in atom_names]
         atom_types = np.array([atom_names.index(symbol) for symbol in symbols]).astype(
             int
@@ -185,6 +186,115 @@ class ASEStructureFormat(Format):
             structures.append(structure)
 
         return structures
+
+
+@Format.register("ase/traj")
+class ASETrajFormat(Format):
+    """Format for the ASE's trajectory format <https://wiki.fysik.dtu.dk/ase/ase/io/trajectory.html#module-ase.io.trajectory>`_ (ase).'
+    a `traj' contains a sequence of frames, each of which is an `Atoms' object.
+    """
+
+    def from_system(
+        self,
+        file_name: str,
+        begin: Optional[int] = 0,
+        end: Optional[int] = None,
+        step: Optional[int] = 1,
+        **kwargs,
+    ) -> dict:
+        """Read ASE's trajectory file to `System` of multiple frames.
+
+        Parameters
+        ----------
+        file_name : str
+            ASE's trajectory file
+        begin : int, optional
+            begin frame index
+        end : int, optional
+            end frame index
+        step : int, optional
+            frame index step
+        **kwargs : dict
+            other parameters
+
+        Returns
+        -------
+        dict_frames: dict
+            a dictionary containing data of multiple frames
+        """
+        traj = Trajectory(file_name)
+        sub_traj = traj[begin:end:step]
+        dict_frames = ASEStructureFormat().from_system(sub_traj[0])
+        for atoms in sub_traj[1:]:
+            tmp = ASEStructureFormat().from_system(atoms)
+            dict_frames["cells"] = np.append(dict_frames["cells"], tmp["cells"][0])
+            dict_frames["coords"] = np.append(dict_frames["coords"], tmp["coords"][0])
+
+        ## Correct the shape of numpy arrays
+        dict_frames["cells"] = dict_frames["cells"].reshape(-1, 3, 3)
+        dict_frames["coords"] = dict_frames["coords"].reshape(len(sub_traj), -1, 3)
+
+        return dict_frames
+
+    def from_labeled_system(
+        self,
+        file_name: str,
+        begin: Optional[int] = 0,
+        end: Optional[int] = None,
+        step: Optional[int] = 1,
+        **kwargs,
+    ) -> dict:
+        """Read ASE's trajectory file to `System` of multiple frames.
+
+        Parameters
+        ----------
+        file_name : str
+            ASE's trajectory file
+        begin : int, optional
+            begin frame index
+        end : int, optional
+            end frame index
+        step : int, optional
+            frame index step
+        **kwargs : dict
+            other parameters
+
+        Returns
+        -------
+        dict_frames: dict
+            a dictionary containing data of multiple frames
+        """
+        traj = Trajectory(file_name)
+        sub_traj = traj[begin:end:step]
+
+        ## check if the first frame has a calculator
+        if sub_traj[0].calc is None:
+            raise ValueError(
+                "The input trajectory does not contain energies and forces, may not be a labeled system."
+            )
+
+        dict_frames = ASEStructureFormat().from_labeled_system(sub_traj[0])
+        for atoms in sub_traj[1:]:
+            tmp = ASEStructureFormat().from_labeled_system(atoms)
+            dict_frames["cells"] = np.append(dict_frames["cells"], tmp["cells"][0])
+            dict_frames["coords"] = np.append(dict_frames["coords"], tmp["coords"][0])
+            dict_frames["energies"] = np.append(
+                dict_frames["energies"], tmp["energies"][0]
+            )
+            dict_frames["forces"] = np.append(dict_frames["forces"], tmp["forces"][0])
+            if "virials" in tmp.keys() and "virials" in dict_frames.keys():
+                dict_frames["virials"] = np.append(
+                    dict_frames["virials"], tmp["virials"][0]
+                )
+
+        ## Correct the shape of numpy arrays
+        dict_frames["cells"] = dict_frames["cells"].reshape(-1, 3, 3)
+        dict_frames["coords"] = dict_frames["coords"].reshape(len(sub_traj), -1, 3)
+        dict_frames["forces"] = dict_frames["forces"].reshape(len(sub_traj), -1, 3)
+        if "virials" in dict_frames.keys():
+            dict_frames["virials"] = dict_frames["virials"].reshape(-1, 3, 3)
+
+        return dict_frames
 
 
 @Driver.register("ase")

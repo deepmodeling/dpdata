@@ -1336,9 +1336,7 @@ class MultiSystems:
         return self.__str__()
 
     def __str__(self):
-        return "MultiSystems ({} systems containing {} frames)".format(
-            len(self.systems), self.get_nframes()
-        )
+        return f"MultiSystems ({len(self.systems)} systems containing {self.get_nframes()} frames)"
 
     def __add__(self, others):
         """Magic method "+" operation."""

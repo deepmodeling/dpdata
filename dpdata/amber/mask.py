@@ -1,4 +1,5 @@
 """Amber mask."""
+
 try:
     import parmed
 except ImportError:

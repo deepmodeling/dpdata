@@ -68,14 +68,7 @@ def formulate_config(eles, types, posi, cell, ener, forc, strs_):
     ret += f"#Z {cell[2][0]:13.8f} {cell[2][1]:13.8f} {cell[2][2]:13.8f}\n"
     ret += "#W 1.0\n"
     ret += "#E %.10f\n" % (ener / natoms)
-    ret += "#S {:.9e} {:.9e} {:.9e} {:.9e} {:.9e} {:.9e}\n".format(
-        strs[0][0],
-        strs[1][1],
-        strs[2][2],
-        strs[0][1],
-        strs[1][2],
-        strs[0][2],
-    )
+    ret += f"#S {strs[0][0]:.9e} {strs[1][1]:.9e} {strs[2][2]:.9e} {strs[0][1]:.9e} {strs[1][2]:.9e} {strs[0][2]:.9e}\n"
     ret += "#F\n"
     for ii in range(natoms):
         sp = np.matmul(cell.T, posi[ii])
