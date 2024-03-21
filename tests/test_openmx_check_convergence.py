@@ -19,14 +19,14 @@ class TestOPENMXTRAJProps:
 
     def test_cell(self):
         ref = 10.0 * np.eye(3)
-        self.assertEqual(self.system.get_nframes(), 200)
+        self.assertEqual(self.system.get_nframes(), 5)
         for ff in range(self.system.get_nframes()):
             for ii in range(3):
                 for jj in range(3):
                     self.assertEqual(self.system["cells"][ff][ii][jj], ref[ii][jj])
 
     def test_coord(self):
-        with open("openmx/Methane.md") as md_file:
+        with open("openmx/Methane2.md") as md_file:
             lines = md_file.readlines()
         lines = lines[-5:]
         coords = []
@@ -50,12 +50,12 @@ class TestOPENMXTRAJProps:
 
 class TestOPENMXTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
-        self.system = dpdata.System("openmx/Methane", fmt="openmx/md")
+        self.system = dpdata.System("openmx/Methane2", fmt="openmx/md")
 
 
 class TestOPENMXLabeledTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
-        self.system = dpdata.LabeledSystem("openmx/Methane", fmt="openmx/md")
+        self.system = dpdata.LabeledSystem("openmx/Methane2", fmt="openmx/md")
 
 
 if __name__ == "__main__":
