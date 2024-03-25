@@ -26,7 +26,9 @@ jobs:
     - name: Test
       run: cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
     - name: Run codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   pass:
     needs: [build]
     runs-on: ubuntu-latest
