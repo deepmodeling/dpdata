@@ -3,7 +3,7 @@ import dpdata.openmx.omx
 from dpdata.format import Format
 
 
-@Format.register("openmx/out")
+@Format.register("openmx/md")
 class OPENMXFormat(Format):
     """Format for the `OpenMX <https://www.openmx-square.org/>`.
 
@@ -11,7 +11,7 @@ class OPENMXFormat(Format):
 
     Note that two output files, System.Name.dat and System.Name.md, are required.
 
-    Use the `openmx/out` keyword argument to supply this format.
+    Use the `openmx/md` keyword argument to supply this format.
     """
 
     @Format.post("rot_lower_triangular")
