@@ -45,8 +45,6 @@ def _to_system_data_lower(lines, lines_incar, cartesian=True):
     system['spin'] = np.array([system['spin']]).astype('float64')
     count = np.sum(np.linalg.norm(system['spin'][0], axis=1) > 0)
     spin_idx = np.where(np.cumsum(system['atom_numbs']) <= count)
-    system['atom_numbs_spin'] = np.array(system['atom_numbs'])[spin_idx]
-    system['atom_names_spin'] = np.array(system['atom_names'])[spin_idx]
     return system
 
 

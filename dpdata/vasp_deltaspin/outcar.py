@@ -97,7 +97,7 @@ def get_frames(fname, begin=0, step=1, ml=False, convergence_check=True):
         oszicar_blk = f.read()
     mag_blk = re.findall(r'Magnetic Force(.*?)\n  \n', oszicar_blk, re.S)[-1].split('\n')
     mag_force = [list(map(float, ss.split()[-3:])) for ss in mag_blk[1:]]
-    spin_blk = re.findall(r'MW_current(.*?)\n lambda', oszicar_blk, re.S)[-1].split('\n')
+    spin_blk = re.findall(r'MW_current(.*?)\n ion', oszicar_blk, re.S)[-1].split('\n')
     spin = [list(map(float, ss.split()[1:4])) for ss in spin_blk[1:]]
     all_mag_forces.append(mag_force)
     all_spins.append(spin)
