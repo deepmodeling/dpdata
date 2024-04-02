@@ -96,7 +96,7 @@ class N2P2Format(Format):
                     unique_atypes = np.array(list(unique_dict.keys()))
                     unique_atypes_list = list(unique_atypes)
                     ntypes = len(unique_atypes)
-                    natoms = [len(atype[atype==at]) for at in unique_atypes]
+                    natoms = [len(atype[atype == at]) for at in unique_atypes]
                     if natoms0 is None:
                         natoms0 = natoms
                     else:
