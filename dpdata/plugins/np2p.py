@@ -156,6 +156,8 @@ class N2P2Format(Format):
         ----------
         data : dict
             system data, whose keys are defined in LabeledSystem.DTYPES
+        file_name : str
+            file name, where the data will be written
         *args : list
             arguments that will be passed from the method
         **kwargs : dict
