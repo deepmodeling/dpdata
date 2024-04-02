@@ -176,7 +176,7 @@ class N2P2Format(Format):
             buff.append("begin")
             for i in range(3):
                 buff.append(
-                    f"lattice {cell[i][0]:15.6f}  {cell[i][2]:15.6f}  {cell[i][1]:15.6f}"
+                    f"lattice {cell[i][0]:15.6f}  {cell[i][1]:15.6f}  {cell[i][2]:15.6f}"
                 )
             for i in range(natom):
                 buff.append(
