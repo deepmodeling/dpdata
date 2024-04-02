@@ -36,6 +36,12 @@ def match_indices(atype1, atype2):
 
 @Format.register("n2p2")
 class N2P2Format(Format):
+    """n2p2
+
+    This class support the conversion from and to the training data of n2p2 format.
+    For more information about the n2p2 format, please refer to https://compphysvienna.github.io/n2p2/topics/cfg_file.html
+    """
+
     def from_labeled_system(self, file_name, **kwargs):
         """Implement LabeledSystem.from that converts from this format to LabeledSystem.
 
