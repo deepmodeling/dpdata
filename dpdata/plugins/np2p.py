@@ -86,11 +86,11 @@ class N2P2Format(Format):
 
                     # Check if the number of atoms of each type is consistent across all frames
                     atype = np.array(atype)
-                    atype_sroted = sorted(atype)
-                    unique_atypes = set(atype_sroted)
+                    unique_dict = {element: None for element in atype}
+                    unique_atypes = np.array(list(unique_dict.keys()))
                     unique_atypes_list = list(unique_atypes)
                     ntypes = len(unique_atypes)
-                    natoms = [atype_sroted.count(at) for at in unique_atypes]
+                    natoms = [len(atype[atype==at]) for at in unique_atypes]
                     if natoms0 is None:
                         natoms0 = natoms
                     else:
