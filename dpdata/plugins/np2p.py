@@ -1,11 +1,13 @@
 import numpy as np
 
 from dpdata.format import Format
+
 from ..unit import EnergyConversion, ForceConversion, LengthConversion
 
 length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
+
 
 def match_indices(atype1, atype2):
     # Ensure atype2 is a numpy array for efficient operations
@@ -20,7 +22,7 @@ def match_indices(atype1, atype2):
         # Find all indices of the current element in atype2
         # np.where returns a tuple, so [0] is used to access the array of indices
         indices = np.where(atype2 == element)[0]
-        
+
         # Find the first unused index
         for index in indices:
             if index not in used_indices:
@@ -30,6 +32,7 @@ def match_indices(atype1, atype2):
                 break  # Move to the next element in atype1
 
     return matched_indices
+
 
 @Format.register("n2p2")
 class N2P2Format(Format):
@@ -56,26 +59,30 @@ class N2P2Format(Format):
         natom0 = None
         natoms0 = None
         atom_types0 = None
-        with open(file_name, 'r') as file:
+        with open(file_name) as file:
             for line in file:
                 line = line.strip()  # Remove leading/trailing whitespace
-                if line.lower() == 'begin':
+                if line.lower() == "begin":
                     current_section = []  # Start a new section
                     cell = []
                     coord = []
                     atype = []
                     force = []
                     energy = None
-                elif line.lower() == 'end':
+                elif line.lower() == "end":
                     # If we are at the end of a section, process the section
-                    assert len(coord) == len(atype) == len(force), "Number of atoms, atom types, and forces must match."
+                    assert (
+                        len(coord) == len(atype) == len(force)
+                    ), "Number of atoms, atom types, and forces must match."
 
                     # Check if the number of atoms is consistent across all frames
                     natom = len(coord)
                     if natom0 is None:
                         natom0 = natom
                     else:
-                        assert natom == natom0, "The number of atoms in all frames must be the same."
+                        assert (
+                            natom == natom0
+                        ), "The number of atoms in all frames must be the same."
 
                     # Check if the number of atoms of each type is consistent across all frames
                     atype = np.array(atype)
@@ -87,7 +94,9 @@ class N2P2Format(Format):
                     if natoms0 is None:
                         natoms0 = natoms
                     else:
-                        assert natoms == natoms0, "The number of atoms of each type in all frames must be the same."
+                        assert (
+                            natoms == natoms0
+                        ), "The number of atoms of each type in all frames must be the same."
                     if atom_types0 is None:
                         atom_types0 = atype
                     atom_order = match_indices(atom_types0, atype)
@@ -106,21 +115,21 @@ class N2P2Format(Format):
                     # If we are inside a section, append the line to the current section
                     # current_section.append(line)
                     line_contents = line.split()
-                    if line_contents[0] == 'lattice':
+                    if line_contents[0] == "lattice":
                         cell.append(line_contents[1:])
-                    elif line_contents[0] == 'atom':
+                    elif line_contents[0] == "atom":
                         coord.append(line_contents[1:4])
                         atype.append(line_contents[4])
                         force.append(line_contents[7:10])
-                    elif line_contents[0] == 'energy':
+                    elif line_contents[0] == "energy":
                         energy = line_contents[1]
-                
+
         atom_names = unique_atypes_list
         atom_numbs = natoms
         atom_types = np.zeros(len(atom_types0), dtype=int)
         for i in range(ntypes):
             atom_types[atom_types0 == unique_atypes_list[i]] = i
-        
+
         cells = np.array(cells) * length_convert
         coords = np.array(coords) * length_convert
         forces = np.array(forces) * force_convert
@@ -164,9 +173,13 @@ class N2P2Format(Format):
             atype = data["atom_types"]
             buff.append("begin")
             for i in range(3):
-                buff.append(f"lattice {cell[i][0]:15.6f}  {cell[i][2]:15.6f}  {cell[i][1]:15.6f}")
+                buff.append(
+                    f"lattice {cell[i][0]:15.6f}  {cell[i][2]:15.6f}  {cell[i][1]:15.6f}"
+                )
             for i in range(natom):
-                buff.append(f"atom {coord[i][0]:15.6f} {coord[i][1]:15.6f} {coord[i][2]:15.6f} {atom_names[atype[i]]:>7} {0:15.6f} {0:15.6f} {force[i][0]:15.6e} {force[i][1]:15.6e} {force[i][2]:15.6e}")
+                buff.append(
+                    f"atom {coord[i][0]:15.6f} {coord[i][1]:15.6f} {coord[i][2]:15.6f} {atom_names[atype[i]]:>7} {0:15.6f} {0:15.6f} {force[i][0]:15.6e} {force[i][1]:15.6e} {force[i][2]:15.6e}"
+                )
             buff.append(f"energy {energy:15.6f}")
             buff.append(f"charge {0:15.6f}")
             buff.append("end")
