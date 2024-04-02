@@ -296,6 +296,16 @@ class ASETrajFormat(Format):
 
         return dict_frames
 
+    def to_system(self, data, **kwargs):
+        """Convert System to ASE Atoms object."""
+        structures = ASEStructureFormat().to_system(data, **kwargs)
+        return structures
+
+    def to_labeled_system(self, data, *args, **kwargs):
+        """Convert System to ASE Atoms object."""
+        structures = ASEStructureFormat().to_labeled_system(data, *args, **kwargs)
+        return structures
+
 
 @Driver.register("ase")
 class ASEDriver(Driver):
