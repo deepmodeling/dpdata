@@ -1,13 +1,13 @@
 import numpy as np
-from pymatgen.core import Structure
 
 import dpdata.pymatgen.molecule
+import dpdata.pymatgen.structure
 from dpdata.format import Format
 
 
 @Format.register("pymatgen/structure")
 class PyMatgenStructureFormat(Format):
-    def from_system(self, structure: Structure, **kwargs) -> dict:
+    def from_system(self, structure, **kwargs) -> dict:
         """Convert pymatgen.core.Structure to System.
 
         Parameters
@@ -22,25 +22,7 @@ class PyMatgenStructureFormat(Format):
         dict
             data dict
         """
-        symbols = [site.species_string for site in structure]
-        atom_names = list(structure.symbol_set)
-        atom_numbs = [symbols.count(symbol) for symbol in atom_names]
-        atom_types = np.array([atom_names.index(symbol) for symbol in symbols]).astype(
-            int
-        )
-        coords = structure.cart_coords
-        cells = structure.lattice.matrix
-        nopbc = not np.any(structure.pbc)
-
-        info_dict = {
-            "atom_names": atom_names,
-            "atom_numbs": atom_numbs,
-            "atom_types": atom_types,
-            "coords": np.array([coords]),
-            "cells": np.array([cells]),
-            "nopbc": nopbc,
-        }
-        return info_dict
+        return dpdata.pymatgen.structure.from_system_data(structure)
 
     def to_system(self, data, **kwargs):
         """Convert System to Pymatgen Structure obj."""
