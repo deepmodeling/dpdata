@@ -2,6 +2,8 @@ from typing import Tuple
 
 import numpy as np
 
+from dpdata.unit import LengthConversion
+
 
 def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
     """Read from Psi4 output.
@@ -28,6 +30,7 @@ def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
     symbols = None
     forces = None
     energy = None
+    length_unit = None
     with open(fn) as f:
         flag = 0
         for line in f:
@@ -53,14 +56,19 @@ def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
                 flag = 1
                 coord = []
                 symbols = []
+            elif line.startswith("    Geometry (in "):
+                # remove ),
+                length_unit = line.split()[2][:-2].lower()
             elif line.startswith("  ## Total Gradient"):
                 flag = 3
                 forces = []
             elif line.startswith("    Total Energy ="):
                 energy = float(line.split()[-1])
+    assert length_unit is not None
+    length_convert = LengthConversion(length_unit, "angstrom").value()
     symbols = np.array(symbols)
     forces = -np.array(forces)
-    coord = np.array(coord)
+    coord = np.array(coord) * length_convert
     assert coord.shape == forces.shape
 
     return symbols, coord, energy, forces

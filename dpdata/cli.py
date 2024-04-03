@@ -1,4 +1,5 @@
 """Command line interface for dpdata."""
+
 import argparse
 from typing import Optional
 

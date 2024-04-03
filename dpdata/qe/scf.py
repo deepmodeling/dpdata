@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 
 import numpy as np
 
@@ -55,7 +54,7 @@ def get_cell(lines):
             raise RuntimeError("parameter 'a' or 'celldm(1)' cannot be found.")
         ret = np.array([[a, 0.0, 0.0], [0.0, a, 0.0], [0.0, 0.0, a]])
     else:
-        sys.exit("ibrav > 1 not supported yet.")
+        raise RuntimeError("ibrav > 1 not supported yet.")
     return ret
 
 
@@ -120,6 +119,8 @@ def get_force(lines, natoms):
 
 def get_stress(lines):
     blk = get_block(lines, "total   stress")
+    if len(blk) == 0:
+        return
     ret = []
     for ii in blk:
         ret.append([float(jj) for jj in ii.split()[3:6]])
@@ -148,7 +149,9 @@ def get_frame(fname):
     atom_names, natoms, types, coords = get_coords(inlines, cell)
     energy = get_energy(outlines)
     force = get_force(outlines, natoms)
-    stress = get_stress(outlines) * np.linalg.det(cell)
+    stress = get_stress(outlines)
+    if stress is not None:
+        stress = (stress * np.linalg.det(cell))[np.newaxis, :, :]
     return (
         atom_names,
         natoms,
@@ -157,5 +160,5 @@ def get_frame(fname):
         coords[np.newaxis, :, :],
         np.array(energy)[np.newaxis],
         force[np.newaxis, :, :],
-        stress[np.newaxis, :, :],
+        stress,
     )
