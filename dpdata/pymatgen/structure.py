@@ -6,7 +6,7 @@ except ImportError:
     pass
 
 
-def from_system_data(structure: Structure):
+def from_system_data(structure):
     symbols = [site.species_string for site in structure]
     atom_names = list(structure.symbol_set)
     atom_numbs = [symbols.count(symbol) for symbol in atom_names]

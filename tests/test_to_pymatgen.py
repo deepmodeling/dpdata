@@ -5,7 +5,7 @@ from comp_sys import CompSys, IsPBC
 from context import dpdata
 
 try:
-    from pymatgen import Structure  # noqa: F401
+    from pymatgen.core import Structure  # noqa: F401
 
     exist_module = True
 except Exception:
