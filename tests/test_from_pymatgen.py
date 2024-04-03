@@ -13,7 +13,7 @@ except Exception:
 
 
 @unittest.skipIf(not exist_module, "skip pymatgen")
-class TestFormPytmatgen(unittest.TestCase, CompSys, IsPBC):
+class TestFormPytmatgen(unittest.TestCase, CompSys):
     def setUp(self):
         structure = Structure.from_file(os.path.join("poscars", "POSCAR.P42nmc"))
         self.system_1 = dpdata.System(structure, fmt="pymatgen/structure")

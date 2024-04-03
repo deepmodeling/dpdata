@@ -19,7 +19,7 @@ class TestPymatgen(unittest.TestCase, CompSys, IsPBC):
         system_1.from_lammps_lmp(
             os.path.join("poscars", "conf.lmp"), type_map=["O", "H"]
         )
-        system_1.to_pymatgen_structure()[0].to("tmp.POSCAR", "poscar")
+        system_1.to_pymatgen_structure()[0].to(filename="tmp.POSCAR", fmt="poscar")
         self.system_1 = system_1
         self.system_2 = dpdata.System("tmp.POSCAR")
         self.places = 6
