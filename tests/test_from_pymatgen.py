@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from comp_sys import CompSys, IsPBC
+from comp_sys import CompSys
 from context import dpdata
 
 try:

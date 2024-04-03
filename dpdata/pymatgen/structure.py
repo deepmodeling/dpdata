@@ -1,7 +1,7 @@
 import numpy as np
 
 try:
-    from pymatgen.core import Structure # noqa: F401
+    from pymatgen.core import Structure  # noqa: F401
 except ImportError:
     pass
 
@@ -19,6 +19,6 @@ def from_system_data(structure) -> dict:
         "atom_numbs": atom_numbs,
         "atom_types": atom_types,
         "coords": np.array([coords]),
-        "cells": np.array([cells])
+        "cells": np.array([cells]),
     }
     return info_dict
