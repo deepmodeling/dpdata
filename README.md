@@ -96,6 +96,7 @@ The `System` or `LabeledSystem` can be constructed from the following file forma
 | ABACUS  | STRU        | True         | True    | LabeledSystem | 'abacus/relax'       |
 | ase     | structure   | True         | True    | MultiSystems  | 'ase/structure'      |
 | DFTB+   | dftbplus    | False        | True    | LabeledSystem | 'dftbplus'           |
+| n2p2    | n2p2        | True         | True    | LabeledSystem | 'n2p2'               |
 
 
 The Class `dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
