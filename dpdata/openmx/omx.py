@@ -15,6 +15,7 @@ length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
+import warnings
 from collections import OrderedDict
 
 ### iterout.c from OpenMX soure code: column numbers and physical quantities ###
@@ -27,6 +28,12 @@ from collections import OrderedDict
 # /* 11: Net charge, electron charge is defined to be negative. */
 # /* 12: magnetic moment (muB) */
 # /* 13,14: angles of spin */
+
+# 15: scf_convergence_flag (optional)
+#
+# 1. Move the declaration of `scf_convergence_flag` in `DFT.c` to `openmx_common.h`.
+# 2. Add `scf_convergence_flag` output to the end of `iterout.c` where `*.md` is written.
+# 3. Recompile OpenMX.
 
 
 def load_atom(lines):
@@ -70,9 +77,18 @@ def load_cells(lines):
     for index, line in enumerate(lines):
         if "Cell_Vectors=" in line:
             parts = line.split()
-            cell.append([float(parts[12]), float(parts[13]), float(parts[14])])
-            cell.append([float(parts[15]), float(parts[16]), float(parts[17])])
-            cell.append([float(parts[18]), float(parts[19]), float(parts[20])])
+            if len(parts) == 21:  # MD.Type is NVT_NH
+                cell.append([float(parts[12]), float(parts[13]), float(parts[14])])
+                cell.append([float(parts[15]), float(parts[16]), float(parts[17])])
+                cell.append([float(parts[18]), float(parts[19]), float(parts[20])])
+            elif len(parts) == 16:  # MD.Type is Opt
+                cell.append([float(parts[7]), float(parts[8]), float(parts[9])])
+                cell.append([float(parts[10]), float(parts[11]), float(parts[12])])
+                cell.append([float(parts[13]), float(parts[14]), float(parts[15])])
+            else:
+                raise RuntimeError(
+                    "Does the file System.Name.md contain unsupported calculation results?"
+                )
             cells.append(cell)
             cell = []
     cells = np.array(cells)
@@ -104,6 +120,9 @@ def load_coords(lines, atom_names, natoms):
                 parts = line.split()
                 for_line = [float(parts[1]), float(parts[2]), float(parts[3])]
                 coord.append(for_line)
+                # It may be necessary to recompile OpenMX to make scf convergence determination.
+                if len(parts) == 15 and parts[14] == "0":
+                    warnings.warn("SCF in System.Name.md has not converged!")
         if cnt == natoms:
             coords.append(coord)
             cnt = 0

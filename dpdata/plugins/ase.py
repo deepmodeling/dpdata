@@ -96,7 +96,7 @@ class ASEStructureFormat(Format):
             "forces": np.array([forces]),
         }
         try:
-            stress = atoms.get_stress(False)
+            stress = atoms.get_stress(voigt=False)  # not use Voigt notation -> return 3x3 matrix
         except PropertyNotImplementedError:
             pass
         else:
@@ -112,7 +112,7 @@ class ASEStructureFormat(Format):
         step: Optional[int] = None,
         ase_fmt: Optional[str] = None,
         **kwargs,
-    ) -> "ase.Atoms":
+    ) -> object:  # generator of "ase.Atoms"
         """Convert a ASE supported file to ASE Atoms.
 
         It will finally be converted to MultiSystems.
@@ -295,6 +295,24 @@ class ASETrajFormat(Format):
             dict_frames["virials"] = dict_frames["virials"].reshape(-1, 3, 3)
 
         return dict_frames
+
+    def to_system(self, data, **kwargs):
+        """Convert System to ASE Atoms object."""
+        list_atoms = ASEStructureFormat().to_system(data, **kwargs)
+        file_name = kwargs.get("file_name", "conf.traj")
+        traj = Trajectory(file_name, 'a')
+        _ = [traj.write(atom) for atom in list_atoms]
+        traj.close()
+        return
+
+    def to_labeled_system(self, data, *args, **kwargs):
+        """Convert System to ASE Atoms object."""
+        list_atoms = ASEStructureFormat().to_labeled_system(data, *args, **kwargs)
+        file_name = kwargs.get("file_name", "labeled_conf.traj")
+        traj = Trajectory(file_name, 'a')
+        _ = [traj.write(atom) for atom in list_atoms]
+        traj.close()
+        return
 
 
 @Driver.register("ase")
