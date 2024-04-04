@@ -96,7 +96,9 @@ class ASEStructureFormat(Format):
             "forces": np.array([forces]),
         }
         try:
-            stress = atoms.get_stress(voigt=False)  # not use Voigt notation -> return 3x3 matrix
+            stress = atoms.get_stress(
+                voigt=False
+            )  # not use Voigt notation -> return 3x3 matrix
         except PropertyNotImplementedError:
             pass
         else:
@@ -300,7 +302,7 @@ class ASETrajFormat(Format):
         """Convert System to ASE Atoms object."""
         list_atoms = ASEStructureFormat().to_system(data, **kwargs)
         file_name = kwargs.get("file_name", "conf.traj")
-        traj = Trajectory(file_name, 'a')
+        traj = Trajectory(file_name, "a")
         _ = [traj.write(atom) for atom in list_atoms]
         traj.close()
         return
@@ -309,7 +311,7 @@ class ASETrajFormat(Format):
         """Convert System to ASE Atoms object."""
         list_atoms = ASEStructureFormat().to_labeled_system(data, *args, **kwargs)
         file_name = kwargs.get("file_name", "labeled_conf.traj")
-        traj = Trajectory(file_name, 'a')
+        traj = Trajectory(file_name, "a")
         _ = [traj.write(atom) for atom in list_atoms]
         traj.close()
         return
