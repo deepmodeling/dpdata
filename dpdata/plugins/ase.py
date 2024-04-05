@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type, Generator, List
+from typing import TYPE_CHECKING, Generator, List, Optional, Type
 
 import numpy as np
 
@@ -298,10 +298,7 @@ class ASETrajFormat(Format):
 
         return dict_frames
 
-    def to_system(self,
-                  data,
-                  file_name: str = "confs.traj",
-                  **kwargs) -> None:
+    def to_system(self, data, file_name: str = "confs.traj", **kwargs) -> None:
         """Convert System to ASE Atoms object.
 
         Parameters
@@ -310,23 +307,23 @@ class ASETrajFormat(Format):
             path to file
         """
         list_atoms = ASEStructureFormat().to_system(data, **kwargs)
-        traj = Trajectory(file_name, 'a')
+        traj = Trajectory(file_name, "a")
         _ = [traj.write(atom) for atom in list_atoms]
         traj.close()
         return
 
-    def to_labeled_system(self,
-                          data,
-                          file_name: str = "labeled_confs.traj",
-                          *args, **kwargs) -> None:
+    def to_labeled_system(
+        self, data, file_name: str = "labeled_confs.traj", *args, **kwargs
+    ) -> None:
         """Convert System to ASE Atoms object.
+
         Parameters
         ----------
         file_name : str
             path to file
         """
         list_atoms = ASEStructureFormat().to_labeled_system(data, *args, **kwargs)
-        traj = Trajectory(file_name, 'a')
+        traj = Trajectory(file_name, "a")
         _ = [traj.write(atom) for atom in list_atoms]
         traj.close()
         return
