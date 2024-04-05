@@ -114,7 +114,7 @@ class ASEStructureFormat(Format):
         step: Optional[int] = None,
         ase_fmt: Optional[str] = None,
         **kwargs,
-    ) -> Generator["ase.Atoms"]:
+    ) -> Generator["ase.Atoms", None, None]:
         """Convert a ASE supported file to ASE Atoms.
 
         It will finally be converted to MultiSystems.
