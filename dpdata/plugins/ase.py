@@ -96,7 +96,9 @@ class ASEStructureFormat(Format):
             "forces": np.array([forces]),
         }
         try:
-            stress = atoms.get_stress(voigt=False)  # not use Voigt notation -> return 3x3 matrix
+            stress = atoms.get_stress(
+                voigt=False
+            )  # not use Voigt notation -> return 3x3 matrix
         except PropertyNotImplementedError:
             pass
         else:
