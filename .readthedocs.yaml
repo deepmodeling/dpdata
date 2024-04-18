@@ -4,7 +4,7 @@ build:
   os: ubuntu-22.04
   tools:
     python: "mambaforge-22.9"
-  build:
+  jobs:
     post_create_environment:
       - pip install uv
     post_install:
