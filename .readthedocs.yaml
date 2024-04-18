@@ -8,7 +8,7 @@ build:
     post_create_environment:
       - pip install uv
     post_install:
-      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH uv pip install .[docs]
+      - uv pip install .[docs]
 conda:
   environment: docs/rtd_environment.yml
 sphinx:
