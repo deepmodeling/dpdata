@@ -93,6 +93,7 @@ class System(MSONable):
         step=1,
         data=None,
         convergence_check=True,
+        post_func_skip_list=None,
         **kwargs,
     ):
         """Constructor.
@@ -163,6 +164,8 @@ class System(MSONable):
             The raw data of System class.
         convergence_check : boolean
             Whether to request a convergence check.
+        post_func_skip_list : list of str
+            The list of post function names to skip.
         **kwargs : dict
             other parameters
         """
@@ -180,6 +183,7 @@ class System(MSONable):
             return
         if file_name is None:
             return
+        self.post_func_skip_list = post_func_skip_list if post_func_skip_list is not None else []
         self.from_fmt(
             file_name,
             fmt,
@@ -192,6 +196,7 @@ class System(MSONable):
 
         if type_map is not None:
             self.apply_type_map(type_map)
+
 
     def check_data(self):
         """Check if data is correct.
@@ -229,11 +234,10 @@ class System(MSONable):
                 self.data = {**self.data, **data}
                 self.check_data()
             if hasattr(fmtobj.from_system, "post_func"):
-                post_func_skip_list = kwargs.get("post_func_skip_list", [])
-                if not isinstance(post_func_skip_list, list):
-                    post_func_skip_list = [post_func_skip_list]
+                assert isinstance(self.post_func_skip_list, list), \
+                    "post_func_skip_list should be a list of string"
                 for post_f in fmtobj.from_system.post_func:
-                    if post_f in post_func_skip_list:
+                    if post_f in self.post_func_skip_list:
                         continue
                     self.post_funcs.get_plugin(post_f)(self)
         return self
