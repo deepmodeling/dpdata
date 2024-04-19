@@ -229,7 +229,12 @@ class System(MSONable):
                 self.data = {**self.data, **data}
                 self.check_data()
             if hasattr(fmtobj.from_system, "post_func"):
+                post_func_skip_list = kwargs.get("post_func_skip_list", [])
+                if not isinstance(post_func_skip_list, list):
+                    post_func_skip_list = [post_func_skip_list]
                 for post_f in fmtobj.from_system.post_func:
+                    if post_f in post_func_skip_list:
+                        continue
                     self.post_funcs.get_plugin(post_f)(self)
         return self
 
