@@ -183,7 +183,9 @@ class System(MSONable):
             return
         if file_name is None:
             return
-        self.post_func_skip_list = post_func_skip_list if post_func_skip_list is not None else []
+        self.post_func_skip_list = (
+            post_func_skip_list if post_func_skip_list is not None else []
+        )
         self.from_fmt(
             file_name,
             fmt,
@@ -196,7 +198,6 @@ class System(MSONable):
 
         if type_map is not None:
             self.apply_type_map(type_map)
-
 
     def check_data(self):
         """Check if data is correct.
@@ -234,8 +235,9 @@ class System(MSONable):
                 self.data = {**self.data, **data}
                 self.check_data()
             if hasattr(fmtobj.from_system, "post_func"):
-                assert isinstance(self.post_func_skip_list, list), \
-                    "post_func_skip_list should be a list of string"
+                assert isinstance(
+                    self.post_func_skip_list, list
+                ), "post_func_skip_list should be a list of string"
                 for post_f in fmtobj.from_system.post_func:
                     if post_f in self.post_func_skip_list:
                         continue
