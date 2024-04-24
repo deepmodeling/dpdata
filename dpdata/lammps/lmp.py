@@ -245,17 +245,30 @@ def from_system_data(system, f_idx=0):
         spin_norm = np.linalg.norm(system['spin'][f_idx], axis=1)
     for ii in range(natoms):
         if 'spin' in  system.keys():
-            ret += coord_fmt % (
-                ii + 1,
-                system["atom_types"][ii] + 1,
-                system["coords"][f_idx][ii][0] - system["orig"][0],
-                system["coords"][f_idx][ii][1] - system["orig"][1],
-                system["coords"][f_idx][ii][2] - system["orig"][2],
-                system['spin'][f_idx][ii][0]/spin_norm[ii],
-                system['spin'][f_idx][ii][1]/spin_norm[ii],
-                system['spin'][f_idx][ii][2]/spin_norm[ii],
-                spin_norm[ii],
-            )
+            if spin_norm[ii] != 0:
+                ret += coord_fmt % (
+                    ii + 1,
+                    system["atom_types"][ii] + 1,
+                    system["coords"][f_idx][ii][0] - system["orig"][0],
+                    system["coords"][f_idx][ii][1] - system["orig"][1],
+                    system["coords"][f_idx][ii][2] - system["orig"][2],
+                    system['spin'][f_idx][ii][0]/spin_norm[ii],
+                    system['spin'][f_idx][ii][1]/spin_norm[ii],
+                    system['spin'][f_idx][ii][2]/spin_norm[ii],
+                    spin_norm[ii],
+                )
+            else:
+                ret += coord_fmt % (
+                    ii + 1,
+                    system["atom_types"][ii] + 1,
+                    system["coords"][f_idx][ii][0] - system["orig"][0],
+                    system["coords"][f_idx][ii][1] - system["orig"][1],
+                    system["coords"][f_idx][ii][2] - system["orig"][2],
+                    system['spin'][f_idx][ii][0],
+                    system['spin'][f_idx][ii][1],
+                    system['spin'][f_idx][ii][2],
+                    spin_norm[ii],
+                )
         else:
             ret += coord_fmt % (
                 ii + 1,
