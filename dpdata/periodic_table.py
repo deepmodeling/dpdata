@@ -114,7 +114,7 @@ ELEMENTS = [
 class Element:
     def __init__(self, symbol: str):
         assert symbol in ELEMENTS
-        self.symbol = "%s" % symbol
+        self.symbol = f"{symbol}"
         d = _pdt[symbol]
         self._Z = d["atomic_no"]
         self._name = d["name"]
@@ -127,7 +127,7 @@ class Element:
         return self.symbol
 
     def __repr__(self):
-        return "Element : %s" % self.symbol
+        return f"Element : {self.symbol}"
 
     @classmethod
     def from_Z(cls, Z):

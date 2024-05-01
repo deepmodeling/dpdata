@@ -28,7 +28,7 @@ def get_path_out(fname, inlines):
     for line in inlines:
         if len(line) > 0 and "suffix" in line and "suffix" == line.split()[0]:
             suffix = line.split()[1]
-            path_out = os.path.join(fname, "OUT.%s/" % suffix)
+            path_out = os.path.join(fname, f"OUT.{suffix}/")
             break
     return path_out
 
@@ -189,7 +189,7 @@ def get_frame(fname):
             unconv_stru += "%d " % i
     ndump = len(energy)
     if unconv_stru != "":
-        warnings.warn("Structure %s are unconverged and not collected!" % unconv_stru)
+        warnings.warn(f"Structure {unconv_stru} are unconverged and not collected!")
 
     for iframe in range(ndump):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))

@@ -139,7 +139,7 @@ def to_system_data(
 
         for ii in sets:
             set = g[ii]
-            fn = "%s.npy" % prop["fn"]
+            fn = "{}.npy".format(prop["fn"])
             if fn in set.keys():
                 dd = set[fn][:]
                 nframes = dd.shape[0]
@@ -257,7 +257,7 @@ def dump(
         for dt, prop in data_types.items():
             if dt in reshaped_data:
                 set_folder.create_dataset(
-                    "%s.npy" % prop["fn"], data=reshaped_data[dt][set_stt:set_end]
+                    "{}.npy".format(prop["fn"]), data=reshaped_data[dt][set_stt:set_end]
                 )
 
     if nopbc:

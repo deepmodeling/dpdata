@@ -121,7 +121,7 @@ class DataType:
                 else:
                     raise RuntimeError("Unsupported type to check shape")
         elif self.required:
-            raise DataError("%s not found in data" % self.name)
+            raise DataError(f"{self.name} not found in data")
 
 
 __system_data_type_plugin = Plugin()
