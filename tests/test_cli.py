@@ -32,7 +32,7 @@ class TestCli(unittest.TestCase, TestPOSCARoh):
 class TestClassScript(unittest.TestCase):
     def test_class_script(self):
         expected_version = dpdata.__version__
-        output = sp.check_output(
-            [sys.executable, "-m", "dpdata", "--version"]
-        ).decode("ascii")
+        output = sp.check_output([sys.executable, "-m", "dpdata", "--version"]).decode(
+            "ascii"
+        )
         assert output.splitlines()[0] == f"dpdata v{expected_version}"
