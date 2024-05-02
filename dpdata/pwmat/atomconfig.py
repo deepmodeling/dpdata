@@ -58,7 +58,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     ret += "\n"
     for ii in system["cells"][f_idx]:
         for jj in ii:
-            ret += "%.16e " % jj
+            ret += f"{jj:.16e} "
         ret += "\n"
     ret += "POSITION"
     ret += "\n"

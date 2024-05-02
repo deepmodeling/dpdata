@@ -450,9 +450,9 @@ class System(MSONable):
             # check if the first shape is nframes
             if tt.shape is not None and Axis.NFRAMES in tt.shape:
                 if tt.name not in self.data and tt.name in system.data:
-                    raise RuntimeError("system has %s, but this does not" % tt.name)
+                    raise RuntimeError(f"system has {tt.name}, but this does not")
                 elif tt.name in self.data and tt.name not in system.data:
-                    raise RuntimeError("this has %s, but system does not" % tt.name)
+                    raise RuntimeError(f"this has {tt.name}, but system does not")
                 elif tt.name not in self.data and tt.name not in system.data:
                     # skip if both not exist
                     continue
@@ -1142,7 +1142,7 @@ class LabeledSystem(System):
         ret += "\nFrame Numbers      : %d" % self.get_nframes()
         ret += "\nAtom Numbers       : %d" % self.get_natoms()
         status = "Yes" if self.has_virial() else "No"
-        ret += "\nIncluding Virials  : %s" % status
+        ret += f"\nIncluding Virials  : {status}"
         ret += "\nElement List       :"
         ret += "\n-------------------"
         ret += "\n" + "  ".join(map(str, self.get_atom_names()))
@@ -1645,9 +1645,7 @@ def add_format_methods():
             def from_format(self, file_name, **kwargs):
                 return self.from_fmt_obj(ff(), file_name, **kwargs)
 
-            from_format.__doc__ = "Read data from :class:`%s` format." % (
-                get_cls_name(ff)
-            )
+            from_format.__doc__ = f"Read data from :class:`{get_cls_name(ff)}` format."
             return from_format
 
         setattr(System, method, get_func(formatcls))
@@ -1660,7 +1658,7 @@ def add_format_methods():
             def to_format(self, *args, **kwargs):
                 return self.to_fmt_obj(ff(), *args, **kwargs)
 
-            to_format.__doc__ = "Dump data to :class:`%s` format." % (get_cls_name(ff))
+            to_format.__doc__ = f"Dump data to :class:`{get_cls_name(ff)}` format."
             return to_format
 
         setattr(System, method, get_func(formatcls))
