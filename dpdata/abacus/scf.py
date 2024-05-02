@@ -38,10 +38,10 @@ def get_block(lines, keyword, skip=0, nlines=None):
             found = True
             blk_idx = idx + 1 + skip
             line_idx = 0
-            while len(re.split("\s+", lines[blk_idx])) == 0:
+            while len(re.split(r"\s+", lines[blk_idx])) == 0:
                 blk_idx += 1
             while line_idx < nlines and blk_idx != len(lines):
-                if len(re.split("\s+", lines[blk_idx])) == 0 or lines[blk_idx] == "":
+                if len(re.split(r"\s+", lines[blk_idx])) == 0 or lines[blk_idx] == "":
                     blk_idx += 1
                     continue
                 ret.append(lines[blk_idx])
@@ -329,7 +329,7 @@ def get_nele_from_stru(geometry_inlines):
             for iline in range(
                 keyword_line_index[idx] + 1, keyword_line_index[idx + 1]
             ):
-                if len(re.split("\s+", geometry_inlines[iline])) >= 3:
+                if len(re.split(r"\s+", geometry_inlines[iline])) >= 3:
                     nele += 1
     return nele
 

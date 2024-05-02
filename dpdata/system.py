@@ -517,6 +517,15 @@ class System(MSONable):
             self.sort_atom_names(type_map=type_map)
 
     def apply_type_map(self, type_map):
+        """Customize the element symbol order and  it should maintain order
+        consistency in dpgen or deepmd-kit. It is especially recommended
+        for multiple complexsystems with multiple elements.
+
+        Parameters
+        ----------
+        type_map : list
+            type_map
+        """
         if type_map is not None and isinstance(type_map, list):
             self.check_type_map(type_map)
         else:

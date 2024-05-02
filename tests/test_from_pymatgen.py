@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from comp_sys import CompSys, IsPBC
+from comp_sys import CompSys
 from context import dpdata
 
 try:
@@ -13,15 +13,13 @@ except Exception:
 
 
 @unittest.skipIf(not exist_module, "skip pymatgen")
-class TestPymatgen(unittest.TestCase, CompSys, IsPBC):
+class TestFormPytmatgen(unittest.TestCase, CompSys):
     def setUp(self):
-        system_1 = dpdata.System()
-        system_1.from_lammps_lmp(
-            os.path.join("poscars", "conf.lmp"), type_map=["O", "H"]
+        structure = Structure.from_file(os.path.join("poscars", "POSCAR.P42nmc"))
+        self.system_1 = dpdata.System(structure, fmt="pymatgen/structure")
+        self.system_2 = dpdata.System(
+            os.path.join("poscars", "POSCAR.P42nmc"), fmt="poscar"
         )
-        system_1.to_pymatgen_structure()[0].to(filename="tmp.POSCAR", fmt="poscar")
-        self.system_1 = system_1
-        self.system_2 = dpdata.System("tmp.POSCAR")
         self.places = 6
         self.e_places = 6
         self.f_places = 6
