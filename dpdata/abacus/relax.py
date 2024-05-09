@@ -183,7 +183,7 @@ def get_frame(fname):
     )
 
     logf = get_log_file(fname, inlines)
-    assert os.path.isfile(logf), "Error: can not find %s" % logf
+    assert os.path.isfile(logf), f"Error: can not find {logf}"
     with open(logf) as f1:
         lines = f1.readlines()
 

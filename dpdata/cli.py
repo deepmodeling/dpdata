@@ -37,9 +37,7 @@ def dpdata_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--type-map", "-t", type=str, nargs="+", help="type map")
 
-    parser.add_argument(
-        "--version", action="version", version="dpdata v%s" % __version__
-    )
+    parser.add_argument("--version", action="version", version=f"dpdata v{__version__}")
     return parser
 
 

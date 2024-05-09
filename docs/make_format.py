@@ -134,13 +134,13 @@ def generate_sub_format_pages(formats: dict):
     for format, alias in formats.items():
         # format: Format, alias: list[str]
         buff = []
-        buff.append(".. _%s:" % format.__name__)
+        buff.append(f".. _{format.__name__}:")
         buff.append("")
         for aa in alias:
-            buff.append("%s format" % aa)
+            buff.append(f"{aa} format")
             buff.append("=" * len(buff[-1]))
             buff.append("")
-        buff.append("Class: %s" % get_cls_link(format))
+        buff.append(f"Class: {get_cls_link(format)}")
         buff.append("")
 
         docstring = format.__doc__
@@ -158,10 +158,10 @@ def generate_sub_format_pages(formats: dict):
             buff.append(f".. _{format.__name__}_{method}:")
             buff.append("")
             if method.startswith("from_"):
-                buff.append("Convert from this format to %s" % method_classes[method])
+                buff.append(f"Convert from this format to {method_classes[method]}")
                 buff.append("`" * len(buff[-1]))
             elif method.startswith("to_"):
-                buff.append("Convert from %s to this format" % method_classes[method])
+                buff.append(f"Convert from {method_classes[method]} to this format")
                 buff.append("`" * len(buff[-1]))
             buff.append("")
             method_obj = getattr(format, method)
@@ -224,10 +224,7 @@ def generate_sub_format_pages(formats: dict):
                     buff.append("""   :noindex:""")
                 buff.append("")
                 if docstring is None or method not in format.__dict__:
-                    docstring = (
-                        """   Convert this format to :class:`%s`."""
-                        % (method_classes[method])
-                    )
+                    docstring = f"""   Convert this format to :class:`{method_classes[method]}`."""
                 doc_obj = SphinxDocString(docstring)
                 if len(doc_obj["Parameters"]) > 0:
                     doc_obj["Parameters"] = [
@@ -295,7 +292,7 @@ def generate_sub_format_pages(formats: dict):
                     )
                 ):
                     docstring = (
-                        "Convert :class:`%s` to this format." % (method_classes[method])
+                        f"Convert :class:`{method_classes[method]}` to this format."
                     )
                 doc_obj = SphinxDocString(docstring)
                 if len(doc_obj["Parameters"]) > 0:
@@ -324,7 +321,7 @@ def generate_sub_format_pages(formats: dict):
             buff.append("")
             buff.append("")
 
-        with open("formats/%s.rst" % format.__name__, "w") as rstfile:
+        with open(f"formats/{format.__name__}.rst", "w") as rstfile:
             rstfile.write("\n".join(buff))
 
 
@@ -342,8 +339,8 @@ if __name__ == "__main__":
         for kk, vv in formats.items():
             writer.writerow(
                 {
-                    "Format": ":ref:`%s`" % kk.__name__,
-                    "Alias": "\n".join("``%s``" % vvv for vvv in vv),
+                    "Format": f":ref:`{kk.__name__}`",
+                    "Alias": "\n".join(f"``{vvv}``" for vvv in vv),
                     "Supported Conversions": "\n".join(
                         method_links[mtd].format(kk.__name__, mtd)
                         for mtd in check_supported(kk)
@@ -364,7 +361,7 @@ if __name__ == "__main__":
             writer.writerow(
                 {
                     "Class": get_cls_link(kk),
-                    "Alias": "\n".join("``%s``" % vvv for vvv in vv),
+                    "Alias": "\n".join(f"``{vvv}``" for vvv in vv),
                 }
             )
 
@@ -381,7 +378,7 @@ if __name__ == "__main__":
             writer.writerow(
                 {
                     "Class": get_cls_link(kk),
-                    "Alias": "\n".join("``%s``" % vvv for vvv in vv),
+                    "Alias": "\n".join(f"``{vvv}``" for vvv in vv),
                 }
             )
     generate_sub_format_pages(formats)
