@@ -20,7 +20,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - run: curl -LsSf https://astral.sh/uv/install.sh | sh
     - name: Install dependencies
-      run: uv pip install --system .[amber,ase,pymatgen] coverage ./tests/plugin rdkit openbabel-wheel
+      run: uv pip install --system .[amber,ase,pymatgen,test] coverage ./tests/plugin rdkit openbabel-wheel
     - name: Test
       run: cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
     - name: Run codecov
@@ -31,7 +31,7 @@ jobs:
       uses: CodSpeedHQ/action@v2
       with:
         token: ${{ secrets.CODSPEED_TOKEN }}
-        run: pytest tests/benchmark/ --codspeed
+        run: pytest benchmark/ --codspeed
   pass:
     needs: [build]
     runs-on: ubuntu-latest
