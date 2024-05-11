@@ -4,6 +4,11 @@ build:
   os: ubuntu-22.04
   tools:
     python: "mambaforge-22.9"
+  jobs:
+    post_create_environment:
+      - pip install uv
+    post_install:
+      - uv pip install .[docs]
 conda:
   environment: docs/rtd_environment.yml
 sphinx:
