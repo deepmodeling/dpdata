@@ -27,6 +27,11 @@ jobs:
       uses: codecov/codecov-action@v4
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - name: Run benchmarks
+      uses: CodSpeedHQ/action@v2
+      with:
+        token: ${{ secrets.CODSPEED_TOKEN }}
+        run: pytest tests/benchmark/ --codspeed
   pass:
     needs: [build]
     runs-on: ubuntu-latest

@@ -58,6 +58,10 @@ docs = [
     'jupyterlite-sphinx',
     'jupyterlite-xeus-python',
 ]
+test = [
+    'pytest',
+    'pytest-codspeed',
+]
 
 [tool.setuptools.packages.find]
 include = ["dpdata*"]
