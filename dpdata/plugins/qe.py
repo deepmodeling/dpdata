@@ -1,3 +1,5 @@
+import numpy as np
+
 import dpdata.md.pbc
 import dpdata.qe.scf
 import dpdata.qe.traj
@@ -26,9 +28,13 @@ class QECPTrajFormat(Format):
             data["coords"],
             data["cells"],
         )
-        data["energies"], data["forces"], es = dpdata.qe.traj.to_system_label(
+        data["energies"], data["forces"], stress, es = dpdata.qe.traj.to_system_label(
             file_name + ".in", file_name, begin=begin, step=step
         )
+        if stress is not None:
+            # Compute virials of all frames by: virial = stress * volume
+            virial = stress * np.linalg.det(data["cells"])[:, np.newaxis, np.newaxis]
+            data["virials"] = virial
         assert cs == es, "the step key between files are not consistent"
         return data
 
