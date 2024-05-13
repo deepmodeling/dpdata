@@ -1,7 +1,7 @@
 name: dpdata
 channels:
   - https://repo.mamba.pm/emscripten-forge
-  - conda-forge
+  - https://repo.mamba.pm/conda-forge
 dependencies:
   - numpy
   - scipy
