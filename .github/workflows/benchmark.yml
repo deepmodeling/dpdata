@@ -21,4 +21,3 @@ jobs:
       with:
         token: ${{ secrets.CODSPEED_TOKEN }}
         run: pytest benchmark/ --codspeed
-
