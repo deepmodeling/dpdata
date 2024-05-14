@@ -56,7 +56,7 @@ docs = [
     'sphinx-argparse',
     'rdkit',
     'jupyterlite-sphinx',
-    'jupyterlite-xeus-python',
+    'jupyterlite-xeus',
 ]
 test = [
     'pytest',
