@@ -58,7 +58,7 @@ docs = [
     'jupyterlite-sphinx',
     'jupyterlite-xeus',
 ]
-test = [
+benchmark = [
     'pytest',
     'pytest-codspeed',
 ]
