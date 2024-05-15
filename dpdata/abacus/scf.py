@@ -156,6 +156,7 @@ def get_energy(outlines):
 
     return Etot, False
 
+
 def get_magnetic(outlines, natoms):
     """
     Extracts magnetic moments from the output lines.
@@ -170,7 +171,9 @@ def get_magnetic(outlines, natoms):
     Mag = []
 
     # 定义正则表达式以匹配所需的数字
-    mag_pattern = re.compile(r"Total Magnetism on atom:.*\(([\d\.\-]+),\s*([\d\.\-]+),\s*([\d\.\-]+)\)")
+    mag_pattern = re.compile(
+        r"Total Magnetism on atom:.*\(([\d\.\-]+),\s*([\d\.\-]+),\s*([\d\.\-]+)\)"
+    )
 
     for line in outlines:
         # 使用正则表达式匹配磁性信息
@@ -188,6 +191,7 @@ def get_magnetic(outlines, natoms):
     else:
         # 将Mag转换为NumPy数组并返回
         return np.array(Mag)
+
 
 def collect_force(outlines):
     force = []
@@ -223,6 +227,7 @@ def get_force(outlines, natoms):
         return [[]]
     else:
         return np.array(force[-1])  # only return the last force
+
 
 def collect_mag_force(outlines):
     """
@@ -278,6 +283,7 @@ def get_mag_force(outlines, natoms):
     else:
         return np.array(mag_force[-1])  # only return the last force
 
+
 def collect_stress(outlines):
     stress = []
     for i, line in enumerate(outlines):
@@ -313,7 +319,8 @@ def get_stress(outlines):
         return None
     else:
         return np.array(stress[-1]) * kbar2evperang3  # only return the last stress
-    
+
+
 def check_deltaspin(path_in):
     """
     Checks if the deltaspin feature is enabled in the input file.
@@ -325,7 +332,7 @@ def check_deltaspin(path_in):
     bool: True if deltaspin is enabled, None otherwise.
     """
     try:
-        with open(path_in, 'r') as file:
+        with open(path_in) as file:
             for line in file:
                 # 移除行首尾的空白字符，然后以空格分割
                 parts = line.strip().split()
@@ -395,16 +402,16 @@ def get_frame(fname):
     stress = get_stress(outlines)
     if stress is not None:
         stress *= np.abs(np.linalg.det(cell))
-        
+
     if deltaspin is not None:
         spin = get_magnetic(outlines, natoms)
         sp_norm = 1.49
         virtual_len = 0.3
         mag_forces = get_mag_force(outlines, natoms)
         coords_deltaspin = np.hstack((coords, coords - spin / sp_norm * virtual_len))
-    
+
     force_deltaspin = np.hstack((force, mag_forces))
-    
+
     # print(force_deltaspin)
     # print(coords_deltaspin)
     # print(spin)
