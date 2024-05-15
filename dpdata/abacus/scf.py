@@ -161,11 +161,13 @@ def get_magnetic(outlines, natoms):
     """
     Extracts magnetic moments from the output lines.
 
-    Parameters:
-    outlines (list of str): The lines from the output file.
-    natoms (int): The number of atoms.
+    Parameters
+    ----------
+    outlines (list of str) : The lines from the output file.
+    natoms (int) : The number of atoms.
 
-    Returns:
+    Returns
+    -------
     np.ndarray: An array of magnetic moments.
     """
     Mag = []
@@ -233,10 +235,12 @@ def collect_mag_force(outlines):
     """
     Collects magnetic forces from the output lines.
 
-    Parameters:
-    outlines (list of str): The lines from the output file.
+    Parameters
+    ----------
+    outlines : The lines from the output file.
 
-    Returns:
+    Returns
+    -------
     list: A list of magnetic forces.
     """
     mag_force = []
@@ -270,11 +274,13 @@ def get_mag_force(outlines, natoms):
     """
     Extracts magnetic forces from the output lines.
 
-    Parameters:
-    outlines (list of str): The lines from the output file.
-    natoms (int): The number of atoms.
+    Parameters
+    ----------
+    outlines (list of str) : The lines from the output file.
+    natoms (int) : The number of atoms.
 
-    Returns:
+    Returns
+    -------
     np.ndarray: An array of magnetic forces.
     """
     mag_force = collect_mag_force(outlines)
@@ -325,10 +331,12 @@ def check_deltaspin(path_in):
     """
     Checks if the deltaspin feature is enabled in the input file.
 
-    Parameters:
-    path_in (str): The path to the input file.
+    Parameters
+    ----------
+    path_in : The path to the input file.
 
-    Returns:
+    Returns
+    -------
     bool: True if deltaspin is enabled, None otherwise.
     """
     try:
