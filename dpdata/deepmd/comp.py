@@ -143,6 +143,7 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     forces = None
     virials = None
     force_deltaspin = None
+    deltaspin = None
     if "deltaspin" in data:
         deltaspin = data["deltaspin"]
     if "energies" in data:
