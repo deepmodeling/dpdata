@@ -423,7 +423,6 @@ def get_frame(fname):
         coords_deltaspin = None
         force_deltaspin = None
 
-
     # print(force_deltaspin)
     # print(coords_deltaspin)
     # print(spin)
