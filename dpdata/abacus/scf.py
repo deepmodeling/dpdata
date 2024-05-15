@@ -160,18 +160,6 @@ def get_energy(outlines):
 
 
 def get_magnetic(outlines, natoms):
-    """
-    Extracts magnetic moments from the output lines.
-
-    Parameters
-    ----------
-    outlines (list of str) : The lines from the output file.
-    natoms (int) : The number of atoms.
-
-    Returns
-    -------
-    np.ndarray: An array of magnetic moments.
-    """
     Mag = []
 
     # regular expression
@@ -233,17 +221,6 @@ def get_force(outlines, natoms):
 
 
 def collect_mag_force(outlines):
-    """
-    Collects magnetic forces from the output lines.
-
-    Parameters
-    ----------
-    outlines : The lines from the output file.
-
-    Returns
-    -------
-    list: A list of magnetic forces.
-    """
     mag_force = []
     for i, line in enumerate(outlines):
         if "Magnetic force (Ry/uB)" in line:
@@ -272,18 +249,6 @@ def collect_mag_force(outlines):
 
 
 def get_mag_force(outlines, natoms):
-    """
-    Extracts magnetic forces from the output lines.
-
-    Parameters
-    ----------
-    outlines (list of str) : The lines from the output file.
-    natoms (int) : The number of atoms.
-
-    Returns
-    -------
-    np.ndarray: An array of magnetic forces.
-    """
     mag_force = collect_mag_force(outlines)
     if len(mag_force) == 0:
         return [[]]
@@ -329,17 +294,6 @@ def get_stress(outlines):
 
 
 def check_deltaspin(path_in):
-    """
-    Checks if the deltaspin feature is enabled in the input file.
-
-    Parameters
-    ----------
-    path_in : The path to the input file.
-
-    Returns
-    -------
-    bool: True if deltaspin is enabled, None otherwise.
-    """
     try:
         with open(path_in) as file:
             for line in file:
@@ -416,11 +370,15 @@ def get_frame(fname):
         virtual_len = 0.3
         mag_forces = get_mag_force(outlines, natoms)
         coords_deltaspin = np.hstack((coords, coords - spin / sp_norm * virtual_len))
-        force_deltaspin = np.hstack((force, mag_forces))
-    else:
-        mag_forces = None
-        coords_deltaspin = None
-        force_deltaspin = None
+
+    force_deltaspin = np.hstack((force, mag_forces))
+
+    # print(force_deltaspin)
+    # print(coords_deltaspin)
+    # print(spin)
+    # print(mag_forces)
+    # print(force)
+    # print(coords)
 
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
