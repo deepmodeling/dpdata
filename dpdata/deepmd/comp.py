@@ -133,7 +133,9 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     nframes = data["cells"].shape[0]
     cells = np.reshape(data["cells"], [nframes, 9]).astype(comp_prec)
     coords = np.reshape(data["coords"], [nframes, -1]).astype(comp_prec)
-    coords_deltaspin = np.reshape(data["coords_deltaspin"], [nframes, -1]).astype(comp_prec)
+    coords_deltaspin = np.reshape(data["coords_deltaspin"], [nframes, -1]).astype(
+        comp_prec
+    )
     eners = None
     forces = None
     virials = None
@@ -144,7 +146,9 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     if "forces" in data:
         forces = np.reshape(data["forces"], [nframes, -1]).astype(comp_prec)
     if "force_deltaspin" in data:
-        force_deltaspin = np.reshape(data["force_deltaspin"], [nframes, -1]).astype(comp_prec)
+        force_deltaspin = np.reshape(data["force_deltaspin"], [nframes, -1]).astype(
+            comp_prec
+        )
     if "virials" in data:
         virials = np.reshape(data["virials"], [nframes, 9]).astype(comp_prec)
     if "atom_pref" in data:
@@ -160,14 +164,18 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
         os.makedirs(set_folder)
         np.save(os.path.join(set_folder, "box"), cells[set_stt:set_end])
         if deltaspin is not None:
-            np.save(os.path.join(set_folder, "coord"), coords_deltaspin[set_stt:set_end])
+            np.save(
+                os.path.join(set_folder, "coord"), coords_deltaspin[set_stt:set_end]
+            )
         else:
             np.save(os.path.join(set_folder, "coord"), coords[set_stt:set_end])
         if eners is not None:
             np.save(os.path.join(set_folder, "energy"), eners[set_stt:set_end])
         if forces is not None:
             if deltaspin is not None:
-                np.save(os.path.join(set_folder, "force"), force_deltaspin[set_stt:set_end])
+                np.save(
+                    os.path.join(set_folder, "force"), force_deltaspin[set_stt:set_end]
+                )
             else:
                 np.save(os.path.join(set_folder, "force"), forces[set_stt:set_end])
         if virials is not None:
