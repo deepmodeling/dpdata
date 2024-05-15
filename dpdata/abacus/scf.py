@@ -304,7 +304,7 @@ def check_deltaspin(path_in):
         # if "sc_mag_switch" not exist return None
         return None
     except FileNotFoundError:
-        print("File not found: {}".format(path_in))
+        print(f"File not found: {path_in}")
         return None
 
 
