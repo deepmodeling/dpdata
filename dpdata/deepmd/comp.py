@@ -135,7 +135,8 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     nframes = data["cells"].shape[0]
     cells = np.reshape(data["cells"], [nframes, 9]).astype(comp_prec)
     coords = np.reshape(data["coords"], [nframes, -1]).astype(comp_prec)
-    coords_deltaspin = np.reshape(data["coords_deltaspin"], [nframes, -1]).astype(comp_prec)
+    if "coords_deltaspin" in data:
+        coords_deltaspin = np.reshape(data["coords_deltaspin"], [nframes, -1]).astype(comp_prec)
     eners = None
     forces = None
     virials = None
