@@ -157,6 +157,16 @@ def get_energy(outlines):
     return Etot, False
 
 def get_magnetic(outlines, natoms):
+    """
+    Extracts magnetic moments from the output lines.
+
+    Parameters:
+    outlines (list of str): The lines from the output file.
+    natoms (int): The number of atoms.
+
+    Returns:
+    np.ndarray: An array of magnetic moments.
+    """
     Mag = []
 
     # 定义正则表达式以匹配所需的数字
@@ -215,6 +225,15 @@ def get_force(outlines, natoms):
         return np.array(force[-1])  # only return the last force
 
 def collect_mag_force(outlines):
+    """
+    Collects magnetic forces from the output lines.
+
+    Parameters:
+    outlines (list of str): The lines from the output file.
+
+    Returns:
+    list: A list of magnetic forces.
+    """
     mag_force = []
     for i, line in enumerate(outlines):
         if "Magnetic force (Ry/uB)" in line:
@@ -243,6 +262,16 @@ def collect_mag_force(outlines):
 
 
 def get_mag_force(outlines, natoms):
+    """
+    Extracts magnetic forces from the output lines.
+
+    Parameters:
+    outlines (list of str): The lines from the output file.
+    natoms (int): The number of atoms.
+
+    Returns:
+    np.ndarray: An array of magnetic forces.
+    """
     mag_force = collect_mag_force(outlines)
     if len(mag_force) == 0:
         return [[]]
@@ -286,6 +315,15 @@ def get_stress(outlines):
         return np.array(stress[-1]) * kbar2evperang3  # only return the last stress
     
 def check_deltaspin(path_in):
+    """
+    Checks if the deltaspin feature is enabled in the input file.
+
+    Parameters:
+    path_in (str): The path to the input file.
+
+    Returns:
+    bool: True if deltaspin is enabled, None otherwise.
+    """
     try:
         with open(path_in, 'r') as file:
             for line in file:
