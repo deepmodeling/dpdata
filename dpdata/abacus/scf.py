@@ -351,7 +351,7 @@ def check_deltaspin(path_in):
         # 文件已读完，没有找到sc_mag_switch参数，返回None
         return None
     except FileNotFoundError:
-        print("File not found: {}".format(path_in))
+        print(f"File not found: {path_in}")
         return None
 
 
