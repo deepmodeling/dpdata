@@ -436,12 +436,13 @@ def get_frame(fname):
     data["coords"] = coords[np.newaxis, :, :]
     data["energies"] = np.array(energy)[np.newaxis]
     data["forces"] = force[np.newaxis, :, :]
-    data["mag_forces"] = mag_forces[np.newaxis, :, :]
-    data["spin"] = spin[np.newaxis, :, :]
-    data["coords_deltaspin"] = coords_deltaspin[np.newaxis, :, :]
-    data["force_deltaspin"] = force_deltaspin[np.newaxis, :, :]
-    data["deltaspin"] = deltaspin
-    # concat
+    if deltaspin is not None:
+        data["mag_forces"] = mag_forces[np.newaxis, :, :]
+        data["spin"] = spin[np.newaxis, :, :]
+        data["coords_deltaspin"] = coords_deltaspin[np.newaxis, :, :]
+        data["force_deltaspin"] = force_deltaspin[np.newaxis, :, :]
+        data["deltaspin"] = deltaspin
+
     if stress is not None:
         data["virials"] = stress[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
