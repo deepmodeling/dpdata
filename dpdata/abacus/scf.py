@@ -174,7 +174,7 @@ def get_magnetic(outlines, natoms):
 
     # 定义正则表达式以匹配所需的数字
     mag_pattern = re.compile(
-        r"Total Magnetism on atom:.*\(([\d\.\-]+),\s*([\d\.\-]+),\s*([\d\.\-]+)\)"
+        r"Total Magnetism on atom:.*\(([\d.\-]+),\s*([\d.\-]+),\s*([\d.\-]+)\)"
     )
 
     for line in outlines:
@@ -247,7 +247,7 @@ def collect_mag_force(outlines):
     for i, line in enumerate(outlines):
         if "Magnetic force (Ry/uB)" in line:
             value_pattern = re.compile(
-                r"^\s*ATOM\s+(\d+)\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
+                r"^\s*ATOM\s+(\d+)\s+[-+]?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]+([eE][-+]?[0-9]+)?\s*$"
             )
             j = i
             # find the first line of force
@@ -351,7 +351,7 @@ def check_deltaspin(path_in):
         # 文件已读完，没有找到sc_mag_switch参数，返回None
         return None
     except FileNotFoundError:
-        print(f"File not found: {path_in}")
+        print("File not found: {}".format(path_in))
         return None
 
 
