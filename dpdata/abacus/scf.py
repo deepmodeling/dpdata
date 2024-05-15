@@ -156,6 +156,28 @@ def get_energy(outlines):
 
     return Etot, False
 
+def get_magnetic(outlines, natoms):
+    Mag = []
+
+    # 定义正则表达式以匹配所需的数字
+    mag_pattern = re.compile(r"Total Magnetism on atom:.*\(([\d\.\-]+),\s*([\d\.\-]+),\s*([\d\.\-]+)\)")
+
+    for line in outlines:
+        # 使用正则表达式匹配磁性信息
+        match = mag_pattern.search(line)
+        if match:
+            # 提取匹配的数字并转换为浮点数，然后将元组转换为列表
+            Mag.append([float(num) for num in match.groups()])
+            # 如果Mag的长度达到了natoms，说明已经收集完所有原子的磁矩
+            if len(Mag) == natoms:
+                break
+
+    # 如果没有找到任何磁矩信息，返回一个空的NumPy数组
+    if len(Mag) == 0:
+        return np.array([[]])
+    else:
+        # 将Mag转换为NumPy数组并返回
+        return np.array(Mag)
 
 def collect_force(outlines):
     force = []
@@ -192,6 +214,40 @@ def get_force(outlines, natoms):
     else:
         return np.array(force[-1])  # only return the last force
 
+def collect_mag_force(outlines):
+    mag_force = []
+    for i, line in enumerate(outlines):
+        if "Magnetic force (Ry/uB)" in line:
+            value_pattern = re.compile(
+                r"^\s*ATOM\s+(\d+)\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
+            )
+            j = i
+            # find the first line of force
+            noforce = False
+            while not value_pattern.match(outlines[j]):
+                j += 1
+                if (
+                    j >= i + 10
+                ):  # if can not find the first line of force in 10 lines, then stop
+                    warnings.warn("Warning: can not find the first line of force")
+                    noforce = True
+                    break
+            if noforce:
+                break
+
+            mag_force.append([])
+            while value_pattern.match(outlines[j]):
+                mag_force[-1].append([float(ii) for ii in outlines[j].split()[1:4]])
+                j += 1
+    return mag_force  # only return the last force
+
+
+def get_mag_force(outlines, natoms):
+    mag_force = collect_mag_force(outlines)
+    if len(mag_force) == 0:
+        return [[]]
+    else:
+        return np.array(mag_force[-1])  # only return the last force
 
 def collect_stress(outlines):
     stress = []
@@ -228,6 +284,22 @@ def get_stress(outlines):
         return None
     else:
         return np.array(stress[-1]) * kbar2evperang3  # only return the last stress
+    
+def check_deltaspin(path_in):
+    try:
+        with open(path_in, 'r') as file:
+            for line in file:
+                # 移除行首尾的空白字符，然后以空格分割
+                parts = line.strip().split()
+                # 检查是否是sc_mag_switch参数行
+                if len(parts) >= 2 and parts[0] == "sc_mag_switch":
+                    # 检查参数值是否为1
+                    return True if parts[1] == "1" else None
+        # 文件已读完，没有找到sc_mag_switch参数，返回None
+        return None
+    except FileNotFoundError:
+        print(f"File not found: {path_in}")
+        return None
 
 
 def get_frame(fname):
@@ -239,6 +311,11 @@ def get_frame(fname):
         "coords": [],
         "energies": [],
         "forces": [],
+        "spin": [],
+        "mag_forces": [],
+        "coords_deltaspin": [],
+        "force_deltaspin": [],
+        "deltaspin": [],
     }
 
     if isinstance(fname, str):
@@ -256,6 +333,7 @@ def get_frame(fname):
 
     geometry_path_in = get_geometry_in(fname, inlines)
     path_out = get_path_out(fname, inlines)
+    deltaspin = check_deltaspin(path_in)
     if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
         return data
 
@@ -279,11 +357,33 @@ def get_frame(fname):
     stress = get_stress(outlines)
     if stress is not None:
         stress *= np.abs(np.linalg.det(cell))
+        
+    if deltaspin is not None:
+        spin = get_magnetic(outlines, natoms)
+        sp_norm = 1.49
+        virtual_len = 0.3
+        mag_forces = get_mag_force(outlines, natoms)
+        coords_deltaspin = np.hstack((coords, coords - spin / sp_norm * virtual_len))
+    
+    force_deltaspin = np.hstack((force, mag_forces))
+    
+    # print(force_deltaspin)
+    # print(coords_deltaspin)
+    # print(spin)
+    # print(mag_forces)
+    # print(force)
+    # print(coords)
 
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
     data["energies"] = np.array(energy)[np.newaxis]
     data["forces"] = force[np.newaxis, :, :]
+    data["mag_forces"] = mag_forces[np.newaxis, :, :]
+    data["spin"] = spin[np.newaxis, :, :]
+    data["coords_deltaspin"] = coords_deltaspin[np.newaxis, :, :]
+    data["force_deltaspin"] = force_deltaspin[np.newaxis, :, :]
+    data["deltaspin"] = deltaspin
+    # concat
     if stress is not None:
         data["virials"] = stress[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
@@ -295,6 +395,10 @@ def get_frame(fname):
     # print("energy = ", data['energies'])
     # print("force = ", data['forces'])
     # print("virial = ", data['virials'])
+    # print("spin = ", data['spin'])
+    # print("mag_forces = ", data['mag_forces'])
+    # print("force_deltaspin = ", data['force_deltaspin'])
+    # print("coords_deltaspin = ", data['coords_deltaspin'])
     return data
 
 
