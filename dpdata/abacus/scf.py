@@ -411,8 +411,12 @@ def get_frame(fname):
         virtual_len = 0.3
         mag_forces = get_mag_force(outlines, natoms)
         coords_deltaspin = np.hstack((coords, coords - spin / sp_norm * virtual_len))
+        force_deltaspin = np.hstack((force, mag_forces))
+    else:
+        mag_forces = None
+        coords_deltaspin = None
+        force_deltaspin = None
 
-    force_deltaspin = np.hstack((force, mag_forces))
 
     # print(force_deltaspin)
     # print(coords_deltaspin)
