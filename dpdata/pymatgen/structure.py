@@ -1,10 +1,5 @@
 import numpy as np
 
-try:
-    from pymatgen.core import Structure  # noqa: F401
-except ImportError:
-    pass
-
 
 def from_system_data(structure) -> dict:
     symbols = [site.species_string for site in structure]

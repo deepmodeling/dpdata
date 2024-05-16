@@ -7,8 +7,6 @@ from copy import deepcopy
 from typing import Any, Dict, Optional, Tuple, Union
 
 import numpy as np
-from monty.json import MSONable
-from monty.serialization import dumpfn, loadfn
 
 import dpdata
 import dpdata.md.pbc
@@ -41,7 +39,7 @@ def load_format(fmt):
     )
 
 
-class System(MSONable):
+class System:
     """The data System.
 
     A data System (a concept used by `deepmd-kit <https://github.com/deepmodeling/deepmd-kit>`_)
@@ -297,6 +295,8 @@ class System(MSONable):
 
     def dump(self, filename, indent=4):
         """Dump .json or .yaml file."""
+        from monty.serialization import dumpfn
+
         dumpfn(self.as_dict(), filename, indent=indent)
 
     def map_atom_types(self, type_map=None) -> np.ndarray:
@@ -340,7 +340,21 @@ class System(MSONable):
     @staticmethod
     def load(filename):
         """Rebuild System obj. from .json or .yaml file."""
+        from monty.serialization import loadfn
+
         return loadfn(filename)
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        """Construct a System instance from a data dict."""
+        from monty.serialization import MontyDecoder
+
+        decoded = {
+            k: MontyDecoder().process_decoded(v)
+            for k, v in data.items()
+            if not k.startswith("@")
+        }
+        return cls(**decoded)
 
     def as_dict(self):
         """Returns data dict of System instance."""

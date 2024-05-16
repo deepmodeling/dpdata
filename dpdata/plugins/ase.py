@@ -6,15 +6,9 @@ import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 
-try:
-    import ase.io
-    from ase.calculators.calculator import PropertyNotImplementedError
-    from ase.io import Trajectory
-
-    if TYPE_CHECKING:
-        from ase.optimize.optimize import Optimizer
-except ImportError:
-    pass
+if TYPE_CHECKING:
+    import ase
+    from ase.optimize.optimize import Optimizer
 
 
 @Format.register("ase/structure")
@@ -84,6 +78,8 @@ class ASEStructureFormat(Format):
             ASE will raise RuntimeError if the atoms does not
             have a calculator
         """
+        from ase.calculators.calculator import PropertyNotImplementedError
+
         info_dict = self.from_system(atoms)
         try:
             energies = atoms.get_potential_energy(force_consistent=True)
@@ -137,6 +133,8 @@ class ASEStructureFormat(Format):
         ase.Atoms
             ASE atoms in the file
         """
+        import ase.io
+
         frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
         yield from frames
 
@@ -222,6 +220,8 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
+        from ase.io import Trajectory
+
         traj = Trajectory(file_name)
         sub_traj = traj[begin:end:step]
         dict_frames = ASEStructureFormat().from_system(sub_traj[0])
@@ -264,6 +264,8 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
+        from ase.io import Trajectory
+
         traj = Trajectory(file_name)
         sub_traj = traj[begin:end:step]
 

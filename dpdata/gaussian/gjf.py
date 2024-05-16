@@ -10,16 +10,7 @@ import warnings
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
-from scipy.sparse import csr_matrix
-from scipy.sparse.csgraph import connected_components
 
-try:
-    from openbabel import openbabel
-except ImportError:
-    try:
-        import openbabel
-    except ImportError:
-        openbabel = None
 from dpdata.periodic_table import Element
 
 
@@ -53,10 +44,13 @@ def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
     ImportError
         if Open Babel is not installed
     """
-    if openbabel is None:
-        raise ImportError(
-            "Open Babel (Python interface) should be installed to detect fragmentation!"
-        )
+    from scipy.sparse import csr_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    try:
+        from openbabel import openbabel
+    except ImportError:
+        import openbabel
     atomnumber = len(symbols)
     # Use openbabel to connect atoms
     mol = openbabel.OBMol()

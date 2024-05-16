@@ -1,6 +1,6 @@
 import unittest
 
-import h5py
+import h5py  # noqa: TID253
 import numpy as np
 
 import dpdata

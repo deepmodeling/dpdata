@@ -2,17 +2,6 @@ import os
 import time
 from copy import deepcopy
 
-from rdkit import Chem
-from rdkit.Chem.rdchem import BondType
-
-# openbabel
-try:
-    from openbabel import openbabel
-
-    USE_OBABEL = True
-except ModuleNotFoundError as e:
-    USE_OBABEL = False
-
 
 def get_explicit_valence(atom, verbose=False):
     exp_val_calculated_from_bonds = int(
@@ -32,6 +21,8 @@ def get_explicit_valence(atom, verbose=False):
 
 def regularize_formal_charges(mol, sanitize=True, verbose=False):
     """Regularize formal charges of atoms."""
+    from rdkit import Chem
+
     assert isinstance(mol, Chem.rdchem.Mol)
     for atom in mol.GetAtoms():
         assign_formal_charge_for_atom(atom, verbose)
@@ -47,6 +38,8 @@ def regularize_formal_charges(mol, sanitize=True, verbose=False):
 
 def assign_formal_charge_for_atom(atom, verbose=False):
     """Assigen formal charge according to 8-electron rule for element B,C,N,O,S,P,As."""
+    from rdkit import Chem
+
     assert isinstance(atom, Chem.rdchem.Atom)
     valence = get_explicit_valence(atom, verbose)
     if atom.GetSymbol() == "B":
@@ -135,6 +128,8 @@ def get_terminal_NR2s(atom):
 
 
 def sanitize_phosphate_Patom(P_atom, verbose=True):
+    from rdkit import Chem
+
     if P_atom.GetSymbol() == "P":
         terminal_oxygens = get_terminal_oxygens(P_atom)
         mol = P_atom.GetOwningMol()
@@ -161,6 +156,8 @@ def sanitize_phosphate(mol):
 
 
 def sanitize_sulfate_Satom(S_atom, verbose=True):
+    from rdkit import Chem
+
     if S_atom.GetSymbol() == "S":
         terminal_oxygens = get_terminal_oxygens(S_atom)
         mol = S_atom.GetOwningMol()
@@ -187,6 +184,8 @@ def sanitize_sulfate(mol):
 
 
 def sanitize_carboxyl_Catom(C_atom, verbose=True):
+    from rdkit import Chem
+
     if C_atom.GetSymbol() == "C":
         terminal_oxygens = get_terminal_oxygens(C_atom)
         mol = C_atom.GetOwningMol()
@@ -214,6 +213,8 @@ def sanitize_carboxyl(mol):
 
 
 def sanitize_guanidine_Catom(C_atom, verbose=True):
+    from rdkit import Chem
+
     if C_atom.GetSymbol() == "C":
         terminal_NR2s = get_terminal_NR2s(C_atom)
         mol = C_atom.GetOwningMol()
@@ -241,6 +242,8 @@ def sanitize_guanidine(mol):
 
 
 def sanitize_nitro_Natom(N_atom, verbose=True):
+    from rdkit import Chem
+
     if N_atom.GetSymbol() == "N":
         terminal_oxygens = get_terminal_oxygens(N_atom)
         mol = N_atom.GetOwningMol()
@@ -275,6 +278,8 @@ def is_terminal_nitrogen(N_atom):
 
 
 def sanitize_nitrine_Natom(atom, verbose=True):
+    from rdkit import Chem
+
     if atom.GetSymbol() == "N" and len(atom.GetNeighbors()) == 2:
         mol = atom.GetOwningMol()
         nei1, nei2 = atom.GetNeighbors()[0], atom.GetNeighbors()[1]
@@ -312,6 +317,8 @@ def contain_hetero_aromatic(mol):
 
 # for carbon with explicit valence > 4
 def regularize_carbon_bond_order(atom, verbose=True):
+    from rdkit import Chem
+
     if atom.GetSymbol() == "C" and get_explicit_valence(atom) > 4:
         if verbose:
             print("Detecting carbon with explicit valence > 4, fixing it...")
@@ -330,6 +337,8 @@ def regularize_carbon_bond_order(atom, verbose=True):
 
 # for nitrogen with explicit valence > 4
 def regularize_nitrogen_bond_order(atom, verbose=True):
+    from rdkit import Chem
+
     mol = atom.GetOwningMol()
     if atom.GetSymbol() == "N" and get_explicit_valence(atom) > 4:
         O_atoms = get_terminal_oxygens(atom)
@@ -363,6 +372,9 @@ def mol_edit_log(mol, i, j):
 
 
 def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=True):
+    from rdkit import Chem
+    from rdkit.Chem.rdchem import BondType
+
     mol = Chem.RWMol(mol_in)
     rings = Chem.rdmolops.GetSymmSSSR(mol)
     rings = [list(i) for i in list(rings)]
@@ -566,6 +578,9 @@ def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=T
 def convert_by_obabel(
     mol, cache_dir=os.path.join(os.getcwd(), ".cache"), obabel_path="obabel"
 ):
+    from openbabel import openbabel
+    from rdkit import Chem
+
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
     if mol.HasProp("_Name"):
@@ -585,6 +600,8 @@ def convert_by_obabel(
 
 
 def super_sanitize_mol(mol, name=None, verbose=True):
+    from rdkit import Chem
+
     if name is None:
         if mol.HasProp("_Name"):
             name = mol.GetProp("_Name")
@@ -655,11 +672,6 @@ class Sanitizer:
             raise ValueError(
                 f"Invalid level '{level}', please set to 'low', 'medium' or 'high'"
             )
-        else:
-            if level == "high" and not USE_OBABEL:
-                raise ModuleNotFoundError(
-                    "obabel not installed, high level sanitizer cannot work"
-                )
 
     def _handle_exception(self, error_info):
         if self.raise_errors:
@@ -669,6 +681,8 @@ class Sanitizer:
 
     def sanitize(self, mol):
         """Sanitize mol according to `self.level`. If failed, return None."""
+        from rdkit import Chem
+
         if self.level == "low":
             try:
                 Chem.SanitizeMol(mol)

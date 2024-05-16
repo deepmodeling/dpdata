@@ -3,7 +3,6 @@
 from copy import deepcopy
 
 import numpy as np
-from rdkit.Chem import Conformer
 
 import dpdata.rdkit.utils
 from dpdata.rdkit.sanitize import Sanitizer
@@ -102,6 +101,8 @@ class BondOrderSystem(System):
         return self
 
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
+        from rdkit.Chem import Conformer
+
         self.rdkit_mol.RemoveAllConformers()
         for ii in range(self.get_nframes()):
             conf = Conformer()

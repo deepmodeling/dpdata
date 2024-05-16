@@ -1,20 +1,18 @@
+import dpdata.rdkit.utils
 from dpdata.format import Format
-
-try:
-    import rdkit.Chem
-
-    import dpdata.rdkit.utils
-except ModuleNotFoundError:
-    pass
 
 
 @Format.register("mol")
 @Format.register("mol_file")
 class MolFormat(Format):
     def from_bond_order_system(self, file_name, **kwargs):
+        import rdkit.Chem
+
         return rdkit.Chem.MolFromMolFile(file_name, sanitize=False, removeHs=False)
 
     def to_bond_order_system(self, data, mol, file_name, frame_idx=0, **kwargs):
+        import rdkit.Chem
+
         assert frame_idx < mol.GetNumConformers()
         rdkit.Chem.MolToMolFile(mol, file_name, confId=frame_idx)
 
@@ -24,6 +22,8 @@ class MolFormat(Format):
 class SdfFormat(Format):
     def from_bond_order_system(self, file_name, **kwargs):
         """Note that it requires all molecules in .sdf file must be of the same topology."""
+        import rdkit.Chem
+
         mols = [
             m
             for m in rdkit.Chem.SDMolSupplier(file_name, sanitize=False, removeHs=False)
@@ -35,6 +35,8 @@ class SdfFormat(Format):
         return mol
 
     def to_bond_order_system(self, data, mol, file_name, frame_idx=-1, **kwargs):
+        import rdkit.Chem
+
         sdf_writer = rdkit.Chem.SDWriter(file_name)
         if frame_idx == -1:
             for ii in range(mol.GetNumConformers()):

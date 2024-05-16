@@ -2,7 +2,6 @@ import os
 import re
 
 import numpy as np
-from scipy.io import netcdf_file
 
 from dpdata.amber.mask import pick_by_amber_mask
 from dpdata.unit import EnergyConversion
@@ -44,6 +43,8 @@ def read_amber_traj(
     labeled : bool
         Whether to return labeled data
     """
+    from scipy.io import netcdf_file
+
     flag_atom_type = False
     flag_atom_numb = False
     amber_types = []

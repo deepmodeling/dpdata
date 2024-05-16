@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 import warnings
+from typing import TYPE_CHECKING
 
-try:
-    import h5py
-except ImportError:
-    pass
 import numpy as np
-from wcmatch.glob import globfilter
 
 import dpdata
+
+if TYPE_CHECKING:
+    import h5py
 
 __all__ = ["to_system_data", "dump"]
 
@@ -35,6 +34,8 @@ def to_system_data(
     labels : bool
         labels
     """
+    from wcmatch.glob import globfilter
+
     g = f[folder] if folder else f
 
     data = {}
