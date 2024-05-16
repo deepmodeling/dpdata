@@ -46,6 +46,7 @@ def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
     """
     from scipy.sparse import csr_matrix
     from scipy.sparse.csgraph import connected_components
+
     try:
         from openbabel import openbabel
     except ImportError:

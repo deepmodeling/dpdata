@@ -348,7 +348,7 @@ class System:
     def from_dict(cls, data: dict):
         """Construct a System instance from a data dict."""
         from monty.serialization import MontyDecoder
-    
+
         decoded = {
             k: MontyDecoder().process_decoded(v)
             for k, v in data.items()

@@ -185,7 +185,7 @@ def sanitize_sulfate(mol):
 
 def sanitize_carboxyl_Catom(C_atom, verbose=True):
     from rdkit import Chem
-    
+
     if C_atom.GetSymbol() == "C":
         terminal_oxygens = get_terminal_oxygens(C_atom)
         mol = C_atom.GetOwningMol()
@@ -214,6 +214,7 @@ def sanitize_carboxyl(mol):
 
 def sanitize_guanidine_Catom(C_atom, verbose=True):
     from rdkit import Chem
+
     if C_atom.GetSymbol() == "C":
         terminal_NR2s = get_terminal_NR2s(C_atom)
         mol = C_atom.GetOwningMol()
@@ -278,6 +279,7 @@ def is_terminal_nitrogen(N_atom):
 
 def sanitize_nitrine_Natom(atom, verbose=True):
     from rdkit import Chem
+
     if atom.GetSymbol() == "N" and len(atom.GetNeighbors()) == 2:
         mol = atom.GetOwningMol()
         nei1, nei2 = atom.GetNeighbors()[0], atom.GetNeighbors()[1]
@@ -336,6 +338,7 @@ def regularize_carbon_bond_order(atom, verbose=True):
 # for nitrogen with explicit valence > 4
 def regularize_nitrogen_bond_order(atom, verbose=True):
     from rdkit import Chem
+
     mol = atom.GetOwningMol()
     if atom.GetSymbol() == "N" and get_explicit_valence(atom) > 4:
         O_atoms = get_terminal_oxygens(atom)

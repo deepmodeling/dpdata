@@ -16,6 +16,7 @@ from dpdata.format import Format
 if TYPE_CHECKING:
     import h5py
 
+
 @Format.register("deepmd")
 @Format.register("deepmd/raw")
 class DeePMDRawFormat(Format):
