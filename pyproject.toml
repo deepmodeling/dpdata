@@ -82,6 +82,7 @@ select = [
     "D", # pydocstyle
     "UP", # pyupgrade
     "I", # isort
+    "TID253", # banned-module-level-imports
 ]
 ignore = [
     "E501", # line too long
@@ -107,3 +108,17 @@ ignore-init-module-imports = true
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+[tool.ruff.lint.flake8-tidy-imports]
+banned-module-level-imports = [
+    "pymatgen",
+    "ase",
+    "openbabel",
+    "rdkit",
+    "parmed",
+    "deepmd",
+    "h5py",
+    "wcmatch",
+    "monty",
+    "scipy",
+]

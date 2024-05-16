@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
-try:
-    import h5py
-except ImportError:
-    pass
 import numpy as np
 
 import dpdata
@@ -16,6 +13,8 @@ import dpdata.deepmd.raw
 from dpdata.driver import Driver
 from dpdata.format import Format
 
+if TYPE_CHECKING:
+    import h5py
 
 @Format.register("deepmd")
 @Format.register("deepmd/raw")
@@ -202,6 +201,8 @@ class DeePMDHDF5Format(Format):
         TypeError
             file_name is not str or h5py.Group or h5py.File
         """
+        import h5py
+
         if isinstance(file_name, (h5py.Group, h5py.File)):
             return dpdata.deepmd.hdf5.to_system_data(
                 file_name, "", type_map=type_map, labels=labels

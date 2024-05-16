@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, List, Optional
 
-from ase.calculators.calculator import (
+from ase.calculators.calculator import (  # noqa: TID253
     Calculator,
     PropertyNotImplementedError,
     all_changes,
