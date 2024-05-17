@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-from typing import Literal, overload
+import sys
+from typing import overload
 
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 import numpy as np
 
 from dpdata.periodic_table import Element

@@ -12,14 +12,13 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Iterable,
-    Literal,
     overload,
 )
 
-if sys.version_info < (3, 8):
-    pass
+if sys.version_info >= (3, 8):
+    from typing import Literal
 else:
-    pass
+    from typing_extensions import Literal
 
 import numpy as np
 
