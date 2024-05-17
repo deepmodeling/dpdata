@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from dpdata.bond_order_system import BondOrderSystem
 from dpdata.plugin import Plugin
 
 if TYPE_CHECKING:
@@ -74,8 +73,7 @@ class DataType:
                 shape.append(system.get_natoms())
             elif ii is Axis.NBONDS:
                 # BondOrderSystem
-                assert isinstance(system, BondOrderSystem)
-                shape.append(system.get_nbonds())
+                shape.append(system.get_nbonds())  # type: ignore
             elif ii == -1:
                 shape.append(AnyInt(-1))
             elif isinstance(ii, int):
