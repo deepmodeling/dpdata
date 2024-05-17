@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpdata.fhi_aims.output
 from dpdata.format import Format
 

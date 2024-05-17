@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, List, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from ase.calculators.calculator import (  # noqa: TID253
     Calculator,
@@ -35,9 +37,9 @@ class DPDataCalculator(Calculator):
 
     def calculate(
         self,
-        atoms: Optional["Atoms"] = None,
-        properties: List[str] = ["energy", "forces"],
-        system_changes: List[str] = all_changes,
+        atoms: Atoms | None = None,
+        properties: list[str] = ["energy", "forces"],
+        system_changes: list[str] = all_changes,
     ):
         """Run calculation with a driver.
 

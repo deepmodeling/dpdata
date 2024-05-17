@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 
 from scipy import constants  # noqa: TID253

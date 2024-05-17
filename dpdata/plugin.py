@@ -1,4 +1,5 @@
 """Base of plugin systems."""
+from __future__ import annotations
 
 
 class Plugin:

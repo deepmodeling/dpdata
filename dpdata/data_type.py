@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 from enum import Enum, unique
-from typing import TYPE_CHECKING, Optional, Tuple, Union, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
-from dpdata.bond_order_system import BondOrderSystem
-from dpdata.bond_order_system import BondOrderSystem
 
+from dpdata.bond_order_system import BondOrderSystem
 from dpdata.plugin import Plugin
 
 if TYPE_CHECKING:
@@ -52,7 +53,7 @@ class DataType:
         self,
         name: str,
         dtype: type,
-        shape: Optional[Tuple[Union[int, Axis], ...]] = None,
+        shape: tuple[int | Axis, ...] | None = None,
         required: bool = True,
     ) -> None:
         self.name = name
@@ -60,7 +61,7 @@ class DataType:
         self.shape = shape
         self.required = required
 
-    def real_shape(self, system: "System") -> Tuple[int]:
+    def real_shape(self, system: System) -> tuple[int]:
         """Returns expected real shape of a system."""
         assert self.shape is not None
         shape = []
@@ -83,7 +84,7 @@ class DataType:
                 raise RuntimeError("Shape is not an int!")
         return tuple(shape)
 
-    def check(self, system: "System"):
+    def check(self, system: System):
         """Check if a system has correct data of this type.
 
         Parameters

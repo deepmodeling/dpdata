@@ -1,16 +1,25 @@
 # %%
+from __future__ import annotations
+
 import glob
 import hashlib
 import numbers
 import os
+import sys
 import warnings
 from copy import deepcopy
-import sys
-from typing import TYPE_CHECKING, TYPE_CHECKING, Any, Dict, Iterable, List, Literal, Optional, Tuple, Type, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Iterable,
+    Literal,
+    overload,
+)
+
 if sys.version_info < (3, 8):
-    from typing_extensions import TypedDict
+    pass
 else:
-    from typing import TypedDict
+    pass
 
 import numpy as np
 
@@ -78,7 +87,7 @@ class System:
         data types of this class
     """
 
-    DTYPES: Tuple[DataType, ...] = (
+    DTYPES: tuple[DataType, ...] = (
         DataType("atom_numbs", list, (Axis.NTYPES,)),
         DataType("atom_names", list, (Axis.NTYPES,)),
         DataType("atom_types", np.ndarray, (Axis.NATOMS,)),
@@ -97,10 +106,10 @@ class System:
         # some formats do not use string as input
         file_name: Any=None,
         fmt: str="auto",
-        type_map:Optional[list[str]]=None,
+        type_map:list[str] | None=None,
         begin:int=0,
         step:int=1,
-        data: Optional[Dict[str, Any]]=None,
+        data: dict[str, Any] | None=None,
         convergence_check: bool=True,
         **kwargs,
     ):
@@ -242,7 +251,7 @@ class System:
                     self.post_funcs.get_plugin(post_f)(self)
         return self
 
-    def to(self, fmt: str, *args: Any, **kwargs: Any) -> "System":
+    def to(self, fmt: str, *args: Any, **kwargs: Any) -> System:
         """Dump systems to the specific format.
 
         Parameters
@@ -280,13 +289,13 @@ class System:
         return ret
 
     @overload
-    def __getitem__(self, key: Union[int, slice, list, np.ndarray]) -> "System":
+    def __getitem__(self, key: int | slice | list | np.ndarray) -> System:
         ...
     @overload
-    def __getitem__(self, key: Literal["atom_names", "real_atom_names"]) -> List[str]:
+    def __getitem__(self, key: Literal["atom_names", "real_atom_names"]) -> list[str]:
         ...
     @overload
-    def __getitem__(self, key: Literal["atom_numbs"]) -> List[int]:
+    def __getitem__(self, key: Literal["atom_numbs"]) -> list[int]:
         ...
     @overload
     def __getitem__(self, key: Literal["nopbc"]) -> bool:
@@ -330,7 +339,7 @@ class System:
 
         dumpfn(self.as_dict(), filename, indent=indent)
 
-    def map_atom_types(self, type_map: Optional[Union[Dict[str, int], List[str]]]=None) -> np.ndarray:
+    def map_atom_types(self, type_map: dict[str, int] | list[str] | None=None) -> np.ndarray:
         """Map the atom types of the system.
 
         Parameters
@@ -396,7 +405,7 @@ class System:
         }
         return d
 
-    def get_atom_names(self) -> List[str]:
+    def get_atom_names(self) -> list[str]:
         """Returns name of atoms."""
         return self.data["atom_names"]
 
@@ -404,7 +413,7 @@ class System:
         """Returns type of atoms."""
         return self.data["atom_types"]
 
-    def get_atom_numbs(self) -> List[int]:
+    def get_atom_numbs(self) -> list[int]:
         """Returns number of atoms."""
         return self.data["atom_numbs"]
 
@@ -424,7 +433,7 @@ class System:
         """Returns a copy of the system."""
         return self.__class__.from_dict({"data": deepcopy(self.data)})
 
-    def sub_system(self, f_idx: numbers.Integral) -> "System":
+    def sub_system(self, f_idx: numbers.Integral) -> System:
         """Construct a subsystem from the system.
 
         Parameters
@@ -447,7 +456,7 @@ class System:
                 continue
             if tt.shape is not None and Axis.NFRAMES in tt.shape:
                 axis_nframes = tt.shape.index(Axis.NFRAMES)
-                new_shape: List[Union[slice, np.ndarray]] = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape: list[slice | np.ndarray] = [slice(None) for _ in self.data[tt.name].shape]
                 new_shape[axis_nframes] = f_idx
                 tmp.data[tt.name] = self.data[tt.name][tuple(new_shape)]
             else:
@@ -455,7 +464,7 @@ class System:
                 tmp.data[tt.name] = self.data[tt.name]
         return tmp
 
-    def append(self, system: "System") -> bool:
+    def append(self, system: System) -> bool:
         """Append a system to this system.
 
         Parameters
@@ -511,7 +520,7 @@ class System:
             self.data["nopbc"] = False
         return True
 
-    def convert_to_mixed_type(self, type_map:Optional[List[str]]=None):
+    def convert_to_mixed_type(self, type_map:list[str] | None=None):
         """Convert the data dict to mixed type format structure, in order to append systems
         with different formula but the same number of atoms. Change the 'atom_names' to
         one placeholder type 'MIXED_TOKEN' and add 'real_atom_types' to store the real type
@@ -537,7 +546,7 @@ class System:
         self.data["atom_numbs"] = [natoms]
         self.data["atom_names"] = ["MIXED_TOKEN"]
 
-    def sort_atom_names(self, type_map:Optional[List[str]]=None):
+    def sort_atom_names(self, type_map:list[str] | None=None):
         """Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
         to atom_names. If type_map is not given, atom_names will be sorted by
         alphabetical order. If type_map is given, atom_names will be type_map.
@@ -549,7 +558,7 @@ class System:
         """
         self.data = sort_atom_names(self.data, type_map=type_map)
 
-    def check_type_map(self, type_map:Optional[List[str]]):
+    def check_type_map(self, type_map:list[str] | None):
         """Assign atom_names to type_map if type_map is given and different from
         atom_names.
 
@@ -561,7 +570,7 @@ class System:
         if type_map is not None and type_map != self.data["atom_names"]:
             self.sort_atom_names(type_map=type_map)
 
-    def apply_type_map(self, type_map: List[str]):
+    def apply_type_map(self, type_map: list[str]):
         """Customize the element symbol order and  it should maintain order
         consistency in dpgen or deepmd-kit. It is especially recommended
         for multiple complexsystems with multiple elements.
@@ -591,7 +600,7 @@ class System:
                 continue
             if tt.shape is not None and Axis.NATOMS in tt.shape:
                 axis_natoms = tt.shape.index(Axis.NATOMS)
-                new_shape: List[Union[slice, np.ndarray]] = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape: list[slice | np.ndarray] = [slice(None) for _ in self.data[tt.name].shape]
                 new_shape[axis_natoms] = idx
                 self.data[tt.name] = self.data[tt.name][tuple(new_shape)]
         return idx
@@ -659,7 +668,7 @@ class System:
             return short_formula
         return self.formula_hash
 
-    def extend(self, systems: Iterable["System"]):
+    def extend(self, systems: Iterable[System]):
         """Extend a system list to this system.
 
         Parameters
@@ -727,11 +736,11 @@ class System:
         self.affine_map(rot, f_idx=f_idx)
         return np.matmul(qq, rot)
 
-    def add_atom_names(self, atom_names: List[str]):
+    def add_atom_names(self, atom_names: list[str]):
         """Add atom_names that do not exist."""
         self.data = add_atom_names(self.data, atom_names)
 
-    def replicate(self, ncopy: Union[List[int], Tuple[int, int, int]]):
+    def replicate(self, ncopy: list[int] | tuple[int, int, int]):
         """Replicate the each frame  in the system in 3 dimensions.
         Each frame in the system will become a supercell.
 
@@ -905,7 +914,7 @@ class System:
         self.data = self.sub_system(idx).data
         return idx
 
-    def predict(self, *args: Any, driver: Union[str, Driver] = "dp", **kwargs: Any) -> "LabeledSystem":
+    def predict(self, *args: Any, driver: str | Driver = "dp", **kwargs: Any) -> LabeledSystem:
         """Predict energies and forces by a driver.
 
         Parameters
@@ -934,8 +943,8 @@ class System:
         return LabeledSystem(data=data)
 
     def minimize(
-        self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any
-    ) -> "LabeledSystem":
+        self, *args: Any, minimizer: str | Minimizer, **kwargs: Any
+    ) -> LabeledSystem:
         """Minimize the geometry.
 
         Parameters
@@ -957,7 +966,7 @@ class System:
         data = minimizer.minimize(self.data.copy())
         return LabeledSystem(data=data)
 
-    def pick_atom_idx(self, idx: numbers.Integral, nopbc: Optional[bool]=None):
+    def pick_atom_idx(self, idx: numbers.Integral, nopbc: bool | None=None):
         """Pick atom index.
 
         Parameters
@@ -981,7 +990,7 @@ class System:
                 continue
             if tt.shape is not None and Axis.NATOMS in tt.shape:
                 axis_natoms = tt.shape.index(Axis.NATOMS)
-                new_shape: List[Union[slice, np.ndarray]] = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape: list[slice | np.ndarray] = [slice(None) for _ in self.data[tt.name].shape]
                 new_shape[axis_natoms] = idx
                 new_sys.data[tt.name] = self.data[tt.name][tuple(new_shape)]
         # recalculate atom_numbs according to atom_types
@@ -993,7 +1002,7 @@ class System:
             new_sys.nopbc = nopbc
         return new_sys
 
-    def remove_atom_names(self, atom_names: Union[str, Iterable[str]]):
+    def remove_atom_names(self, atom_names: str | Iterable[str]):
         """Remove atom names and all such atoms.
         For example, you may not remove EP atoms in TIP4P/Ew water, which
         is not a real atom.
@@ -1019,7 +1028,7 @@ class System:
         new_sys.data["atom_numbs"] = new_sys.data["atom_numbs"][: len(new_atom_names)]
         return new_sys
 
-    def pick_by_amber_mask(self, param: Union[str, "parmed.Structure"], maskstr: str, pass_coords: bool=False, nopbc: Optional[bool]=None):
+    def pick_by_amber_mask(self, param: str | parmed.Structure, maskstr: str, pass_coords: bool=False, nopbc: bool | None=None):
         """Pick atoms by amber mask.
 
         Parameters
@@ -1154,7 +1163,7 @@ class LabeledSystem(System):
             The number of skipped frames when loading MD trajectory.
     """
 
-    DTYPES: Tuple[DataType, ...] = System.DTYPES + (
+    DTYPES: tuple[DataType, ...] = System.DTYPES + (
         DataType("energies", np.ndarray, (Axis.NFRAMES,)),
         DataType("forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
         DataType("virials", np.ndarray, (Axis.NFRAMES, 3, 3), required=False),
@@ -1226,7 +1235,7 @@ class LabeledSystem(System):
         self.affine_map_fv(trans, f_idx=f_idx)
         return trans
 
-    def correction(self, hl_sys: "LabeledSystem") -> "LabeledSystem":
+    def correction(self, hl_sys: LabeledSystem) -> LabeledSystem:
         """Get energy and force correction between self and a high-level LabeledSystem.
         The self's coordinates will be kept, but energy and forces will be replaced by
         the correction between these two systems.
@@ -1255,7 +1264,7 @@ class LabeledSystem(System):
             )
         return corrected_sys
 
-    def remove_outlier(self, threshold: float = 8.0) -> "LabeledSystem":
+    def remove_outlier(self, threshold: float = 8.0) -> LabeledSystem:
         r"""Remove outlier frames from the system.
 
         Remove the frames whose energies satisfy the condition
@@ -1306,11 +1315,11 @@ class MultiSystems:
         type_map : list of str
             Maps atom type to name
         """
-        self.systems: Dict[str, System] = {}
+        self.systems: dict[str, System] = {}
         if type_map is not None:
-            self.atom_names: List[str] = type_map
+            self.atom_names: list[str] = type_map
         else:
-            self.atom_names: List[str] = []
+            self.atom_names: list[str] = []
         self.append(*systems)
 
     def from_fmt_obj(self, fmtobj: Format, directory, labeled:bool=True, **kwargs: Any):
@@ -1356,7 +1365,7 @@ class MultiSystems:
                 )
         return self
 
-    def to(self, fmt: str, *args: Any, **kwargs: Any) -> "MultiSystems":
+    def to(self, fmt: str, *args: Any, **kwargs: Any) -> MultiSystems:
         """Dump systems to the specific format.
 
         Parameters
@@ -1406,7 +1415,7 @@ class MultiSystems:
         return multi_systems
 
     @classmethod
-    def from_dir(cls, dir_name: str, file_name: str, fmt: str="auto", type_map: Optional[List[str]]=None):
+    def from_dir(cls, dir_name: str, file_name: str, fmt: str="auto", type_map: list[str] | None=None):
         multi_systems = cls()
         target_file_list = sorted(
             glob.glob(f"./{dir_name}/**/{file_name}", recursive=True)
@@ -1417,7 +1426,7 @@ class MultiSystems:
             )
         return multi_systems
 
-    def load_systems_from_file(self, file_name=None, fmt: Optional[str]=None, **kwargs):
+    def load_systems_from_file(self, file_name=None, fmt: str | None=None, **kwargs):
         assert fmt is not None
         fmt = fmt.lower()
         return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
@@ -1426,7 +1435,7 @@ class MultiSystems:
         """Returns number of frames in all systems."""
         return sum(len(system) for system in self.systems.values())
 
-    def append(self, *systems: Union[System, "MultiSystems"]):
+    def append(self, *systems: System | MultiSystems):
         """Append systems or MultiSystems to systems.
 
         Parameters
@@ -1476,7 +1485,7 @@ class MultiSystems:
             system.add_atom_names(new_in_self)
         system.sort_atom_names(type_map=self.atom_names)
 
-    def predict(self, *args: Any, driver: Union[str, Driver]="dp", **kwargs: Any) -> "MultiSystems":
+    def predict(self, *args: Any, driver: str | Driver="dp", **kwargs: Any) -> MultiSystems:
         """Predict energies and forces by a driver.
 
         Parameters
@@ -1501,8 +1510,8 @@ class MultiSystems:
         return new_multisystems
 
     def minimize(
-        self, *args: Any, minimizer: Union[str, Minimizer], **kwargs: Any
-    ) -> "MultiSystems":
+        self, *args: Any, minimizer: str | Minimizer, **kwargs: Any
+    ) -> MultiSystems:
         """Minimize geometry by a minimizer.
 
         Parameters
@@ -1535,7 +1544,7 @@ class MultiSystems:
             new_multisystems.append(ss.minimize(*args, minimizer=minimizer, **kwargs))
         return new_multisystems
 
-    def pick_atom_idx(self, idx: numbers.Integral, nopbc: Optional[bool]=None):
+    def pick_atom_idx(self, idx: numbers.Integral, nopbc: bool | None=None):
         """Pick atom index.
 
         Parameters
@@ -1555,7 +1564,7 @@ class MultiSystems:
             new_sys.append(ss.pick_atom_idx(idx, nopbc=nopbc))
         return new_sys
 
-    def correction(self, hl_sys: "MultiSystems") -> "MultiSystems":
+    def correction(self, hl_sys: MultiSystems) -> MultiSystems:
         """Get energy and force correction between self (assumed low-level) and a high-level MultiSystems.
         The self's coordinates will be kept, but energy and forces will be replaced by
         the correction between these two systems.
@@ -1595,8 +1604,8 @@ class MultiSystems:
         return corrected_sys
 
     def train_test_split(
-        self, test_size: Union[float, int], seed: Optional[int] = None
-    ) -> Tuple["MultiSystems", "MultiSystems", Dict[str, np.ndarray]]:
+        self, test_size: float | int, seed: int | None = None
+    ) -> tuple[MultiSystems, MultiSystems, dict[str, np.ndarray]]:
         """Split systems into random train and test subsets.
 
         Parameters
@@ -1652,7 +1661,7 @@ class MultiSystems:
         return train_systems, test_systems, test_system_idx
 
 
-def get_cls_name(cls: Type[Any]) -> str:
+def get_cls_name(cls: type[Any]) -> str:
     """Returns the fully qualified name of a class, such as `np.ndarray`.
 
     Parameters

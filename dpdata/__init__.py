@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from . import lammps, md, vasp
 from .bond_order_system import BondOrderSystem
 from .system import LabeledSystem, MultiSystems, System

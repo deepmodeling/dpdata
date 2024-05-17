@@ -1,4 +1,6 @@
-from abc import ABCMeta, abstractmethod, abstractmethod, abstractproperty
+from __future__ import annotations
+
+from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 
 import numpy as np

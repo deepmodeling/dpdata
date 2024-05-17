@@ -1,20 +1,24 @@
-from typing import Dict, List, Literal, Union, overload
+from __future__ import annotations
+
+from typing import Literal, overload
+
 import numpy as np
 
 from dpdata.periodic_table import Element
 
+
 @overload
-def elements_index_map(elements: List[str], standard: bool, inverse: Literal[True]) -> Dict[int, str]:
+def elements_index_map(elements: list[str], standard: bool, inverse: Literal[True]) -> dict[int, str]:
     ...
 @overload
-def elements_index_map(elements: List[str], standard: bool, inverse: Literal[False]=...) -> Dict[str, int]:
+def elements_index_map(elements: list[str], standard: bool, inverse: Literal[False]=...) -> dict[str, int]:
     ...
 @overload
-def elements_index_map(elements: List[str], standard: bool, inverse: bool=False) -> Union[Dict[str, int], Dict[int, str]]:
+def elements_index_map(elements: list[str], standard: bool, inverse: bool=False) -> dict[str, int] | dict[int, str]:
     ...
 
 
-def elements_index_map(elements: List[str], standard: bool=False, inverse: bool=False) -> dict:
+def elements_index_map(elements: list[str], standard: bool=False, inverse: bool=False) -> dict:
     if standard:
         elements.sort(key=lambda x: Element(x).Z)
     if inverse:

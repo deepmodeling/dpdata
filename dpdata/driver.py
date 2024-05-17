@@ -1,7 +1,8 @@
 """Driver plugin system."""
+from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Callable, List, Type, Union
+from typing import TYPE_CHECKING, Callable
 
 from .plugin import Plugin
 
@@ -43,7 +44,7 @@ class Driver(ABC):
         return Driver.__DriverPlugin.register(key)
 
     @staticmethod
-    def get_driver(key: str) -> Type["Driver"]:
+    def get_driver(key: str) -> type[Driver]:
         """Get a driver plugin.
 
         Parameters
@@ -97,7 +98,7 @@ class Driver(ABC):
         return NotImplemented
 
     @property
-    def ase_calculator(self) -> "ase.calculators.calculator.Calculator":
+    def ase_calculator(self) -> ase.calculators.calculator.Calculator:
         """Returns an ase calculator based on this driver."""
         from .ase_calculator import DPDataCalculator
 
@@ -130,7 +131,7 @@ class HybridDriver(Driver):
     This driver is the hybrid of SQM and DP.
     """
 
-    def __init__(self, drivers: List[Union[dict, Driver]]) -> None:
+    def __init__(self, drivers: list[dict | Driver]) -> None:
         self.drivers = []
         for driver in drivers:
             if isinstance(driver, Driver):
@@ -200,7 +201,7 @@ class Minimizer(ABC):
         return Minimizer.__MinimizerPlugin.register(key)
 
     @staticmethod
-    def get_minimizer(key: str) -> Type["Minimizer"]:
+    def get_minimizer(key: str) -> type[Minimizer]:
         """Get a minimizer plugin.
 
         Parameters

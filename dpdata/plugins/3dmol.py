@@ -1,4 +1,4 @@
-from typing import Tuple
+from __future__ import annotations
 
 import numpy as np
 
@@ -17,7 +17,7 @@ class Py3DMolFormat(Format):
         self,
         data: dict,
         f_idx: int = 0,
-        size: Tuple[int] = (300, 300),
+        size: tuple[int] = (300, 300),
         style: dict = {"stick": {}, "sphere": {"radius": 0.4}},
         **kwargs,
     ):

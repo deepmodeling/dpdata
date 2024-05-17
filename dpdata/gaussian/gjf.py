@@ -2,19 +2,19 @@
 # https://github.com/deepmodeling/dpgen/blob/0767dce7cad29367edb2e4a55fd0d8724dbda642/dpgen/generator/lib/gaussian.py#L1-L190
 # under LGPL 3.0 license
 """Generate Gaussian input file."""
+from __future__ import annotations
 
 import itertools
 import re
 import uuid
 import warnings
-from typing import List, Optional, Tuple, Union
 
 import numpy as np
 
 from dpdata.periodic_table import Element
 
 
-def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
+def _crd2frag(symbols: list[str], crds: np.ndarray) -> tuple[int, list[int]]:
     """Detect fragments from coordinates.
 
     Parameters
@@ -102,12 +102,12 @@ def detect_multiplicity(symbols: np.ndarray) -> int:
 
 def make_gaussian_input(
     sys_data: dict,
-    keywords: Union[str, List[str]],
-    multiplicity: Union[str, int] = "auto",
+    keywords: str | list[str],
+    multiplicity: str | int = "auto",
     charge: int = 0,
     fragment_guesses: bool = False,
-    basis_set: Optional[str] = None,
-    keywords_high_multiplicity: Optional[str] = None,
+    basis_set: str | None = None,
+    keywords_high_multiplicity: str | None = None,
     nproc: int = 1,
 ) -> str:
     """Make gaussian input file.

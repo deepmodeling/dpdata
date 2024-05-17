@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpdata.abacus.md
 import dpdata.abacus.relax
 import dpdata.abacus.scf

@@ -1,4 +1,9 @@
-import numpy as np
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import numpy as np
 
 # Angston is used in Psi4 by default
 template = """molecule {{
