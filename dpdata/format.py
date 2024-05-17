@@ -2,6 +2,7 @@
 
 import os
 from abc import ABC
+from typing import Callable
 
 from .plugin import Plugin
 
@@ -163,7 +164,7 @@ class Format(ABC):
             if not isinstance(func_name, (list, tuple, set)):
                 object.post_func = (func_name,)
             else:
-                object.post_func = func_name
+                object.post_func = tuple(func_name)
             return object
 
         return decorator

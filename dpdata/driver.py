@@ -1,12 +1,12 @@
 """Driver plugin system."""
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Callable, List, Union
+from typing import TYPE_CHECKING, Callable, List, Type, Union
 
 from .plugin import Plugin
 
 if TYPE_CHECKING:
-    import ase
+    import ase.calculators.calculator
 
 
 class Driver(ABC):
@@ -43,7 +43,7 @@ class Driver(ABC):
         return Driver.__DriverPlugin.register(key)
 
     @staticmethod
-    def get_driver(key: str) -> "Driver":
+    def get_driver(key: str) -> Type["Driver"]:
         """Get a driver plugin.
 
         Parameters
@@ -157,6 +157,7 @@ class HybridDriver(Driver):
         dict
             labeled data with energies and forces
         """
+        labeled_data = {}
         for ii, driver in enumerate(self.drivers):
             lb_data = driver.label(data.copy())
             if ii == 0:
@@ -199,7 +200,7 @@ class Minimizer(ABC):
         return Minimizer.__MinimizerPlugin.register(key)
 
     @staticmethod
-    def get_minimizer(key: str) -> "Minimizer":
+    def get_minimizer(key: str) -> Type["Minimizer"]:
         """Get a minimizer plugin.
 
         Parameters

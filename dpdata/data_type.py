@@ -1,7 +1,9 @@
 from enum import Enum, unique
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, Union, Union
 
 import numpy as np
+from dpdata.bond_order_system import BondOrderSystem
+from dpdata.bond_order_system import BondOrderSystem
 
 from dpdata.plugin import Plugin
 
@@ -50,7 +52,7 @@ class DataType:
         self,
         name: str,
         dtype: type,
-        shape: Tuple[int, Axis] = None,
+        shape: Optional[Tuple[Union[int, Axis], ...]] = None,
         required: bool = True,
     ) -> None:
         self.name = name
@@ -60,6 +62,7 @@ class DataType:
 
     def real_shape(self, system: "System") -> Tuple[int]:
         """Returns expected real shape of a system."""
+        assert self.shape is not None
         shape = []
         for ii in self.shape:
             if ii is Axis.NFRAMES:
@@ -70,6 +73,7 @@ class DataType:
                 shape.append(system.get_natoms())
             elif ii is Axis.NBONDS:
                 # BondOrderSystem
+                assert isinstance(system, BondOrderSystem)
                 shape.append(system.get_nbonds())
             elif ii == -1:
                 shape.append(AnyInt(-1))

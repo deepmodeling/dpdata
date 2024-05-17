@@ -1,9 +1,20 @@
+from typing import Dict, List, Literal, Union, overload
 import numpy as np
 
 from dpdata.periodic_table import Element
 
+@overload
+def elements_index_map(elements: List[str], standard: bool, inverse: Literal[True]) -> Dict[int, str]:
+    ...
+@overload
+def elements_index_map(elements: List[str], standard: bool, inverse: Literal[False]=...) -> Dict[str, int]:
+    ...
+@overload
+def elements_index_map(elements: List[str], standard: bool, inverse: bool=False) -> Union[Dict[str, int], Dict[int, str]]:
+    ...
 
-def elements_index_map(elements, standard=False, inverse=False):
+
+def elements_index_map(elements: List[str], standard: bool=False, inverse: bool=False) -> dict:
     if standard:
         elements.sort(key=lambda x: Element(x).Z)
     if inverse:

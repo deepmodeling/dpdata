@@ -23,7 +23,10 @@ class DPDataCalculator(Calculator):
         dpdata driver
     """
 
-    name = "dpdata"
+    @property
+    def name(self) -> str:
+        return "dpdata"
+
     implemented_properties = ["energy", "free_energy", "forces", "virial", "stress"]
 
     def __init__(self, driver: Driver, **kwargs) -> None:
@@ -48,10 +51,10 @@ class DPDataCalculator(Calculator):
         system_changes : List[str], optional
             unused, only for function signature compatibility, by default all_changes
         """
-        if atoms is not None:
-            self.atoms = atoms.copy()
+        assert atoms is not None
+        atoms = atoms.copy()
 
-        system = dpdata.System(self.atoms, fmt="ase/structure")
+        system = dpdata.System(atoms, fmt="ase/structure")
         data = system.predict(driver=self.driver).data
 
         self.results["energy"] = data["energies"][0]

@@ -26,6 +26,7 @@ dependencies = [
     'h5py',
     'wcmatch',
     'importlib_metadata>=1.4; python_version < "3.8"',
+    'type_extensions>=0.4.0; python_version < "3.8"',
 ]
 requires-python = ">=3.7"
 readme = "README.md"
@@ -121,4 +122,9 @@ banned-module-level-imports = [
     "wcmatch",
     "monty",
     "scipy",
+]
+
+[tool.pyright]
+include = [
+    "dpdata/*.py",
 ]
