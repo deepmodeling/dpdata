@@ -93,13 +93,21 @@ class ASEStructureFormat(Format):
             "energies": np.array([energies]),
             "forces": np.array([forces]),
         }
-        try:
-            stress = atoms.get_stress(False)
-        except PropertyNotImplementedError:
-            pass
-        else:
-            virials = np.array([-atoms.get_volume() * stress])
+
+        # try to get virials from different sources
+        virials = atoms.info.get("virial")
+        if virials is None:
+            virials = atoms.info.get("virials")
+        if virials is None:
+            try:
+                stress = atoms.get_stress(False)
+            except PropertyNotImplementedError:
+                pass
+            else:
+                virials = np.array([-atoms.get_volume() * stress])
+        if virials is not None:
             info_dict["virials"] = virials
+
         return info_dict
 
     def from_multi_systems(
