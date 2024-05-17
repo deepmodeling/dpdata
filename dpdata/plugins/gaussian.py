@@ -83,7 +83,7 @@ class GaussianDriver(Driver):
     -1102.714590995794
     """
 
-    def __init__(self, gaussian_exec: str = "g16", **kwargs: dict) -> None:
+    def __init__(self, gaussian_exec: str = "g16", **kwargs) -> None:
         self.gaussian_exec = gaussian_exec
         self.kwargs = kwargs
 
