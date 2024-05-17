@@ -1,9 +1,9 @@
-from typing import Tuple
+from __future__ import annotations
 
 import numpy as np
 
 
-def read_orca_sp_output(fn: str) -> Tuple[np.ndarray, np.ndarray, float, np.ndarray]:
+def read_orca_sp_output(fn: str) -> tuple[np.ndarray, np.ndarray, float, np.ndarray]:
     """Read from ORCA output.
 
     Note that both the energy and the gradient should be printed.

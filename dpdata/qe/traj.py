@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+from __future__ import annotations
+
 import warnings
 
 import numpy as np

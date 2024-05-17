@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpdata.siesta.aiMD_output
 import dpdata.siesta.output
 from dpdata.format import Format

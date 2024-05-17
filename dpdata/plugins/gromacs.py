@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpdata.gromacs.gro
 from dpdata.format import Format
 

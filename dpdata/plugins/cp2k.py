@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 
 import dpdata.cp2k.output

@@ -1,9 +1,9 @@
-from typing import Tuple
+from __future__ import annotations
 
 import numpy as np
 
 
-def read_dftb_plus(fn_1: str, fn_2: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
+def read_dftb_plus(fn_1: str, fn_2: str) -> tuple[str, np.ndarray, float, np.ndarray]:
     """Read from DFTB+ input and output.
 
     Parameters

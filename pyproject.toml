@@ -26,6 +26,7 @@ dependencies = [
     'h5py',
     'wcmatch',
     'importlib_metadata>=1.4; python_version < "3.8"',
+    'typing_extensions; python_version < "3.8"',
 ]
 requires-python = ">=3.7"
 readme = "README.md"
@@ -83,6 +84,7 @@ select = [
     "UP", # pyupgrade
     "I", # isort
     "TID253", # banned-module-level-imports
+    "TCH", # flake8-type-checking
 ]
 ignore = [
     "E501", # line too long
@@ -121,4 +123,12 @@ banned-module-level-imports = [
     "wcmatch",
     "monty",
     "scipy",
+]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[tool.pyright]
+include = [
+    "dpdata/*.py",
 ]
