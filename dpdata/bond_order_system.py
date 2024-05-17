@@ -98,7 +98,7 @@ class BondOrderSystem(System):
         mol = fmtobj.from_bond_order_system(file_name, **kwargs)
         self.from_rdkit_mol(mol)
         if hasattr(fmtobj.from_bond_order_system, "post_func"):
-            for post_f in fmtobj.from_bond_order_system.post_func: # type: ignore
+            for post_f in fmtobj.from_bond_order_system.post_func:  # type: ignore
                 self.post_funcs.get_plugin(post_f)(self)
         return self
 

@@ -1,4 +1,5 @@
 """Command line interface for dpdata."""
+
 from __future__ import annotations
 
 import argparse

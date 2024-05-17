@@ -104,13 +104,13 @@ class System:
     def __init__(
         self,
         # some formats do not use string as input
-        file_name: Any=None,
-        fmt: str="auto",
-        type_map:list[str] | None=None,
-        begin:int=0,
-        step:int=1,
-        data: dict[str, Any] | None=None,
-        convergence_check: bool=True,
+        file_name: Any = None,
+        fmt: str = "auto",
+        type_map: list[str] | None = None,
+        begin: int = 0,
+        step: int = 1,
+        data: dict[str, Any] | None = None,
+        convergence_check: bool = True,
         **kwargs,
     ):
         """Constructor.
@@ -231,7 +231,7 @@ class System:
 
     post_funcs = Plugin()
 
-    def from_fmt(self, file_name: Any, fmt: str="auto", **kwargs: Any):
+    def from_fmt(self, file_name: Any, fmt: str = "auto", **kwargs: Any):
         fmt = fmt.lower()
         if fmt == "auto":
             fmt = os.path.basename(file_name).split(".")[-1].lower()
@@ -247,7 +247,7 @@ class System:
                 self.data = {**self.data, **data}
                 self.check_data()
             if hasattr(fmtobj.from_system, "post_func"):
-                for post_f in fmtobj.from_system.post_func: # type: ignore
+                for post_f in fmtobj.from_system.post_func:  # type: ignore
                     self.post_funcs.get_plugin(post_f)(self)
         return self
 
@@ -289,20 +289,19 @@ class System:
         return ret
 
     @overload
-    def __getitem__(self, key: int | slice | list | np.ndarray) -> System:
-        ...
+    def __getitem__(self, key: int | slice | list | np.ndarray) -> System: ...
     @overload
-    def __getitem__(self, key: Literal["atom_names", "real_atom_names"]) -> list[str]:
-        ...
+    def __getitem__(
+        self, key: Literal["atom_names", "real_atom_names"]
+    ) -> list[str]: ...
     @overload
-    def __getitem__(self, key: Literal["atom_numbs"]) -> list[int]:
-        ...
+    def __getitem__(self, key: Literal["atom_numbs"]) -> list[int]: ...
     @overload
-    def __getitem__(self, key: Literal["nopbc"]) -> bool:
-        ...
+    def __getitem__(self, key: Literal["nopbc"]) -> bool: ...
     @overload
-    def __getitem__(self, key: Literal["orig", "coords", "energies", "forces", "virials"]) -> np.ndarray:
-        ...
+    def __getitem__(
+        self, key: Literal["orig", "coords", "energies", "forces", "virials"]
+    ) -> np.ndarray: ...
     @overload
     def __getitem__(self, key: str) -> Any:
         # other cases, for example customized data
@@ -333,13 +332,15 @@ class System:
             raise RuntimeError("Unspported data structure")
         return self.__class__.from_dict({"data": self_copy.data})
 
-    def dump(self, filename: str, indent: int=4):
+    def dump(self, filename: str, indent: int = 4):
         """Dump .json or .yaml file."""
         from monty.serialization import dumpfn
 
         dumpfn(self.as_dict(), filename, indent=indent)
 
-    def map_atom_types(self, type_map: dict[str, int] | list[str] | None=None) -> np.ndarray:
+    def map_atom_types(
+        self, type_map: dict[str, int] | list[str] | None = None
+    ) -> np.ndarray:
         """Map the atom types of the system.
 
         Parameters
@@ -456,7 +457,9 @@ class System:
                 continue
             if tt.shape is not None and Axis.NFRAMES in tt.shape:
                 axis_nframes = tt.shape.index(Axis.NFRAMES)
-                new_shape: list[slice | np.ndarray] = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape: list[slice | np.ndarray] = [
+                    slice(None) for _ in self.data[tt.name].shape
+                ]
                 new_shape[axis_nframes] = f_idx
                 tmp.data[tt.name] = self.data[tt.name][tuple(new_shape)]
             else:
@@ -520,7 +523,7 @@ class System:
             self.data["nopbc"] = False
         return True
 
-    def convert_to_mixed_type(self, type_map:list[str] | None=None):
+    def convert_to_mixed_type(self, type_map: list[str] | None = None):
         """Convert the data dict to mixed type format structure, in order to append systems
         with different formula but the same number of atoms. Change the 'atom_names' to
         one placeholder type 'MIXED_TOKEN' and add 'real_atom_types' to store the real type
@@ -546,7 +549,7 @@ class System:
         self.data["atom_numbs"] = [natoms]
         self.data["atom_names"] = ["MIXED_TOKEN"]
 
-    def sort_atom_names(self, type_map:list[str] | None=None):
+    def sort_atom_names(self, type_map: list[str] | None = None):
         """Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
         to atom_names. If type_map is not given, atom_names will be sorted by
         alphabetical order. If type_map is given, atom_names will be type_map.
@@ -558,7 +561,7 @@ class System:
         """
         self.data = sort_atom_names(self.data, type_map=type_map)
 
-    def check_type_map(self, type_map:list[str] | None):
+    def check_type_map(self, type_map: list[str] | None):
         """Assign atom_names to type_map if type_map is given and different from
         atom_names.
 
@@ -600,7 +603,9 @@ class System:
                 continue
             if tt.shape is not None and Axis.NATOMS in tt.shape:
                 axis_natoms = tt.shape.index(Axis.NATOMS)
-                new_shape: list[slice | np.ndarray] = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape: list[slice | np.ndarray] = [
+                    slice(None) for _ in self.data[tt.name].shape
+                ]
                 new_shape[axis_natoms] = idx
                 self.data[tt.name] = self.data[tt.name][tuple(new_shape)]
         return idx
@@ -686,7 +691,7 @@ class System:
         self.data["coords"] = np.matmul(ncoord, self.data["cells"])
 
     @post_funcs.register("remove_pbc")
-    def remove_pbc(self, protect_layer: int=9):
+    def remove_pbc(self, protect_layer: int = 9):
         """This method does NOT delete the definition of the cells, it
         (1) revises the cell to a cubic cell and ensures that the cell
         boundary to any atom in the system is no less than `protect_layer`
@@ -701,7 +706,7 @@ class System:
         assert protect_layer >= 0, "the protect_layer should be no less than 0"
         remove_pbc(self.data, protect_layer)
 
-    def affine_map(self, trans, f_idx: numbers.Integral=0):
+    def affine_map(self, trans, f_idx: numbers.Integral = 0):
         assert np.linalg.det(trans) != 0
         self.data["cells"][f_idx] = np.matmul(self.data["cells"][f_idx], trans)
         self.data["coords"][f_idx] = np.matmul(self.data["coords"][f_idx], trans)
@@ -719,7 +724,7 @@ class System:
         for ii in range(self.get_nframes()):
             self.rot_frame_lower_triangular(ii)
 
-    def rot_frame_lower_triangular(self, f_idx: numbers.Integral=0):
+    def rot_frame_lower_triangular(self, f_idx: numbers.Integral = 0):
         qq, rr = np.linalg.qr(self.data["cells"][f_idx].T)
         if np.linalg.det(qq) < 0:
             qq = -qq
@@ -837,7 +842,11 @@ class System:
         self.sort_atom_types()
 
     def perturb(
-        self, pert_num: int, cell_pert_fraction: float, atom_pert_distance: float, atom_pert_style: str="normal"
+        self,
+        pert_num: int,
+        cell_pert_fraction: float,
+        atom_pert_distance: float,
+        atom_pert_style: str = "normal",
     ):
         """Perturb each frame in the system randomly.
         The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
@@ -914,7 +923,9 @@ class System:
         self.data = self.sub_system(idx).data
         return idx
 
-    def predict(self, *args: Any, driver: str | Driver = "dp", **kwargs: Any) -> LabeledSystem:
+    def predict(
+        self, *args: Any, driver: str | Driver = "dp", **kwargs: Any
+    ) -> LabeledSystem:
         """Predict energies and forces by a driver.
 
         Parameters
@@ -966,7 +977,7 @@ class System:
         data = minimizer.minimize(self.data.copy())
         return LabeledSystem(data=data)
 
-    def pick_atom_idx(self, idx: numbers.Integral, nopbc: bool | None=None):
+    def pick_atom_idx(self, idx: numbers.Integral, nopbc: bool | None = None):
         """Pick atom index.
 
         Parameters
@@ -990,7 +1001,9 @@ class System:
                 continue
             if tt.shape is not None and Axis.NATOMS in tt.shape:
                 axis_natoms = tt.shape.index(Axis.NATOMS)
-                new_shape: list[slice | np.ndarray] = [slice(None) for _ in self.data[tt.name].shape]
+                new_shape: list[slice | np.ndarray] = [
+                    slice(None) for _ in self.data[tt.name].shape
+                ]
                 new_shape[axis_natoms] = idx
                 new_sys.data[tt.name] = self.data[tt.name][tuple(new_shape)]
         # recalculate atom_numbs according to atom_types
@@ -1028,7 +1041,13 @@ class System:
         new_sys.data["atom_numbs"] = new_sys.data["atom_numbs"][: len(new_atom_names)]
         return new_sys
 
-    def pick_by_amber_mask(self, param: str | parmed.Structure, maskstr: str, pass_coords: bool=False, nopbc: bool | None=None):
+    def pick_by_amber_mask(
+        self,
+        param: str | parmed.Structure,
+        maskstr: str,
+        pass_coords: bool = False,
+        nopbc: bool | None = None,
+    ):
         """Pick atoms by amber mask.
 
         Parameters
@@ -1093,7 +1112,10 @@ def get_cell_perturb_matrix(cell_pert_fraction: float):
     return cell_pert_matrix
 
 
-def get_atom_perturb_vector(atom_pert_distance: float, atom_pert_style: Literal["normal", "uniform", "const"]="normal"):
+def get_atom_perturb_vector(
+    atom_pert_distance: float,
+    atom_pert_style: Literal["normal", "uniform", "const"] = "normal",
+):
     random_vector = None
     if atom_pert_distance < 0:
         raise RuntimeError("atom_pert_distance can not be negative")
@@ -1230,7 +1252,7 @@ class LabeledSystem(System):
                 trans.T, np.matmul(self.data["virials"][f_idx], trans)
             )
 
-    def rot_frame_lower_triangular(self, f_idx: numbers.Integral=0):
+    def rot_frame_lower_triangular(self, f_idx: numbers.Integral = 0):
         trans = System.rot_frame_lower_triangular(self, f_idx=f_idx)
         self.affine_map_fv(trans, f_idx=f_idx)
         return trans
@@ -1322,7 +1344,9 @@ class MultiSystems:
             self.atom_names: list[str] = []
         self.append(*systems)
 
-    def from_fmt_obj(self, fmtobj: Format, directory, labeled:bool=True, **kwargs: Any):
+    def from_fmt_obj(
+        self, fmtobj: Format, directory, labeled: bool = True, **kwargs: Any
+    ):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
             for dd in fmtobj.from_multi_systems(directory, **kwargs):
                 if labeled:
@@ -1415,7 +1439,13 @@ class MultiSystems:
         return multi_systems
 
     @classmethod
-    def from_dir(cls, dir_name: str, file_name: str, fmt: str="auto", type_map: list[str] | None=None):
+    def from_dir(
+        cls,
+        dir_name: str,
+        file_name: str,
+        fmt: str = "auto",
+        type_map: list[str] | None = None,
+    ):
         multi_systems = cls()
         target_file_list = sorted(
             glob.glob(f"./{dir_name}/**/{file_name}", recursive=True)
@@ -1426,7 +1456,7 @@ class MultiSystems:
             )
         return multi_systems
 
-    def load_systems_from_file(self, file_name=None, fmt: str | None=None, **kwargs):
+    def load_systems_from_file(self, file_name=None, fmt: str | None = None, **kwargs):
         assert fmt is not None
         fmt = fmt.lower()
         return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
@@ -1485,7 +1515,9 @@ class MultiSystems:
             system.add_atom_names(new_in_self)
         system.sort_atom_names(type_map=self.atom_names)
 
-    def predict(self, *args: Any, driver: str | Driver="dp", **kwargs: Any) -> MultiSystems:
+    def predict(
+        self, *args: Any, driver: str | Driver = "dp", **kwargs: Any
+    ) -> MultiSystems:
         """Predict energies and forces by a driver.
 
         Parameters
@@ -1544,7 +1576,7 @@ class MultiSystems:
             new_multisystems.append(ss.minimize(*args, minimizer=minimizer, **kwargs))
         return new_multisystems
 
-    def pick_atom_idx(self, idx: numbers.Integral, nopbc: bool | None=None):
+    def pick_atom_idx(self, idx: numbers.Integral, nopbc: bool | None = None):
         """Pick atom index.
 
         Parameters
@@ -1599,7 +1631,7 @@ class MultiSystems:
         for nn in self.systems.keys():
             ll_ss = self[nn]
             hl_ss = hl_sys[nn]
-            assert isinstance(ll_ss, LabeledSystem) 
+            assert isinstance(ll_ss, LabeledSystem)
             corrected_sys.append(ll_ss.correction(hl_ss))
         return corrected_sys
 
