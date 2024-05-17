@@ -84,6 +84,7 @@ select = [
     "UP", # pyupgrade
     "I", # isort
     "TID253", # banned-module-level-imports
+    "TCH", # flake8-type-checking
 ]
 ignore = [
     "E501", # line too long
@@ -123,6 +124,9 @@ banned-module-level-imports = [
     "monty",
     "scipy",
 ]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]
 
 [tool.pyright]
 include = [
