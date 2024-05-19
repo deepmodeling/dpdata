@@ -1,4 +1,6 @@
-from abc import ABCMeta, abstractproperty
+from __future__ import annotations
+
+from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 
 import numpy as np
@@ -61,11 +63,13 @@ class ErrorsBase(metaclass=ABCMeta):
         self.system_1 = system_1
         self.system_2 = system_2
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def e_errors(self) -> np.ndarray:
         """Energy errors."""
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def f_errors(self) -> np.ndarray:
         """Force errors."""
 
@@ -114,12 +118,16 @@ class Errors(ErrorsBase):
     @lru_cache()
     def e_errors(self) -> np.ndarray:
         """Energy errors."""
+        assert isinstance(self.system_1, self.SYSTEM_TYPE)
+        assert isinstance(self.system_2, self.SYSTEM_TYPE)
         return self.system_1["energies"] - self.system_2["energies"]
 
     @property
     @lru_cache()
     def f_errors(self) -> np.ndarray:
         """Force errors."""
+        assert isinstance(self.system_1, self.SYSTEM_TYPE)
+        assert isinstance(self.system_2, self.SYSTEM_TYPE)
         return (self.system_1["forces"] - self.system_2["forces"]).ravel()
 
 
@@ -147,6 +155,8 @@ class MultiErrors(ErrorsBase):
     @lru_cache()
     def e_errors(self) -> np.ndarray:
         """Energy errors."""
+        assert isinstance(self.system_1, self.SYSTEM_TYPE)
+        assert isinstance(self.system_2, self.SYSTEM_TYPE)
         errors = []
         for nn in self.system_1.systems.keys():
             ss1 = self.system_1[nn]
@@ -158,6 +168,8 @@ class MultiErrors(ErrorsBase):
     @lru_cache()
     def f_errors(self) -> np.ndarray:
         """Force errors."""
+        assert isinstance(self.system_1, self.SYSTEM_TYPE)
+        assert isinstance(self.system_2, self.SYSTEM_TYPE)
         errors = []
         for nn in self.system_1.systems.keys():
             ss1 = self.system_1[nn]

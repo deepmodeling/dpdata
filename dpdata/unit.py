@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC
 
-from scipy import constants
+from scipy import constants  # noqa: TID253
 
 AVOGADRO = constants.Avogadro  # Avagadro constant
 ELE_CHG = constants.elementary_charge  # Elementary Charge, in C

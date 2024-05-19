@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+from __future__ import annotations
+
 import numpy as np
 
 from ..periodic_table import ELEMENTS

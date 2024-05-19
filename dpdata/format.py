@@ -1,5 +1,7 @@
 """Implement the format plugin system."""
 
+from __future__ import annotations
+
 import os
 from abc import ABC
 
@@ -163,7 +165,7 @@ class Format(ABC):
             if not isinstance(func_name, (list, tuple, set)):
                 object.post_func = (func_name,)
             else:
-                object.post_func = func_name
+                object.post_func = tuple(func_name)
             return object
 
         return decorator

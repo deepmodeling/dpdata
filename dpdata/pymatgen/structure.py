@@ -1,9 +1,6 @@
-import numpy as np
+from __future__ import annotations
 
-try:
-    from pymatgen.core import Structure  # noqa: F401
-except ImportError:
-    pass
+import numpy as np
 
 
 def from_system_data(structure) -> dict:

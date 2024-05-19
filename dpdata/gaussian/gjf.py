@@ -3,27 +3,19 @@
 # under LGPL 3.0 license
 """Generate Gaussian input file."""
 
+from __future__ import annotations
+
 import itertools
 import re
 import uuid
 import warnings
-from typing import List, Optional, Tuple, Union
 
 import numpy as np
-from scipy.sparse import csr_matrix
-from scipy.sparse.csgraph import connected_components
 
-try:
-    from openbabel import openbabel
-except ImportError:
-    try:
-        import openbabel
-    except ImportError:
-        openbabel = None
 from dpdata.periodic_table import Element
 
 
-def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
+def _crd2frag(symbols: list[str], crds: np.ndarray) -> tuple[int, list[int]]:
     """Detect fragments from coordinates.
 
     Parameters
@@ -53,10 +45,13 @@ def _crd2frag(symbols: List[str], crds: np.ndarray) -> Tuple[int, List[int]]:
     ImportError
         if Open Babel is not installed
     """
-    if openbabel is None:
-        raise ImportError(
-            "Open Babel (Python interface) should be installed to detect fragmentation!"
-        )
+    from scipy.sparse import csr_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    try:
+        from openbabel import openbabel
+    except ImportError:
+        import openbabel
     atomnumber = len(symbols)
     # Use openbabel to connect atoms
     mol = openbabel.OBMol()
@@ -108,12 +103,12 @@ def detect_multiplicity(symbols: np.ndarray) -> int:
 
 def make_gaussian_input(
     sys_data: dict,
-    keywords: Union[str, List[str]],
-    multiplicity: Union[str, int] = "auto",
+    keywords: str | list[str],
+    multiplicity: str | int = "auto",
     charge: int = 0,
     fragment_guesses: bool = False,
-    basis_set: Optional[str] = None,
-    keywords_high_multiplicity: Optional[str] = None,
+    basis_set: str | None = None,
+    keywords_high_multiplicity: str | None = None,
     nproc: int = 1,
 ) -> str:
     """Make gaussian input file.
