@@ -62,6 +62,11 @@ class ASEStructureFormat(Format):
         """Convert ase.Atoms to a LabeledSystem. Energies and forces
         are calculated by the calculator.
 
+        Note that this method will try to load virials from the following sources:
+        - atoms.info['virial']
+        - atoms.info['virials']
+        - converted from stress tensor
+
         Parameters
         ----------
         atoms : ase.Atoms
@@ -79,12 +84,6 @@ class ASEStructureFormat(Format):
         RuntimeError
             ASE will raise RuntimeError if the atoms does not
             have a calculator
-
-
-        Note that this method will try to load virials from the following sources:
-        - atoms.info['virial']
-        - atoms.info['virials']
-        - converted from stress tensor
         """
         from ase.calculators.calculator import PropertyNotImplementedError
 
