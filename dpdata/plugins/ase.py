@@ -11,6 +11,7 @@ from dpdata.format import Format
 if TYPE_CHECKING:
     import ase
     from ase.optimize.optimize import Optimizer
+    from ase.io import Trajectory
 
 
 @Format.register("ase/structure")
