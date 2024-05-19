@@ -172,7 +172,7 @@ class ASEStructureFormat(Format):
         return structures
 
     def to_labeled_system(self, data, *args, **kwargs):
-        """Convert System to ASE Atoms object. """
+        """Convert System to ASE Atoms object."""
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
 
