@@ -167,13 +167,18 @@ class ASEStructureFormat(Format):
         return structures
 
     def to_labeled_system(self, data, *args, **kwargs):
-        """Convert System to ASE Atoms object."""
+        """Convert System to ASE Atoms object.
+
+        Note that this method will try to load virials from the following sources:
+        - atoms.info['virial']
+        - atoms.info['virials']
+        - converted from stress tensor
+        """
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
 
         structures = []
         species = [data["atom_names"][tt] for tt in data["atom_types"]]
-
         for ii in range(data["coords"].shape[0]):
             structure = Atoms(
                 symbols=species,
