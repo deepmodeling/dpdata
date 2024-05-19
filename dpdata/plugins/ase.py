@@ -79,6 +79,12 @@ class ASEStructureFormat(Format):
         RuntimeError
             ASE will raise RuntimeError if the atoms does not
             have a calculator
+
+
+        Note that this method will try to load virials from the following sources:
+        - atoms.info['virial']
+        - atoms.info['virials']
+        - converted from stress tensor
         """
         from ase.calculators.calculator import PropertyNotImplementedError
 
@@ -167,13 +173,7 @@ class ASEStructureFormat(Format):
         return structures
 
     def to_labeled_system(self, data, *args, **kwargs):
-        """Convert System to ASE Atoms object.
-
-        Note that this method will try to load virials from the following sources:
-        - atoms.info['virial']
-        - atoms.info['virials']
-        - converted from stress tensor
-        """
+        """Convert System to ASE Atoms object. """
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
 
