@@ -225,7 +225,7 @@ def collect_mag_force(outlines):
     for i, line in enumerate(outlines):
         if "Magnetic force (Ry/uB)" in line:
             value_pattern = re.compile(
-                r"^\s*ATOM\s+(\d+)\s+[-+]?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]+([eE][-+]?[0-9]+)?\s*$"
+                r"^\s*ATOM\s+(\d+)\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
             )
             j = i
             # find the first line of force
@@ -370,8 +370,7 @@ def get_frame(fname):
         virtual_len = 0.3
         mag_forces = get_mag_force(outlines, natoms)
         coords_deltaspin = np.hstack((coords, coords - spin / sp_norm * virtual_len))
-
-    force_deltaspin = np.hstack((force, mag_forces))
+        force_deltaspin = np.hstack((force, mag_forces))
 
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
