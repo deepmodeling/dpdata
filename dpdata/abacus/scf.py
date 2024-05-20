@@ -373,13 +373,6 @@ def get_frame(fname):
 
     force_deltaspin = np.hstack((force, mag_forces))
 
-    # print(force_deltaspin)
-    # print(coords_deltaspin)
-    # print(spin)
-    # print(mag_forces)
-    # print(force)
-    # print(coords)
-
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
     data["energies"] = np.array(energy)[np.newaxis]
