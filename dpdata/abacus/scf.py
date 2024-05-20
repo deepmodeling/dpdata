@@ -174,26 +174,25 @@ def get_magnetic(outlines, natoms):
     """
     Mag = []
 
-    # 定义正则表达式以匹配所需的数字
+    # regular expression
     mag_pattern = re.compile(
         r"Total Magnetism on atom:.*\(([\d.\-]+),\s*([\d.\-]+),\s*([\d.\-]+)\)"
     )
 
     for line in outlines:
-        # 使用正则表达式匹配磁性信息
+        # match the magnetic information with regular expression
         match = mag_pattern.search(line)
         if match:
-            # 提取匹配的数字并转换为浮点数，然后将元组转换为列表
+            # Transit to float, and append to the list
             Mag.append([float(num) for num in match.groups()])
-            # 如果Mag的长度达到了natoms，说明已经收集完所有原子的磁矩
+            # If the lense of the Mag equal to 'natoms', all the magnetic moments collected
             if len(Mag) == natoms:
                 break
 
-    # 如果没有找到任何磁矩信息，返回一个空的NumPy数组
+    # If no magnetic information found return an empty NumPy array
     if len(Mag) == 0:
         return np.array([[]])
     else:
-        # 将Mag转换为NumPy数组并返回
         return np.array(Mag)
 
 
@@ -344,13 +343,11 @@ def check_deltaspin(path_in):
     try:
         with open(path_in) as file:
             for line in file:
-                # 移除行首尾的空白字符，然后以空格分割
                 parts = line.strip().split()
-                # 检查是否是sc_mag_switch参数行
+                # Check if the "sc_mag_switch" exist
                 if len(parts) >= 2 and parts[0] == "sc_mag_switch":
-                    # 检查参数值是否为1
                     return True if parts[1] == "1" else None
-        # 文件已读完，没有找到sc_mag_switch参数，返回None
+        # if "sc_mag_switch" not exist return None
         return None
     except FileNotFoundError:
         print(f"File not found: {path_in}")
@@ -424,13 +421,6 @@ def get_frame(fname):
         mag_forces = None
         coords_deltaspin = None
         force_deltaspin = None
-
-    # print(force_deltaspin)
-    # print(coords_deltaspin)
-    # print(spin)
-    # print(mag_forces)
-    # print(force)
-    # print(coords)
 
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
