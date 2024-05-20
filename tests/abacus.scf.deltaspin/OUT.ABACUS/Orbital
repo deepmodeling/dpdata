@@ -1,0 +1,63 @@
+  #io    spec    l    m    z  sym
+    0      Fe    0    0    1              s
+    0      Fe    0    0    2              s
+    0      Fe    0    0    3              s
+    0      Fe    0    0    4              s
+    0      Fe    1    0    1             pz
+    0      Fe    1    1    1             px
+    0      Fe    1    2    1             py
+    0      Fe    1    0    2             pz
+    0      Fe    1    1    2             px
+    0      Fe    1    2    2             py
+    0      Fe    2    0    1           dz^2
+    0      Fe    2    1    1            dxz
+    0      Fe    2    2    1            dyz
+    0      Fe    2    3    1       dx^2-y^2
+    0      Fe    2    4    1            dxy
+    0      Fe    2    0    2           dz^2
+    0      Fe    2    1    2            dxz
+    0      Fe    2    2    2            dyz
+    0      Fe    2    3    2       dx^2-y^2
+    0      Fe    2    4    2            dxy
+    0      Fe    3    0    1           fz^3
+    0      Fe    3    1    1          fxz^2
+    0      Fe    3    2    1          fyz^2
+    0      Fe    3    3    1     fzx^2-zy^2
+    0      Fe    3    4    1           fxyz
+    0      Fe    3    5    1    fx^3-3*xy^2
+    0      Fe    3    6    1     f3yx^2-y^3
+    1      Fe    0    0    1              s
+    1      Fe    0    0    2              s
+    1      Fe    0    0    3              s
+    1      Fe    0    0    4              s
+    1      Fe    1    0    1             pz
+    1      Fe    1    1    1             px
+    1      Fe    1    2    1             py
+    1      Fe    1    0    2             pz
+    1      Fe    1    1    2             px
+    1      Fe    1    2    2             py
+    1      Fe    2    0    1           dz^2
+    1      Fe    2    1    1            dxz
+    1      Fe    2    2    1            dyz
+    1      Fe    2    3    1       dx^2-y^2
+    1      Fe    2    4    1            dxy
+    1      Fe    2    0    2           dz^2
+    1      Fe    2    1    2            dxz
+    1      Fe    2    2    2            dyz
+    1      Fe    2    3    2       dx^2-y^2
+    1      Fe    2    4    2            dxy
+    1      Fe    3    0    1           fz^3
+    1      Fe    3    1    1          fxz^2
+    1      Fe    3    2    1          fyz^2
+    1      Fe    3    3    1     fzx^2-zy^2
+    1      Fe    3    4    1           fxyz
+    1      Fe    3    5    1    fx^3-3*xy^2
+    1      Fe    3    6    1     f3yx^2-y^3
+
+
+  #io =Orbital index in supercell
+#spec =Atomic species label
+   #l =Angular mumentum quantum number
+   #m =Magnetic quantum number
+   #z =Zeta index of orbital
+ #sym =Symmetry name of real orbital
