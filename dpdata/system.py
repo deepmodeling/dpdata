@@ -1109,7 +1109,7 @@ class LabeledSystem(System):
         DataType("spin", np.ndarray, (Axis.NFRAMES, 3)),
         DataType("coords_deltaspin", np.ndarray, (Axis.NFRAMES,)),
         DataType("force_deltaspin", np.ndarray, (Axis.NFRAMES, 3)),
-        DataType("deltaspin", np.ndarray, (Axis.NFRAMES,))
+        DataType("deltaspin", np.ndarray, (Axis.NFRAMES,)),
     )
 
     post_funcs = Plugin() + System.post_funcs
