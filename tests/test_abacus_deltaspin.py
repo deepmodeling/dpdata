@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import unittest
 
-import numpy as np
 from context import dpdata
 
 class TestDeltaSpin(unittest.TestCase):
@@ -17,8 +16,6 @@ class TestDeltaSpin(unittest.TestCase):
     def system_to_npy(self):
         data = dpdata.LabeledSystem('./abacus.scf.deltaspin', fmt = 'abacus/scf').to_deepmd_npy('./abacus.scf.deltaspin/')
         print(data)
-        
-
 
 
 if __name__ == "__main__":
