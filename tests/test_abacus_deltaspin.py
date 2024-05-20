@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from context import dpdata
 
 
@@ -13,4 +15,3 @@ class TestDeltaSpin(unittest.TestCase):
             "./abacus.scf.deltaspin", fmt="abacus/scf"
         ).to_deepmd_npy("./abacus.scf.deltaspin/")
         print(data)
-
