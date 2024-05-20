@@ -1195,11 +1195,6 @@ class LabeledSystem(System):
         DataType("forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
         DataType("virials", np.ndarray, (Axis.NFRAMES, 3, 3), required=False),
         DataType("atom_pref", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False),
-        DataType("mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
-        DataType("spin", np.ndarray, (Axis.NFRAMES, 3)),
-        DataType("coords_deltaspin", np.ndarray, (Axis.NFRAMES,)),
-        DataType("force_deltaspin", np.ndarray, (Axis.NFRAMES, 3)),
-        DataType("deltaspin", np.ndarray, (Axis.NFRAMES,)),
     )
 
     post_funcs = Plugin() + System.post_funcs
