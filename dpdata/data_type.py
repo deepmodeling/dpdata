@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from enum import Enum, unique
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -50,7 +52,7 @@ class DataType:
         self,
         name: str,
         dtype: type,
-        shape: Tuple[int, Axis] = None,
+        shape: tuple[int | Axis, ...] | None = None,
         required: bool = True,
     ) -> None:
         self.name = name
@@ -58,8 +60,9 @@ class DataType:
         self.shape = shape
         self.required = required
 
-    def real_shape(self, system: "System") -> Tuple[int]:
+    def real_shape(self, system: System) -> tuple[int]:
         """Returns expected real shape of a system."""
+        assert self.shape is not None
         shape = []
         for ii in self.shape:
             if ii is Axis.NFRAMES:
@@ -70,7 +73,7 @@ class DataType:
                 shape.append(system.get_natoms())
             elif ii is Axis.NBONDS:
                 # BondOrderSystem
-                shape.append(system.get_nbonds())
+                shape.append(system.get_nbonds())  # type: ignore
             elif ii == -1:
                 shape.append(AnyInt(-1))
             elif isinstance(ii, int):
@@ -79,7 +82,7 @@ class DataType:
                 raise RuntimeError("Shape is not an int!")
         return tuple(shape)
 
-    def check(self, system: "System"):
+    def check(self, system: System):
         """Check if a system has correct data of this type.
 
         Parameters
@@ -121,7 +124,7 @@ class DataType:
                 else:
                     raise RuntimeError("Unsupported type to check shape")
         elif self.required:
-            raise DataError("%s not found in data" % self.name)
+            raise DataError(f"{self.name} not found in data")
 
 
 __system_data_type_plugin = Plugin()

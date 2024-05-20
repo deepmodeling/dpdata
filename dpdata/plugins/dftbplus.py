@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from dpdata.dftbplus.output import read_dftb_plus

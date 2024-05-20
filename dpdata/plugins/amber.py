@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import subprocess as sp
 import tempfile
@@ -124,7 +126,7 @@ class SQMDriver(Driver):
     -15.41111246
     """
 
-    def __init__(self, sqm_exec: str = "sqm", **kwargs: dict) -> None:
+    def __init__(self, sqm_exec: str = "sqm", **kwargs) -> None:
         self.sqm_exec = sqm_exec
         self.kwargs = kwargs
 

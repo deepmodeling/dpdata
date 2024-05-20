@@ -1,4 +1,6 @@
 # %%
+from __future__ import annotations
+
 import unittest
 
 from comp_sys import CompLabeledSys
