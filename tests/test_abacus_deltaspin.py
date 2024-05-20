@@ -1,7 +1,3 @@
-from __future__ import annotations
-
-import unittest
-
 from context import dpdata
 
 
@@ -18,6 +14,3 @@ class TestDeltaSpin(unittest.TestCase):
         ).to_deepmd_npy("./abacus.scf.deltaspin/")
         print(data)
 
-
-if __name__ == "__main__":
-    unittest.main()
