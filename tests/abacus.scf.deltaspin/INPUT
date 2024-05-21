@@ -1,0 +1,29 @@
+INPUT_PARAMETERS
+suffix                          ABACUS
+calculation                     scf
+ecutwfc                         100
+scf_thr                         1.0e-7
+scf_nmax                        200
+out_chg                         0
+smearing_method                 gauss
+smearing_sigma                  0.01
+ks_solver                       genelpa
+basis_type                      lcao
+symmetry                        0
+noncolin			            1
+lspinorb			            0
+nspin                           4
+kspacing                        1.0
+cal_force                       true
+cal_stress                      true
+out_mul                         true
+
+#deltaspin
+sc_mag_switch                   1
+decay_grad_switch               1
+sc_thr                          1e-7
+nsc                             100
+nsc_min                         2
+sc_file                         sc.json
+alpha_trial                     0.01
+sccut                           3
