@@ -6,7 +6,7 @@ import numpy as np
 from context import dpdata
 
 class TestABACUSDeltaSpin(unittest.TestCase):
-    """Make a test for the DeltaSpin module in ABACUS"""
+    """Make a test for the DeltaSpin module in ABACUS."""
 
     def setUp(self):
         
