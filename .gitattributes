@@ -1,1 +1,2 @@
-.git_archival.txt  export-subst
+.git_archival.txt  export-subst 
+*.py test eol=lf
