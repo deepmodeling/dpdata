@@ -71,7 +71,7 @@ class TestASEtraj3Labeled(unittest.TestCase, CompLabeledSys, IsPBC):
 class TestASEtraj4(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
         self.system_1 = dpdata.System("ase_traj/MoS2", fmt="deepmd")
-        self.system_1.to_system(file_name="tmp.traj")
+        self.system_1.to(file_name="tmp.traj", fmt='ase/traj')
         self.system_2 = dpdata.System("tmp.traj", fmt="ase/traj")
         self.places = 6
         self.e_places = 6
@@ -83,7 +83,7 @@ class TestASEtraj4(unittest.TestCase, CompSys, IsPBC):
 class TestASEtraj4Labeled(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem("ase_traj/MoS2", fmt="deepmd")
-        self.system_1.to_labeled_system(file_name="tmp1.traj")
+        self.system_1.to(file_name="tmp1.traj", fmt='ase/traj')
         self.system_2 = dpdata.LabeledSystem("tmp1.traj", fmt="ase/traj")
         self.places = 6
         self.e_places = 6
