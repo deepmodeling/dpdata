@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from .pbc import posi_diff, posi_shift

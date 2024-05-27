@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from dpdata.data_type import Axis, DataType, register_data_type

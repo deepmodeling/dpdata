@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpdata.lammps.dump
 import dpdata.lammps.lmp
 from dpdata.format import Format

@@ -1,11 +1,31 @@
+from __future__ import annotations
+
 import numpy as np
 
 import dpdata.pymatgen.molecule
+import dpdata.pymatgen.structure
 from dpdata.format import Format
 
 
 @Format.register("pymatgen/structure")
 class PyMatgenStructureFormat(Format):
+    def from_system(self, structure, **kwargs) -> dict:
+        """Convert pymatgen.core.Structure to System.
+
+        Parameters
+        ----------
+        structure : pymatgen.core.Structure
+            a Pymatgen Structure, containing a structure
+        **kwargs : dict
+            other parameters
+
+        Returns
+        -------
+        dict
+            data dict
+        """
+        return dpdata.pymatgen.structure.from_system_data(structure)
+
     def to_system(self, data, **kwargs):
         """Convert System to Pymatgen Structure obj."""
         structures = []

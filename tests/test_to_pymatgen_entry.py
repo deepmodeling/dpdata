@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import os
 import unittest
 
 from context import dpdata
-from monty.serialization import loadfn
+from monty.serialization import loadfn  # noqa: TID253
 
 try:
     from pymatgen.entries.computed_entries import ComputedStructureEntry  # noqa: F401

@@ -1,9 +1,11 @@
+from __future__ import annotations
+
+import json
 from pathlib import Path
 
-from monty.serialization import loadfn
-
-fpdt = str(Path(__file__).absolute().parent / "periodic_table.json")
-_pdt = loadfn(fpdt)
+fpdt = Path(__file__).absolute().parent / "periodic_table.json"
+with fpdt.open("r") as fpdt:
+    _pdt = json.load(fpdt)
 ELEMENTS = [
     "H",
     "He",
@@ -108,13 +110,28 @@ ELEMENTS = [
     "Md",
     "No",
     "Lr",
+    "Rf",
+    "Db",
+    "Sg",
+    "Bh",
+    "Hs",
+    "Mt",
+    "Ds",
+    "Rg",
+    "Cn",
+    "Nh",
+    "Fl",
+    "Mc",
+    "Lv",
+    "Ts",
+    "Og",
 ]
 
 
 class Element:
     def __init__(self, symbol: str):
         assert symbol in ELEMENTS
-        self.symbol = "%s" % symbol
+        self.symbol = f"{symbol}"
         d = _pdt[symbol]
         self._Z = d["atomic_no"]
         self._name = d["name"]
@@ -127,7 +144,7 @@ class Element:
         return self.symbol
 
     def __repr__(self):
-        return "Element : %s" % self.symbol
+        return f"Element : {self.symbol}"
 
     @classmethod
     def from_Z(cls, Z):

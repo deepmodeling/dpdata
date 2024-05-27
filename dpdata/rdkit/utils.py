@@ -1,11 +1,11 @@
-try:
-    from rdkit import Chem
-except ModuleNotFoundError:
-    pass
+from __future__ import annotations
+
 import numpy as np
 
 
 def mol_to_system_data(mol):
+    from rdkit import Chem
+
     if not isinstance(mol, Chem.rdchem.Mol):
         raise TypeError(f"rdkit.Chem.Mol required, not {type(mol)}")
 
@@ -52,6 +52,8 @@ def mol_to_system_data(mol):
 
 
 def system_data_to_mol(data):
+    from rdkit import Chem
+
     mol_ed = Chem.RWMol()
     atom_symbols = [data["atom_names"][i] for i in data["atom_types"]]
     # add atoms

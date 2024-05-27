@@ -1,5 +1,7 @@
 """Implement the format plugin system."""
 
+from __future__ import annotations
+
 import os
 from abc import ABC
 
@@ -163,7 +165,7 @@ class Format(ABC):
             if not isinstance(func_name, (list, tuple, set)):
                 object.post_func = (func_name,)
             else:
-                object.post_func = func_name
+                object.post_func = tuple(func_name)
             return object
 
         return decorator
@@ -184,7 +186,7 @@ class Format(ABC):
             system data, whose keys are defined in System.DTYPES
         """
         raise NotImplementedError(
-            "%s doesn't support System.from" % (self.__class__.__name__)
+            f"{self.__class__.__name__} doesn't support System.from"
         )
 
     def to_system(self, data, *args, **kwargs):
@@ -200,7 +202,7 @@ class Format(ABC):
             keyword arguments that will be passed from the method
         """
         raise NotImplementedError(
-            "%s doesn't support System.to" % (self.__class__.__name__)
+            f"{self.__class__.__name__} doesn't support System.to"
         )
 
     def from_labeled_system(self, file_name, **kwargs):
@@ -219,7 +221,7 @@ class Format(ABC):
             system data, whose keys are defined in LabeledSystem.DTYPES
         """
         raise NotImplementedError(
-            "%s doesn't support LabeledSystem.from" % (self.__class__.__name__)
+            f"{self.__class__.__name__} doesn't support LabeledSystem.from"
         )
 
     def to_labeled_system(self, data, *args, **kwargs):
@@ -254,7 +256,7 @@ class Format(ABC):
             system data
         """
         raise NotImplementedError(
-            "%s doesn't support BondOrderSystem.from" % (self.__class__.__name__)
+            f"{self.__class__.__name__} doesn't support BondOrderSystem.from"
         )
 
     def to_bond_order_system(self, data, rdkit_mol, *args, **kwargs):
@@ -313,7 +315,7 @@ class Format(ABC):
                 if os.path.isdir(os.path.join(directory, name))
             ]
         raise NotImplementedError(
-            "%s doesn't support MultiSystems.from" % (self.__class__.__name__)
+            f"{self.__class__.__name__} doesn't support MultiSystems.from"
         )
 
     def to_multi_systems(self, formulas, directory, **kwargs):
@@ -333,7 +335,7 @@ class Format(ABC):
         if self.MultiMode == self.MultiModes.Directory:
             return [os.path.join(directory, ff) for ff in formulas]
         raise NotImplementedError(
-            "%s doesn't support MultiSystems.to" % (self.__class__.__name__)
+            f"{self.__class__.__name__} doesn't support MultiSystems.to"
         )
 
     def mix_system(self, *system, type_map, **kwargs):
@@ -354,5 +356,5 @@ class Format(ABC):
             dict of mixed system with key 'atom_numbs'
         """
         raise NotImplementedError(
-            "%s doesn't support System.from" % (self.__class__.__name__)
+            f"{self.__class__.__name__} doesn't support System.from"
         )
