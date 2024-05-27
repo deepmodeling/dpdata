@@ -70,10 +70,9 @@ class TestASEtraj3Labeled(unittest.TestCase, CompLabeledSys, IsPBC):
 @unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
 class TestASEtraj4(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
-        system_1 = dpdata.System("ase_traj/MoS2", fmt="deepmd")
-        system_1.to(file_name="tmp.traj", fmt="ase/traj")
-        self.system_2 = dpdata.System("tmp.traj", fmt="ase/traj")
-        self.system_1 = system_1
+        self.system_1 = dpdata.System("ase_traj/MoS2", fmt="deepmd")
+        self.system_1.to(file_name="ase_traj/tmp.traj", fmt="ase/traj")
+        self.system_2 = dpdata.System("ase_traj/tmp.traj", fmt="ase/traj")
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -83,10 +82,9 @@ class TestASEtraj4(unittest.TestCase, CompSys, IsPBC):
 @unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
 class TestASEtraj4Labeled(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
-        system_1 = dpdata.LabeledSystem("ase_traj/MoS2", fmt="deepmd")
-        system_1.to(file_name="tmp1.traj", fmt="ase/traj")
-        self.system_2 = dpdata.LabeledSystem("tmp1.traj", fmt="ase/traj")
-        self.system_1 = system_1
+        self.system_1 = dpdata.LabeledSystem("ase_traj/MoS2", fmt="deepmd")
+        self.system_1.to(file_name="ase_traj/tmp1.traj", fmt="ase/traj")
+        self.system_2 = dpdata.LabeledSystem("ase_traj/tmp1.traj", fmt="ase/traj")
         self.places = 6
         self.e_places = 6
         self.f_places = 6

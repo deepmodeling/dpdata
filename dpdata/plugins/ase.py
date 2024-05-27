@@ -1,3 +1,4 @@
+import os
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generator
@@ -313,6 +314,9 @@ class ASETrajFormat(Format):
         file_name : str
             path to file
         """
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+
         list_atoms = ASEStructureFormat().to_system(data, **kwargs)
         traj = Trajectory(file_name, "a")
         _ = [traj.write(atom) for atom in list_atoms]
@@ -329,6 +333,9 @@ class ASETrajFormat(Format):
         file_name : str
             path to file
         """
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+
         list_atoms = ASEStructureFormat().to_labeled_system(data, *args, **kwargs)
         traj = Trajectory(file_name, "a")
         _ = [traj.write(atom) for atom in list_atoms]
