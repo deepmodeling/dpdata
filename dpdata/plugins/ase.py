@@ -10,8 +10,12 @@ from dpdata.format import Format
 
 if TYPE_CHECKING:
     import ase
-    from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
+
+try:
+    from ase.io import Trajectory
+except ImportError:
+    pass
 
 
 @Format.register("ase/structure")
