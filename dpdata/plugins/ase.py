@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generator, List
+from typing import TYPE_CHECKING, Generator
 
 import numpy as np
 
@@ -145,7 +145,7 @@ class ASEStructureFormat(Format):
         frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
         yield from frames
 
-    def to_system(self, data, **kwargs) -> List[ase.Atoms]:
+    def to_system(self, data, **kwargs) -> list[ase.Atoms]:
         """Convert System to ASE Atom obj."""
         from ase import Atoms
 
@@ -163,7 +163,7 @@ class ASEStructureFormat(Format):
 
         return structures
 
-    def to_labeled_system(self, data, *args, **kwargs) -> List[ase.Atoms]:
+    def to_labeled_system(self, data, *args, **kwargs) -> list[ase.Atoms]:
         """Convert System to ASE Atoms object."""
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
