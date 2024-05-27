@@ -67,5 +67,29 @@ class TestASEtraj3Labeled(unittest.TestCase, CompLabeledSys, IsPBC):
         self.v_places = 4
 
 
+@unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
+class TestASEtraj4(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp(self):
+        self.system_1 = dpdata.System("ase_traj/MoS2", fmt="deepmd")
+        self.system_1.to_system(file_name="tmp.traj")
+        self.system_2 = dpdata.System("tmp.traj", fmt="ase/traj")
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+
+@unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
+class TestASEtraj4Labeled(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem("ase_traj/MoS2", fmt="deepmd")
+        self.system_1.to_system(file_name="tmp.traj")
+        self.system_2 = dpdata.LabeledSystem("tmp.traj", fmt="ase/traj")
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+
 if __name__ == "__main__":
     unittest.main()
