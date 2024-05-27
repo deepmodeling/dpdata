@@ -16,6 +16,8 @@ repos:
     -   id: check-merge-conflict
     -   id: check-symlinks
     -   id: check-toml
+    -   id: mixed-line-ending
+        args: ["--fix=lf"]
 # Python
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
