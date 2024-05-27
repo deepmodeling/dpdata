@@ -10,8 +10,8 @@ from dpdata.format import Format
 
 if TYPE_CHECKING:
     import ase
-    from ase.optimize.optimize import Optimizer
     from ase.io import Trajectory
+    from ase.optimize.optimize import Optimizer
 
 
 @Format.register("ase/structure")
@@ -111,7 +111,7 @@ class ASEStructureFormat(Format):
         step: int | None = None,
         ase_fmt: str | None = None,
         **kwargs,
-    ) -> Generator["ase.Atoms", None, None]:
+    ) -> Generator[ase.Atoms, None, None]:
         """Convert a ASE supported file to ASE Atoms.
 
         It will finally be converted to MultiSystems.
@@ -141,7 +141,7 @@ class ASEStructureFormat(Format):
         frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
         yield from frames
 
-    def to_system(self, data, **kwargs) -> List["ase.Atoms"]:
+    def to_system(self, data, **kwargs) -> List[ase.Atoms]:
         """Convert System to ASE Atom obj."""
         from ase import Atoms
 
@@ -159,7 +159,7 @@ class ASEStructureFormat(Format):
 
         return structures
 
-    def to_labeled_system(self, data, *args, **kwargs) -> List["ase.Atoms"]:
+    def to_labeled_system(self, data, *args, **kwargs) -> List[ase.Atoms]:
         """Convert System to ASE Atoms object."""
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
