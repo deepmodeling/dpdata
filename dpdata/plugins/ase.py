@@ -62,6 +62,11 @@ class ASEStructureFormat(Format):
         """Convert ase.Atoms to a LabeledSystem. Energies and forces
         are calculated by the calculator.
 
+        Note that this method will try to load virials from the following sources:
+        - atoms.info['virial']
+        - atoms.info['virials']
+        - converted from stress tensor
+
         Parameters
         ----------
         atoms : ase.Atoms
@@ -93,13 +98,21 @@ class ASEStructureFormat(Format):
             "energies": np.array([energies]),
             "forces": np.array([forces]),
         }
-        try:
-            stress = atoms.get_stress(False)
-        except PropertyNotImplementedError:
-            pass
-        else:
-            virials = np.array([-atoms.get_volume() * stress])
+
+        # try to get virials from different sources
+        virials = atoms.info.get("virial")
+        if virials is None:
+            virials = atoms.info.get("virials")
+        if virials is None:
+            try:
+                stress = atoms.get_stress(False)
+            except PropertyNotImplementedError:
+                pass
+            else:
+                virials = np.array([-atoms.get_volume() * stress])
+        if virials is not None:
             info_dict["virials"] = virials
+
         return info_dict
 
     def from_multi_systems(
@@ -165,7 +178,6 @@ class ASEStructureFormat(Format):
 
         structures = []
         species = [data["atom_names"][tt] for tt in data["atom_types"]]
-
         for ii in range(data["coords"].shape[0]):
             structure = Atoms(
                 symbols=species,
