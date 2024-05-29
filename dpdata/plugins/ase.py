@@ -13,11 +13,6 @@ if TYPE_CHECKING:
     import ase
     from ase.optimize.optimize import Optimizer
 
-try:
-    from ase.io import Trajectory
-except ImportError:
-    pass
-
 
 @Format.register("ase/structure")
 class ASEStructureFormat(Format):
@@ -306,7 +301,11 @@ class ASETrajFormat(Format):
 
         return dict_frames
 
-    def to_system(self, data, file_name: str = "confs.traj", **kwargs) -> None:
+    def to_system(
+            self,
+            data,
+            file_name: str = "confs.traj",
+            **kwargs) -> None:
         """Convert System to ASE Atoms object.
 
         Parameters
@@ -314,6 +313,8 @@ class ASETrajFormat(Format):
         file_name : str
             path to file
         """
+        from ase.io import Trajectory
+
         if os.path.isfile(file_name):
             os.remove(file_name)
 
@@ -324,8 +325,11 @@ class ASETrajFormat(Format):
         return
 
     def to_labeled_system(
-        self, data, file_name: str = "labeled_confs.traj", *args, **kwargs
-    ) -> None:
+        self,
+        data,
+        file_name: str = "labeled_confs.traj",
+        *args,
+        **kwargs    ) -> None:
         """Convert System to ASE Atoms object.
 
         Parameters
@@ -333,6 +337,8 @@ class ASETrajFormat(Format):
         file_name : str
             path to file
         """
+        from ase.io import Trajectory
+
         if os.path.isfile(file_name):
             os.remove(file_name)
 
