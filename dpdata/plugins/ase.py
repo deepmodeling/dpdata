@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import os
+from typing import TYPE_CHECKING, Generator
 
 import numpy as np
 
@@ -94,7 +95,7 @@ class ASEStructureFormat(Format):
             "forces": np.array([forces]),
         }
         try:
-            stress = atoms.get_stress(False)
+            stress = atoms.get_stress(voigt=False)
         except PropertyNotImplementedError:
             pass
         else:
@@ -110,7 +111,7 @@ class ASEStructureFormat(Format):
         step: int | None = None,
         ase_fmt: str | None = None,
         **kwargs,
-    ) -> ase.Atoms:
+    ) -> Generator[ase.Atoms, None, None]:
         """Convert a ASE supported file to ASE Atoms.
 
         It will finally be converted to MultiSystems.
@@ -140,7 +141,7 @@ class ASEStructureFormat(Format):
         frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
         yield from frames
 
-    def to_system(self, data, **kwargs):
+    def to_system(self, data, **kwargs) -> list[ase.Atoms]:
         """Convert System to ASE Atom obj."""
         from ase import Atoms
 
@@ -158,7 +159,7 @@ class ASEStructureFormat(Format):
 
         return structures
 
-    def to_labeled_system(self, data, *args, **kwargs):
+    def to_labeled_system(self, data, *args, **kwargs) -> list[ase.Atoms]:
         """Convert System to ASE Atoms object."""
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
@@ -299,6 +300,46 @@ class ASETrajFormat(Format):
             dict_frames["virials"] = dict_frames["virials"].reshape(-1, 3, 3)
 
         return dict_frames
+
+    def to_system(self, data, file_name: str = "confs.traj", **kwargs) -> None:
+        """Convert System to ASE Atoms object.
+
+        Parameters
+        ----------
+        file_name : str
+            path to file
+        """
+        from ase.io import Trajectory
+
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+
+        list_atoms = ASEStructureFormat().to_system(data, **kwargs)
+        traj = Trajectory(file_name, "a")
+        _ = [traj.write(atom) for atom in list_atoms]
+        traj.close()
+        return
+
+    def to_labeled_system(
+        self, data, file_name: str = "labeled_confs.traj", *args, **kwargs
+    ) -> None:
+        """Convert System to ASE Atoms object.
+
+        Parameters
+        ----------
+        file_name : str
+            path to file
+        """
+        from ase.io import Trajectory
+
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+
+        list_atoms = ASEStructureFormat().to_labeled_system(data, *args, **kwargs)
+        traj = Trajectory(file_name, "a")
+        _ = [traj.write(atom) for atom in list_atoms]
+        traj.close()
+        return
 
 
 @Driver.register("ase")
