@@ -301,11 +301,7 @@ class ASETrajFormat(Format):
 
         return dict_frames
 
-    def to_system(
-            self,
-            data,
-            file_name: str = "confs.traj",
-            **kwargs) -> None:
+    def to_system(self, data, file_name: str = "confs.traj", **kwargs) -> None:
         """Convert System to ASE Atoms object.
 
         Parameters
@@ -325,11 +321,8 @@ class ASETrajFormat(Format):
         return
 
     def to_labeled_system(
-        self,
-        data,
-        file_name: str = "labeled_confs.traj",
-        *args,
-        **kwargs    ) -> None:
+        self, data, file_name: str = "labeled_confs.traj", *args, **kwargs
+    ) -> None:
         """Convert System to ASE Atoms object.
 
         Parameters
