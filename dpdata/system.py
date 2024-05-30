@@ -643,6 +643,10 @@ class System(MSONable):
         assert np.linalg.det(trans) != 0
         self.data["cells"][f_idx] = np.matmul(self.data["cells"][f_idx], trans)
         self.data["coords"][f_idx] = np.matmul(self.data["coords"][f_idx], trans)
+        try:
+            self.data["spin"][f_idx] = np.matmul(self.data["spin"][f_idx], trans)
+        except:
+            pass
 
     @post_funcs.register("shift_orig_zero")
     def _shift_orig_zero(self):

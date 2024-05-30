@@ -266,7 +266,7 @@ def from_system_data(system, f_idx=0):
                     system["coords"][f_idx][ii][2] - system["orig"][2],
                     system['spin'][f_idx][ii][0],
                     system['spin'][f_idx][ii][1],
-                    system['spin'][f_idx][ii][2],
+                    system['spin'][f_idx][ii][2]+1,
                     spin_norm[ii],
                 )
         else:
