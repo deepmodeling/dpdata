@@ -776,7 +776,7 @@ class System:
         tmp.data["atom_numbs"] = list(
             np.array(np.copy(data["atom_numbs"])) * np.prod(ncopy)
         )
-        tmp.data["atom_types"] = np.tile(np.copy(data["atom_types"]), (np.prod(ncopy),) + (1,))
+        tmp.data["atom_types"] = np.tile(np.copy(data["atom_types"]), (int(np.prod(ncopy)),) + (1,))
         tmp.data["atom_types"] = np.transpose(tmp.data["atom_types"]).reshape([-1])
 
         tmp.data["cells"] = np.copy(data["cells"])
