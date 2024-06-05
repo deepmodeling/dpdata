@@ -106,7 +106,9 @@ class TestMinimize(unittest.TestCase, CompLabeledSys, IsPBC):
         )
         zero_driver = ZeroDriver()
         self.system_1 = ori_sys.predict(driver=zero_driver)
-        self.system_2 = ori_sys.minimize(driver=zero_driver, minimizer="ase")
+        self.system_2 = ori_sys.minimize(
+            driver=zero_driver, minimizer="ase", max_steps=100
+        )
         self.places = 6
         self.e_places = 6
         self.f_places = 6
