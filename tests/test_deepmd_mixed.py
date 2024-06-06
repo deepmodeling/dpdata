@@ -314,5 +314,29 @@ class TestMixedMultiSystemsTypeChange(
         )
 
 
+class TestMixedSingleSystemsDump(
+    unittest.TestCase, CompLabeledSys, IsNoPBC
+):
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        # C1H4
+        self.system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        self.system_2 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        # test dump
+        self.system_1.to('deepmd/npy/mixed', "tmp.deepmd.mixed.single")
+
+    def tearDown(self):
+        if os.path.exists("tmp.deepmd.mixed.single"):
+            shutil.rmtree("tmp.deepmd.mixed.single")
+
+
 if __name__ == "__main__":
     unittest.main()
