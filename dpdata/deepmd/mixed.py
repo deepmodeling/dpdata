@@ -3,6 +3,7 @@ from __future__ import annotations
 import glob
 import os
 import shutil
+import copy
 
 import numpy as np
 
@@ -159,6 +160,8 @@ def dump(folder, data, set_size=2000, comp_prec=np.float32, remove_sets=True):
     # if not converted to mixed
     if "real_atom_types" not in data:
         from dpdata import LabeledSystem, System
+        # not change the original content
+        data = copy.deepcopy(data)
 
         if "energies" in data:
             temp_sys = LabeledSystem(data=data)
