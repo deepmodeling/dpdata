@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from __future__ import annotations
 
 import numpy as np
 
@@ -59,12 +60,12 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     ret += "1.0\n"
     for ii in system["cells"][f_idx]:
         for jj in ii:
-            ret += "%.16e " % jj
+            ret += f"{jj:.16e} "
         ret += "\n"
     for idx, ii in enumerate(system["atom_names"]):
         if system["atom_numbs"][idx] == 0:
             continue
-        ret += "%s " % ii
+        ret += f"{ii} "
     ret += "\n"
     for ii in system["atom_numbs"]:
         if ii == 0:

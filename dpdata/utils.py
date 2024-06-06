@@ -1,9 +1,34 @@
+from __future__ import annotations
+
+import sys
+from typing import overload
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 import numpy as np
 
 from dpdata.periodic_table import Element
 
 
-def elements_index_map(elements, standard=False, inverse=False):
+@overload
+def elements_index_map(
+    elements: list[str], standard: bool, inverse: Literal[True]
+) -> dict[int, str]: ...
+@overload
+def elements_index_map(
+    elements: list[str], standard: bool, inverse: Literal[False] = ...
+) -> dict[str, int]: ...
+@overload
+def elements_index_map(
+    elements: list[str], standard: bool, inverse: bool = False
+) -> dict[str, int] | dict[int, str]: ...
+
+
+def elements_index_map(
+    elements: list[str], standard: bool = False, inverse: bool = False
+) -> dict:
     if standard:
         elements.sort(key=lambda x: Element(x).Z)
     if inverse:

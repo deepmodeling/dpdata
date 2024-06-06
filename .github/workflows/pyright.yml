@@ -1,0 +1,19 @@
+on:
+  - push
+  - pull_request
+
+name: Type checker
+jobs:
+  pyright:
+    name: pyright
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - run: pip install uv
+    - run: uv pip install --system -e .[amber,ase,pymatgen] rdkit openbabel-wheel
+    - uses: jakebailey/pyright-action@v2
+      with:
+        version: 1.1.363

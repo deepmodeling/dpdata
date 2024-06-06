@@ -1,4 +1,4 @@
-from typing import Tuple
+from __future__ import annotations
 
 import numpy as np
 
@@ -31,7 +31,7 @@ def coord_to_xyz(coord: np.ndarray, types: list) -> str:
     return "\n".join(buff)
 
 
-def xyz_to_coord(xyz: str) -> Tuple[np.ndarray, list]:
+def xyz_to_coord(xyz: str) -> tuple[np.ndarray, list]:
     """Convert xyz format to coordinates and types.
 
     Parameters

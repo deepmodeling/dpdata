@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpdata.md.pbc
 import dpdata.qe.scf
 import dpdata.qe.traj

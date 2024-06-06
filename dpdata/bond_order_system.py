@@ -1,9 +1,10 @@
 # %%
 # Bond Order System
+from __future__ import annotations
+
 from copy import deepcopy
 
 import numpy as np
-from rdkit.Chem import Conformer
 
 import dpdata.rdkit.utils
 from dpdata.rdkit.sanitize import Sanitizer
@@ -97,11 +98,14 @@ class BondOrderSystem(System):
         mol = fmtobj.from_bond_order_system(file_name, **kwargs)
         self.from_rdkit_mol(mol)
         if hasattr(fmtobj.from_bond_order_system, "post_func"):
-            for post_f in fmtobj.from_bond_order_system.post_func:
+            for post_f in fmtobj.from_bond_order_system.post_func:  # type: ignore
                 self.post_funcs.get_plugin(post_f)(self)
         return self
 
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
+        from rdkit.Chem import Conformer
+
+        assert self.rdkit_mol is not None
         self.rdkit_mol.RemoveAllConformers()
         for ii in range(self.get_nframes()):
             conf = Conformer()
@@ -144,9 +148,9 @@ class BondOrderSystem(System):
         """Return the formal charges on each atom."""
         return self.data["formal_charges"]
 
-    def copy(self):
+    def copy(self):  # type: ignore
         new_mol = deepcopy(self.rdkit_mol)
-        self.__class__(data=deepcopy(self.data), rdkit_mol=new_mol)
+        return self.__class__(data=deepcopy(self.data), rdkit_mol=new_mol)
 
     def __add__(self, other):
         raise NotImplementedError(

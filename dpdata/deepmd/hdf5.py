@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 import warnings
+from typing import TYPE_CHECKING
 
-try:
-    import h5py
-except ImportError:
-    pass
 import numpy as np
-from wcmatch.glob import globfilter
 
 import dpdata
+
+if TYPE_CHECKING:
+    import h5py
 
 __all__ = ["to_system_data", "dump"]
 
@@ -35,6 +34,8 @@ def to_system_data(
     labels : bool
         labels
     """
+    from wcmatch.glob import globfilter
+
     g = f[folder] if folder else f
 
     data = {}
@@ -139,7 +140,7 @@ def to_system_data(
 
         for ii in sets:
             set = g[ii]
-            fn = "%s.npy" % prop["fn"]
+            fn = "{}.npy".format(prop["fn"])
             if fn in set.keys():
                 dd = set[fn][:]
                 nframes = dd.shape[0]
@@ -257,7 +258,7 @@ def dump(
         for dt, prop in data_types.items():
             if dt in reshaped_data:
                 set_folder.create_dataset(
-                    "%s.npy" % prop["fn"], data=reshaped_data[dt][set_stt:set_end]
+                    "{}.npy".format(prop["fn"]), data=reshaped_data[dt][set_stt:set_end]
                 )
 
     if nopbc:

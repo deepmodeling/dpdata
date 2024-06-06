@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpdata.md.pbc
 import dpdata.openmx.omx
 from dpdata.format import Format

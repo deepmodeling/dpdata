@@ -1,4 +1,7 @@
-from typing import TYPE_CHECKING, Optional, Type
+from __future__ import annotations
+
+import os
+from typing import TYPE_CHECKING, Generator
 
 import numpy as np
 
@@ -6,15 +9,9 @@ import dpdata
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 
-try:
-    import ase.io
-    from ase.calculators.calculator import PropertyNotImplementedError
-    from ase.io import Trajectory
-
-    if TYPE_CHECKING:
-        from ase.optimize.optimize import Optimizer
-except ImportError:
-    pass
+if TYPE_CHECKING:
+    import ase
+    from ase.optimize.optimize import Optimizer
 
 
 @Format.register("ase/structure")
@@ -28,7 +25,7 @@ class ASEStructureFormat(Format):
     automatic detection fails.
     """
 
-    def from_system(self, atoms: "ase.Atoms", **kwargs) -> dict:
+    def from_system(self, atoms: ase.Atoms, **kwargs) -> dict:
         """Convert ase.Atoms to a System.
 
         Parameters
@@ -62,7 +59,7 @@ class ASEStructureFormat(Format):
         }
         return info_dict
 
-    def from_labeled_system(self, atoms: "ase.Atoms", **kwargs) -> dict:
+    def from_labeled_system(self, atoms: ase.Atoms, **kwargs) -> dict:
         """Convert ase.Atoms to a LabeledSystem. Energies and forces
         are calculated by the calculator.
 
@@ -84,6 +81,8 @@ class ASEStructureFormat(Format):
             ASE will raise RuntimeError if the atoms does not
             have a calculator
         """
+        from ase.calculators.calculator import PropertyNotImplementedError
+
         info_dict = self.from_system(atoms)
         try:
             energies = atoms.get_potential_energy(force_consistent=True)
@@ -96,7 +95,7 @@ class ASEStructureFormat(Format):
             "forces": np.array([forces]),
         }
         try:
-            stress = atoms.get_stress(False)
+            stress = atoms.get_stress(voigt=False)
         except PropertyNotImplementedError:
             pass
         else:
@@ -107,12 +106,12 @@ class ASEStructureFormat(Format):
     def from_multi_systems(
         self,
         file_name: str,
-        begin: Optional[int] = None,
-        end: Optional[int] = None,
-        step: Optional[int] = None,
-        ase_fmt: Optional[str] = None,
+        begin: int | None = None,
+        end: int | None = None,
+        step: int | None = None,
+        ase_fmt: str | None = None,
         **kwargs,
-    ) -> "ase.Atoms":
+    ) -> Generator[ase.Atoms, None, None]:
         """Convert a ASE supported file to ASE Atoms.
 
         It will finally be converted to MultiSystems.
@@ -137,10 +136,12 @@ class ASEStructureFormat(Format):
         ase.Atoms
             ASE atoms in the file
         """
+        import ase.io
+
         frames = ase.io.read(file_name, format=ase_fmt, index=slice(begin, end, step))
         yield from frames
 
-    def to_system(self, data, **kwargs):
+    def to_system(self, data, **kwargs) -> list[ase.Atoms]:
         """Convert System to ASE Atom obj."""
         from ase import Atoms
 
@@ -158,7 +159,7 @@ class ASEStructureFormat(Format):
 
         return structures
 
-    def to_labeled_system(self, data, *args, **kwargs):
+    def to_labeled_system(self, data, *args, **kwargs) -> list[ase.Atoms]:
         """Convert System to ASE Atoms object."""
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
@@ -197,9 +198,9 @@ class ASETrajFormat(Format):
     def from_system(
         self,
         file_name: str,
-        begin: Optional[int] = 0,
-        end: Optional[int] = None,
-        step: Optional[int] = 1,
+        begin: int | None = 0,
+        end: int | None = None,
+        step: int | None = 1,
         **kwargs,
     ) -> dict:
         """Read ASE's trajectory file to `System` of multiple frames.
@@ -222,6 +223,8 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
+        from ase.io import Trajectory
+
         traj = Trajectory(file_name)
         sub_traj = traj[begin:end:step]
         dict_frames = ASEStructureFormat().from_system(sub_traj[0])
@@ -239,9 +242,9 @@ class ASETrajFormat(Format):
     def from_labeled_system(
         self,
         file_name: str,
-        begin: Optional[int] = 0,
-        end: Optional[int] = None,
-        step: Optional[int] = 1,
+        begin: int | None = 0,
+        end: int | None = None,
+        step: int | None = 1,
         **kwargs,
     ) -> dict:
         """Read ASE's trajectory file to `System` of multiple frames.
@@ -264,6 +267,8 @@ class ASETrajFormat(Format):
         dict_frames: dict
             a dictionary containing data of multiple frames
         """
+        from ase.io import Trajectory
+
         traj = Trajectory(file_name)
         sub_traj = traj[begin:end:step]
 
@@ -296,6 +301,46 @@ class ASETrajFormat(Format):
 
         return dict_frames
 
+    def to_system(self, data, file_name: str = "confs.traj", **kwargs) -> None:
+        """Convert System to ASE Atoms object.
+
+        Parameters
+        ----------
+        file_name : str
+            path to file
+        """
+        from ase.io import Trajectory
+
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+
+        list_atoms = ASEStructureFormat().to_system(data, **kwargs)
+        traj = Trajectory(file_name, "a")
+        _ = [traj.write(atom) for atom in list_atoms]
+        traj.close()
+        return
+
+    def to_labeled_system(
+        self, data, file_name: str = "labeled_confs.traj", *args, **kwargs
+    ) -> None:
+        """Convert System to ASE Atoms object.
+
+        Parameters
+        ----------
+        file_name : str
+            path to file
+        """
+        from ase.io import Trajectory
+
+        if os.path.isfile(file_name):
+            os.remove(file_name)
+
+        list_atoms = ASEStructureFormat().to_labeled_system(data, *args, **kwargs)
+        traj = Trajectory(file_name, "a")
+        _ = [traj.write(atom) for atom in list_atoms]
+        traj.close()
+        return
+
 
 @Driver.register("ase")
 class ASEDriver(Driver):
@@ -307,7 +352,7 @@ class ASEDriver(Driver):
         ASE calculator
     """
 
-    def __init__(self, calculator: "ase.calculators.calculator.Calculator") -> None:
+    def __init__(self, calculator: ase.calculators.calculator.Calculator) -> None:
         """Setup the driver."""
         self.calculator = calculator
 
@@ -359,9 +404,9 @@ class ASEMinimizer(Minimizer):
     def __init__(
         self,
         driver: Driver,
-        optimizer: Optional[Type["Optimizer"]] = None,
+        optimizer: type[Optimizer] | None = None,
         fmax: float = 5e-3,
-        max_steps: Optional[int] = None,
+        max_steps: int | None = None,
         optimizer_kwargs: dict = {},
     ) -> None:
         self.calculator = driver.ase_calculator
