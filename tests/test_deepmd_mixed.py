@@ -314,9 +314,7 @@ class TestMixedMultiSystemsTypeChange(
         )
 
 
-class TestMixedSingleSystemsDump(
-    unittest.TestCase, CompLabeledSys, IsNoPBC
-):
+class TestMixedSingleSystemsDump(unittest.TestCase, CompLabeledSys, IsNoPBC):
     def setUp(self):
         self.places = 6
         self.e_places = 6
@@ -331,7 +329,7 @@ class TestMixedSingleSystemsDump(
             "gaussian/methane.gaussianlog", fmt="gaussian/log"
         )
         # test dump
-        self.system_1.to('deepmd/npy/mixed', "tmp.deepmd.mixed.single")
+        self.system_1.to("deepmd/npy/mixed", "tmp.deepmd.mixed.single")
 
     def tearDown(self):
         if os.path.exists("tmp.deepmd.mixed.single"):
