@@ -190,7 +190,7 @@ def collect_force(outlines):
 def get_force(outlines, natoms):
     force = collect_force(outlines)
     if len(force) == 0:
-        return [[]]
+        return None
     else:
         return np.array(force[-1])  # only return the last force
 
@@ -285,7 +285,7 @@ def get_frame(fname):
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
     data["energies"] = np.array(energy)[np.newaxis]
-    data["forces"] = force[np.newaxis, :, :]
+    data["forces"] = np.empty((0,)) if force is None else force[np.newaxis, :, :]
     if stress is not None:
         data["virials"] = stress[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
