@@ -160,9 +160,7 @@ class TestABACUSLabeledOutputNoFS(unittest.TestCase):
         # check the returned force is empty
         self.assertFalse(system_ch4.data["forces"])
         self.assertTrue("virials" not in system_ch4.data)
-        
-        
-        
+
 
 if __name__ == "__main__":
     unittest.main()
