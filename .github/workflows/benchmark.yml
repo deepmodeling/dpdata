@@ -1,11 +1,11 @@
-name: Python package
+name: Benchmark
 
 on:
   - push
   - pull_request
 
 jobs:
-  build:
+  benchmark:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -15,7 +15,7 @@ jobs:
         python-version: 3.12
     - run: curl -LsSf https://astral.sh/uv/install.sh | sh
     - name: Install dependencies
-      run: uv pip install --system .[amber,ase,pymatgen,benchmark] rdkit openbabel-wheel
+      run: uv pip install --system .[test,amber,ase,pymatgen,benchmark] rdkit openbabel-wheel
     - name: Run benchmarks
       uses: CodSpeedHQ/action@v2
       with:
