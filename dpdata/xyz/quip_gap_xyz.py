@@ -6,13 +6,18 @@ import re
 from collections import OrderedDict
 
 import numpy as np
-from ..unit import EnergyConversion, ForceConversion, LengthConversion
+
+from ..unit import EnergyConversion, ForceConversion
 
 e_conv_kcalpermol2eV = EnergyConversion("kcal_mol", "eV").value()
 e_conv_au2eV = EnergyConversion("hartree", "eV").value()
-f_conv_kcalpermolperang2eVperang = ForceConversion("kcal_mol/angstrom", "eV/angstrom").value()
+f_conv_kcalpermolperang2eVperang = ForceConversion(
+    "kcal_mol/angstrom", "eV/angstrom"
+).value()
 f_conv_auperang2eVperang = ForceConversion("hartree/angstrom", "eV/angstrom").value()
-f_conv_kcalpermolperbohr2eVperang = ForceConversion("kcal_mol/bohr", "eV/angstrom").value()
+f_conv_kcalpermolperbohr2eVperang = ForceConversion(
+    "kcal_mol/bohr", "eV/angstrom"
+).value()
 f_conv_au2eVperang = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 
@@ -46,13 +51,10 @@ class QuipGapxyzSystems:
                     lines.append(self.file_object.readline())
                 if not lines[-1]:
                     raise RuntimeError(
-                        "this xyz file may lack of lines, should be {};lines:{}".format(
-                            atom_num + 2, lines
-                        )
+                        f"this xyz file may lack of lines, should be {atom_num + 2};lines:{lines}"
                     )
                 yield lines
 
-        
     @staticmethod
     def handle_single_xyz_frame(lines):
         atom_num = int(lines[0].strip("\n").strip())
@@ -115,7 +117,9 @@ class QuipGapxyzSystems:
                             )
                         )
                     field_length = int(kv_dict["value"])
-                    coords_array = data_array[:, used_colomn : used_colomn + field_length]
+                    coords_array = data_array[
+                        :, used_colomn : used_colomn + field_length
+                    ]
                     used_colomn += field_length
                     continue
                 elif kv_dict["key"] == "Z":
@@ -140,8 +144,8 @@ class QuipGapxyzSystems:
                         )
                     field_length = int(kv_dict["value"])
                     used_colomn += field_length
-                    continue            
-                elif kv_dict["key"] == "force" or kv_dict["key"] == "forces" :
+                    continue
+                elif kv_dict["key"] == "force" or kv_dict["key"] == "forces":
                     if kv_dict["datatype"] != "R":
                         raise RuntimeError(
                             "datatype for pos must be 'R' instead of {}".format(
@@ -149,7 +153,9 @@ class QuipGapxyzSystems:
                             )
                         )
                     field_length = int(kv_dict["value"])
-                    force_array = data_array[:, used_colomn : used_colomn + field_length]
+                    force_array = data_array[
+                        :, used_colomn : used_colomn + field_length
+                    ]
                     used_colomn += field_length
                     continue
             except Exception as e:
@@ -187,14 +193,13 @@ class QuipGapxyzSystems:
             ).astype("float32")
         else:
             virials = None
-            
+
         try:
             e_units = np.array([field_dict["energy-unit"].lower()])
             f_units = np.array([field_dict["force-unit"].lower()])
         except:
             pass
-            #print('No units information contained.')
-
+            # print('No units information contained.')
 
         info_dict = {}
         info_dict["nopbc"] = False
@@ -203,19 +208,29 @@ class QuipGapxyzSystems:
         info_dict["atom_types"] = np.array(atom_type_list).astype(int)
 
         info_dict["coords"] = np.array([coords_array]).astype("float32")
-        '''
+        """
         info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
         info_dict["forces"] = np.array([force_array]).astype("float32")
-        '''
+        """
 
         try:
             if e_units == "kcal/mol":
-                info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32") * e_conv_kcalpermol2eV
+                info_dict["energies"] = (
+                    np.array([field_dict["energy"]]).astype("float32")
+                    * e_conv_kcalpermol2eV
+                )
             elif e_units in ["hartree", "au", "a.u."]:
-                info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32") * e_conv_au2eV
+                info_dict["energies"] = (
+                    np.array([field_dict["energy"]]).astype("float32") * e_conv_au2eV
+                )
             elif e_units == "ev":
-                info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
-            else: info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
+                info_dict["energies"] = np.array([field_dict["energy"]]).astype(
+                    "float32"
+                )
+            else:
+                info_dict["energies"] = np.array([field_dict["energy"]]).astype(
+                    "float32"
+                )
         except Exception:
             try:
                 possible_fields = [
@@ -223,31 +238,50 @@ class QuipGapxyzSystems:
                     "energies",
                     "Energies",
                     "potential-energy.energy",
-                    "Energy"
+                    "Energy",
                 ]
                 for key in possible_fields:
                     if key in field_dict:
-                        info_dict["energies"] = np.array([field_dict[key]], dtype="float32")
+                        info_dict["energies"] = np.array(
+                            [field_dict[key]], dtype="float32"
+                        )
                         break
                 else:
                     raise ValueError("No valid energy field found in field_dict.")
             except KeyError:
                 raise ValueError("Error while accessing energy fields in field_dict.")
-        
+
         try:
             if f_units == "kcal/mol/angstrom":
-                info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_kcalpermolperang2eVperang
-            elif f_units == "hartree/angstrom" or f_units == "hartree/ang" or f_units == "hartree/ang.":
-                info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_auperang2eVperang
-            elif f_units == "kcal/mol/bohr":    
-                info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_kcalpermolperbohr2eVperang
-            elif f_units == "kcal/mol/bohr":    
-                info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_au2eVperang
-            elif f_units == "ev/angstrom" or f_units == "ev/ang" or f_units == "ev/ang.":
-                info_dict["forces"] = np.array([force_array]).astype("float32") 
-            else: info_dict["forces"] = np.array([force_array]).astype("float32")
+                info_dict["forces"] = (
+                    np.array([force_array]).astype("float32")
+                    * f_conv_kcalpermolperang2eVperang
+                )
+            elif (
+                f_units == "hartree/angstrom"
+                or f_units == "hartree/ang"
+                or f_units == "hartree/ang."
+            ):
+                info_dict["forces"] = (
+                    np.array([force_array]).astype("float32") * f_conv_auperang2eVperang
+                )
+            elif f_units == "kcal/mol/bohr":
+                info_dict["forces"] = (
+                    np.array([force_array]).astype("float32")
+                    * f_conv_kcalpermolperbohr2eVperang
+                )
+            elif f_units == "kcal/mol/bohr":
+                info_dict["forces"] = (
+                    np.array([force_array]).astype("float32") * f_conv_au2eVperang
+                )
+            elif (
+                f_units == "ev/angstrom" or f_units == "ev/ang" or f_units == "ev/ang."
+            ):
+                info_dict["forces"] = np.array([force_array]).astype("float32")
+            else:
+                info_dict["forces"] = np.array([force_array]).astype("float32")
         except:
-            info_dict["forces"] = np.array([force_array]).astype("float32") 
+            info_dict["forces"] = np.array([force_array]).astype("float32")
 
         if virials is not None:
             info_dict["virials"] = virials
@@ -258,7 +292,9 @@ class QuipGapxyzSystems:
                 [np.array(lattice_values).reshape(3, 3)]
             ).astype("float32")
         else:
-            lattice_values = np.array([[100.0, 0.0, 0.0], [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]])
+            lattice_values = np.array(
+                [[100.0, 0.0, 0.0], [0.0, 100.0, 0.0], [0.0, 0.0, 100.0]]
+            )
 
             info_dict["nopbc"] = True
             info_dict["cells"] = np.array(
