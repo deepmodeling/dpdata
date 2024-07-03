@@ -191,7 +191,7 @@ class QuipGapxyzSystems:
         try:
             e_units = np.array([field_dict["energy-unit"].lower()])
             f_units = np.array([field_dict["force-unit"].lower()])
-        except:
+        except Exception:
             pass
             #print('No units information contained.')
 
@@ -246,7 +246,7 @@ class QuipGapxyzSystems:
             elif f_units == "ev/angstrom" or f_units == "ev/ang" or f_units == "ev/ang.":
                 info_dict["forces"] = np.array([force_array]).astype("float32") 
             else: info_dict["forces"] = np.array([force_array]).astype("float32")
-        except:
+        except Exception:
             info_dict["forces"] = np.array([force_array]).astype("float32") 
 
         if virials is not None:
