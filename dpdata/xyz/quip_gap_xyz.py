@@ -280,7 +280,7 @@ class QuipGapxyzSystems:
                 info_dict["forces"] = np.array([force_array]).astype("float32")
             else:
                 info_dict["forces"] = np.array([force_array]).astype("float32")
-        except:
+        except Exception:
             info_dict["forces"] = np.array([force_array]).astype("float32")
 
         if virials is not None:
