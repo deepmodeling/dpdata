@@ -257,15 +257,15 @@ class QuipGapxyzSystems:
                 info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_kcalpermolperang2eVperang
             elif f_units == "hartree/angstrom" or f_units == "hartree/ang" or f_units == "hartree/ang.":
                 info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_auperang2eVperang
-            elif f_units == "kcal/mol/bohr":    
+            elif f_units == "kcal/mol/bohr":
                 info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_kcalpermolperbohr2eVperang
-            elif f_units == "kcal/mol/bohr":    
+            elif f_units == "kcal/mol/bohr":
                 info_dict["forces"] = np.array([force_array]).astype("float32") * f_conv_au2eVperang
             elif f_units == "ev/angstrom" or f_units == "ev/ang" or f_units == "ev/ang.":
-                info_dict["forces"] = np.array([force_array]).astype("float32") 
+                info_dict["forces"] = np.array([force_array]).astype("float32")
             else: info_dict["forces"] = np.array([force_array]).astype("float32")
         except Exception:
-            info_dict["forces"] = np.array([force_array]).astype("float32") 
+            info_dict["forces"] = np.array([force_array]).astype("float32")
 =======
                 info_dict["forces"] = (
                     np.array([force_array]).astype("float32")
