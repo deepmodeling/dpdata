@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: uv pip install --system .[test,amber,ase,pymatgen,benchmark] rdkit openbabel-wheel
     - name: Run benchmarks
-      uses: CodSpeedHQ/action@v2
+      uses: CodSpeedHQ/action@v3
       with:
         token: ${{ secrets.CODSPEED_TOKEN }}
         run: pytest benchmark/ --codspeed
