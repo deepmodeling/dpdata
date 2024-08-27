@@ -49,7 +49,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "numpydoc",
-    "m2r2",
+    "myst_parser",
     "sphinxarg.ext",
     "jupyterlite_sphinx",
 ]
