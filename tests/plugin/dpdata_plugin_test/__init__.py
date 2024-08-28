@@ -11,6 +11,10 @@ register_data_type(
 )
 
 register_data_type(
+    DataType("foo", np.ndarray, (Axis.NFRAMES, 3, 3), required=False), labeled=False
+)
+
+register_data_type(
     DataType("bar", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, -1), required=False),
     labeled=True,
 )

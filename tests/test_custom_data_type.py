@@ -93,3 +93,19 @@ class TestDeepmdLoadDumpCompAny(unittest.TestCase):
         self.system.to_deepmd_hdf5("data_bar.h5")
         x = dpdata.LabeledSystem("data_bar.h5", fmt="deepmd/hdf5")
         np.testing.assert_allclose(x.data["bar"], self.bar)
+
+
+class TestDeepmdLoadDumpCompUnlabeled(TestDeepmdLoadDumpComp):
+    def setUp(self):
+        self.system = dpdata.System(data=dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar").data)
+        self.foo = np.ones((len(self.system), 3, 3))
+        self.system.data["foo"] = self.foo
+        self.system.check_data()
+
+    def test_duplicated_data_type(self):
+        dt = DataType("foo", np.ndarray, (Axis.NFRAMES, 3, 3), required=False)
+        n_dtypes_old = len(dpdata.System.DTYPES)
+        with self.assertWarns(UserWarning):
+            dpdata.System.register_data_type(dt)
+        n_dtypes_new = len(dpdata.System.DTYPES)
+        self.assertEqual(n_dtypes_old, n_dtypes_new)
