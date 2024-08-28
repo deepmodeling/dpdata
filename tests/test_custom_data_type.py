@@ -59,9 +59,15 @@ class TestDeepmdLoadDumpCompUnlabeled(unittest.TestCase, DeepmdLoadDumpCompTest)
     cls = dpdata.System
     shape = (3, 3)
 
-class TestDeepmdLoadDumpCompUnlabeled(unittest.TestCase, DeepmdLoadDumpCompTest):
+    def setUp(self):
+        DeepmdLoadDumpCompTest.setUp()
+
+class TestDeepmdLoadDumpCompLabeled(unittest.TestCase, DeepmdLoadDumpCompTest):
     cls = dpdata.LabeledSystem
     shape = (2, 4)
+
+    def setUp(self):
+        DeepmdLoadDumpCompTest.setUp()
 
 class TestDeepmdLoadDumpCompAny(unittest.TestCase):
     def setUp(self):
