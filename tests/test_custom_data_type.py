@@ -48,7 +48,7 @@ class DeepmdLoadDumpCompTest:
         np.testing.assert_allclose(x.data["foo"], self.foo)
 
     def test_duplicated_data_type(self):
-        dt = DataType("foo", np.ndarray, (Axis.NFRAMES, 2, 4), required=False)
+        dt = DataType("foo", np.ndarray, (Axis.NFRAMES, *self.shape), required=False)
         n_dtypes_old = len(self.cls.DTYPES)
         with self.assertWarns(UserWarning):
             self.cls.register_data_type(dt)
