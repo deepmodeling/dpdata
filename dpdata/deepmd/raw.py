@@ -84,9 +84,7 @@ def to_system_data(folder, type_map=None, labels=True):
             ):
                 # skip as these data contains specific rules
                 continue
-            if not (
-                len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES
-            ):
+            if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
                 warnings.warn(
                     f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/raw format."
                 )
@@ -147,7 +145,7 @@ def dump(folder, data):
         with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
             pass
     # allow custom dtypes
-    labels = 'energies' in data
+    labels = "energies" in data
     if labels:
         dtypes = dpdata.system.LabeledSystem.DTYPES
     else:

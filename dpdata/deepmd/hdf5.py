@@ -214,7 +214,7 @@ def dump(
         "virials": {"fn": "virial", "shape": (nframes, 9), "dump": True},
     }
 
-    labels = 'energies' in data
+    labels = "energies" in data
     if labels:
         dtypes = dpdata.system.LabeledSystem.DTYPES
     else:

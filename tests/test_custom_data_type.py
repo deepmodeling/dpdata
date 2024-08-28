@@ -11,7 +11,9 @@ from dpdata.data_type import Axis, DataType
 
 class DeepmdLoadDumpCompTest:
     def setUp(self):
-        self.system = self.cls(data=dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar").data)
+        self.system = self.cls(
+            data=dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar").data
+        )
         self.foo = np.ones((len(self.system), *self.shape))
         self.system.data["foo"] = self.foo
         self.system.check_data()
@@ -55,6 +57,7 @@ class DeepmdLoadDumpCompTest:
         n_dtypes_new = len(self.cls.DTYPES)
         self.assertEqual(n_dtypes_old, n_dtypes_new)
 
+
 class TestDeepmdLoadDumpCompUnlabeled(unittest.TestCase, DeepmdLoadDumpCompTest):
     cls = dpdata.System
     shape = (3, 3)
@@ -62,12 +65,14 @@ class TestDeepmdLoadDumpCompUnlabeled(unittest.TestCase, DeepmdLoadDumpCompTest)
     def setUp(self):
         DeepmdLoadDumpCompTest.setUp(self)
 
+
 class TestDeepmdLoadDumpCompLabeled(unittest.TestCase, DeepmdLoadDumpCompTest):
     cls = dpdata.LabeledSystem
     shape = (2, 4)
 
     def setUp(self):
         DeepmdLoadDumpCompTest.setUp(self)
+
 
 class TestDeepmdLoadDumpCompAny(unittest.TestCase):
     def setUp(self):

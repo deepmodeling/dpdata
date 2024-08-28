@@ -70,7 +70,7 @@ def to_system_data(folder, type_map=None, labels=True):
         dtypes = dpdata.system.LabeledSystem.DTYPES
     else:
         dtypes = dpdata.system.System.DTYPES
-    
+
     for dtype in dtypes:
         if dtype.name in (
             "atom_numbs",
@@ -95,8 +95,7 @@ def to_system_data(folder, type_map=None, labels=True):
             continue
         natoms = data["coords"].shape[1]
         shape = [
-            natoms if xx == dpdata.system.Axis.NATOMS else xx
-            for xx in dtype.shape[1:]
+            natoms if xx == dpdata.system.Axis.NATOMS else xx for xx in dtype.shape[1:]
         ]
         all_data = []
         for ii in sets:
