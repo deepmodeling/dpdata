@@ -6,11 +6,14 @@
 Welcome to dpdata's documentation!
 ==================================
 
+dpdata is a Python package for manipulating atomistic data of software in computational science.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   Overview <self>
+   installation
+   systems/index
    try_dpdata
    cli
    formats
@@ -18,9 +21,6 @@ Welcome to dpdata's documentation!
    minimizers
    api/api
    credits
-
-.. mdinclude:: ../README.md
-
 
 Indices and tables
 ==================
