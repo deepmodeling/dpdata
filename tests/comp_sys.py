@@ -106,13 +106,27 @@ class CompLabeledSys(CompSys):
 
 
 def _make_comp_ms_test_func(comp_sys_test_func):
-    """Functional making test function for multi-sys from the that for
-    single sys.
+    """
+    Dynamically generates a test function for multi-system comparisons.
+
+    Args:
+        comp_sys_test_func (Callable): The original test function for single systems.
+
+    Returns
+    -------
+    Callable: A new test function that can handle comparisons between multi-systems.
     """
 
     def comp_ms_test_func(iobj):
+        assert hasattr(iobj, "ms_1") and hasattr(
+            iobj, "ms_2"
+        ), "Multi-system objects must be present"
         iobj.assertEqual(len(iobj.ms_1), len(iobj.ms_2))
         keys = [ii.formula for ii in iobj.ms_1]
+        keys_2 = [ii.formula for ii in iobj.ms_2]
+        assert sorted(keys) == sorted(
+            keys_2
+        ), f"Keys of two MS are not equal: {keys} != {keys_2}"
         for kk in keys:
             iobj.system_1 = iobj.ms_1[kk]
             iobj.system_2 = iobj.ms_2[kk]
@@ -124,8 +138,15 @@ def _make_comp_ms_test_func(comp_sys_test_func):
 
 
 def _make_comp_ms_class(comp_class):
-    """Class functinal making multi-sys comparison case from single-sys
-    comparison case.
+    """
+    Dynamically generates a test class for multi-system comparisons.
+
+    Args:
+        comp_class (type): The original test class for single systems.
+
+    Returns
+    -------
+    type: A new test class that can handle comparisons between multi-systems.
     """
 
     class CompMS:
@@ -176,11 +197,17 @@ class IsNoPBC:
 
 class MSAllIsPBC:
     def test_is_pbc(self):
+        assert hasattr(self, "ms_1") and hasattr(
+            self, "ms_2"
+        ), "Multi-system objects must be present and iterable"
         self.assertTrue(all([not ss.nopbc for ss in self.ms_1]))
         self.assertTrue(all([not ss.nopbc for ss in self.ms_2]))
 
 
 class MSAllIsNoPBC:
     def test_is_nopbc(self):
+        assert hasattr(self, "ms_1") and hasattr(
+            self, "ms_2"
+        ), "Multi-system objects must be present and iterable"
         self.assertTrue(all([ss.nopbc for ss in self.ms_1]))
         self.assertTrue(all([ss.nopbc for ss in self.ms_2]))
