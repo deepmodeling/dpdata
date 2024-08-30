@@ -19,6 +19,7 @@ dpdata is a Python package for manipulating atomistic data of software in comput
    formats
    drivers
    minimizers
+   plugin
    api/api
    credits
 
