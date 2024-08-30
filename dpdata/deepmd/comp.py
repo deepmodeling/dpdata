@@ -67,40 +67,43 @@ def to_system_data(folder, type_map=None, labels=True):
         data["virials"] = np.concatenate(all_virs, axis=0)
     # allow custom dtypes
     if labels:
-        for dtype in dpdata.system.LabeledSystem.DTYPES:
-            if dtype.name in (
-                "atom_numbs",
-                "atom_names",
-                "atom_types",
-                "orig",
-                "cells",
-                "coords",
-                "real_atom_types",
-                "real_atom_names",
-                "nopbc",
-                "energies",
-                "forces",
-                "virials",
-            ):
-                # skip as these data contains specific rules
-                continue
-            if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
-                warnings.warn(
-                    f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/npy format."
-                )
-                continue
-            natoms = data["coords"].shape[1]
-            shape = [
-                natoms if xx == dpdata.system.Axis.NATOMS else xx
-                for xx in dtype.shape[1:]
-            ]
-            all_data = []
-            for ii in sets:
-                tmp = _cond_load_data(os.path.join(ii, dtype.name + ".npy"))
-                if tmp is not None:
-                    all_data.append(np.reshape(tmp, [tmp.shape[0], *shape]))
-            if len(all_data) > 0:
-                data[dtype.name] = np.concatenate(all_data, axis=0)
+        dtypes = dpdata.system.LabeledSystem.DTYPES
+    else:
+        dtypes = dpdata.system.System.DTYPES
+
+    for dtype in dtypes:
+        if dtype.name in (
+            "atom_numbs",
+            "atom_names",
+            "atom_types",
+            "orig",
+            "cells",
+            "coords",
+            "real_atom_types",
+            "real_atom_names",
+            "nopbc",
+            "energies",
+            "forces",
+            "virials",
+        ):
+            # skip as these data contains specific rules
+            continue
+        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+            warnings.warn(
+                f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/npy format."
+            )
+            continue
+        natoms = data["coords"].shape[1]
+        shape = [
+            natoms if xx == dpdata.system.Axis.NATOMS else xx for xx in dtype.shape[1:]
+        ]
+        all_data = []
+        for ii in sets:
+            tmp = _cond_load_data(os.path.join(ii, dtype.name + ".npy"))
+            if tmp is not None:
+                all_data.append(np.reshape(tmp, [tmp.shape[0], *shape]))
+        if len(all_data) > 0:
+            data[dtype.name] = np.concatenate(all_data, axis=0)
     return data
 
 
@@ -173,6 +176,11 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
         with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
             pass
     # allow custom dtypes
+    labels = "energies" in data
+    if labels:
+        dtypes = dpdata.system.LabeledSystem.DTYPES
+    else:
+        dtypes = dpdata.system.System.DTYPES
     for dtype in dpdata.system.LabeledSystem.DTYPES:
         if dtype.name in (
             "atom_numbs",
