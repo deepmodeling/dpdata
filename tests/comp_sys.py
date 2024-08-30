@@ -105,6 +105,51 @@ class CompLabeledSys(CompSys):
         )
 
 
+def _make_comp_ms_test_func(comp_sys_test_func):
+    """Functional making test function for multi-sys from the that for
+    single sys.
+    """
+
+    def comp_ms_test_func(iobj):
+        iobj.assertEqual(len(iobj.ms_1), len(iobj.ms_2))
+        keys = [ii.formula for ii in iobj.ms_1]
+        for kk in keys:
+            iobj.system_1 = iobj.ms_1[kk]
+            iobj.system_2 = iobj.ms_2[kk]
+            comp_sys_test_func(iobj)
+        del iobj.system_1
+        del iobj.system_2
+
+    return comp_ms_test_func
+
+
+def _make_comp_ms_class(comp_class):
+    """Class functinal making multi-sys comparison case from single-sys
+    comparison case.
+    """
+
+    class CompMS:
+        pass
+
+    test_methods = [
+        func
+        for func in dir(comp_class)
+        if callable(getattr(comp_class, func)) and func.startswith("test_")
+    ]
+
+    for func in test_methods:
+        setattr(CompMS, func, _make_comp_ms_test_func(getattr(comp_class, func)))
+
+    return CompMS
+
+
+# MultiSystems comparison from single System comparison
+CompMultiSys = _make_comp_ms_class(CompSys)
+
+# LabeledMultiSystems comparison from single LabeledSystem comparison
+CompLabeledMultiSys = _make_comp_ms_class(CompLabeledSys)
+
+
 class MultiSystems:
     def test_systems_name(self):
         self.assertEqual(set(self.systems.systems), set(self.system_names))
@@ -127,3 +172,15 @@ class IsNoPBC:
     def test_is_nopbc(self):
         self.assertTrue(self.system_1.nopbc)
         self.assertTrue(self.system_2.nopbc)
+
+
+class MSAllIsPBC:
+    def test_is_pbc(self):
+        self.assertTrue(all([not ss.nopbc for ss in self.ms_1]))
+        self.assertTrue(all([not ss.nopbc for ss in self.ms_2]))
+
+
+class MSAllIsNoPBC:
+    def test_is_nopbc(self):
+        self.assertTrue(all([ss.nopbc for ss in self.ms_1]))
+        self.assertTrue(all([ss.nopbc for ss in self.ms_2]))
