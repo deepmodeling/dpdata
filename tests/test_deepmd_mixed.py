@@ -6,12 +6,18 @@ import unittest
 from glob import glob
 
 import numpy as np
-from comp_sys import CompLabeledSys, IsNoPBC, MultiSystems
+from comp_sys import (
+    CompLabeledMultiSys,
+    CompLabeledSys,
+    IsNoPBC,
+    MSAllIsNoPBC,
+    MultiSystems,
+)
 from context import dpdata
 
 
 class TestMixedMultiSystemsDumpLoad(
-    unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
 ):
     def setUp(self):
         self.places = 6
@@ -62,8 +68,8 @@ class TestMixedMultiSystemsDumpLoad(
         self.place_holder_ms.from_deepmd_npy("tmp.deepmd.mixed", fmt="deepmd/npy")
         self.systems = dpdata.MultiSystems()
         self.systems.from_deepmd_npy_mixed("tmp.deepmd.mixed", fmt="deepmd/npy/mixed")
-        self.system_1 = self.ms["C1H4A0B0D0"]
-        self.system_2 = self.systems["C1H4A0B0D0"]
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
         mixed_sets = glob("tmp.deepmd.mixed/*/set.*")
         self.assertEqual(len(mixed_sets), 2)
         for i in mixed_sets:
@@ -112,7 +118,7 @@ class TestMixedMultiSystemsDumpLoad(
 
 
 class TestMixedMultiSystemsDumpLoadSetSize(
-    unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
 ):
     def setUp(self):
         self.places = 6
@@ -163,8 +169,8 @@ class TestMixedMultiSystemsDumpLoadSetSize(
         self.place_holder_ms.from_deepmd_npy("tmp.deepmd.mixed", fmt="deepmd/npy")
         self.systems = dpdata.MultiSystems()
         self.systems.from_deepmd_npy_mixed("tmp.deepmd.mixed", fmt="deepmd/npy/mixed")
-        self.system_1 = self.ms["C1H4A0B0D0"]
-        self.system_2 = self.systems["C1H4A0B0D0"]
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
         mixed_sets = glob("tmp.deepmd.mixed/*/set.*")
         self.assertEqual(len(mixed_sets), 5)
         for i in mixed_sets:
@@ -213,7 +219,7 @@ class TestMixedMultiSystemsDumpLoadSetSize(
 
 
 class TestMixedMultiSystemsTypeChange(
-    unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
 ):
     def setUp(self):
         self.places = 6
@@ -265,8 +271,8 @@ class TestMixedMultiSystemsTypeChange(
         self.place_holder_ms.from_deepmd_npy("tmp.deepmd.mixed", fmt="deepmd/npy")
         self.systems = dpdata.MultiSystems(type_map=["TOKEN"])
         self.systems.from_deepmd_npy_mixed("tmp.deepmd.mixed", fmt="deepmd/npy/mixed")
-        self.system_1 = self.ms["TOKEN0C1H4A0B0D0"]
-        self.system_2 = self.systems["TOKEN0C1H4A0B0D0"]
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
         mixed_sets = glob("tmp.deepmd.mixed/*/set.*")
         self.assertEqual(len(mixed_sets), 2)
         for i in mixed_sets:
