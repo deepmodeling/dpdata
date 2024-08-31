@@ -14,9 +14,6 @@ def load_type(folder, type_map=None):
         int
     )
     ntypes = np.max(data["atom_types"]) + 1
-    data["atom_numbs"] = []
-    for ii in range(ntypes):
-        data["atom_numbs"].append(np.count_nonzero(data["atom_types"] == ii))
     data["atom_names"] = []
     # if find type_map.raw, use it
     if os.path.isfile(os.path.join(folder, "type_map.raw")):
@@ -30,9 +27,10 @@ def load_type(folder, type_map=None):
         my_type_map = []
         for ii in range(ntypes):
             my_type_map.append("Type_%d" % ii)
-    assert len(my_type_map) >= len(data["atom_numbs"])
-    for ii in range(len(data["atom_numbs"])):
-        data["atom_names"].append(my_type_map[ii])
+    data["atom_names"] = my_type_map
+    data["atom_numbs"] = []
+    for ii, _ in enumerate(data["atom_names"]):
+        data["atom_numbs"].append(np.count_nonzero(data["atom_types"] == ii))
 
     return data
 

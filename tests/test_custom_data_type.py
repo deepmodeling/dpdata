@@ -57,6 +57,16 @@ class DeepmdLoadDumpCompTest:
         n_dtypes_new = len(self.cls.DTYPES)
         self.assertEqual(n_dtypes_old, n_dtypes_new)
 
+    def test_to_deepmd_npy_mixed(self):
+        ms = dpdata.MultiSystems(self.system)
+        ms.to_deepmd_npy_mixed("data_foo_mixed")
+        x = dpdata.MultiSystems().load_systems_from_file(
+            "data_foo_mixed",
+            fmt="deepmd/npy/mixed",
+            labeled=issubclass(self.cls, dpdata.LabeledSystem),
+        )
+        np.testing.assert_allclose(list(x.systems.values())[0].data["foo"], self.foo)
+
 
 class TestDeepmdLoadDumpCompUnlabeled(unittest.TestCase, DeepmdLoadDumpCompTest):
     cls = dpdata.System
