@@ -2,14 +2,8 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import TYPE_CHECKING
 
 import numpy as np
-
-from dpdata.utils import open_file
-
-if TYPE_CHECKING:
-    from dpdata.utils import FileType
 
 latt_patt = r"\|\s+([0-9]{1,}[.][0-9]*)\s+([0-9]{1,}[.][0-9]*)\s+([0-9]{1,}[.][0-9]*)"
 pos_patt_first = r"\|\s+[0-9]{1,}[:]\s\w+\s(\w+)(\s.*[-]?[0-9]{1,}[.][0-9]*)(\s+[-]?[0-9]{1,}[.][0-9]*)(\s+[-]?[0-9]{1,}[.][0-9]*)"
@@ -74,8 +68,8 @@ def get_fhi_aims_block(fp):
     return blk
 
 
-def get_frames(fname: FileType, md=True, begin=0, step=1, convergence_check=True):
-    fp = open_file(fname).__enter__()
+def get_frames(fname, md=True, begin=0, step=1, convergence_check=True):
+    fp = open(fname)
     blk = get_fhi_aims_block(fp)
     ret = get_info(blk, type_idx_zero=True)
 
@@ -92,7 +86,7 @@ def get_frames(fname: FileType, md=True, begin=0, step=1, convergence_check=True
     rec_failed = []
     while len(blk) > 0:
         if debug:
-            with open_file(str(cc), "w") as f:
+            with open(str(cc), "w") as f:
                 f.write("\n".join(blk))
         if cc >= begin and (cc - begin) % step == 0:
             if cc == 0:
