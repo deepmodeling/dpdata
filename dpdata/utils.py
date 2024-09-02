@@ -136,10 +136,11 @@ def utf8len(s: str) -> int:
 
 FileType = io.IOBase | str | os.PathLike
 
+
 @contextmanager
 def open_file(file: FileType, *args, **kwargs) -> Generator[io.IOBase, None, None]:
     """A context manager that yields a file object.
-    
+
     Parameters
     ----------
     file : file object or file path
@@ -162,7 +163,7 @@ def open_file(file: FileType, *args, **kwargs) -> Generator[io.IOBase, None, Non
     Examples
     --------
     >>> with open_file("file.txt") as file:
-    ...     print(file.read())    
+    ...     print(file.read())
     """
     if isinstance(file, io.IOBase):
         yield file

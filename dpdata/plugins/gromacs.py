@@ -24,7 +24,9 @@ class GromacsGroFormat(Format):
             file_name, format_atom_name=format_atom_name, **kwargs
         )
 
-    def to_system(self, data, file_name: FileType | None=None, frame_idx=-1, **kwargs):
+    def to_system(
+        self, data, file_name: FileType | None = None, frame_idx=-1, **kwargs
+    ):
         """Dump the system in gromacs .gro format.
 
         Parameters

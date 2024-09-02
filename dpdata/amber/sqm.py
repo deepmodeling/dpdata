@@ -82,7 +82,7 @@ def parse_sqm_out(fname: FileType):
     return data
 
 
-def make_sqm_in(data, fname: FileType|None=None, frame_idx=0, **kwargs):
+def make_sqm_in(data, fname: FileType | None = None, frame_idx=0, **kwargs):
     symbols = [data["atom_names"][ii] for ii in data["atom_types"]]
     atomic_numbers = [ELEMENTS.index(ss) + 1 for ss in symbols]
     charge = kwargs.get("charge", 0)

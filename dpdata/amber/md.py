@@ -7,7 +7,7 @@ import numpy as np
 
 from dpdata.amber.mask import pick_by_amber_mask
 from dpdata.unit import EnergyConversion
-from dpdata.utils import FileType, open_file
+from dpdata.utils import open_file
 
 from ..periodic_table import ELEMENTS
 

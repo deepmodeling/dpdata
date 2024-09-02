@@ -5,7 +5,9 @@ import numpy as np
 from dpdata.utils import FileType, open_file
 
 
-def read_dftb_plus(fn_1: FileType, fn_2: FileType) -> tuple[str, np.ndarray, float, np.ndarray]:
+def read_dftb_plus(
+    fn_1: FileType, fn_2: FileType
+) -> tuple[str, np.ndarray, float, np.ndarray]:
     """Read from DFTB+ input and output.
 
     Parameters

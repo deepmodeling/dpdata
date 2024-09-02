@@ -5,7 +5,9 @@ import numpy as np
 from dpdata.utils import FileType, open_file
 
 
-def read_orca_sp_output(fn: FileType) -> tuple[np.ndarray, np.ndarray, float, np.ndarray]:
+def read_orca_sp_output(
+    fn: FileType,
+) -> tuple[np.ndarray, np.ndarray, float, np.ndarray]:
     """Read from ORCA output.
 
     Note that both the energy and the gradient should be printed.
