@@ -180,7 +180,7 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
         dtypes = dpdata.system.LabeledSystem.DTYPES
     else:
         dtypes = dpdata.system.System.DTYPES
-    for dtype in dpdata.system.LabeledSystem.DTYPES:
+    for dtype in dtypes:
         if dtype.name in (
             "atom_numbs",
             "atom_names",
