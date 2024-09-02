@@ -75,7 +75,7 @@ def get_fhi_aims_block(fp):
 
 
 def get_frames(fname: FileType, md=True, begin=0, step=1, convergence_check=True):
-    fp = open_file(fname)
+    fp = open_file(fname).__enter__()
     blk = get_fhi_aims_block(fp)
     ret = get_info(blk, type_idx_zero=True)
 
