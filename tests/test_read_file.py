@@ -14,9 +14,9 @@ class TestReadFile(unittest.TestCase):
             self.assertEqual(file.read(), "Hello, world!")
 
     def test_open_file_from_file_str(self):
-        with open_file("/proc/cpuinfo") as file:
-            self.assertEqual(file.read(), Path("/proc/cpuinfo").read_text())
+        with open_file("/dev/null") as file:
+            self.assertEqual(file.read(), Path("/dev/null").read_text())
 
     def test_open_file_from_file_path(self):
-        with open_file(Path("/proc/cpuinfo")) as file:
-            self.assertEqual(file.read(), Path("/proc/cpuinfo").read_text())
+        with open_file(Path("/dev/null")) as file:
+            self.assertEqual(file.read(), Path("/dev/null").read_text())
