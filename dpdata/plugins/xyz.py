@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from dpdata.format import Format
+from dpdata.utils import FileType, open_file
 from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems
 from dpdata.xyz.xyz import coord_to_xyz, xyz_to_coord
 
@@ -16,16 +17,16 @@ class XYZFormat(Format):
     >>> s.to("xyz", "a.xyz")
     """
 
-    def to_system(self, data, file_name, **kwargs):
+    def to_system(self, data, file_name: FileType, **kwargs):
         buff = []
         types = np.array(data["atom_names"])[data["atom_types"]]
         for cc in data["coords"]:
             buff.append(coord_to_xyz(cc, types))
-        with open(file_name, "w") as fp:
+        with open_file(file_name, "w") as fp:
             fp.write("\n".join(buff))
 
-    def from_system(self, file_name, **kwargs):
-        with open(file_name) as fp:
+    def from_system(self, file_name: FileType, **kwargs):
+        with open_file(file_name) as fp:
             coords, types = xyz_to_coord(fp.read())
         atom_names, atom_types, atom_numbs = np.unique(
             types, return_inverse=True, return_counts=True

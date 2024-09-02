@@ -5,6 +5,8 @@ import re
 
 import numpy as np
 
+from dpdata.utils import FileType, open_file
+
 from ..unit import LengthConversion
 
 nm2ang = LengthConversion("nm", "angstrom").value()
@@ -48,9 +50,9 @@ def _get_cell(line):
     return cell
 
 
-def file_to_system_data(fname, format_atom_name=True, **kwargs):
+def file_to_system_data(fname: FileType, format_atom_name=True, **kwargs):
     system = {"coords": [], "cells": []}
-    with open(fname) as fp:
+    with open_file(fname) as fp:
         frame = 0
         while True:
             flag = fp.readline()

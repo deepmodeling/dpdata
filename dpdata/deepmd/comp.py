@@ -8,6 +8,7 @@ import warnings
 import numpy as np
 
 import dpdata
+from dpdata.utils import open_file
 
 from .raw import load_type
 
@@ -172,7 +173,7 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     except OSError:
         pass
     if data.get("nopbc", False):
-        with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
+        with open_file(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
             pass
     # allow custom dtypes
     labels = "energies" in data

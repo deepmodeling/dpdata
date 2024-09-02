@@ -6,6 +6,7 @@ from dpdata.format import Format
 from dpdata.psi4.input import write_psi4_input
 from dpdata.psi4.output import read_psi4_output
 from dpdata.unit import EnergyConversion, ForceConversion
+from dpdata.utils import FileType, open_file
 
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
@@ -19,12 +20,12 @@ class PSI4OutFormat(Format):
     printed into the output file.
     """
 
-    def from_labeled_system(self, file_name: str, **kwargs) -> dict:
+    def from_labeled_system(self, file_name: FileType, **kwargs) -> dict:
         """Read from Psi4 output.
 
         Parameters
         ----------
-        file_name : str
+        file_name : FileType
             file name
         **kwargs
             keyword arguments
@@ -61,7 +62,7 @@ class PSI4InputFormat(Format):
     def to_system(
         self,
         data: dict,
-        file_name: str,
+        file_name: FileType,
         method: str,
         basis: str,
         charge: int = 0,
@@ -91,7 +92,7 @@ class PSI4InputFormat(Format):
             keyword arguments
         """
         types = np.array(data["atom_names"])[data["atom_types"]]
-        with open(file_name, "w") as fout:
+        with open_file(file_name, "w") as fout:
             fout.write(
                 write_psi4_input(
                     types=types,

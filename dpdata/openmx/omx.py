@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from dpdata.utils import FileType, open_file
+
 from ..unit import (
     EnergyConversion,
     ForceConversion,
@@ -98,12 +100,12 @@ def load_cells(lines):
 
 
 # load atom_names, atom_numbs, atom_types, cells
-def load_param_file(fname, mdname):
-    with open(fname) as dat_file:
+def load_param_file(fname: FileType, mdname: FileType):
+    with open_file(fname) as dat_file:
         lines = dat_file.readlines()
     atom_names, atom_types, atom_numbs = load_atom(lines)
 
-    with open(mdname) as md_file:
+    with open_file(mdname) as md_file:
         lines = md_file.readlines()
     cells = load_cells(lines)
     return atom_names, atom_numbs, atom_types, cells
@@ -133,15 +135,15 @@ def load_coords(lines, atom_names, natoms):
     return coords
 
 
-def load_data(mdname, atom_names, natoms):
-    with open(mdname) as md_file:
+def load_data(mdname: FileType, atom_names, natoms):
+    with open_file(mdname) as md_file:
         lines = md_file.readlines()
     coords = load_coords(lines, atom_names, natoms)
     steps = [str(i) for i in range(1, coords.shape[0] + 1)]
     return coords, steps
 
 
-def to_system_data(fname, mdname):
+def to_system_data(fname: FileType, mdname: FileType):
     data = {}
     (
         data["atom_names"],
@@ -194,7 +196,7 @@ def load_force(lines, atom_names, atom_numbs):
 # load energy, force
 def to_system_label(fname, mdname):
     atom_names, atom_numbs, atom_types, cells = load_param_file(fname, mdname)
-    with open(mdname) as md_file:
+    with open_file(mdname) as md_file:
         lines = md_file.readlines()
     energy = load_energy(lines)
     force = load_force(lines, atom_names, atom_numbs)

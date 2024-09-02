@@ -4,6 +4,7 @@ import numpy as np
 
 from dpdata.periodic_table import ELEMENTS
 from dpdata.unit import EnergyConversion
+from dpdata.utils import FileType, open_file
 
 kcal2ev = EnergyConversion("kcal_mol", "eV").value()
 
@@ -14,7 +15,7 @@ READ_COORDS = 6
 READ_FORCES = 7
 
 
-def parse_sqm_out(fname):
+def parse_sqm_out(fname: FileType):
     """Read atom symbols, charges and coordinates from ambertools sqm.out file."""
     atom_symbols = []
     coords = []
@@ -22,7 +23,7 @@ def parse_sqm_out(fname):
     forces = []
     energies = []
 
-    with open(fname) as f:
+    with open_file(fname) as f:
         flag = START
         for line in f:
             if line.startswith(" Total SCF energy"):
@@ -81,7 +82,7 @@ def parse_sqm_out(fname):
     return data
 
 
-def make_sqm_in(data, fname=None, frame_idx=0, **kwargs):
+def make_sqm_in(data, fname: FileType|None=None, frame_idx=0, **kwargs):
     symbols = [data["atom_names"][ii] for ii in data["atom_types"]]
     atomic_numbers = [ELEMENTS.index(ss) + 1 for ss in symbols]
     charge = kwargs.get("charge", 0)
@@ -109,6 +110,6 @@ def make_sqm_in(data, fname=None, frame_idx=0, **kwargs):
             f"{data['coords'][frame_idx][ii, 2]:.6f}",
         )
     if fname is not None:
-        with open(fname, "w") as fp:
+        with open_file(fname, "w") as fp:
             fp.write(ret)
     return ret

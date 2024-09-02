@@ -6,6 +6,8 @@ import warnings
 
 import numpy as np
 
+from dpdata.utils import open_file
+
 from ..unit import EnergyConversion, LengthConversion, PressureConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
@@ -253,7 +255,7 @@ def get_frame(fname):
     if not CheckFile(path_in):
         return data
 
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
 
     geometry_path_in = get_geometry_in(fname, inlines)
@@ -261,9 +263,9 @@ def get_frame(fname):
     if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
         return data
 
-    with open(geometry_path_in) as fp:
+    with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
-    with open(path_out) as fp:
+    with open_file(path_out) as fp:
         outlines = fp.read().split("\n")
 
     celldm, cell = get_cell(geometry_inlines)
@@ -338,7 +340,7 @@ def get_nele_from_stru(geometry_inlines):
 
 def get_frame_from_stru(fname):
     assert isinstance(fname, str)
-    with open(fname) as fp:
+    with open_file(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
     inlines = ["ntype %d" % nele]

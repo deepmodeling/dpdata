@@ -8,11 +8,12 @@ import dpdata.gaussian.gjf
 import dpdata.gaussian.log
 from dpdata.driver import Driver
 from dpdata.format import Format
+from dpdata.utils import FileType, open_file
 
 
 @Format.register("gaussian/log")
 class GaussianLogFormat(Format):
-    def from_labeled_system(self, file_name, md=False, **kwargs):
+    def from_labeled_system(self, file_name: FileType, md=False, **kwargs):
         try:
             return dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
@@ -21,7 +22,7 @@ class GaussianLogFormat(Format):
 
 @Format.register("gaussian/md")
 class GaussianMDFormat(Format):
-    def from_labeled_system(self, file_name, **kwargs):
+    def from_labeled_system(self, file_name: FileType, **kwargs):
         return GaussianLogFormat().from_labeled_system(file_name, md=True)
 
 
@@ -29,7 +30,7 @@ class GaussianMDFormat(Format):
 class GaussiaGJFFormat(Format):
     """Gaussian input file."""
 
-    def from_system(self, file_name: str, **kwargs):
+    def from_system(self, file_name: FileType, **kwargs):
         """Read Gaussian input file.
 
         Parameters
@@ -39,11 +40,11 @@ class GaussiaGJFFormat(Format):
         **kwargs : dict
             keyword arguments
         """
-        with open(file_name) as fp:
+        with open_file(file_name) as fp:
             text = fp.read()
         return dpdata.gaussian.gjf.read_gaussian_input(text)
 
-    def to_system(self, data: dict, file_name: str, **kwargs):
+    def to_system(self, data: dict, file_name: FileType, **kwargs):
         """Generate Gaussian input file.
 
         Parameters
@@ -56,7 +57,7 @@ class GaussiaGJFFormat(Format):
             Other parameters to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
         """
         text = dpdata.gaussian.gjf.make_gaussian_input(data, **kwargs)
-        with open(file_name, "w") as fp:
+        with open_file(file_name, "w") as fp:
             fp.write(text)
 
 
@@ -110,7 +111,7 @@ class GaussianDriver(Driver):
                 try:
                     sp.check_output([*self.gaussian_exec.split(), inp_fn])
                 except sp.CalledProcessError as e:
-                    with open(out_fn) as f:
+                    with open_file(out_fn) as f:
                         out = f.read()
                     raise RuntimeError("Run gaussian failed! Output:\n" + out) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="gaussian/log"))

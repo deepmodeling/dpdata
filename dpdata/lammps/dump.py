@@ -6,6 +6,8 @@ import sys
 
 import numpy as np
 
+from dpdata.utils import FileType, open_file
+
 lib_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(lib_path)
 import warnings
@@ -169,11 +171,11 @@ def box2dumpbox(orig, box):
     return bounds, tilt
 
 
-def load_file(fname, begin=0, step=1):
+def load_file(fname: FileType, begin=0, step=1):
     lines = []
     buff = []
     cc = -1
-    with open(fname) as fp:
+    with open_file(fname) as fp:
         while True:
             line = fp.readline().rstrip("\n")
             if not line:

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import numpy as np
 
+from dpdata.utils import FileType, open_file
 
-def read_dftb_plus(fn_1: str, fn_2: str) -> tuple[str, np.ndarray, float, np.ndarray]:
+
+def read_dftb_plus(fn_1: FileType, fn_2: FileType) -> tuple[str, np.ndarray, float, np.ndarray]:
     """Read from DFTB+ input and output.
 
     Parameters
@@ -29,7 +31,7 @@ def read_dftb_plus(fn_1: str, fn_2: str) -> tuple[str, np.ndarray, float, np.nda
     symbols = None
     forces = None
     energy = None
-    with open(fn_1) as f:
+    with open_file(fn_1) as f:
         flag = 0
         for line in f:
             if flag == 1:
@@ -49,7 +51,7 @@ def read_dftb_plus(fn_1: str, fn_2: str) -> tuple[str, np.ndarray, float, np.nda
                 flag += 1
                 if flag == 7:
                     flag = 0
-    with open(fn_2) as f:
+    with open_file(fn_2) as f:
         flag = 0
         for line in f:
             if line.startswith("Total Forces"):

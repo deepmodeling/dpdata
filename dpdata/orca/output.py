@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import numpy as np
 
+from dpdata.utils import FileType, open_file
 
-def read_orca_sp_output(fn: str) -> tuple[np.ndarray, np.ndarray, float, np.ndarray]:
+
+def read_orca_sp_output(fn: FileType) -> tuple[np.ndarray, np.ndarray, float, np.ndarray]:
     """Read from ORCA output.
 
     Note that both the energy and the gradient should be printed.
@@ -28,7 +30,7 @@ def read_orca_sp_output(fn: str) -> tuple[np.ndarray, np.ndarray, float, np.ndar
     symbols = None
     forces = None
     energy = None
-    with open(fn) as f:
+    with open_file(fn) as f:
         flag = 0
         for line in f:
             if flag in (1, 3, 4):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from dpdata.format import Format
+from dpdata.utils import FileType, open_file
 
 from ..unit import EnergyConversion, ForceConversion, LengthConversion
 
@@ -44,7 +45,7 @@ class N2P2Format(Format):
     For more information about the n2p2 format, please refer to https://compphysvienna.github.io/n2p2/topics/cfg_file.html
     """
 
-    def from_labeled_system(self, file_name, **kwargs):
+    def from_labeled_system(self, file_name: FileType, **kwargs):
         """Read from n2p2 format.
 
         Parameters
@@ -67,7 +68,7 @@ class N2P2Format(Format):
         natom0 = None
         natoms0 = None
         atom_types0 = None
-        with open(file_name) as file:
+        with open_file(file_name) as file:
             for line in file:
                 line = line.strip()  # Remove leading/trailing whitespace
                 if line.lower() == "begin":
@@ -155,7 +156,7 @@ class N2P2Format(Format):
             "forces": forces,
         }
 
-    def to_labeled_system(self, data, file_name, **kwargs):
+    def to_labeled_system(self, data, file_name: FileType, **kwargs):
         """Write n2p2 format.
 
         By default, LabeledSystem.to will fallback to System.to.
@@ -193,5 +194,5 @@ class N2P2Format(Format):
             buff.append(f"energy {energy:15.6f}")
             buff.append(f"charge {0:15.6f}")
             buff.append("end")
-        with open(file_name, "w") as fp:
+        with open_file(file_name, "w") as fp:
             fp.write("\n".join(buff))
