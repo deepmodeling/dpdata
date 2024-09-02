@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from dpdata.periodic_table import ELEMENTS
 from dpdata.unit import EnergyConversion
-from dpdata.utils import FileType, open_file
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 kcal2ev = EnergyConversion("kcal_mol", "eV").value()
 

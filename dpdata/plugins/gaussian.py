@@ -3,12 +3,16 @@ from __future__ import annotations
 import os
 import subprocess as sp
 import tempfile
+from typing import TYPE_CHECKING
 
 import dpdata.gaussian.gjf
 import dpdata.gaussian.log
 from dpdata.driver import Driver
 from dpdata.format import Format
-from dpdata.utils import FileType, open_file
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("gaussian/log")

@@ -4,7 +4,7 @@ import io
 import os
 import sys
 from contextlib import contextmanager
-from typing import Generator, overload
+from typing import TYPE_CHECKING, Generator, overload
 
 if sys.version_info >= (3, 8):
     from typing import Literal
@@ -134,7 +134,8 @@ def utf8len(s: str) -> int:
     return len(s.encode("utf-8"))
 
 
-FileType = io.IOBase | str | os.PathLike
+if TYPE_CHECKING:
+    FileType = io.IOBase | str | os.PathLike
 
 
 @contextmanager

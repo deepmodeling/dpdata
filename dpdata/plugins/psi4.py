@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from dpdata.format import Format
 from dpdata.psi4.input import write_psi4_input
 from dpdata.psi4.output import read_psi4_output
 from dpdata.unit import EnergyConversion, ForceConversion
-from dpdata.utils import FileType, open_file
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()

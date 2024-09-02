@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import re
 import warnings
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from dpdata.utils import FileType, open_file
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 latt_patt = r"\|\s+([0-9]{1,}[.][0-9]*)\s+([0-9]{1,}[.][0-9]*)\s+([0-9]{1,}[.][0-9]*)"
 pos_patt_first = r"\|\s+[0-9]{1,}[:]\s\w+\s(\w+)(\s.*[-]?[0-9]{1,}[.][0-9]*)(\s+[-]?[0-9]{1,}[.][0-9]*)(\s+[-]?[0-9]{1,}[.][0-9]*)"

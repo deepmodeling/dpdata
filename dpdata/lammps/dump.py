@@ -3,10 +3,14 @@ from __future__ import annotations
 
 import os
 import sys
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from dpdata.utils import FileType, open_file
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 lib_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(lib_path)
