@@ -169,6 +169,7 @@ class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):
         self.system_2 = dpdata.System("poscars/POSCAR.SiC.const", fmt="vasp/poscar")
         self.places = 6
 
+
 class TestPerturbPartAtoms(unittest.TestCase, CompSys, IsPBC):
     @patch("numpy.random")
     def setUp(self, random_mock):
@@ -178,6 +179,7 @@ class TestPerturbPartAtoms(unittest.TestCase, CompSys, IsPBC):
         self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "normal")
         self.system_2 = dpdata.System("poscars/POSCAR.SiC.normal", fmt="vasp/poscar")
         self.places = 6
+
 
 if __name__ == "__main__":
     unittest.main()
