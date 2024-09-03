@@ -20,20 +20,20 @@ or let dpdata infer the format (`vasp/poscar`) of the file from the file name ex
 d_poscar = dpdata.System("my.POSCAR")
 ```
 The number of atoms, atom types, coordinates are loaded from the `POSCAR` and stored to a data {class}`System` called `d_poscar`.
-A data {class}`System` (a concept used by [deepmd-kit](https://github.com/deepmodeling/deepmd-kit)) contains frames that has the same number of atoms of the same type. The order of the atoms should be consistent among the frames in one {class}`System`.
+A data {class}`System <dpdata.System>` (a concept used by [deepmd-kit](https://github.com/deepmodeling/deepmd-kit)) contains frames that has the same number of atoms of the same type. The order of the atoms should be consistent among the frames in one {class}`System <dpdata.System>`.
 It is noted that `POSCAR` only contains one frame.
 If the multiple frames stored in, for example, a `OUTCAR` is wanted,
 ```python
 d_outcar = dpdata.LabeledSystem("OUTCAR")
 ```
-The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any), are loaded by {class}`LabeledSystem`. It is noted that the forces of atoms are always assumed to exist. {class}`LabeledSystem` is a derived class of {class}`System`.
+The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any), are loaded by {class}`LabeledSystem <dpdata.LabeledSystem>`. It is noted that the forces of atoms are always assumed to exist. {class}`LabeledSystem <dpdata.LabeledSystem>` is a derived class of {class}`System <dpdata.System>`.
 
-The {class}`System` or {class}`LabeledSystem` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
+The {class}`System <dpdata.System>` or {class}`LabeledSystem <dpdata.LabeledSystem>` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
 
 
 
 ### Access data
-These properties stored in {class}`System` and {class}`LabeledSystem` can be accessed by operator `[]` with the key of the property supplied, for example
+These properties stored in {class}`System <dpdata.System>` and {class}`LabeledSystem <dpdata.LabeledSystem>` can be accessed by operator `[]` with the key of the property supplied, for example
 ```python
 coords = d_outcar["coords"]
 ```
@@ -52,7 +52,7 @@ Available properties are (nframe: number of frames in the system, natoms: total 
 
 
 ### Dump data
-The data stored in {class}`System` or {class}`LabeledSystem` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
+The data stored in {class}`System <dpdata.System>` or {class}`LabeledSystem <dpdata.LabeledSystem>` can be dumped in 'lammps/lmp' or 'vasp/poscar' format, for example:
 ```python
 d_outcar.to("lammps/lmp", "conf.lmp", frame_idx=0)
 ```
