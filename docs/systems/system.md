@@ -19,7 +19,7 @@ or let dpdata infer the format (`vasp/poscar`) of the file from the file name ex
 ```python
 d_poscar = dpdata.System("my.POSCAR")
 ```
-The number of atoms, atom types, coordinates are loaded from the `POSCAR` and stored to a data {class}`System` called `d_poscar`.
+The number of atoms, atom types, coordinates are loaded from the `POSCAR` and stored to a data {class}`System <dpdata.System>` called `d_poscar`.
 A data {class}`System <dpdata.System>` (a concept used by [deepmd-kit](https://github.com/deepmodeling/deepmd-kit)) contains frames that has the same number of atoms of the same type. The order of the atoms should be consistent among the frames in one {class}`System <dpdata.System>`.
 It is noted that `POSCAR` only contains one frame.
 If the multiple frames stored in, for example, a `OUTCAR` is wanted,
