@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import dpdata.abacus.md
 import dpdata.abacus.relax
 import dpdata.abacus.scf
 from dpdata.format import Format
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("abacus/stru")
@@ -12,7 +18,7 @@ class AbacusSTRUFormat(Format):
     def from_system(self, file_name, **kwargs):
         return dpdata.abacus.scf.get_frame_from_stru(file_name)
 
-    def to_system(self, data, file_name, frame_idx=0, **kwargs):
+    def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
         """Dump the system into ABACUS STRU format file.
 
         Parameters
@@ -46,7 +52,7 @@ class AbacusSTRUFormat(Format):
             numerical_descriptor=numerical_descriptor,
             mass=mass,
         )
-        with open(file_name, "w") as fp:
+        with open_file(file_name, "w") as fp:
             fp.write(stru_string)
 
 

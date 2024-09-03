@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 
 import dpdata
+from dpdata.utils import open_file
 
 
 def load_type(folder, type_map=None):
@@ -14,13 +15,10 @@ def load_type(folder, type_map=None):
         int
     )
     ntypes = np.max(data["atom_types"]) + 1
-    data["atom_numbs"] = []
-    for ii in range(ntypes):
-        data["atom_numbs"].append(np.count_nonzero(data["atom_types"] == ii))
     data["atom_names"] = []
     # if find type_map.raw, use it
     if os.path.isfile(os.path.join(folder, "type_map.raw")):
-        with open(os.path.join(folder, "type_map.raw")) as fp:
+        with open_file(os.path.join(folder, "type_map.raw")) as fp:
             my_type_map = fp.read().split()
     # else try to use arg type_map
     elif type_map is not None:
@@ -30,9 +28,10 @@ def load_type(folder, type_map=None):
         my_type_map = []
         for ii in range(ntypes):
             my_type_map.append("Type_%d" % ii)
-    assert len(my_type_map) >= len(data["atom_numbs"])
-    for ii in range(len(data["atom_numbs"])):
-        data["atom_names"].append(my_type_map[ii])
+    data["atom_names"] = my_type_map
+    data["atom_numbs"] = []
+    for ii, _ in enumerate(data["atom_names"]):
+        data["atom_numbs"].append(np.count_nonzero(data["atom_types"] == ii))
 
     return data
 
@@ -64,40 +63,41 @@ def to_system_data(folder, type_map=None, labels=True):
             data["nopbc"] = True
         # allow custom dtypes
         if labels:
-            for dtype in dpdata.system.LabeledSystem.DTYPES:
-                if dtype.name in (
-                    "atom_numbs",
-                    "atom_names",
-                    "atom_types",
-                    "orig",
-                    "cells",
-                    "coords",
-                    "real_atom_types",
-                    "real_atom_names",
-                    "nopbc",
-                    "energies",
-                    "forces",
-                    "virials",
-                ):
-                    # skip as these data contains specific rules
-                    continue
-                if not (
-                    len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES
-                ):
-                    warnings.warn(
-                        f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/raw format."
-                    )
-                    continue
-                natoms = data["coords"].shape[1]
-                shape = [
-                    natoms if xx == dpdata.system.Axis.NATOMS else xx
-                    for xx in dtype.shape[1:]
-                ]
-                if os.path.exists(os.path.join(folder, f"{dtype.name}.raw")):
-                    data[dtype.name] = np.reshape(
-                        np.loadtxt(os.path.join(folder, f"{dtype.name}.raw")),
-                        [nframes, *shape],
-                    )
+            dtypes = dpdata.system.LabeledSystem.DTYPES
+        else:
+            dtypes = dpdata.system.System.DTYPES
+        for dtype in dtypes:
+            if dtype.name in (
+                "atom_numbs",
+                "atom_names",
+                "atom_types",
+                "orig",
+                "cells",
+                "coords",
+                "real_atom_types",
+                "real_atom_names",
+                "nopbc",
+                "energies",
+                "forces",
+                "virials",
+            ):
+                # skip as these data contains specific rules
+                continue
+            if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+                warnings.warn(
+                    f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/raw format."
+                )
+                continue
+            natoms = data["coords"].shape[1]
+            shape = [
+                natoms if xx == dpdata.system.Axis.NATOMS else xx
+                for xx in dtype.shape[1:]
+            ]
+            if os.path.exists(os.path.join(folder, f"{dtype.name}.raw")):
+                data[dtype.name] = np.reshape(
+                    np.loadtxt(os.path.join(folder, f"{dtype.name}.raw")),
+                    [nframes, *shape],
+                )
         return data
     else:
         raise RuntimeError("not dir " + folder)
@@ -141,10 +141,15 @@ def dump(folder, data):
     except OSError:
         pass
     if data.get("nopbc", False):
-        with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
+        with open_file(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
             pass
     # allow custom dtypes
-    for dtype in dpdata.system.LabeledSystem.DTYPES:
+    labels = "energies" in data
+    if labels:
+        dtypes = dpdata.system.LabeledSystem.DTYPES
+    else:
+        dtypes = dpdata.system.System.DTYPES
+    for dtype in dtypes:
         if dtype.name in (
             "atom_numbs",
             "atom_names",

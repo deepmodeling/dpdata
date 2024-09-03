@@ -9,10 +9,12 @@ import dpdata
 from dpdata.data_type import Axis, DataType
 
 
-class TestDeepmdLoadDumpComp(unittest.TestCase):
+class DeepmdLoadDumpCompTest:
     def setUp(self):
-        self.system = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
-        self.foo = np.ones((len(self.system), 2, 4))
+        self.system = self.cls(
+            data=dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar").data
+        )
+        self.foo = np.ones((len(self.system), *self.shape))
         self.system.data["foo"] = self.foo
         self.system.check_data()
 
@@ -23,7 +25,7 @@ class TestDeepmdLoadDumpComp(unittest.TestCase):
 
     def test_from_deepmd_raw(self):
         self.system.to_deepmd_raw("data_foo")
-        x = dpdata.LabeledSystem("data_foo", fmt="deepmd/raw")
+        x = self.cls("data_foo", fmt="deepmd/raw")
         np.testing.assert_allclose(x.data["foo"], self.foo)
 
     def test_to_deepmd_npy(self):
@@ -33,7 +35,7 @@ class TestDeepmdLoadDumpComp(unittest.TestCase):
 
     def test_from_deepmd_npy(self):
         self.system.to_deepmd_npy("data_foo")
-        x = dpdata.LabeledSystem("data_foo", fmt="deepmd/npy")
+        x = self.cls("data_foo", fmt="deepmd/npy")
         np.testing.assert_allclose(x.data["foo"], self.foo)
 
     def test_to_deepmd_hdf5(self):
@@ -44,16 +46,42 @@ class TestDeepmdLoadDumpComp(unittest.TestCase):
 
     def test_from_deepmd_hdf5(self):
         self.system.to_deepmd_hdf5("data_foo.h5")
-        x = dpdata.LabeledSystem("data_foo.h5", fmt="deepmd/hdf5")
+        x = self.cls("data_foo.h5", fmt="deepmd/hdf5")
         np.testing.assert_allclose(x.data["foo"], self.foo)
 
     def test_duplicated_data_type(self):
-        dt = DataType("foo", np.ndarray, (Axis.NFRAMES, 2, 4), required=False)
-        n_dtypes_old = len(dpdata.LabeledSystem.DTYPES)
+        dt = DataType("foo", np.ndarray, (Axis.NFRAMES, *self.shape), required=False)
+        n_dtypes_old = len(self.cls.DTYPES)
         with self.assertWarns(UserWarning):
-            dpdata.LabeledSystem.register_data_type(dt)
-        n_dtypes_new = len(dpdata.LabeledSystem.DTYPES)
+            self.cls.register_data_type(dt)
+        n_dtypes_new = len(self.cls.DTYPES)
         self.assertEqual(n_dtypes_old, n_dtypes_new)
+
+    def test_to_deepmd_npy_mixed(self):
+        ms = dpdata.MultiSystems(self.system)
+        ms.to_deepmd_npy_mixed("data_foo_mixed")
+        x = dpdata.MultiSystems().load_systems_from_file(
+            "data_foo_mixed",
+            fmt="deepmd/npy/mixed",
+            labeled=issubclass(self.cls, dpdata.LabeledSystem),
+        )
+        np.testing.assert_allclose(list(x.systems.values())[0].data["foo"], self.foo)
+
+
+class TestDeepmdLoadDumpCompUnlabeled(unittest.TestCase, DeepmdLoadDumpCompTest):
+    cls = dpdata.System
+    shape = (3, 3)
+
+    def setUp(self):
+        DeepmdLoadDumpCompTest.setUp(self)
+
+
+class TestDeepmdLoadDumpCompLabeled(unittest.TestCase, DeepmdLoadDumpCompTest):
+    cls = dpdata.LabeledSystem
+    shape = (2, 4)
+
+    def setUp(self):
+        DeepmdLoadDumpCompTest.setUp(self)
 
 
 class TestDeepmdLoadDumpCompAny(unittest.TestCase):

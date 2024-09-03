@@ -102,7 +102,11 @@ def to_system_data(
         },
     }
     # allow custom dtypes
-    for dtype in dpdata.system.LabeledSystem.DTYPES:
+    if labels:
+        dtypes = dpdata.system.LabeledSystem.DTYPES
+    else:
+        dtypes = dpdata.system.System.DTYPES
+    for dtype in dtypes:
         if dtype.name in (
             "atom_numbs",
             "atom_names",
@@ -210,8 +214,13 @@ def dump(
         "virials": {"fn": "virial", "shape": (nframes, 9), "dump": True},
     }
 
+    labels = "energies" in data
+    if labels:
+        dtypes = dpdata.system.LabeledSystem.DTYPES
+    else:
+        dtypes = dpdata.system.System.DTYPES
     # allow custom dtypes
-    for dtype in dpdata.system.LabeledSystem.DTYPES:
+    for dtype in dtypes:
         if dtype.name in (
             "atom_numbs",
             "atom_names",
@@ -243,9 +252,10 @@ def dump(
     for dt, prop in data_types.items():
         if dt in data:
             if prop["dump"]:
-                reshaped_data[dt] = np.reshape(data[dt], prop["shape"]).astype(
-                    comp_prec
-                )
+                ddata = np.reshape(data[dt], prop["shape"])
+                if np.issubdtype(ddata.dtype, np.floating):
+                    ddata = ddata.astype(comp_prec)
+                reshaped_data[dt] = ddata
 
     # dump frame properties: cell, coord, energy, force and virial
     nsets = nframes // set_size

@@ -146,5 +146,23 @@ class TestABACUSLabeledOutputFail(unittest.TestCase):
         self.assertEqual(len(self.system_ch4), 0)
 
 
+class TestABACUSLabeledOutputNoFS(unittest.TestCase):
+    def setUp(self):
+        shutil.copy("abacus.scf/INPUT.ch4-noforcestress", "abacus.scf/INPUT")
+
+    def tearDown(self):
+        if os.path.isfile("abacus.scf/INPUT"):
+            os.remove("abacus.scf/INPUT")
+
+    def test_noforcestress_job(self):
+        # check below will not throw error
+        system_ch4 = dpdata.LabeledSystem("abacus.scf", fmt="abacus/scf")
+        # check the returned force is empty
+        self.assertFalse(system_ch4.data["forces"])
+        self.assertTrue("virials" not in system_ch4.data)
+        # test append self
+        system_ch4.append(system_ch4)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -41,6 +41,11 @@ repository = "https://github.com/deepmodeling/dpdata"
 dpdata = "dpdata.cli:dpdata_cli"
 
 [project.optional-dependencies]
+test = [
+    # https://github.com/materialsproject/pymatgen/issues/3882
+    # https://github.com/kuelumbus/rdkit-pypi/issues/102
+    "numpy<2",
+]
 ase = ['ase']
 amber = [
     'parmed; python_version >= "3.8"',
@@ -52,9 +57,9 @@ docs = [
     'recommonmark',
     'sphinx_rtd_theme>=1.0.0rc1',
     'numpydoc',
-    'm2r2',
+    'myst-parser',
     'deepmodeling-sphinx>=0.1.1',
-    'sphinx-argparse',
+    'sphinx-argparse<0.5.0',
     'rdkit',
     'jupyterlite-sphinx',
     'jupyterlite-xeus',
