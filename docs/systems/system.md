@@ -28,7 +28,7 @@ d_outcar = dpdata.LabeledSystem("OUTCAR")
 ```
 The labels provided in the `OUTCAR`, i.e. energies, forces and virials (if any), are loaded by {class}`LabeledSystem <dpdata.LabeledSystem>`. It is noted that the forces of atoms are always assumed to exist. {class}`LabeledSystem <dpdata.LabeledSystem>` is a derived class of {class}`System <dpdata.System>`.
 
-The {class}`System <dpdata.System>` or {class}`LabeledSystem <dpdata.LabeledSystem>` can be constructed from the following file formats with the `format key` in the table passed to argument `fmt`:
+The {class}`System <dpdata.System>` or {class}`LabeledSystem <dpdata.LabeledSystem>` can be constructed from the [supported file formats](../formats.rst) with the `format key` in the table passed to argument `fmt`.
 
 
 
