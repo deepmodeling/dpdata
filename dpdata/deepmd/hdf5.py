@@ -252,9 +252,10 @@ def dump(
     for dt, prop in data_types.items():
         if dt in data:
             if prop["dump"]:
-                reshaped_data[dt] = np.reshape(data[dt], prop["shape"]).astype(
-                    comp_prec
-                )
+                ddata = np.reshape(data[dt], prop["shape"])
+                if np.issubdtype(ddata.dtype, np.floating):
+                    ddata = ddata.astype(comp_prec)
+                reshaped_data[dt] = ddata
 
     # dump frame properties: cell, coord, energy, force and virial
     nsets = nframes // set_size

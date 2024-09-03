@@ -204,7 +204,9 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
                 f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/npy format."
             )
             continue
-        ddata = np.reshape(data[dtype.name], [nframes, -1]).astype(comp_prec)
+        ddata = np.reshape(data[dtype.name], [nframes, -1])
+        if np.issubdtype(ddata.dtype, np.floating):
+            ddata = ddata.astype(comp_prec)
         for ii in range(nsets):
             set_stt = ii * set_size
             set_end = (ii + 1) * set_size
