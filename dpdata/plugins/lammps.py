@@ -1,20 +1,26 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import dpdata.lammps.dump
 import dpdata.lammps.lmp
 from dpdata.format import Format
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("lmp")
 @Format.register("lammps/lmp")
 class LAMMPSLmpFormat(Format):
     @Format.post("shift_orig_zero")
-    def from_system(self, file_name, type_map=None, **kwargs):
-        with open(file_name) as fp:
+    def from_system(self, file_name: FileType, type_map=None, **kwargs):
+        with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
         return dpdata.lammps.lmp.to_system_data(lines, type_map)
 
-    def to_system(self, data, file_name, frame_idx=0, **kwargs):
+    def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
         """Dump the system in lammps data format.
 
         Parameters
@@ -30,7 +36,7 @@ class LAMMPSLmpFormat(Format):
         """
         assert frame_idx < len(data["coords"])
         w_str = dpdata.lammps.lmp.from_system_data(data, frame_idx)
-        with open(file_name, "w") as fp:
+        with open_file(file_name, "w") as fp:
             fp.write(w_str)
 
 

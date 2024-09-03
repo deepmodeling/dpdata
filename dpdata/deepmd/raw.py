@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 
 import dpdata
+from dpdata.utils import open_file
 
 
 def load_type(folder, type_map=None):
@@ -17,7 +18,7 @@ def load_type(folder, type_map=None):
     data["atom_names"] = []
     # if find type_map.raw, use it
     if os.path.isfile(os.path.join(folder, "type_map.raw")):
-        with open(os.path.join(folder, "type_map.raw")) as fp:
+        with open_file(os.path.join(folder, "type_map.raw")) as fp:
             my_type_map = fp.read().split()
     # else try to use arg type_map
     elif type_map is not None:
@@ -140,7 +141,7 @@ def dump(folder, data):
     except OSError:
         pass
     if data.get("nopbc", False):
-        with open(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
+        with open_file(os.path.join(folder, "nopbc"), "w") as fw_nopbc:
             pass
     # allow custom dtypes
     labels = "energies" in data

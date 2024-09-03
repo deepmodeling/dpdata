@@ -5,6 +5,8 @@ import os
 
 import numpy as np
 
+from dpdata.utils import open_file
+
 ry2ev = 13.605693009
 bohr2ang = 0.52917721067
 kbar2evperang3 = 1e3 / 1.602176621e6
@@ -142,9 +144,9 @@ def get_frame(fname):
         path_out = fname[1]
     else:
         raise RuntimeError("invalid input")
-    with open(path_out) as fp:
+    with open_file(path_out) as fp:
         outlines = fp.read().split("\n")
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
     cell = get_cell(inlines)
     atom_names, natoms, types, coords = get_coords(inlines, cell)

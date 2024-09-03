@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 import dpdata.vasp.outcar
 import dpdata.vasp.poscar
 import dpdata.vasp.xml
 from dpdata.format import Format
-from dpdata.utils import uniq_atom_names
+from dpdata.utils import open_file, uniq_atom_names
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("poscar")
@@ -15,14 +20,14 @@ from dpdata.utils import uniq_atom_names
 @Format.register("vasp/contcar")
 class VASPPoscarFormat(Format):
     @Format.post("rot_lower_triangular")
-    def from_system(self, file_name, **kwargs):
-        with open(file_name) as fp:
+    def from_system(self, file_name: FileType, **kwargs):
+        with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
         data = dpdata.vasp.poscar.to_system_data(lines)
         data = uniq_atom_names(data)
         return data
 
-    def to_system(self, data, file_name, frame_idx=0, **kwargs):
+    def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
         """Dump the system in vasp POSCAR format.
 
         Parameters
@@ -37,7 +42,7 @@ class VASPPoscarFormat(Format):
             other parameters
         """
         w_str = VASPStringFormat().to_system(data, frame_idx=frame_idx)
-        with open(file_name, "w") as fp:
+        with open_file(file_name, "w") as fp:
             fp.write(w_str)
 
 
