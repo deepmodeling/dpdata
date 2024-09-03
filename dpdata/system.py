@@ -849,6 +849,7 @@ class System:
         cell_pert_fraction: float,
         atom_pert_distance: float,
         atom_pert_style: str = "normal",
+        atom_pert_prob: float = 1.0,
     ):
         """Perturb each frame in the system randomly.
         The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
@@ -877,6 +878,8 @@ class System:
                     These points are treated as vector used by atoms to move.
                     Obviously, the max length of the distance atoms move is `atom_pert_distance`.
                 - `'const'`: The distance atoms move will be a constant `atom_pert_distance`.
+        atom_pert_prob : float
+            Determine the proportion of the total number of atoms in a frame that are perturbed.
 
         Returns
         -------
@@ -900,11 +903,14 @@ class System:
                 tmp_system.data["coords"][0] = np.matmul(
                     tmp_system.data["coords"][0], cell_perturb_matrix
                 )
+                pert_natoms = int(atom_pert_prob * len(tmp_system.data["coords"][0]))
+                pert_atom_id = np.random.choice(range(len(tmp_system.data["coords"][0])), pert_natoms, replace=False).tolist()
                 for kk in range(len(tmp_system.data["coords"][0])):
-                    atom_perturb_vector = get_atom_perturb_vector(
-                        atom_pert_distance, atom_pert_style
-                    )
-                    tmp_system.data["coords"][0][kk] += atom_perturb_vector
+                    if kk in pert_atom_id:
+                        atom_perturb_vector = get_atom_perturb_vector(
+                            atom_pert_distance, atom_pert_style
+                        )
+                        tmp_system.data["coords"][0][kk] += atom_perturb_vector
                 tmp_system.rot_lower_triangular()
                 perturbed_system.append(tmp_system)
         return perturbed_system
