@@ -1,15 +1,15 @@
 # `MultiSystems`
 
-The Class :class:`dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
+The Class {class}`dpdata.MultiSystems`  can read data  from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
 
-Use :meth:`dpdata.MultiSystems.from_dir` to read from a  directory, :class:`dpdata.MultiSystems` will walk in the directory
-Recursively  and  find all file with specific file_name. Supports all the file formats that :class:`dpdata.LabeledSystem` supports.
+Use {meth}`dpdata.MultiSystems.from_dir` to read from a  directory, {class}`dpdata.MultiSystems` will walk in the directory
+Recursively  and  find all file with specific file_name. Supports all the file formats that {class}`dpdata.LabeledSystem` supports.
 
-Use :meth:`dpdata.MultiSystems.from_file` to read from single file. Single-file support is available for the `quip/gap/xyz` and `ase/structure` formats.
+Use {meth}`dpdata.MultiSystems.from_file` to read from single file. Single-file support is available for the `quip/gap/xyz` and `ase/structure` formats.
 
 For example, for `quip/gap xyz` files, single .xyz file may contain many different configurations with different atom numbers and atom type.
 
-The following commands relating to :class:`dpdata.MultiSystems` may be useful.
+The following commands relating to {class}`dpdata.MultiSystems` may be useful.
 ```python
 # load data
 
