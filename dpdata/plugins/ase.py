@@ -188,7 +188,7 @@ class ASEStructureFormat(Format):
                         stress33[1][1],
                         stress33[2][2],
                         stress33[1][2],
-                        stress33[2][0],
+                        stress33[0][2],
                         stress33[0][1],
                     ]
                 )
