@@ -182,7 +182,16 @@ class ASEStructureFormat(Format):
                 vol = structure.get_volume()
                 # results['stress'] = data["virials"][ii] / (v_pref * vol)
                 stress33 = -data["virials"][ii] / vol
-                results["stress"] = np.array([stress33[0][0],stress33[1][1],stress33[2][2],stress33[1][2],stress33[2][0],stress33[0][1]])
+                results["stress"] = np.array(
+                    [
+                        stress33[0][0],
+                        stress33[1][1],
+                        stress33[2][2],
+                        stress33[1][2],
+                        stress33[2][0],
+                        stress33[0][1],
+                    ]
+                )
 
             structure.calc = SinglePointCalculator(structure, **results)
             structures.append(structure)
