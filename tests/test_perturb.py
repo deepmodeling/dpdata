@@ -12,12 +12,16 @@ class NormalGenerator:
     def __init__(self):
         self.randn_generator = self.get_randn_generator()
         self.rand_generator = self.get_rand_generator()
+        self.choice_generator = self.get_choice_generator()
 
     def randn(self, number):
         return next(self.randn_generator)
 
     def rand(self, number):
         return next(self.rand_generator)
+
+    def choice(self, total_natoms, pert_natoms, replace):
+        return next(self.choice_generator)[:pert_natoms]
 
     @staticmethod
     def get_randn_generator():
@@ -44,17 +48,26 @@ class NormalGenerator:
             [0.23182233, 0.87106847, 0.68728511, 0.94180274, 0.92860453, 0.69191187]
         )
 
+    @staticmethod
+    def get_choice_generator():
+        yield np.asarray(
+            [5,3,7,6,2,1,4,0]
+        )
 
 class UniformGenerator:
     def __init__(self):
         self.randn_generator = self.get_randn_generator()
         self.rand_generator = self.get_rand_generator()
+        self.choice_generator = self.get_choice_generator()
 
     def randn(self, number):
         return next(self.randn_generator)
 
     def rand(self, number):
         return next(self.rand_generator)
+
+    def choice(self, total_natoms, pert_natoms, replace):
+        return next(self.choice_generator)
 
     @staticmethod
     def get_randn_generator():
@@ -97,17 +110,26 @@ class UniformGenerator:
             yield np.asarray(data[count])
             count += 1
 
+    @staticmethod
+    def get_choice_generator():
+        yield np.asarray(
+            [5,3,7,6,2,1,4,0]
+        )
 
 class ConstGenerator:
     def __init__(self):
         self.randn_generator = self.get_randn_generator()
         self.rand_generator = self.get_rand_generator()
+        self.choice_generator = self.get_choice_generator()
 
     def randn(self, number):
         return next(self.randn_generator)
 
     def rand(self, number):
         return next(self.rand_generator)
+
+    def choice(self, total_natoms, pert_natoms, replace):
+        return next(self.choice_generator)
 
     @staticmethod
     def get_randn_generator():
@@ -135,6 +157,11 @@ class ConstGenerator:
             [0.01525907, 0.68387374, 0.39768541, 0.55596047, 0.26557088, 0.60883073]
         )
 
+    @staticmethod
+    def get_choice_generator():
+        yield np.asarray(
+            [5,3,7,6,2,1,4,0]
+        )
 
 # %%
 class TestPerturbNormal(unittest.TestCase, CompSys, IsPBC):
@@ -142,6 +169,7 @@ class TestPerturbNormal(unittest.TestCase, CompSys, IsPBC):
     def setUp(self, random_mock):
         random_mock.rand = NormalGenerator().rand
         random_mock.randn = NormalGenerator().randn
+        random_mock.choice = NormalGenerator().choice
         system_1_origin = dpdata.System("poscars/POSCAR.SiC", fmt="vasp/poscar")
         self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "normal")
         self.system_2 = dpdata.System("poscars/POSCAR.SiC.normal", fmt="vasp/poscar")
@@ -153,6 +181,7 @@ class TestPerturbUniform(unittest.TestCase, CompSys, IsPBC):
     def setUp(self, random_mock):
         random_mock.rand = UniformGenerator().rand
         random_mock.randn = UniformGenerator().randn
+        random_mock.choice = UniformGenerator().choice
         system_1_origin = dpdata.System("poscars/POSCAR.SiC", fmt="vasp/poscar")
         self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "uniform")
         self.system_2 = dpdata.System("poscars/POSCAR.SiC.uniform", fmt="vasp/poscar")
@@ -164,6 +193,7 @@ class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):
     def setUp(self, random_mock):
         random_mock.rand = ConstGenerator().rand
         random_mock.randn = ConstGenerator().randn
+        random_mock.choice = ConstGenerator().choice
         system_1_origin = dpdata.System("poscars/POSCAR.SiC", fmt="vasp/poscar")
         self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "const")
         self.system_2 = dpdata.System("poscars/POSCAR.SiC.const", fmt="vasp/poscar")
@@ -174,9 +204,10 @@ class TestPerturbPartAtoms(unittest.TestCase, CompSys, IsPBC):
     def setUp(self, random_mock):
         random_mock.rand = NormalGenerator().rand
         random_mock.randn = NormalGenerator().randn
+        random_mock.choice = NormalGenerator().choice
         system_1_origin = dpdata.System("poscars/POSCAR.SiC", fmt="vasp/poscar")
-        self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "normal")
-        self.system_2 = dpdata.System("poscars/POSCAR.SiC.normal", fmt="vasp/poscar")
+        self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "normal", 0.25)
+        self.system_2 = dpdata.System("poscars/POSCAR.SiC.partpert", fmt="vasp/poscar")
         self.places = 6
 
 
