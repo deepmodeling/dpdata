@@ -50,9 +50,8 @@ class NormalGenerator:
 
     @staticmethod
     def get_choice_generator():
-        yield np.asarray(
-            [5,3,7,6,2,1,4,0]
-        )
+        yield np.asarray([5, 3, 7, 6, 2, 1, 4, 0])
+
 
 class UniformGenerator:
     def __init__(self):
@@ -112,9 +111,8 @@ class UniformGenerator:
 
     @staticmethod
     def get_choice_generator():
-        yield np.asarray(
-            [5,3,7,6,2,1,4,0]
-        )
+        yield np.asarray([5, 3, 7, 6, 2, 1, 4, 0])
+
 
 class ConstGenerator:
     def __init__(self):
@@ -159,9 +157,8 @@ class ConstGenerator:
 
     @staticmethod
     def get_choice_generator():
-        yield np.asarray(
-            [5,3,7,6,2,1,4,0]
-        )
+        yield np.asarray([5, 3, 7, 6, 2, 1, 4, 0])
+
 
 # %%
 class TestPerturbNormal(unittest.TestCase, CompSys, IsPBC):
@@ -198,6 +195,7 @@ class TestPerturbConst(unittest.TestCase, CompSys, IsPBC):
         self.system_1 = system_1_origin.perturb(1, 0.05, 0.6, "const")
         self.system_2 = dpdata.System("poscars/POSCAR.SiC.const", fmt="vasp/poscar")
         self.places = 6
+
 
 class TestPerturbPartAtoms(unittest.TestCase, CompSys, IsPBC):
     @patch("numpy.random")
