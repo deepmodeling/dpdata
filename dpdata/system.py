@@ -904,9 +904,13 @@ class System:
                     tmp_system.data["coords"][0], cell_perturb_matrix
                 )
                 pert_natoms = int(atom_pert_prob * len(tmp_system.data["coords"][0]))
-                pert_atom_id = sorted(np.random.choice(
-                    range(len(tmp_system.data["coords"][0])), pert_natoms, replace=False
-                ).tolist())
+                pert_atom_id = sorted(
+                    np.random.choice(
+                        range(len(tmp_system.data["coords"][0])),
+                        pert_natoms,
+                        replace=False,
+                    ).tolist()
+                )
                 for kk in pert_atom_id:
                     atom_perturb_vector = get_atom_perturb_vector(
                         atom_pert_distance, atom_pert_style
