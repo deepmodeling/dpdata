@@ -257,7 +257,7 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False):
     if 'sp' in head:
         contain_spin = True
         spin_force = safe_get_spin_force(lines)
-        system['spin'] = [spin_force[:, :1] * spin_force[:, 1:4]]
+        system['spins'] = [spin_force[:, :1] * spin_force[:, 1:4]]
     for ii in range(1, len(array_lines)):
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
@@ -271,9 +271,9 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False):
             safe_get_posi(array_lines[ii], cell, np.array(orig), unwrap)[idx]
         )
         if contain_spin:
-            system['spin'].append(safe_get_spin_force(array_lines[ii])[:, :1] * safe_get_spin_force(array_lines[ii])[:, 1:4])
+            system['spins'].append(safe_get_spin_force(array_lines[ii])[:, :1] * safe_get_spin_force(array_lines[ii])[:, 1:4])
     if contain_spin:
-        system["spin"] = np.array(system["spin"])
+        system["spins"] = np.array(system["spins"])
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
     return system

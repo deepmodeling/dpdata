@@ -126,17 +126,17 @@ def get_posi(lines):
         posis.append([float(jj) for jj in ii.split()[2:5]])
     return np.array(posis)
 
-def get_spin(lines):
+def get_spins(lines):
     atom_lines = get_atoms(lines)
     if len(atom_lines[0].split()) < 8:
         return None
-    spin_ori = []
-    spin_norm = []
+    spins_ori = []
+    spins_norm = []
     for ii in atom_lines:
-        spin_ori.append([float(jj) for jj in ii.split()[5:8]])
-        spin_norm.append([float(jj) for jj in ii.split()[-1:]])
-    spin = np.array(spin_ori) * np.array(spin_norm)
-    return spin
+        spins_ori.append([float(jj) for jj in ii.split()[5:8]])
+        spins_norm.append([float(jj) for jj in ii.split()[-1:]])
+    spins = np.array(spins_ori) * np.array(spins_norm)
+    return spins
 
 def get_lmpbox(lines):
     box_info = []
@@ -162,9 +162,9 @@ def get_lmpbox(lines):
 def system_data(lines, type_map=None, type_idx_zero=True):
     system = {}
     system["atom_numbs"] = get_natoms_vec(lines)
-    spin = get_spin(lines)
-    if spin is not None: 
-        system['spin'] = np.array([spin])
+    spins = get_spins(lines)
+    if spins is not None: 
+        system['spins'] = np.array([spins])
     system["atom_names"] = []
     if type_map is None:
         for ii in range(len(system["atom_numbs"])):
@@ -230,7 +230,7 @@ def from_system_data(system, f_idx=0):
         + ptr_float_fmt
         + "\n"
     )
-    if 'spin' in system.keys():
+    if 'spins' in system.keys():
         coord_fmt = (
             coord_fmt.strip('\n') 
             + " "
@@ -243,20 +243,20 @@ def from_system_data(system, f_idx=0):
             + ptr_float_fmt
             + "\n"
         )
-        spin_norm = np.linalg.norm(system['spin'][f_idx], axis=1)
+        spins_norm = np.linalg.norm(system['spins'][f_idx], axis=1)
     for ii in range(natoms):
-        if 'spin' in  system.keys():
-            if spin_norm[ii] != 0:
+        if 'spins' in system.keys():
+            if spins_norm[ii] != 0:
                 ret += coord_fmt % (
                     ii + 1,
                     system["atom_types"][ii] + 1,
                     system["coords"][f_idx][ii][0] - system["orig"][0],
                     system["coords"][f_idx][ii][1] - system["orig"][1],
                     system["coords"][f_idx][ii][2] - system["orig"][2],
-                    system['spin'][f_idx][ii][0]/spin_norm[ii],
-                    system['spin'][f_idx][ii][1]/spin_norm[ii],
-                    system['spin'][f_idx][ii][2]/spin_norm[ii],
-                    spin_norm[ii],
+                    system['spins'][f_idx][ii][0]/spins_norm[ii],
+                    system['spins'][f_idx][ii][1]/spins_norm[ii],
+                    system['spins'][f_idx][ii][2]/spins_norm[ii],
+                    spins_norm[ii],
                 )
             else:
                 ret += coord_fmt % (
@@ -265,10 +265,10 @@ def from_system_data(system, f_idx=0):
                     system["coords"][f_idx][ii][0] - system["orig"][0],
                     system["coords"][f_idx][ii][1] - system["orig"][1],
                     system["coords"][f_idx][ii][2] - system["orig"][2],
-                    system['spin'][f_idx][ii][0],
-                    system['spin'][f_idx][ii][1],
-                    system['spin'][f_idx][ii][2]+1,
-                    spin_norm[ii],
+                    system['spins'][f_idx][ii][0],
+                    system['spins'][f_idx][ii][1],
+                    system['spins'][f_idx][ii][2]+1,
+                    spins_norm[ii],
                 )
         else:
             ret += coord_fmt % (

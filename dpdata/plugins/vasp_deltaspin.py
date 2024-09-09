@@ -78,7 +78,7 @@ class VASPOutcarFormat(Format):
             data["atom_types"],
             data["cells"],
             data["coords"],
-            data['spin'],
+            data['spins'],
             data["energies"],
             data["forces"],
             data['mag_forces'],

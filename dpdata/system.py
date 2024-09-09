@@ -93,7 +93,7 @@ class System:
         DataType("orig", np.ndarray, (3,)),
         DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
         DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
-        DataType("spin", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False),
+        DataType("spins", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False),
         DataType(
             "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
         ),
@@ -712,7 +712,7 @@ class System:
         self.data["cells"][f_idx] = np.matmul(self.data["cells"][f_idx], trans)
         self.data["coords"][f_idx] = np.matmul(self.data["coords"][f_idx], trans)
         try:
-            self.data["spin"][f_idx] = np.matmul(self.data["spin"][f_idx], trans)
+            self.data["spins"][f_idx] = np.matmul(self.data["spins"][f_idx], trans)
         except:
             pass
 
