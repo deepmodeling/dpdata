@@ -1,7 +1,15 @@
 #!/usr/bin/python3
+from __future__ import annotations
+
 import warnings
+from typing import TYPE_CHECKING
 
 import numpy as np
+
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 from ..unit import (
     EnergyConversion,
@@ -85,8 +93,8 @@ def load_atom_types(lines, natoms, atom_names):
     return np.array(ret, dtype=int)
 
 
-def load_param_file(fname):
-    with open(fname) as fp:
+def load_param_file(fname: FileType):
+    with open_file(fname) as fp:
         lines = fp.read().split("\n")
     natoms = int(load_key(lines, "nat"))
     ntypes = int(load_key(lines, "ntyp"))
@@ -125,11 +133,11 @@ def _load_pos_block(fp, natoms):
         return blk, ss
 
 
-def load_data(fname, natoms, begin=0, step=1, convert=1.0):
+def load_data(fname: FileType, natoms, begin=0, step=1, convert=1.0):
     coords = []
     steps = []
     cc = 0
-    with open(fname) as fp:
+    with open_file(fname) as fp:
         while True:
             blk, ss = _load_pos_block(fp, natoms)
             if blk is None:
@@ -145,7 +153,7 @@ def load_data(fname, natoms, begin=0, step=1, convert=1.0):
 
 # def load_pos(fname, natoms) :
 #     coords = []
-#     with open(fname) as fp:
+#     with open_file(fname) as fp:
 #         while True:
 #             blk = _load_pos_block(fp, natoms)
 #             # print(blk)
@@ -162,7 +170,7 @@ def load_energy(fname, begin=0, step=1):
     steps = []
     for ii in data[begin::step, 0]:
         steps.append("%d" % ii)
-    with open(fname) as fp:
+    with open_file(fname) as fp:
         while True:
             line = fp.readline()
             if not line:
@@ -176,7 +184,7 @@ def load_energy(fname, begin=0, step=1):
 
 # def load_force(fname, natoms) :
 #     coords = []
-#     with open(fname) as fp:
+#     with open_file(fname) as fp:
 #         while True:
 #             blk = _load_pos_block(fp, natoms)
 #             # print(blk)

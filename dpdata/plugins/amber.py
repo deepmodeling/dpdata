@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import subprocess as sp
 import tempfile
@@ -6,6 +8,7 @@ import dpdata.amber.md
 import dpdata.amber.sqm
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
+from dpdata.utils import open_file
 
 
 @Format.register("amber/md")
@@ -124,7 +127,7 @@ class SQMDriver(Driver):
     -15.41111246
     """
 
-    def __init__(self, sqm_exec: str = "sqm", **kwargs: dict) -> None:
+    def __init__(self, sqm_exec: str = "sqm", **kwargs) -> None:
         self.sqm_exec = sqm_exec
         self.kwargs = kwargs
 
@@ -141,7 +144,7 @@ class SQMDriver(Driver):
                         [*self.sqm_exec.split(), "-O", "-i", inp_fn, "-o", out_fn]
                     )
                 except sp.CalledProcessError as e:
-                    with open(out_fn) as f:
+                    with open_file(out_fn) as f:
                         raise RuntimeError(
                             "Run sqm failed! Output:\n" + f.read()
                         ) from e

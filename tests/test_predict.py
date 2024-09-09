@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy as np
@@ -104,7 +106,9 @@ class TestMinimize(unittest.TestCase, CompLabeledSys, IsPBC):
         )
         zero_driver = ZeroDriver()
         self.system_1 = ori_sys.predict(driver=zero_driver)
-        self.system_2 = ori_sys.minimize(driver=zero_driver, minimizer="ase")
+        self.system_2 = ori_sys.minimize(
+            driver=zero_driver, minimizer="ase", max_steps=100
+        )
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -121,7 +125,9 @@ class TestMinimizeMultiSystems(unittest.TestCase, CompLabeledSys, IsPBC):
         zero_driver = ZeroDriver()
         self.system_1 = list(multi_sys.predict(driver=zero_driver).systems.values())[0]
         self.system_2 = list(
-            multi_sys.minimize(driver=zero_driver, minimizer="ase").systems.values()
+            multi_sys.minimize(
+                driver=zero_driver, minimizer="ase", max_steps=100
+            ).systems.values()
         )[0]
         self.places = 6
         self.e_places = 6

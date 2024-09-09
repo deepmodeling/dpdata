@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import os
 
 import numpy as np
+
+from dpdata.utils import open_file
 
 from .scf import (
     bohr2ang,
@@ -172,10 +176,10 @@ def get_frame(fname):
         path_in = os.path.join(fname, "INPUT")
     else:
         raise RuntimeError("invalid input")
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
-    with open(geometry_path_in) as fp:
+    with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
     atom_names, natoms, types, coord_tmp = get_coords(
@@ -183,8 +187,8 @@ def get_frame(fname):
     )
 
     logf = get_log_file(fname, inlines)
-    assert os.path.isfile(logf), "Error: can not find %s" % logf
-    with open(logf) as f1:
+    assert os.path.isfile(logf), f"Error: can not find {logf}"
+    with open_file(logf) as f1:
         lines = f1.readlines()
 
     atomnumber = 0

@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from dpdata.format import Format
 from dpdata.orca.output import read_orca_sp_output
 from dpdata.unit import EnergyConversion, ForceConversion
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
@@ -16,12 +23,12 @@ class ORCASPOutFormat(Format):
     printed into the output file.
     """
 
-    def from_labeled_system(self, file_name: str, **kwargs) -> dict:
+    def from_labeled_system(self, file_name: FileType, **kwargs) -> dict:
         """Read from ORCA single point energy output.
 
         Parameters
         ----------
-        file_name : str
+        file_name : FileType
             file name
         **kwargs
             keyword arguments

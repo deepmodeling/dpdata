@@ -1,13 +1,13 @@
-import numpy as np
+from __future__ import annotations
 
-try:
-    from pymatgen.core import Molecule
-except ImportError:
-    pass
 from collections import Counter
+
+import numpy as np
 
 
 def to_system_data(file_name, protect_layer=9):
+    from pymatgen.core import Molecule
+
     mol = Molecule.from_file(file_name)
     elem_mol = list(str(site.species.elements[0]) for site in mol.sites)
     elem_counter = Counter(elem_mol)

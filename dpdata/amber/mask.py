@@ -1,5 +1,7 @@
 """Amber mask."""
 
+from __future__ import annotations
+
 try:
     import parmed
 except ImportError:

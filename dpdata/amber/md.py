@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 import os
 import re
 
 import numpy as np
-from scipy.io import netcdf_file
 
 from dpdata.amber.mask import pick_by_amber_mask
 from dpdata.unit import EnergyConversion
+from dpdata.utils import open_file
 
 from ..periodic_table import ELEMENTS
 
@@ -44,11 +46,13 @@ def read_amber_traj(
     labeled : bool
         Whether to return labeled data
     """
+    from scipy.io import netcdf_file
+
     flag_atom_type = False
     flag_atom_numb = False
     amber_types = []
     atomic_number = []
-    with open(parm7_file) as f:
+    with open_file(parm7_file) as f:
         for line in f:
             if line.startswith("%FLAG"):
                 flag_atom_type = line.startswith("%FLAG AMBER_ATOM_TYPE")
@@ -98,14 +102,14 @@ def read_amber_traj(
         # load energy from mden_file or mdout_file
         energies = []
         if mden_file is not None and os.path.isfile(mden_file):
-            with open(mden_file) as f:
+            with open_file(mden_file) as f:
                 for line in f:
                     if line.startswith("L6"):
                         s = line.split()
                         if s[2] != "E_pot":
                             energies.append(float(s[2]))
         elif mdout_file is not None and os.path.isfile(mdout_file):
-            with open(mdout_file) as f:
+            with open_file(mdout_file) as f:
                 for line in f:
                     if "EPtot" in line:
                         s = line.split()

@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
-try:
-    import h5py
-except ImportError:
-    pass
 import numpy as np
 
 import dpdata
@@ -15,6 +12,9 @@ import dpdata.deepmd.mixed
 import dpdata.deepmd.raw
 from dpdata.driver import Driver
 from dpdata.format import Format
+
+if TYPE_CHECKING:
+    import h5py
 
 
 @Format.register("deepmd")
@@ -202,6 +202,8 @@ class DeePMDHDF5Format(Format):
         TypeError
             file_name is not str or h5py.Group or h5py.File
         """
+        import h5py
+
         if isinstance(file_name, (h5py.Group, h5py.File)):
             return dpdata.deepmd.hdf5.to_system_data(
                 file_name, "", type_map=type_map, labels=labels
@@ -300,6 +302,8 @@ class DeePMDHDF5Format(Format):
         **kwargs : dict
             other parameters
         """
+        import h5py
+
         if isinstance(file_name, (h5py.Group, h5py.File)):
             dpdata.deepmd.hdf5.dump(
                 file_name, "", data, set_size=set_size, comp_prec=comp_prec
@@ -330,6 +334,8 @@ class DeePMDHDF5Format(Format):
         h5py.Group
             a HDF5 group in the HDF5 file
         """
+        import h5py
+
         with h5py.File(directory, "r") as f:
             for ff in f.keys():
                 yield f[ff]
@@ -353,6 +359,8 @@ class DeePMDHDF5Format(Format):
         h5py.Group
             a HDF5 group with the name of formula
         """
+        import h5py
+
         with h5py.File(directory, "w") as f:
             for ff in formulas:
                 yield f.create_group(ff)

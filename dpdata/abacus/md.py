@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import os
 import warnings
 
 import numpy as np
+
+from dpdata.utils import open_file
 
 from .scf import (
     bohr2ang,
@@ -28,7 +32,7 @@ def get_path_out(fname, inlines):
     for line in inlines:
         if len(line) > 0 and "suffix" in line and "suffix" == line.split()[0]:
             suffix = line.split()[1]
-            path_out = os.path.join(fname, "OUT.%s/" % suffix)
+            path_out = os.path.join(fname, f"OUT.{suffix}/")
             break
     return path_out
 
@@ -154,12 +158,12 @@ def get_frame(fname):
         path_in = os.path.join(fname, "INPUT")
     else:
         raise RuntimeError("invalid input")
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
     path_out = get_path_out(fname, inlines)
 
-    with open(geometry_path_in) as fp:
+    with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
     atom_names, natoms, types, coords = get_coords(
@@ -170,11 +174,11 @@ def get_frame(fname):
     # ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
     # number of dumped geometry files
     # coords = get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, cell)
-    with open(os.path.join(path_out, "MD_dump")) as fp:
+    with open_file(os.path.join(path_out, "MD_dump")) as fp:
         dumplines = fp.read().split("\n")
     coords, cells, force, stress = get_coords_from_dump(dumplines, natoms)
     ndump = np.shape(coords)[0]
-    with open(os.path.join(path_out, "running_md.log")) as fp:
+    with open_file(os.path.join(path_out, "running_md.log")) as fp:
         outlines = fp.read().split("\n")
     energy = get_energy(outlines, ndump, dump_freq)
 
@@ -189,7 +193,7 @@ def get_frame(fname):
             unconv_stru += "%d " % i
     ndump = len(energy)
     if unconv_stru != "":
-        warnings.warn("Structure %s are unconverged and not collected!" % unconv_stru)
+        warnings.warn(f"Structure {unconv_stru} are unconverged and not collected!")
 
     for iframe in range(ndump):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))

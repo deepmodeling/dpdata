@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import subprocess as sp
+import sys
 import unittest
 
 from context import dpdata
@@ -26,3 +29,12 @@ class TestCli(unittest.TestCase, TestPOSCARoh):
     @classmethod
     def tearDownClass(cls) -> None:
         cls.system = None
+
+
+class TestClassScript(unittest.TestCase):
+    def test_class_script(self):
+        expected_version = dpdata.__version__
+        output = sp.check_output([sys.executable, "-m", "dpdata", "--version"]).decode(
+            "ascii"
+        )
+        assert output.splitlines()[0] == f"dpdata v{expected_version}"

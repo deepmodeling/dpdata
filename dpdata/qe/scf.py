@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 
 import os
-import sys
 
 import numpy as np
+
+from dpdata.utils import open_file
 
 ry2ev = 13.605693009
 bohr2ang = 0.52917721067
@@ -55,7 +57,7 @@ def get_cell(lines):
             raise RuntimeError("parameter 'a' or 'celldm(1)' cannot be found.")
         ret = np.array([[a, 0.0, 0.0], [0.0, a, 0.0], [0.0, 0.0, a]])
     else:
-        sys.exit("ibrav > 1 not supported yet.")
+        raise RuntimeError("ibrav > 1 not supported yet.")
     return ret
 
 
@@ -142,9 +144,9 @@ def get_frame(fname):
         path_out = fname[1]
     else:
         raise RuntimeError("invalid input")
-    with open(path_out) as fp:
+    with open_file(path_out) as fp:
         outlines = fp.read().split("\n")
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
     cell = get_cell(inlines)
     atom_names, natoms, types, coords = get_coords(inlines, cell)

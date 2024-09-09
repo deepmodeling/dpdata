@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import os
 import re
 import warnings
 
 import numpy as np
+
+from dpdata.utils import open_file
 
 from ..unit import EnergyConversion, LengthConversion, PressureConversion
 
@@ -23,7 +27,7 @@ ABACUS_STRU_KEYS = [
 
 def CheckFile(ifile):
     if not os.path.isfile(ifile):
-        print("Can not find file %s" % ifile)
+        print(f"Can not find file {ifile}")
         return False
     return True
 
@@ -38,10 +42,10 @@ def get_block(lines, keyword, skip=0, nlines=None):
             found = True
             blk_idx = idx + 1 + skip
             line_idx = 0
-            while len(re.split("\s+", lines[blk_idx])) == 0:
+            while len(re.split(r"\s+", lines[blk_idx])) == 0:
                 blk_idx += 1
             while line_idx < nlines and blk_idx != len(lines):
-                if len(re.split("\s+", lines[blk_idx])) == 0 or lines[blk_idx] == "":
+                if len(re.split(r"\s+", lines[blk_idx])) == 0 or lines[blk_idx] == "":
                     blk_idx += 1
                     continue
                 ret.append(lines[blk_idx])
@@ -91,7 +95,7 @@ def get_path_out(fname, inlines):
     for line in inlines:
         if "suffix" in line and "suffix" == line.split()[0]:
             suffix = line.split()[1]
-            path_out = os.path.join(fname, "OUT.%s/running_scf.log" % suffix)
+            path_out = os.path.join(fname, f"OUT.{suffix}/running_scf.log")
             break
     return path_out
 
@@ -131,7 +135,7 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
                 tmp = np.matmul(xyz, cell)
                 xyz = tmp
             else:
-                print("coord_type = %s" % coord_type)
+                print(f"coord_type = {coord_type}")
                 raise RuntimeError(
                     "Input coordination type is invalid.\n Only direct and cartesian are accepted."
                 )
@@ -188,7 +192,7 @@ def collect_force(outlines):
 def get_force(outlines, natoms):
     force = collect_force(outlines)
     if len(force) == 0:
-        return [[]]
+        return None
     else:
         return np.array(force[-1])  # only return the last force
 
@@ -251,7 +255,7 @@ def get_frame(fname):
     if not CheckFile(path_in):
         return data
 
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
 
     geometry_path_in = get_geometry_in(fname, inlines)
@@ -259,9 +263,9 @@ def get_frame(fname):
     if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
         return data
 
-    with open(geometry_path_in) as fp:
+    with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
-    with open(path_out) as fp:
+    with open_file(path_out) as fp:
         outlines = fp.read().split("\n")
 
     celldm, cell = get_cell(geometry_inlines)
@@ -283,7 +287,7 @@ def get_frame(fname):
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
     data["energies"] = np.array(energy)[np.newaxis]
-    data["forces"] = force[np.newaxis, :, :]
+    data["forces"] = np.empty((0,)) if force is None else force[np.newaxis, :, :]
     if stress is not None:
         data["virials"] = stress[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
@@ -329,14 +333,14 @@ def get_nele_from_stru(geometry_inlines):
             for iline in range(
                 keyword_line_index[idx] + 1, keyword_line_index[idx + 1]
             ):
-                if len(re.split("\s+", geometry_inlines[iline])) >= 3:
+                if len(re.split(r"\s+", geometry_inlines[iline])) >= 3:
                     nele += 1
     return nele
 
 
 def get_frame_from_stru(fname):
     assert isinstance(fname, str)
-    with open(fname) as fp:
+    with open_file(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
     inlines = ["ntype %d" % nele]
@@ -367,11 +371,11 @@ def make_unlabeled_stru(
     for iele in range(len(data["atom_names"])):
         out += data["atom_names"][iele] + " "
         if mass is not None:
-            out += "%.3f " % mass[iele]
+            out += f"{mass[iele]:.3f} "
         else:
             out += "1 "
         if pp_file is not None:
-            out += "%s\n" % pp_file[iele]
+            out += f"{pp_file[iele]}\n"
         else:
             out += "\n"
     out += "\n"
@@ -380,12 +384,12 @@ def make_unlabeled_stru(
         assert len(numerical_orbital) == len(data["atom_names"])
         out += "NUMERICAL_ORBITAL\n"
         for iele in range(len(numerical_orbital)):
-            out += "%s\n" % numerical_orbital[iele]
+            out += f"{numerical_orbital[iele]}\n"
         out += "\n"
 
     if numerical_descriptor is not None:
         assert isinstance(numerical_descriptor, str)
-        out += "NUMERICAL_DESCRIPTOR\n%s\n" % numerical_descriptor
+        out += f"NUMERICAL_DESCRIPTOR\n{numerical_descriptor}\n"
         out += "\n"
 
     out += "LATTICE_CONSTANT\n"

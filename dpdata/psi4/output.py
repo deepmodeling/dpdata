@@ -1,11 +1,17 @@
-from typing import Tuple
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from dpdata.unit import LengthConversion
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
-def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
+def read_psi4_output(fn: FileType) -> tuple[str, np.ndarray, float, np.ndarray]:
     """Read from Psi4 output.
 
     Note that both the energy and the gradient should be printed.
@@ -31,7 +37,7 @@ def read_psi4_output(fn: str) -> Tuple[str, np.ndarray, float, np.ndarray]:
     forces = None
     energy = None
     length_unit = None
-    with open(fn) as f:
+    with open_file(fn) as f:
         flag = 0
         for line in f:
             if flag in (1, 3, 4, 5, 6):

@@ -1,5 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import dpdata.gromacs.gro
 from dpdata.format import Format
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("gro")
@@ -21,7 +29,9 @@ class GromacsGroFormat(Format):
             file_name, format_atom_name=format_atom_name, **kwargs
         )
 
-    def to_system(self, data, file_name=None, frame_idx=-1, **kwargs):
+    def to_system(
+        self, data, file_name: FileType | None = None, frame_idx=-1, **kwargs
+    ):
         """Dump the system in gromacs .gro format.
 
         Parameters
@@ -50,5 +60,5 @@ class GromacsGroFormat(Format):
         if file_name is None:
             return gro_str
         else:
-            with open(file_name, "w+") as fp:
+            with open_file(file_name, "w+") as fp:
                 fp.write(gro_str)

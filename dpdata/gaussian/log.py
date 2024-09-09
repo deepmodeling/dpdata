@@ -1,4 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
+
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 from ..periodic_table import ELEMENTS
 from ..unit import EnergyConversion, ForceConversion, LengthConversion
@@ -10,7 +19,7 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 symbols = ["X"] + ELEMENTS
 
 
-def to_system_data(file_name, md=False):
+def to_system_data(file_name: FileType, md=False):
     """Read Gaussian log file.
 
     Parameters
@@ -41,7 +50,7 @@ def to_system_data(file_name, md=False):
     nopbc = True
     coords = None
 
-    with open(file_name) as fp:
+    with open_file(file_name) as fp:
         for line in fp:
             if line.startswith(" SCF Done"):
                 # energies

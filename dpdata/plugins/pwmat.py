@@ -1,8 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 import dpdata.pwmat.atomconfig
 import dpdata.pwmat.movement
 from dpdata.format import Format
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("movement")
@@ -45,12 +53,12 @@ class PwmatOutputFormat(Format):
 @Format.register("pwmat/final.config")
 class PwmatAtomconfigFormat(Format):
     @Format.post("rot_lower_triangular")
-    def from_system(self, file_name, **kwargs):
-        with open(file_name) as fp:
+    def from_system(self, file_name: FileType, **kwargs):
+        with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
         return dpdata.pwmat.atomconfig.to_system_data(lines)
 
-    def to_system(self, data, file_name, frame_idx=0, *args, **kwargs):
+    def to_system(self, data, file_name: FileType, frame_idx=0, *args, **kwargs):
         """Dump the system in pwmat atom.config format.
 
         Parameters
@@ -68,5 +76,5 @@ class PwmatAtomconfigFormat(Format):
         """
         assert frame_idx < len(data["coords"])
         w_str = dpdata.pwmat.atomconfig.from_system_data(data, frame_idx)
-        with open(file_name, "w") as fp:
+        with open_file(file_name, "w") as fp:
             fp.write(w_str)
