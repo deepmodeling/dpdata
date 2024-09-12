@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import numpy as np
 from typing import TYPE_CHECKING
 
 import dpdata.abacus.md
@@ -8,9 +10,10 @@ import dpdata.abacus.scf
 from dpdata.format import Format
 from dpdata.utils import open_file
 
+from dpdata.data_type import Axis, DataType
+
 if TYPE_CHECKING:
     from dpdata.utils import FileType
-
 
 @Format.register("abacus/stru")
 @Format.register("stru")
@@ -29,32 +32,25 @@ class AbacusSTRUFormat(Format):
             The output file name
         frame_idx : int
             The index of the frame to dump
-        pp_file : list of string, optional
-            List of pseudo potential files
-        numerical_orbital : list of string, optional
-            List of orbital files
-        mass : list of float, optional
-            List of atomic masses
-        numerical_descriptor : str, optional
-            numerical descriptor file
         **kwargs : dict
             other parameters
         """
-        pp_file = kwargs.get("pp_file")
-        numerical_orbital = kwargs.get("numerical_orbital")
-        mass = kwargs.get("mass")
-        numerical_descriptor = kwargs.get("numerical_descriptor")
         stru_string = dpdata.abacus.scf.make_unlabeled_stru(
             data=data,
             frame_idx=frame_idx,
-            pp_file=pp_file,
-            numerical_orbital=numerical_orbital,
-            numerical_descriptor=numerical_descriptor,
-            mass=mass,
+            dest_dir=os.path.dirname(file_name),
+            **kwargs,
         )
         with open_file(file_name, "w") as fp:
             fp.write(stru_string)
 
+def register_data(data):
+    if "spins" in data:
+        dt = DataType("spins", np.ndarray, (Axis.NFRAMES,Axis.NATOMS,3 ), required=False)
+        dpdata.LabeledSystem.register_data_type(dt)
+    if "mag_forces" in data:
+        dt = DataType("mag_forces", np.ndarray, (Axis.NFRAMES,Axis.NATOMS,3 ), required=False)
+        dpdata.LabeledSystem.register_data_type(dt)
 
 @Format.register("abacus/scf")
 @Format.register("abacus/pw/scf")
@@ -62,7 +58,9 @@ class AbacusSTRUFormat(Format):
 class AbacusSCFFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
-        return dpdata.abacus.scf.get_frame(file_name)
+        data = dpdata.abacus.scf.get_frame(file_name)
+        register_data(data)
+        return data
 
 
 @Format.register("abacus/md")
@@ -71,7 +69,9 @@ class AbacusSCFFormat(Format):
 class AbacusMDFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
-        return dpdata.abacus.md.get_frame(file_name)
+        data = dpdata.abacus.md.get_frame(file_name)
+        register_data(data)
+        return data
 
 
 @Format.register("abacus/relax")
@@ -80,4 +80,6 @@ class AbacusMDFormat(Format):
 class AbacusRelaxFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
-        return dpdata.abacus.relax.get_frame(file_name)
+        data = dpdata.abacus.relax.get_frame(file_name)
+        register_data(data)
+        return data
