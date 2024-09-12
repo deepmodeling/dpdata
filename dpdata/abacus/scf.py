@@ -560,7 +560,7 @@ def get_frame_from_stru(fname):
     with open_file(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
-    inlines = ["ntype %d" % nele]
+    inlines = [f"ntype {nele}"]
     celldm, cell = get_cell(geometry_inlines)
     atom_names, natoms, types, coords = get_coords(
         celldm, cell, geometry_inlines, inlines
@@ -780,11 +780,7 @@ def make_unlabeled_stru(
         out += str(data["atom_numbs"][iele]) + "\n"
         for iatom in range(data["atom_numbs"][iele]):
             iatomtype = np.nonzero(data["atom_types"] == iele)[0][iatom]
-            iout = "%.12f %.12f %.12f" % (  # 12 decimal places
-                data["coords"][frame_idx][iatomtype, 0],
-                data["coords"][frame_idx][iatomtype, 1],
-                data["coords"][frame_idx][iatomtype, 2],
-            )
+            iout = f"{data['coords'][frame_idx][iatomtype, 0]:.12f} {data['coords'][frame_idx][iatomtype, 1]:.12f} {data['coords'][frame_idx][iatomtype, 2]:.12f}"
             # add flags for move, velocity, mag, angle1, angle2, and sc
             if move is not None:
                 if (
