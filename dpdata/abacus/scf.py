@@ -113,24 +113,39 @@ def get_cell(geometry_inlines):
 
 
 def parse_stru_pos(pos_line):
-    """
-    The content in atom position block:
-    - `m` or NO key word: three numbers, which take value in 0 or 1, control how the atom move in geometry relaxation calculations. In example below, the numbers `0 0 0` following the coordinates of the first atom means this atom are *not allowed* to move in all three directions, and the numbers `1 1 1` following the coordinates of the second atom means this atom *can* move in all three directions.
-    - `v` or `vel` or `velocity`: set the three components of initial velocity of atoms in geometry relaxation calculations(e. g. `v 1.0 1.0 1.0`).
-    - `mag` or `magmom` : set the start magnetization for each atom. In colinear case only one number should be given. In non-colinear case one have two choice:either set one number for the norm of magnetization here and specify two polar angle later(e. g. see below), or set three number for the xyz commponent of magnetization here (e. g. `mag 0.0 0.0 1.0`). Note that if this parameter is set, the initial magnetic moment setting in the second line will be overrided.
-    - `angle1`: in non-colinear case, specify the angle between c-axis and real spin, in angle measure instead of radian measure
-    - `angle2`: in non-colinear case, specify angle between a-axis and real spin in projection in ab-plane , in angle measure instead of radian measure
+    """Parses a line from the atom position block in a structure file.
+
+    The content in atom position block can include:
+    - `m` or NO key word: Three numbers (0 or 1) controlling atom movement in geometry relaxation calculations.
+    - `v`, `vel`, or `velocity`: Three components of initial velocity of atoms in geometry relaxation calculations.
+    - `mag` or `magmom`: Start magnetization for each atom. Can be one number (colinear) or three numbers (non-colinear).
+    - `angle1`: In non-colinear case, angle between c-axis and real spin (in degrees).
+    - `angle2`: In non-colinear case, angle between a-axis and real spin projection in ab-plane (in degrees).
+    - `cs` or `constrain`: Three numbers (0 or 1) controlling the spin constraint of the atom.
+    - `lambda`: Three numbers controlling the lambda of the atom.
+
+    Parameters:
+    pos_line (str): A line from the atom position block.
+
+    Returns:
+    tuple: A tuple containing:
+        - pos (list of float): The position coordinates.
+        - move (list of int or None): Movement control values.
+        - velocity (list of float or None): Initial velocity components.
+        - magmom (float, list of float, or None): Magnetization values.
+        - angle1 (float or None): Angle1 value.
+        - angle2 (float or None): Angle2 value.
+        - constrain (list of bool or None): Spin constraint values.
+        - lambda1 (float, list of float, or None): Lambda values.
 
       e.g.:
-
       ```
       Fe
       1.0
       2
       0.0 0.0 0.0 m 0 0 0 mag 1.0 angle1 90 angle2 0 cs 0 0 0
       0.5 0.5 0.5 m 1 1 1 mag 1.0 angle1 90 angle2 180
-    - `cs` or `constrain`: three numbers, which take value in 0 or 1, control the spin constraint of the atom.
-    - `lambda`: three numbers, control the lambda of the atom.
+      ```
     """
     pos_line = pos_line.split("#")[0]  # remove comments
     sline = pos_line.split()
@@ -384,16 +399,15 @@ def get_stress(outlines):
 
 
 def get_mag_force(outlines):
-    """
-    Read atomic magmom and magnetic force from OUT.ABACUS/running_scf.log
+    """Read atomic magmom and magnetic force from OUT.ABACUS/running_scf.log.
 
     Returns
     -------
     magmom: list of list of atomic magnetic moments (three dimensions: ION_STEP * NATOMS * 1/3)
     magforce: list of list of atomic magnetic forces (three dimensions: ION_STEP * NATOMS * 1/3)
-    """
-    """
-The following is an example of the output of OUT.ABACUS/running_scf.log:
+
+    e.g.:
+    
 -------------------------------------------------------------------------------------------
  Total Magnetism (uB)
 -------------------------------------------------------------------------------------------
@@ -580,8 +594,7 @@ def make_unlabeled_stru(
     dest_dir=None,
     **kwargs,
 ):
-    """
-    Make an unlabeled STRU file from a dictionary.
+    """Make an unlabeled STRU file from a dictionary.
 
     Parameters
     ----------
