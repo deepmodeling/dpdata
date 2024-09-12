@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import os,shutil
+import os
+import shutil
 import unittest
 
 from context import dpdata
@@ -27,7 +28,7 @@ class TestStruDump(unittest.TestCase):
             numerical_descriptor="jle.orb",
         )
         myfilecmp(self, "abacus.scf/stru_test", "STRU_tmp")
-    
+
     def test_dumpStruLinkFile(self):
         os.makedirs("abacus.scf/tmp", exist_ok=True)
         self.system_ch4.to(
@@ -37,16 +38,16 @@ class TestStruDump(unittest.TestCase):
             pp_file=["abacus.scf/C.upf", "abacus.scf/H.upf"],
             numerical_orbital=["abacus.scf/C.orb", "abacus.scf/H.orb"],
             numerical_descriptor="abacus.scf/jle.orb",
-            link_file=True
+            link_file=True,
         )
         myfilecmp(self, "abacus.scf/stru_test", "abacus.scf/tmp/STRU_tmp")
-        
+
         self.assertTrue(os.path.islink("abacus.scf/tmp/C.upf"))
         self.assertTrue(os.path.islink("abacus.scf/tmp/H.upf"))
         self.assertTrue(os.path.islink("abacus.scf/tmp/C.orb"))
         self.assertTrue(os.path.islink("abacus.scf/tmp/H.orb"))
         self.assertTrue(os.path.islink("abacus.scf/tmp/jle.orb"))
-        
+
         if os.path.isdir("abacus.scf/tmp"):
             shutil.rmtree("abacus.scf/tmp")
 
@@ -72,7 +73,6 @@ class TestStruDump(unittest.TestCase):
         with open("abacus.scf/stru.ref") as f:
             stru_ref = f.read()
         assert c == stru_ref
-        
 
     def test_dump_spin(self):
         sys_tmp = dpdata.System("abacus.scf/stru.ref", fmt="stru")

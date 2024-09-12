@@ -1,19 +1,20 @@
 from __future__ import annotations
 
 import os
-import numpy as np
 from typing import TYPE_CHECKING
+
+import numpy as np
 
 import dpdata.abacus.md
 import dpdata.abacus.relax
 import dpdata.abacus.scf
+from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
 
-from dpdata.data_type import Axis, DataType
-
 if TYPE_CHECKING:
     from dpdata.utils import FileType
+
 
 @Format.register("abacus/stru")
 @Format.register("stru")
@@ -44,13 +45,19 @@ class AbacusSTRUFormat(Format):
         with open_file(file_name, "w") as fp:
             fp.write(stru_string)
 
+
 def register_data(data):
     if "spins" in data:
-        dt = DataType("spins", np.ndarray, (Axis.NFRAMES,Axis.NATOMS,3 ), required=False)
+        dt = DataType(
+            "spins", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False
+        )
         dpdata.LabeledSystem.register_data_type(dt)
     if "mag_forces" in data:
-        dt = DataType("mag_forces", np.ndarray, (Axis.NFRAMES,Axis.NATOMS,3 ), required=False)
+        dt = DataType(
+            "mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False
+        )
         dpdata.LabeledSystem.register_data_type(dt)
+
 
 @Format.register("abacus/scf")
 @Format.register("abacus/pw/scf")
