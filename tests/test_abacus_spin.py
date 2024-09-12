@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import os,shutil
+import os
+import shutil
 import unittest
 
 import numpy as np
@@ -11,11 +12,11 @@ class TestABACUSSpin(unittest.TestCase):
     def setUp(self):
         self.dump_path = "abacus.spin/dump"
         os.makedirs(self.dump_path, exist_ok=True)
-        
+
     def tearDown(self):
         if os.path.isdir(self.dump_path):
             shutil.rmtree(self.dump_path)
-    
+
     def test_scf(self):
         os.system("cp abacus.spin/INPUT.scf abacus.spin/INPUT")
         mysys = dpdata.LabeledSystem("abacus.spin", fmt="abacus/scf")
@@ -37,15 +38,17 @@ class TestABACUSSpin(unittest.TestCase):
             ],
             decimal=8,
         )
-        
+
         # dump to deepmd-npy
         mysys.to(file_name=self.dump_path, fmt="deepmd/npy")
         self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spins.npy"))
         self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_forces.npy"))
-        
+
         sys2 = dpdata.LabeledSystem(self.dump_path, fmt="deepmd/npy")
         np.testing.assert_almost_equal(data["spins"], sys2.data["spins"], decimal=8)
-        np.testing.assert_almost_equal(data["mag_forces"], sys2.data["mag_forces"], decimal=8)
+        np.testing.assert_almost_equal(
+            data["mag_forces"], sys2.data["mag_forces"], decimal=8
+        )
 
     def test_relax(self):
         os.system("cp abacus.spin/INPUT.relax abacus.spin/INPUT")
@@ -84,15 +87,17 @@ class TestABACUSSpin(unittest.TestCase):
         self.assertEqual(len(data["mag_forces"]), 3)
         np.testing.assert_almost_equal(data["spins"], spins_ref, decimal=8)
         np.testing.assert_almost_equal(data["mag_forces"], magforces_ref, decimal=8)
-        
+
         # dump to deepmd-npy
         mysys.to(file_name=self.dump_path, fmt="deepmd/npy")
         self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spins.npy"))
         self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_forces.npy"))
-        
+
         sys2 = dpdata.LabeledSystem(self.dump_path, fmt="deepmd/npy")
         np.testing.assert_almost_equal(data["spins"], sys2.data["spins"], decimal=8)
-        np.testing.assert_almost_equal(data["mag_forces"], sys2.data["mag_forces"], decimal=8)
+        np.testing.assert_almost_equal(
+            data["mag_forces"], sys2.data["mag_forces"], decimal=8
+        )
 
     def test_md(self):
         os.system("cp abacus.spin/INPUT.md abacus.spin/INPUT")
@@ -139,12 +144,14 @@ class TestABACUSSpin(unittest.TestCase):
         self.assertEqual(len(data["mag_forces"]), 4)
         np.testing.assert_almost_equal(data["spins"], spins_ref, decimal=8)
         np.testing.assert_almost_equal(data["mag_forces"], magforces_ref, decimal=8)
-        
+
         # dump to deepmd-npy
         mysys.to(file_name=self.dump_path, fmt="deepmd/npy")
         self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spins.npy"))
         self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_forces.npy"))
-        
+
         sys2 = dpdata.LabeledSystem(self.dump_path, fmt="deepmd/npy")
         np.testing.assert_almost_equal(data["spins"], sys2.data["spins"], decimal=8)
-        np.testing.assert_almost_equal(data["mag_forces"], sys2.data["mag_forces"], decimal=8)
+        np.testing.assert_almost_equal(
+            data["mag_forces"], sys2.data["mag_forces"], decimal=8
+        )
