@@ -124,28 +124,30 @@ def parse_stru_pos(pos_line):
     - `cs` or `constrain`: Three numbers (0 or 1) controlling the spin constraint of the atom.
     - `lambda`: Three numbers controlling the lambda of the atom.
 
-    Parameters:
-    pos_line (str): A line from the atom position block.
+    Parameters
+    ----------
+    pos_line : A line from the atom position block.
 
-    Returns:
+    Returns
+    -------
     tuple: A tuple containing:
-        - pos (list of float): The position coordinates.
-        - move (list of int or None): Movement control values.
-        - velocity (list of float or None): Initial velocity components.
-        - magmom (float, list of float, or None): Magnetization values.
-        - angle1 (float or None): Angle1 value.
-        - angle2 (float or None): Angle2 value.
-        - constrain (list of bool or None): Spin constraint values.
-        - lambda1 (float, list of float, or None): Lambda values.
+          - pos (list of float): The position coordinates.
+          - move (list of int or None): Movement control values.
+          - velocity (list of float or None): Initial velocity components.
+          - magmom (float, list of float, or None): Magnetization values.
+          - angle1 (float or None): Angle1 value.
+          - angle2 (float or None): Angle2 value.
+          - constrain (list of bool or None): Spin constraint values.
+          - lambda1 (float, list of float, or None): Lambda values.
 
-      e.g.:
-      ```
-      Fe
-      1.0
-      2
-      0.0 0.0 0.0 m 0 0 0 mag 1.0 angle1 90 angle2 0 cs 0 0 0
-      0.5 0.5 0.5 m 1 1 1 mag 1.0 angle1 90 angle2 180
-      ```
+        e.g.:
+        ```
+        Fe
+        1.0
+        2
+        0.0 0.0 0.0 m 0 0 0 mag 1.0 angle1 90 angle2 0 cs 0 0 0
+        0.5 0.5 0.5 m 1 1 1 mag 1.0 angle1 90 angle2 180
+        ```
     """
     pos_line = pos_line.split("#")[0]  # remove comments
     sline = pos_line.split()
@@ -405,22 +407,19 @@ def get_mag_force(outlines):
     -------
     magmom: list of list of atomic magnetic moments (three dimensions: ION_STEP * NATOMS * 1/3)
     magforce: list of list of atomic magnetic forces (three dimensions: ION_STEP * NATOMS * 1/3)
-
     e.g.:
-    
--------------------------------------------------------------------------------------------
- Total Magnetism (uB)
--------------------------------------------------------------------------------------------
-                         Fe         0.0000000001         0.0000000000         3.0000000307
-                         Fe        -0.0000000000        -0.0000000000         3.0000001151
--------------------------------------------------------------------------------------------
-
--------------------------------------------------------------------------------------------
- Magnetic force (eV/uB)
--------------------------------------------------------------------------------------------
-                         Fe         0.0000000000         0.0000000000        -1.2117698671
-                         Fe         0.0000000000         0.0000000000        -1.2117928796
--------------------------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------------
+    Total Magnetism (uB)
+    -------------------------------------------------------------------------------------------
+        Fe         0.0000000001         0.0000000000         3.0000000307
+        Fe        -0.0000000000        -0.0000000000         3.0000001151
+    -------------------------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------------
+    Magnetic force (eV/uB)
+    -------------------------------------------------------------------------------------------
+        Fe         0.0000000000         0.0000000000        -1.2117698671
+        Fe         0.0000000000         0.0000000000        -1.2117928796
+    -------------------------------------------------------------------------------------------
 
     """
     mags = []
