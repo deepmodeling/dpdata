@@ -20,13 +20,14 @@ def get_block(lines, start_marker):
             break
     if start_idx is None:
         raise RuntimeError(f"{start_marker} not found in the input lines.")
-    
+
     block = []
     for line in lines[start_idx:]:
         if line.strip() == "" or line.strip().startswith("&"):
             break
         block.append(line.strip())
     return block
+
 
 def get_block(lines, start_marker, skip=0):
     start_idx = None
@@ -36,13 +37,14 @@ def get_block(lines, start_marker, skip=0):
             break
     if start_idx is None:
         raise RuntimeError(f"{start_marker} not found in the input lines.")
-    
+
     block = []
     for line in lines[start_idx:]:
         if line.strip() == "" or line.strip().startswith("&"):
             break
         block.append(line.strip())
     return block
+
 
 def get_cell(lines):
     for idx, line in enumerate(lines):
@@ -51,7 +53,7 @@ def get_cell(lines):
             break
     else:
         raise RuntimeError("ibrav not found in the input lines.")
-    
+
     if ibrav == 0:
         for line in lines:
             if "CELL_PARAMETERS" in line and "angstrom" not in line.lower():
@@ -77,6 +79,7 @@ def get_cell(lines):
     else:
         raise RuntimeError("ibrav > 1 not supported yet.")
     return ret
+
 
 def get_coords(lines, cell):
     coord = []
@@ -117,12 +120,14 @@ def get_coords(lines, cell):
 
     return list(atom_names), atom_numbs, atom_types, coord
 
+
 def get_energy(lines):
     energy = None
     for ii in lines:
         if "!    total energy" in ii:
             energy = ry2ev * float(ii.split("=")[1].split()[0])
     return energy
+
 
 def get_force(lines, natoms):
     blk = get_block(lines, "Forces acting on atoms", skip=1)
@@ -134,6 +139,7 @@ def get_force(lines, natoms):
     ret *= ry2ev / bohr2ang
     return ret
 
+
 def get_stress(lines):
     blk = get_block(lines, "total   stress")
     if len(blk) == 0:
@@ -144,6 +150,7 @@ def get_stress(lines):
     ret = np.array(ret)
     ret *= kbar2evperang3
     return ret
+
 
 def get_frame(fname):
     if isinstance(fname, str):
