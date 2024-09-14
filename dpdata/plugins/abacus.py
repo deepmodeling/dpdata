@@ -46,7 +46,7 @@ class AbacusSTRUFormat(Format):
             fp.write(stru_string)
 
 
-def register_data(data):
+def register_mag_data(data):
     if "spins" in data:
         dt = DataType(
             "spins", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False
@@ -66,7 +66,7 @@ class AbacusSCFFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.scf.get_frame(file_name)
-        register_data(data)
+        register_mag_data(data)
         return data
 
 
@@ -77,7 +77,7 @@ class AbacusMDFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.md.get_frame(file_name)
-        register_data(data)
+        register_mag_data(data)
         return data
 
 
@@ -88,5 +88,5 @@ class AbacusRelaxFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.relax.get_frame(file_name)
-        register_data(data)
+        register_mag_data(data)
         return data
