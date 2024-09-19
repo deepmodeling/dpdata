@@ -191,8 +191,6 @@ class TestPWSCFLabeledOutputListInput(unittest.TestCase, TestPWSCFSinglePointEne
 class TestNa(unittest.TestCase):
     def test(self):
         ss = dpdata.LabeledSystem("qe.scf/na.out", fmt="qe/pw/scf")
-        b2a = dpdata.unit.LengthConversion("bohr", "angstrom").value()
-        print(ss.data.keys())
         self.assertEqual(ss["atom_numbs"], [3])
         self.assertEqual(ss["atom_names"], ["Na"])
         self.assertEqual(ss.get_nframes(), 1)
