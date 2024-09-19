@@ -128,8 +128,6 @@ def get_energy(lines):
 
 def get_force(lines, natoms):
     blk = get_block(lines, "Forces acting on atoms", skip=1)
-    if len(blk) == 0:
-        raise RuntimeError("no force found in the output file.")
     ret = []
     blk = blk[0 : sum(natoms)]
     for ii in blk:
