@@ -1,0 +1,47 @@
+
+&control
+    calculation = 'scf'
+    restart_mode = 'from_scratch',
+    prefix = 'Na'
+    outdir = './tmp'
+    pseudo_dir = './'
+/
+&SYSTEM
+ ibrav=0,   
+ nosym=.true.,                     
+ nat=3,                         
+ ntyp=1,                        
+ occupations = 'smearing',       
+ smearing = 'gauss',                
+ degauss = 0.02,                   
+ ecutwfc = 100,                   
+ ecutrho = 960,                   
+ lspinorb = .false.,                
+ noncolin = .false.,                
+/
+&ELECTRONS
+ conv_thr = 1.0d-9,                  
+ mixing_beta = 0.7,               
+ electron_maxstep = 200,          
+/
+&electrons
+    mixing_beta = 0.7
+    conv_thr = 1.0d-8
+/
+&ions
+/
+&cell
+/
+ATOMIC_SPECIES
+ Na  22.989769  Na_ONCV_PBE-1.0.upf
+CELL_PARAMETERS {angstrom}        
+ 7.171683039200000  0.000000000000000  0.000000000000000
+ -4.270578118300000  5.761527588200000  0.000000000000000
+ -0.000000045600000  0.000000023000000  12.826457854999999
+ATOMIC_POSITIONS (crystal)       
+ Na  0.940587444301534  0.397635863676890  0.059472381901808
+ Na  0.059413515648061  0.602364552456546  0.559472465518034
+ Na  0.602364619812068  0.059413062489401  0.059472381901808
+K_POINTS {automatic} 
+ 8 8 4  0 0 0
+ 
