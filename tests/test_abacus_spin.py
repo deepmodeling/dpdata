@@ -41,8 +41,8 @@ class TestABACUSSpin(unittest.TestCase):
 
         # dump to deepmd-npy
         mysys.to(file_name=self.dump_path, fmt="deepmd/npy")
-        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spins.npy"))
-        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_forces.npy"))
+        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spin.npy"))
+        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_force.npy"))
 
         sys2 = dpdata.LabeledSystem(self.dump_path, fmt="deepmd/npy")
         np.testing.assert_almost_equal(data["spins"], sys2.data["spins"], decimal=8)
@@ -90,8 +90,8 @@ class TestABACUSSpin(unittest.TestCase):
 
         # dump to deepmd-npy
         mysys.to(file_name=self.dump_path, fmt="deepmd/npy")
-        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spins.npy"))
-        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_forces.npy"))
+        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spin.npy"))
+        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_force.npy"))
 
         sys2 = dpdata.LabeledSystem(self.dump_path, fmt="deepmd/npy")
         np.testing.assert_almost_equal(data["spins"], sys2.data["spins"], decimal=8)
@@ -147,8 +147,8 @@ class TestABACUSSpin(unittest.TestCase):
 
         # dump to deepmd-npy
         mysys.to(file_name=self.dump_path, fmt="deepmd/npy")
-        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spins.npy"))
-        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_forces.npy"))
+        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/spin.npy"))
+        self.assertTrue(os.path.isfile(f"{self.dump_path}/set.000/mag_force.npy"))
 
         sys2 = dpdata.LabeledSystem(self.dump_path, fmt="deepmd/npy")
         np.testing.assert_almost_equal(data["spins"], sys2.data["spins"], decimal=8)
