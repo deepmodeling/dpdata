@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from __future__ import annotations
 
 import numpy as np
 
@@ -35,16 +36,16 @@ def _to_system_data_lower(lines, lines_incar, cartesian=True):
     system["coords"] = np.array(system["coords"])
 
     for idx, incar_param in enumerate(lines_incar):
-        if 'MAGMOM' in incar_param:
+        if "MAGMOM" in incar_param:
             start_index = idx
-        elif 'M_CONSTR' in incar_param:
+        elif "M_CONSTR" in incar_param:
             end_index = idx
-    system['spins'] = [lines_incar[start_index].replace('=', '').strip().split()[1:4]]
-    for idx in range(start_index+1, end_index-1):
-        system['spins'].append(lines_incar[idx].strip().split()[:3])
-    system['spins'] = np.array([system['spins']]).astype('float64')
-    count = np.sum(np.linalg.norm(system['spins'][0], axis=1) > 0)
-    spins_idx = np.where(np.cumsum(system['atom_numbs']) <= count)
+    system["spins"] = [lines_incar[start_index].replace("=", "").strip().split()[1:4]]
+    for idx in range(start_index + 1, end_index - 1):
+        system["spins"].append(lines_incar[idx].strip().split()[:3])
+    system["spins"] = np.array([system["spins"]]).astype("float64")
+    count = np.sum(np.linalg.norm(system["spins"][0], axis=1) > 0)
+    spins_idx = np.where(np.cumsum(system["atom_numbs"]) <= count)
     return system
 
 
@@ -100,16 +101,20 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
 
     magmom_incar = "MAGMOM = "
     mconstr_incar = "M_CONSTR = "
-    for idx, tmp_spin in enumerate(system['spins'][f_idx]):
+    for idx, tmp_spin in enumerate(system["spins"][f_idx]):
         if idx == 0:
-            magmom_incar  += f"{tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
-            mconstr_incar += f"{tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
-        elif idx == len(system['spins'][f_idx]) - 1:
-            magmom_incar  += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \n"
+            magmom_incar += (
+                f"{tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
+            )
+            mconstr_incar += (
+                f"{tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
+            )
+        elif idx == len(system["spins"][f_idx]) - 1:
+            magmom_incar += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \n"
             mconstr_incar += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \n"
         else:
-            magmom_incar  += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
+            magmom_incar += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
             mconstr_incar += f"       {tmp_spin[0]:10.5f}  {tmp_spin[1]:10.5f}  {tmp_spin[2]:10.5f} \ \n"
-    magmom_incar += '\n' + mconstr_incar + '\n'
+    magmom_incar += "\n" + mconstr_incar + "\n"
 
     return ret, magmom_incar

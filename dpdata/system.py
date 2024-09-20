@@ -1215,7 +1215,9 @@ class LabeledSystem(System):
         DataType(
             "forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), deepmd_name="force"
         ),
-        DataType("mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False),
+        DataType(
+            "mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False
+        ),
         DataType(
             "virials",
             np.ndarray,

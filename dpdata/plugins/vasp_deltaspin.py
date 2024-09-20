@@ -1,5 +1,8 @@
-import numpy as np
+from __future__ import annotations
+
 import re
+
+import numpy as np
 
 import dpdata.vasp_deltaspin.outcar
 import dpdata.vasp_deltaspin.poscar
@@ -14,7 +17,7 @@ class VASPPoscarFormat(Format):
     def from_system(self, file_name, **kwargs):
         with open(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
-        with open(file_name[:-6] + 'INCAR') as fp:
+        with open(file_name[:-6] + "INCAR") as fp:
             lines_incar = [line.rstrip("\n") for line in fp]
         data = dpdata.vasp_deltaspin.poscar.to_system_data(lines, lines_incar)
         data = uniq_atom_names(data)
@@ -38,10 +41,12 @@ class VASPPoscarFormat(Format):
         with open(file_name, "w") as fp:
             fp.write(w_str)
 
-        with open(file_name[:-6] + 'INCAR') as fp:
+        with open(file_name[:-6] + "INCAR") as fp:
             tmp_incar = fp.read()
-        res_incar = re.sub(r'MAGMOM[\s\S]*?\n\nM_CONST[\s\S]*?\n\n', m_str, tmp_incar, re.S)
-        with open(file_name[:-6] + 'INCAR', 'w') as fp:
+        res_incar = re.sub(
+            r"MAGMOM[\s\S]*?\n\nM_CONST[\s\S]*?\n\n", m_str, tmp_incar, re.S
+        )
+        with open(file_name[:-6] + "INCAR", "w") as fp:
             fp.write(res_incar)
 
 
@@ -78,10 +83,10 @@ class VASPOutcarFormat(Format):
             data["atom_types"],
             data["cells"],
             data["coords"],
-            data['spins'],
+            data["spins"],
             data["energies"],
             data["forces"],
-            data['mag_forces'],
+            data["mag_forces"],
             tmp_virial,
         ) = dpdata.vasp_deltaspin.outcar.get_frames(
             file_name,
@@ -100,5 +105,3 @@ class VASPOutcarFormat(Format):
                 data["virials"][ii] *= v_pref * vol
         data = uniq_atom_names(data)
         return data
-
-
