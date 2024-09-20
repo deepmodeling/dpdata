@@ -46,6 +46,8 @@ class DataType:
         represents numbers
     required : bool, default=True
         whether this data is required
+    deepmd_name : str, optional
+        DeePMD-kit data type name. When not given, it is the same as `name`.
     """
 
     def __init__(
@@ -54,11 +56,13 @@ class DataType:
         dtype: type,
         shape: tuple[int | Axis, ...] | None = None,
         required: bool = True,
+        deepmd_name: str | None = None,
     ) -> None:
         self.name = name
         self.dtype = dtype
         self.shape = shape
         self.required = required
+        self.deepmd_name = name if deepmd_name is None else deepmd_name
 
     def real_shape(self, system: System) -> tuple[int]:
         """Returns expected real shape of a system."""
