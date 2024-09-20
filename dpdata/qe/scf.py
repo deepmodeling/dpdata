@@ -29,6 +29,20 @@ _QE_BLOCK_KEYWORDS = [
     "HUBBARD",
 ]
 
+_QE_BLOCK_KEYWORDS = [
+    "ATOMIC_SPECIES",
+    "ATOMIC_POSITIONS",
+    "K_POINTS",
+    "ADDITIONAL_K_POINTS",
+    "CELL_PARAMETERS",
+    "CONSTRAINTS",
+    "OCCUPATIONS",
+    "ATOMIC_VELOCITIES",
+    "ATOMIC_FORCES",
+    "SOLVENTS",
+    "HUBBARD",
+]
+
 
 def get_block(lines, keyword, skip=0):
     ret = []
