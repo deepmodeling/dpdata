@@ -69,38 +69,7 @@ def to_system_data(
         data["nopbc"] = True
     sets = globfilter(g.keys(), "set.*")
 
-    data_types = {
-        "cells": {
-            "fn": "box",
-            "labeled": False,
-            "shape": (3, 3),
-            "required": "nopbc" not in data,
-        },
-        "coords": {
-            "fn": "coord",
-            "labeled": False,
-            "shape": (natoms, 3),
-            "required": True,
-        },
-        "energies": {
-            "fn": "energy",
-            "labeled": True,
-            "shape": tuple(),
-            "required": False,
-        },
-        "forces": {
-            "fn": "force",
-            "labeled": True,
-            "shape": (natoms, 3),
-            "required": False,
-        },
-        "virials": {
-            "fn": "virial",
-            "labeled": True,
-            "shape": (3, 3),
-            "required": False,
-        },
-    }
+    data_types = {}
     # allow custom dtypes
     if labels:
         dtypes = dpdata.system.LabeledSystem.DTYPES
@@ -112,14 +81,9 @@ def to_system_data(
             "atom_names",
             "atom_types",
             "orig",
-            "cells",
-            "coords",
             "real_atom_types",
             "real_atom_names",
             "nopbc",
-            "energies",
-            "forces",
-            "virials",
         ):
             # skip as these data contains specific rules
             continue
@@ -133,10 +97,10 @@ def to_system_data(
         ]
 
         data_types[dtype.name] = {
-            "fn": dtype.name,
-            "labeled": True,
+            "fn": dtype.deepmd_name,
             "shape": shape,
-            "required": False,
+            "required": dtype.required
+            and not (dtype.name == "cells" and data.get("nopbc", False)),
         }
 
     for dt, prop in data_types.items():
@@ -206,13 +170,7 @@ def dump(
     nopbc = data.get("nopbc", False)
     reshaped_data = {}
 
-    data_types = {
-        "cells": {"fn": "box", "shape": (nframes, 9), "dump": not nopbc},
-        "coords": {"fn": "coord", "shape": (nframes, -1), "dump": True},
-        "energies": {"fn": "energy", "shape": (nframes,), "dump": True},
-        "forces": {"fn": "force", "shape": (nframes, -1), "dump": True},
-        "virials": {"fn": "virial", "shape": (nframes, 9), "dump": True},
-    }
+    data_types = {}
 
     labels = "energies" in data
     if labels:
@@ -226,14 +184,9 @@ def dump(
             "atom_names",
             "atom_types",
             "orig",
-            "cells",
-            "coords",
             "real_atom_types",
             "real_atom_names",
             "nopbc",
-            "energies",
-            "forces",
-            "virials",
         ):
             # skip as these data contains specific rules
             continue
@@ -244,9 +197,9 @@ def dump(
             continue
 
         data_types[dtype.name] = {
-            "fn": dtype.name,
+            "fn": dtype.deepmd_name,
             "shape": (nframes, -1),
-            "dump": True,
+            "dump": not (dtype.name == "cells" and nopbc),
         }
 
     for dt, prop in data_types.items():
