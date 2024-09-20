@@ -49,12 +49,20 @@ class AbacusSTRUFormat(Format):
 def register_mag_data(data):
     if "spins" in data:
         dt = DataType(
-            "spins", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False,deepmd_name="spin"
+            "spins",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="spin",
         )
         dpdata.LabeledSystem.register_data_type(dt)
     if "mag_forces" in data:
         dt = DataType(
-            "mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False,deepmd_name="force_mag"
+            "mag_forces",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="force_mag",
         )
         dpdata.LabeledSystem.register_data_type(dt)
 
