@@ -91,8 +91,10 @@ class System:
         DataType("atom_names", list, (Axis.NTYPES,)),
         DataType("atom_types", np.ndarray, (Axis.NATOMS,)),
         DataType("orig", np.ndarray, (3,)),
-        DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
-        DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3), deepmd_name="box"),
+        DataType(
+            "coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), deepmd_name="coord"
+        ),
         DataType("spins", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False),
         DataType(
             "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
@@ -1209,10 +1211,18 @@ class LabeledSystem(System):
     """
 
     DTYPES: tuple[DataType, ...] = System.DTYPES + (
-        DataType("energies", np.ndarray, (Axis.NFRAMES,)),
-        DataType("forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("energies", np.ndarray, (Axis.NFRAMES,), deepmd_name="energy"),
+        DataType(
+            "forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), deepmd_name="force"
+        ),
         DataType("mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False),
-        DataType("virials", np.ndarray, (Axis.NFRAMES, 3, 3), required=False),
+        DataType(
+            "virials",
+            np.ndarray,
+            (Axis.NFRAMES, 3, 3),
+            required=False,
+            deepmd_name="virial",
+        ),
         DataType("atom_pref", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False),
     )
 

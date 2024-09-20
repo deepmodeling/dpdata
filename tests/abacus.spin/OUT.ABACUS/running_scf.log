@@ -1,0 +1,565 @@
+                                                                                     
+                              ABACUS v3.7.1
+
+               Atomic-orbital Based Ab-initio Computation at UStc                    
+
+                     Website: http://abacus.ustc.edu.cn/                             
+               Documentation: https://abacus.deepmodeling.com/                       
+                  Repository: https://github.com/abacusmodeling/abacus-develop       
+                              https://github.com/deepmodeling/abacus-develop         
+                      Commit: 1a7a3158b (Fri Aug 23 00:52:25 2024 +0800)
+
+    Start Time is Fri Aug 23 16:06:02 2024
+                                                                                     
+ ------------------------------------------------------------------------------------
+
+ READING GENERAL INFORMATION
+                           global_out_dir = OUT.ABACUS/
+                           global_in_card = INPUT
+                               pseudo_dir = ./
+                              orbital_dir = ./
+                                    DRANK = 1
+                                    DSIZE = 16
+                                   DCOLOR = 1
+                                    GRANK = 1
+                                    GSIZE = 1
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading atom information in unitcell:                              |
+ | From the input file and the structure file we know the number of   |
+ | different elments in this unitcell, then we list the detail        |
+ | information for each element, especially the zeta and polar atomic |
+ | orbital number for each element. The total atom number is counted. |
+ | We calculate the nearest atom distance for each atom and show the  |
+ | Cartesian and Direct coordinates for each atom. We list the file   |
+ | address for atomic orbitals. The volume and the lattice vectors    |
+ | in real and reciprocal space is also shown.                        |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+ READING UNITCELL INFORMATION
+                                    ntype = 1
+                  lattice constant (Bohr) = 1.88028
+              lattice constant (Angstrom) = 0.995
+
+ READING ATOM TYPE 1
+                               atom label = Fe
+                      L=0, number of zeta = 4
+                      L=1, number of zeta = 2
+                      L=2, number of zeta = 2
+                      L=3, number of zeta = 1
+             number of atom for this type = 2
+               magnetization of element 1 = [ 0, 0, 2.4 ]
+
+                        TOTAL ATOM NUMBER = 2
+DIRECT COORDINATES
+    atom                   x                   y                   z     mag                  vx                  vy                  vz
+taud_Fe1            0.0500000000        0.1000000000        0.1500000000  2.4000        0.0000000000        0.0000000000        0.0000000000
+taud_Fe2            0.5000000000        0.5000000000        0.5000000000  2.4000        0.0000000000        0.0000000000        0.0000000000
+
+
+
+                          Volume (Bohr^3) = 150.259
+                             Volume (A^3) = 22.266
+
+ Lattice vectors: (Cartesian coordinate: in unit of a_0)
+             +2.82743                  +0                  +0
+                   +0            +2.82743                  +0
+                   +0                  +0            +2.82743
+ Reciprocal vectors: (Cartesian coordinate: in unit of 2 pi/a_0)
+            +0.353679                  -0                  +0
+                   -0           +0.353679                  -0
+                   +0                  -0           +0.353679
+ The esolver type has been set to : ksdft_pw
+
+ RUNNING WITH DEVICE  : CPU / Intel(R) Xeon(R) Platinum 8255C CPU @ 2.50GHz
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Reading pseudopotentials files:                                    |
+ | The pseudopotential file is in UPF format. The 'NC' indicates that |
+ | the type of pseudopotential is 'norm conserving'. Functional of    |
+ | exchange and correlation is decided by 4 given parameters in UPF   |
+ | file.  We also read in the 'core correction' if there exists.      |
+ | Also we can read the valence electrons number and the maximal      |
+ | angular momentum used in this pseudopotential. We also read in the |
+ | trail wave function, trail atomic density and local-pseudopotential|
+ | on logrithmic grid. The non-local pseudopotential projector is also|
+ | read in if there is any.                                           |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+                PAO radial cut off (Bohr) = 15
+
+ Read in pseudopotential file is Fe.upf
+                     pseudopotential type = NC
+          exchange-correlation functional = PBE
+                 nonlocal core correction = 1
+                        valence electrons = 16
+                                     lmax = 2
+                           number of zeta = 6
+                     number of projectors = 10
+                           L of projector = 0
+                           L of projector = 0
+                           L of projector = 1
+                           L of projector = 1
+                           L of projector = 1
+                           L of projector = 1
+                           L of projector = 2
+                           L of projector = 2
+                           L of projector = 2
+                           L of projector = 2
+     initial pseudo atomic orbital number = 40
+                                   NLOCAL = 108
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ Warning: the number of valence electrons in pseudopotential > 8 for Fe: [Ar] 3d6 4s2
+ Pseudopotentials with additional electrons can yield (more) accurate outcomes, but may be less efficient.
+ If you're confident that your chosen pseudopotential is appropriate, you can safely ignore this warning.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                  
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves of charge/potential:                             |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT. The number of plane waves    |
+ | is 'npw' in each processor.                                        |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP THE PLANE WAVE BASIS
+ energy cutoff for charge/potential (unit:Ry) = 320
+            fft grid for charge/potential = [ 32, 32, 32 ]
+                        fft grid division = [ 1, 1, 1 ]
+        big fft grid for charge/potential = [ 32, 32, 32 ]
+                                     nbxx = 2048
+                                     nrxx = 2048
+
+ SETUP PLANE WAVES FOR CHARGE/POTENTIAL
+                    number of plane waves = 14531
+                         number of sticks = 725
+
+ PARALLEL PW FOR CHARGE/POTENTIAL
+     PROC   COLUMNS(POT)             PW
+        1             45            909
+        2             45            909
+        3             46            908
+        4             46            908
+        5             45            909
+        6             45            909
+        7             45            909
+        8             45            909
+        9             45            909
+       10             46            908
+       11             46            908
+       12             46            908
+       13             45            907
+       14             45            907
+       15             45            907
+       16             45            907
+ --------------- sum -------------------
+       16            725          14531
+                            number of |g| = 165
+                                  max |g| = 28.6453
+                                  min |g| = 0.500354
+
+----------- Double Check Mixing Parameters Begin ------------
+mixing_type: broyden
+mixing_beta: 0.4
+mixing_gg0: 1
+mixing_gg0_min: 0.1
+mixing_beta_mag: 1.6
+mixing_gg0_mag: 0
+mixing_ndim: 10
+----------- Double Check Mixing Parameters End ------------
+
+ SETUP THE ELECTRONS NUMBER
+            electron number of element Fe = 16
+      total electron number of element Fe = 32
+            AUTOSET number of electrons:  = 32
+ DONE : SETUP UNITCELL Time : 0.316237 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup K-points                                                     |
+ | We setup the k-points according to input parameters.               |
+ | The reduced k-points are set according to symmetry operations.     |
+ | We treat the spin as another set of k-points.                      |
+ |                                                                    |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP K-POINTS
+                                    nspin = 4
+                   Input type of k points = Monkhorst-Pack(Gamma)
+                                   nkstot = 216
+K-POINTS DIRECT COORDINATES
+ KPOINTS    DIRECT_X    DIRECT_Y    DIRECT_Z  WEIGHT
+
+ DONE : INIT K-POINTS Time : 0.376998 (SEC)
+
+
+
+
+
+ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ |                                                                    |
+ | Setup plane waves of wave functions:                               |
+ | Use the energy cutoff and the lattice vectors to generate the      |
+ | dimensions of FFT grid. The number of FFT grid on each processor   |
+ | is 'nrxx'. The number of plane wave basis in reciprocal space is   |
+ | different for charege/potential and wave functions. We also set    |
+ | the 'sticks' for the parallel of FFT. The number of plane wave of  |
+ | each k-point is 'npwk[ik]' in each processor                       |
+ <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+ SETUP PLANE WAVES FOR WAVE FUNCTIONS
+     energy cutoff for wavefunc (unit:Ry) = 80
+              fft grid for wave functions = [ 32, 32, 32 ]
+                    number of plane waves = 3071
+                         number of sticks = 253
+
+ PARALLEL PW FOR WAVE FUNCTIONS
+     PROC   COLUMNS(POT)             PW
+        1             16            192
+        2             16            192
+        3             16            192
+        4             16            192
+        5             15            191
+        6             15            191
+        7             16            194
+        8             16            192
+        9             16            192
+       10             16            192
+       11             16            192
+       12             16            192
+       13             16            192
+       14             16            192
+       15             16            192
+       16             15            191
+ --------------- sum -------------------
+       16            253           3071
+ DONE : INIT PLANEWAVE Time : 0.380345 (SEC)
+
+                           occupied bands = 32
+                                   NBANDS = 52
+
+ SETUP NONLOCAL PSEUDOPOTENTIALS IN PLANE WAVE BASIS
+ Fe non-local projectors:
+ projector 1 L=0
+ projector 2 L=0
+ projector 3 L=1
+ projector 4 L=1
+ projector 5 L=1
+ projector 6 L=1
+ projector 7 L=2
+ projector 8 L=2
+ projector 9 L=2
+ projector 10 L=2
+      TOTAL NUMBER OF NONLOCAL PROJECTORS = 68
+ DONE : LOCAL POTENTIAL Time : 0.40963 (SEC)
+
+
+ Init Non-Local PseudoPotential table : 
+ Init Non-Local-Pseudopotential done.
+ DONE : NON-LOCAL POTENTIAL Time : 0.443773 (SEC)
+
+                                     npwx = 128
+
+ Warning_Memory_Consuming allocated:  Psi_PW 43.875 MB
+
+ Make real space PAO into reciprocal space.
+       max mesh points in Pseudopotential = 1425
+     dq(describe PAO in reciprocal space) = 0.01
+                                    max q = 1078
+
+ number of pseudo atomic orbitals for Fe is 6
+ DONE : INIT BASIS Time : 0.620862 (SEC)
+
+
+ -------------------------------------------
+ SELF-CONSISTENT
+ -------------------------------------------
+                                 init_chg = atomic
+ DONE : INIT SCF Time : 0.761759 (SEC)
+
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   1--------------------------------
+total magnetism (Bohr mag/cell)	-8.56154e-05	-3.16838e-05	3.87672
+       absolute magnetism (Bohr mag/cell) = 3.90219
+ Notice: Threshold on eigenvalues was too large.
+ hsover_error=0.32 > DRHO=0.0810864
+ Origin diag_ethr = 0.01
+ New    diag_ethr = 0.000253395
+total magnetism (Bohr mag/cell)	-9.09654e-05	-3.00029e-05	3.87658
+       absolute magnetism (Bohr mag/cell) = 3.90286
+
+ Density error is 0.0818013187196
+                          Error Threshold = 0.000253394954616
+----------------------------------------------------------
+     Energy           Rydberg                 eV          
+----------------------------------------------------------
+ E_KohnSham     -501.1638820263      -6818.6844273569     
+ E_Harris       -501.1650591987      -6818.7004436094     
+ E_Fermi        1.4203911993         19.3254136999        
+----------------------------------------------------------
+
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   2--------------------------------
+total magnetism (Bohr mag/cell)	-2.92622585913e-05	-0.000266812474323	3.65800660509
+       absolute magnetism (Bohr mag/cell) = 3.88387266047
+
+ Density error is 0.0165562104235
+                          Error Threshold = 0.000255629120999
+----------------------------------------------------------
+     Energy           Rydberg                 eV          
+----------------------------------------------------------
+ E_KohnSham     -501.1785311471      -6818.8837388713     
+ E_Harris       -501.4729927600      -6822.8900946492     
+ E_Fermi        1.4123735299         19.2163277107        
+----------------------------------------------------------
+
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   3--------------------------------
+total magnetism (Bohr mag/cell)	-1.41288005953e-05	-0.000388528787066	3.72548472333
+       absolute magnetism (Bohr mag/cell) = 3.91023806289
+
+ Density error is 0.00318633115585
+                          Error Threshold = 5.17381575736e-05
+----------------------------------------------------------
+     Energy           Rydberg                 eV          
+----------------------------------------------------------
+ E_KohnSham     -501.1785047719      -6818.8833800180     
+ E_Harris       -501.0742053019      -6817.4643129270     
+ E_Fermi        1.4117399370         19.2077072372        
+----------------------------------------------------------
+
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   4--------------------------------
+total magnetism (Bohr mag/cell)	2.26526732328e-05	-0.000450436470697	3.73775099313
+       absolute magnetism (Bohr mag/cell) = 3.92308219614
+
+ Density error is 0.000165938860835
+                          Error Threshold = 9.95728486202e-06
+----------------------------------------------------------
+     Energy           Rydberg                 eV          
+----------------------------------------------------------
+ E_KohnSham     -501.1804562269      -6818.9099309251     
+ E_Harris       -501.0912756169      -6817.6965664782     
+ E_Fermi        1.4131895976         19.2274308815        
+----------------------------------------------------------
+
+
+ PW ALGORITHM --------------- ION=   1  ELEC=   5--------------------------------
+
+total magnetism (Bohr mag/cell)	-0.000682480084963	-0.000407948602903	4.47635324671
+       absolute magnetism (Bohr mag/cell) = 4.82248432181
+
+ Density error is 6.61858307885e-09
+                          Error Threshold = 5.40730613116e-10
+----------------------------------------------------------
+     Energy           Rydberg                 eV          
+----------------------------------------------------------
+ E_KohnSham     -501.1664531630      -6818.7194094666     
+ E_KS(sigma->0) -501.1658847659      -6818.7116760274     
+ E_Harris       -501.1680065331      -6818.7405441510     
+ E_band         -30.1701507306       -410.4859594555      
+ E_one_elec     -214.9321986489      -2924.3025852934     
+ E_Hartree      128.2299640744       1744.6581657467      
+ E_xc           -71.3503189041       -970.7708912124      
+ E_Ewald        -343.2422281761      -4670.0500974110     
+ E_entropy(-TS) -0.0011367942        -0.0154668785        
+ E_descf        0.0000000000         0.0000000000         
+ E_exx          0.0000000000         0.0000000000         
+ E_Fermi        1.4108073605         19.1950188828        
+----------------------------------------------------------
+
+-------------------------------------------------------------------------------------------
+ Total Magnetism (uB)                                                                      
+-------------------------------------------------------------------------------------------
+                         Fe        -0.0000002724        -0.0000001728         2.4000001004 
+                         Fe        -0.0000003180        -0.0000002299         2.3999994597 
+-------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------
+ Magnetic force (eV/uB)                                                                    
+-------------------------------------------------------------------------------------------
+                         Fe        -0.0000175013        -0.0000418680        -0.3669618965 
+                         Fe        -0.0000161517        -0.0000195198        -0.3669821632 
+-------------------------------------------------------------------------------------------
+
+Charge and Mag of Atom 0
+ Orbital 1 Charge: 1.99985926204 Mag: -8.50835272933e-09 -8.84955876115e-09 2.84869655853e-06
+ Orbital 2 Charge: 5.99701367096 Mag: -2.18088393737e-07 -2.40618119919e-07 0.000105269162551
+ Orbital 3 Charge: 6.37379729477 Mag: -4.581340875e-08 7.66548679323e-08 2.39989198254
+Sum of atom 0 is: 14.3706702278 -2.72410155216e-07 -1.72812810748e-07 2.4000001004
+Charge and Mag of Atom 1
+ Orbital 1 Charge: 1.99985925962 Mag: -6.91586723071e-09 -8.93979594505e-09 2.85090960195e-06
+ Orbital 2 Charge: 5.99701367924 Mag: -2.16539560943e-07 -2.55979271358e-07 0.000105265428294
+ Orbital 3 Charge: 6.37381969542 Mag: -9.45758719447e-08 3.50118887944e-08 2.3998913434
+Sum of atom 1 is: 14.3706926343 -3.18031300118e-07 -2.29907178509e-07 2.39999945974
+
+ charge density convergence is achieved
+ final etot is -6818.7194095 eV
+ EFERMI = 19.195018883 eV
+
+------------------------------------------------------------------------------------------
+ TOTAL-FORCE (eV/Angstrom)                                                                
+------------------------------------------------------------------------------------------
+                       Fe1        -0.0000234480         0.0000848730         0.0003959639 
+                       Fe2         0.0000234480        -0.0000848730        -0.0003959639 
+------------------------------------------------------------------------------------------
+
+ --------------------------------------------
+ !FINAL_ETOT_IS -6818.719409466637 eV
+ --------------------------------------------
+
+
+TIME STATISTICS
+----------------------------------------------------------------------------
+    CLASS_NAME               NAME             TIME/s  CALLS   AVG/s  PER/%  
+----------------------------------------------------------------------------
+                  total                       563.56 15       37.57  100.00 
+ Driver           reading                     0.11   1        0.11   0.02   
+ Input_Conv       Convert                     0.00   1        0.00   0.00   
+ Driver           driver_line                 563.45 1        563.45 99.98  
+ UnitCell         check_tau                   0.00   1        0.00   0.00   
+ PW_Basis_Sup     setuptransform              0.06   1        0.06   0.01   
+ PW_Basis_Sup     distributeg                 0.00   1        0.00   0.00   
+ mymath           heapsort                    0.00   3        0.00   0.00   
+ PW_Basis_K       setuptransform              0.00   1        0.00   0.00   
+ PW_Basis_K       distributeg                 0.00   1        0.00   0.00   
+ PW_Basis         setup_struc_factor          0.00   1        0.00   0.00   
+ ppcell_vnl       init                        0.00   1        0.00   0.00   
+ ppcell_vl        init_vloc                   0.02   1        0.02   0.00   
+ ppcell_vnl       init_vnl                    0.03   1        0.03   0.01   
+ WF_atomic        init_at_1                   0.18   1        0.18   0.03   
+ wavefunc         wfcinit                     0.00   1        0.00   0.00   
+ Ions             opt_ions                    562.87 1        562.87 99.88  
+ ESolver_KS_PW    runner                      562.87 1        562.87 99.88  
+ H_Ewald_pw       compute_ewald               0.00   1        0.00   0.00   
+ Charge           set_rho_core                0.01   1        0.01   0.00   
+ PW_Basis_Sup     recip2real                  0.03   202      0.00   0.00   
+ PW_Basis_Sup     gathers_scatterp            0.01   202      0.00   0.00   
+ Charge           atomic_rho                  0.00   1        0.00   0.00   
+ Potential        init_pot                    0.01   1        0.01   0.00   
+ Potential        update_from_charge          0.07   13       0.01   0.01   
+ Potential        cal_fixed_v                 0.00   1        0.00   0.00   
+ PotLocal         cal_fixed_v                 0.00   1        0.00   0.00   
+ Potential        cal_v_eff                   0.06   13       0.00   0.01   
+ H_Hartree_pw     v_hartree                   0.00   13       0.00   0.00   
+ PW_Basis_Sup     real2recip                  0.02   247      0.00   0.00   
+ PW_Basis_Sup     gatherp_scatters            0.02   247      0.00   0.00   
+ PotXC            cal_v_eff                   0.06   13       0.00   0.01   
+ XC_Functional    v_xc                        0.06   13       0.00   0.01   
+ Potential        interpolate_vrs             0.00   13       0.00   0.00   
+ OnsiteProj       init_k_stage0               0.08   1        0.08   0.01   
+ Charge_Mixing    init_mixing                 0.00   2        0.00   0.00   
+ ESolver_KS_PW    hamilt2density              184.77 13       14.21  32.79  
+ HSolverPW        solve                       287.77 21       13.70  51.06  
+ pp_cell_vnl      getvnl                      4.21   21384    0.00   0.75   
+ Structure_Factor get_sk                      2.26   492264   0.00   0.40   
+ OnsiteProj       getvnl                      3.45   21384    0.00   0.61   
+ OnsiteProj       init_k                      4.11   26136    0.00   0.73   
+ OnsiteProj       init_k_stage1               1.73   26136    0.00   0.31   
+ OnsiteProj       init_k_stage2               2.37   26136    0.00   0.42   
+ WF_atomic        atomic_wfc                  0.10   216      0.00   0.02   
+ DiagoDavid       diag_mock                   259.79 4536     0.06   46.10  
+ DiagoDavid       first                       83.93  4536     0.02   14.89  
+ David            spsi_func                   1.10   1075598  0.00   0.20   
+ DiagoDavid       SchmidtOrth                 14.54  537799   0.00   2.58   
+ David            hpsi_func                   149.60 14979    0.01   26.55  
+ Operator         hPsi                        396.41 31827    0.01   70.34  
+ Operator         EkineticPW                  2.03   31827    0.00   0.36   
+ Operator         VeffPW                      344.42 31827    0.01   61.12  
+ PW_Basis_K       recip2real                  183.20 3119822  0.00   32.51  
+ PW_Basis_K       gathers_scatterp            160.47 3119822  0.00   28.47  
+ PW_Basis_K       real2recip                  155.75 2827790  0.00   27.64  
+ PW_Basis_K       gatherp_scatters            136.28 2827790  0.00   24.18  
+ Operator         NonlocalPW                  42.43  31827    0.00   7.53   
+ Nonlocal         add_nonlocal_pp             34.57  31827    0.00   6.13   
+ Operator         OnsiteProjPW                7.38   31827    0.00   1.31   
+ OnsiteProj       add_onsite_proj             7.35   31827    0.00   1.30   
+ OnsiteProj       overlap                     5.91   36579    0.00   1.05   
+ DiagoDavid       cal_elem                    35.38  14979    0.00   6.28   
+ DiagoDavid       diag_zhegvx                 51.18  14979    0.00   9.08   
+ DiagoDavid       cal_grad                    101.08 10443    0.01   17.94  
+ DiagoDavid       check_update                0.01   10443    0.00   0.00   
+ DiagoDavid       last                        1.75   4536     0.00   0.31   
+ ElecStatePW      psiToRho                    18.60  13       1.43   3.30   
+ Charge_Mixing    get_drho                    0.01   13       0.00   0.00   
+ Charge_Mixing    inner_product_recip_rho     0.00   13       0.00   0.00   
+ Charge           mix_rho                     0.01   10       0.00   0.00   
+ Charge           Broyden_mixing              0.01   10       0.00   0.00   
+ Charge_Mixing    inner_product_recip_hartree 0.00   48       0.00   0.00   
+ SpinConstrain    cal_mw_from_lambda          377.05 86       4.38   66.90  
+ DiagoIterAssist  diag_responce               266.63 16848    0.02   47.31  
+ DiagoIterAssist  diagH_LAPACK                12.16  16848    0.00   2.16   
+ OnsiteProj       cal_occupation              0.06   1        0.06   0.01   
+ ModuleIO         write_istate_info           0.07   1        0.07   0.01   
+----------------------------------------------------------------------------
+
+
+ NAME-------------------------|MEMORY(MB)--------
+                         total          786.3
+                        Psi_PW          668.8
+                    DAV::basis          12.38
+                     DAV::hpsi          12.38
+                     DAV::spsi          12.38
+                      DAV::hcc          10.56
+                      DAV::scc          10.56
+                      DAV::vcc          10.56
+                      MTransOp          10.56
+                  PW_B_K::gcar          9.645
+                   PW_B_K::gk2          3.215
+                 DiagSub::temp          3.096
+                      VNL::tab          2.632
+                      VNL::vkb          2.024
+            Nonlocal<PW>::becp          1.727
+              Nonlocal<PW>::ps          1.727
+                   VNL::tab_at          1.579
+                     FFT::grid          1.000
+                      Chg::rho          1.000
+                 Chg::rho_save          1.000
+                     Pot::veff          1.000
+              Pot::veff_smooth          1.000
+ -------------   < 1.0 MB has been ignored ----------------
+ ----------------------------------------------------------
+
+ Start  Time  : Fri Aug 23 16:06:02 2024
+ Finish Time  : Fri Aug 23 16:15:04 2024
+ Total  Time  : 0 h 9 mins 2 secs 
