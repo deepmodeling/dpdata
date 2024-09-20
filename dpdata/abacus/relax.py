@@ -13,6 +13,7 @@ from .scf import (
     get_cell,
     get_coords,
     get_geometry_in,
+    get_mag_force,
     kbar2evperang3,
 )
 
@@ -198,6 +199,8 @@ def get_frame(fname):
         lines, atomnumber
     )
 
+    magmom, magforce = get_mag_force(lines)
+
     data = {}
     data["atom_names"] = atom_names
     data["atom_numbs"] = natoms
@@ -210,5 +213,10 @@ def get_frame(fname):
         data["virials"] = virial
     data["stress"] = stress
     data["orig"] = np.zeros(3)
+
+    if len(magmom) > 0:
+        data["spins"] = magmom
+    if len(magforce) > 0:
+        data["mag_forces"] = magforce
 
     return data
