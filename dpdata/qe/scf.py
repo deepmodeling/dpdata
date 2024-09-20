@@ -15,19 +15,6 @@ from .traj import (
     length_convert as bohr2ang,
 )
 
-_QE_BLOCK_KEYWORDS = [
-    "ATOMIC_SPECIES",
-    "ATOMIC_POSITIONS",
-    "K_POINTS",
-    "ADDITIONAL_K_POINTS",
-    "CELL_PARAMETERS",
-    "CONSTRAINTS",
-    "OCCUPATIONS",
-    "ATOMIC_VELOCITIES",
-    "ATOMIC_FORCES",
-    "SOLVENTS",
-    "HUBBARD",
-]
 
 _QE_BLOCK_KEYWORDS = [
     "ATOMIC_SPECIES",
