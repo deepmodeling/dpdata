@@ -7,9 +7,13 @@ import numpy as np
 
 from dpdata.utils import open_file
 
-ry2ev = 13.605693009
-bohr2ang = 0.52917721067
-kbar2evperang3 = 1e3 / 1.602176621e6
+from .traj import (
+    kbar2evperang3,
+    ry2ev,
+)
+from .traj import (
+    length_convert as bohr2ang,
+)
 
 _QE_BLOCK_KEYWORDS = [
     "ATOMIC_SPECIES",

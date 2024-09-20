@@ -8,7 +8,7 @@ from context import dpdata
 class TestPWSCFSinglePointEnergy:
     def test_energy(self):
         ref_energy = -296.08379065679094669
-        self.assertAlmostEqual(self.system_al.data["energies"][0], ref_energy)
+        self.assertAlmostEqual(self.system_al.data["energies"][0] / ref_energy, 1.0)
 
 
 class TestPWSCFLabeledOutput(unittest.TestCase, TestPWSCFSinglePointEnergy):
