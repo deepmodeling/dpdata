@@ -54,7 +54,7 @@ def register_mag_data(data):
         dpdata.LabeledSystem.register_data_type(dt)
     if "mag_forces" in data:
         dt = DataType(
-            "mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False,deepmd_name="mag_force"
+            "mag_forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False,deepmd_name="force_mag"
         )
         dpdata.LabeledSystem.register_data_type(dt)
 
