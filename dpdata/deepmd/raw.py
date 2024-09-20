@@ -49,16 +49,6 @@ def to_system_data(folder, type_map=None, labels=True):
             data["cells"] = np.loadtxt(os.path.join(folder, "box.raw"), ndmin=2)
         data["cells"] = np.reshape(data["cells"], [nframes, 3, 3])
         data["coords"] = np.reshape(data["coords"], [nframes, -1, 3])
-        if labels:
-            if os.path.exists(os.path.join(folder, "energy.raw")):
-                data["energies"] = np.loadtxt(os.path.join(folder, "energy.raw"))
-                data["energies"] = np.reshape(data["energies"], [nframes])
-            if os.path.exists(os.path.join(folder, "force.raw")):
-                data["forces"] = np.loadtxt(os.path.join(folder, "force.raw"))
-                data["forces"] = np.reshape(data["forces"], [nframes, -1, 3])
-            if os.path.exists(os.path.join(folder, "virial.raw")):
-                data["virials"] = np.loadtxt(os.path.join(folder, "virial.raw"))
-                data["virials"] = np.reshape(data["virials"], [nframes, 3, 3])
         if os.path.isfile(os.path.join(folder, "nopbc")):
             data["nopbc"] = True
         # allow custom dtypes
@@ -77,9 +67,6 @@ def to_system_data(folder, type_map=None, labels=True):
                 "real_atom_types",
                 "real_atom_names",
                 "nopbc",
-                "energies",
-                "forces",
-                "virials",
             ):
                 # skip as these data contains specific rules
                 continue
@@ -88,14 +75,14 @@ def to_system_data(folder, type_map=None, labels=True):
                     f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted from deepmd/raw format."
                 )
                 continue
-            natoms = data["coords"].shape[1]
+            natoms = data["atom_types"].shape[0]
             shape = [
                 natoms if xx == dpdata.system.Axis.NATOMS else xx
                 for xx in dtype.shape[1:]
             ]
-            if os.path.exists(os.path.join(folder, f"{dtype.name}.raw")):
+            if os.path.exists(os.path.join(folder, f"{dtype.deepmd_name}.raw")):
                 data[dtype.name] = np.reshape(
-                    np.loadtxt(os.path.join(folder, f"{dtype.name}.raw")),
+                    np.loadtxt(os.path.join(folder, f"{dtype.deepmd_name}.raw")),
                     [nframes, *shape],
                 )
         return data
@@ -108,10 +95,6 @@ def dump(folder, data):
     nframes = data["cells"].shape[0]
     np.savetxt(os.path.join(folder, "type.raw"), data["atom_types"], fmt="%d")
     np.savetxt(os.path.join(folder, "type_map.raw"), data["atom_names"], fmt="%s")
-    np.savetxt(os.path.join(folder, "box.raw"), np.reshape(data["cells"], [nframes, 9]))
-    np.savetxt(
-        os.path.join(folder, "coord.raw"), np.reshape(data["coords"], [nframes, -1])
-    )
     # BondOrder System
     if "bonds" in data:
         np.savetxt(
@@ -121,21 +104,6 @@ def dump(folder, data):
         )
     if "formal_charges" in data:
         np.savetxt(os.path.join(folder, "formal_charges.raw"), data["formal_charges"])
-    # Labeled System
-    if "energies" in data:
-        np.savetxt(
-            os.path.join(folder, "energy.raw"),
-            np.reshape(data["energies"], [nframes, 1]),
-        )
-    if "forces" in data:
-        np.savetxt(
-            os.path.join(folder, "force.raw"), np.reshape(data["forces"], [nframes, -1])
-        )
-    if "virials" in data:
-        np.savetxt(
-            os.path.join(folder, "virial.raw"),
-            np.reshape(data["virials"], [nframes, 9]),
-        )
     try:
         os.remove(os.path.join(folder, "nopbc"))
     except OSError:
@@ -155,14 +123,9 @@ def dump(folder, data):
             "atom_names",
             "atom_types",
             "orig",
-            "cells",
-            "coords",
             "real_atom_types",
             "real_atom_names",
             "nopbc",
-            "energies",
-            "forces",
-            "virials",
         ):
             # skip as these data contains specific rules
             continue
@@ -174,4 +137,4 @@ def dump(folder, data):
             )
             continue
         ddata = np.reshape(data[dtype.name], [nframes, -1])
-        np.savetxt(os.path.join(folder, f"{dtype.name}.raw"), ddata)
+        np.savetxt(os.path.join(folder, f"{dtype.deepmd_name}.raw"), ddata)

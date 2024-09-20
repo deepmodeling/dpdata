@@ -91,8 +91,10 @@ class System:
         DataType("atom_names", list, (Axis.NTYPES,)),
         DataType("atom_types", np.ndarray, (Axis.NATOMS,)),
         DataType("orig", np.ndarray, (3,)),
-        DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
-        DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3), deepmd_name="box"),
+        DataType(
+            "coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), deepmd_name="coord"
+        ),
         DataType(
             "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
         ),
@@ -849,6 +851,7 @@ class System:
         cell_pert_fraction: float,
         atom_pert_distance: float,
         atom_pert_style: str = "normal",
+        atom_pert_prob: float = 1.0,
     ):
         """Perturb each frame in the system randomly.
         The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
@@ -877,6 +880,8 @@ class System:
                     These points are treated as vector used by atoms to move.
                     Obviously, the max length of the distance atoms move is `atom_pert_distance`.
                 - `'const'`: The distance atoms move will be a constant `atom_pert_distance`.
+        atom_pert_prob : float
+            Determine the proportion of the total number of atoms in a frame that are perturbed.
 
         Returns
         -------
@@ -900,7 +905,15 @@ class System:
                 tmp_system.data["coords"][0] = np.matmul(
                     tmp_system.data["coords"][0], cell_perturb_matrix
                 )
-                for kk in range(len(tmp_system.data["coords"][0])):
+                pert_natoms = int(atom_pert_prob * len(tmp_system.data["coords"][0]))
+                pert_atom_id = sorted(
+                    np.random.choice(
+                        range(len(tmp_system.data["coords"][0])),
+                        pert_natoms,
+                        replace=False,
+                    ).tolist()
+                )
+                for kk in pert_atom_id:
                     atom_perturb_vector = get_atom_perturb_vector(
                         atom_pert_distance, atom_pert_style
                     )
@@ -1193,9 +1206,17 @@ class LabeledSystem(System):
     """
 
     DTYPES: tuple[DataType, ...] = System.DTYPES + (
-        DataType("energies", np.ndarray, (Axis.NFRAMES,)),
-        DataType("forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
-        DataType("virials", np.ndarray, (Axis.NFRAMES, 3, 3), required=False),
+        DataType("energies", np.ndarray, (Axis.NFRAMES,), deepmd_name="energy"),
+        DataType(
+            "forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), deepmd_name="force"
+        ),
+        DataType(
+            "virials",
+            np.ndarray,
+            (Axis.NFRAMES, 3, 3),
+            required=False,
+            deepmd_name="virial",
+        ),
         DataType("atom_pref", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False),
     )
 

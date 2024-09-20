@@ -12,6 +12,7 @@ from .scf import (
     get_cell,
     get_coords,
     get_geometry_in,
+    get_mag_force,
     kbar2evperang3,
 )
 
@@ -199,6 +200,9 @@ def get_frame(fname):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))
     if np.sum(np.abs(stress[0])) < 1e-10:
         stress = None
+
+    magmom, magforce = get_mag_force(outlines)
+
     data = {}
     data["atom_names"] = atom_names
     data["atom_numbs"] = natoms
@@ -213,5 +217,9 @@ def get_frame(fname):
     if not isinstance(data["virials"], np.ndarray):
         del data["virials"]
     data["orig"] = np.zeros(3)
+    if len(magmom) > 0:
+        data["spins"] = magmom
+    if len(magforce) > 0:
+        data["mag_forces"] = magforce
 
     return data

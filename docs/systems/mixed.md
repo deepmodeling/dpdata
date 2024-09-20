@@ -1,6 +1,6 @@
 # Mixed Type Format
 
-The format `deepmd/npy/mixed` is the mixed type numpy format for DeePMD-kit, and can be loaded or dumped through class :class:`dpdata.MultiSystems`.
+The format `deepmd/npy/mixed` is the mixed type numpy format for DeePMD-kit, and can be loaded or dumped through class {class}`dpdata.MultiSystems`.
 
 Under this format, systems with the same number of atoms but different formula can be put together
 for a larger system, especially when the frame numbers in systems are sparse.
