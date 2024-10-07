@@ -2,6 +2,5 @@ name: dpdata
 channels:
   - conda-forge
 dependencies:
-  - mamba
   - pip:
     - ..[docs]
