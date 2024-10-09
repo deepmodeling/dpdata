@@ -1,7 +1,8 @@
-name: dpdata
+name: dpdata-rtd
 channels:
   - conda-forge
 dependencies:
+  - python <3.13
   - mamba
   - pip:
     - ..[docs]

@@ -1,4 +1,4 @@
-name: dpdata
+name: dpdata-emscripten
 channels:
   - https://repo.mamba.pm/emscripten-forge
   - conda-forge
