@@ -630,7 +630,6 @@ def make_unlabeled_stru(
         If True, then only filename will be written in the STRU file, and make a soft link to the real file.
     dest_dir : str, optional
         The destination directory to make the soft link of the pseudo potential files and orbital files.
-        
     For velocity, mag, angle1, angle2, sc, and lambda_, if the value is None, then the corresponding information will not be written.
     ABACUS support defining "mag" and "angle1"/"angle2" at the same time, and in this case, the "mag" only define the norm of the magnetic moment, and "angle1" and "angle2" define the direction of the magnetic moment.
     If data has spins, then it will be written as mag to STRU file; while if mag is passed at the same time, then mag will be used.
@@ -693,13 +692,17 @@ def make_unlabeled_stru(
         elif isinstance(pp_file, dict):
             for iele in data["atom_names"]:
                 if iele not in pp_file:
-                    raise RuntimeError(f"ERROR: make_unlabeled_stru: pp_file does not contain {iele}")
-            ppfiles = [pp_file[data["atom_names"][i]] for i in range(len(data["atom_names"]))]
+                    raise RuntimeError(
+                        f"ERROR: make_unlabeled_stru: pp_file does not contain {iele}"
+                    )
+            ppfiles = [
+                pp_file[data["atom_names"][i]] for i in range(len(data["atom_names"]))
+            ]
         else:
             raise RuntimeError(f"ERROR: invalid pp_file: {pp_file}")
     else:
         ppfiles = None
-        
+
     for iele in range(len(data["atom_names"])):
         if data["atom_numbs"][iele] == 0:
             continue
@@ -731,12 +734,17 @@ def make_unlabeled_stru(
         elif isinstance(numerical_orbital, dict):
             for iele in data["atom_names"]:
                 if iele not in numerical_orbital:
-                    raise RuntimeError(f"ERROR: make_unlabeled_stru: numerical_orbital does not contain {iele}")
-            orbfiles = [numerical_orbital[data["atom_names"][i]] for i in range(len(data["atom_names"])) if data["atom_numbs"][i] != 0]
+                    raise RuntimeError(
+                        f"ERROR: make_unlabeled_stru: numerical_orbital does not contain {iele}"
+                    )
+            orbfiles = [
+                numerical_orbital[data["atom_names"][i]]
+                for i in range(len(data["atom_names"]))
+                if data["atom_numbs"][i] != 0
+            ]
         else:
             raise RuntimeError(f"ERROR: invalid numerical_orbital: {numerical_orbital}")
-        
-        
+
         out += "NUMERICAL_ORBITAL\n"
         for iorb in orbfiles:
             if not link_file:
