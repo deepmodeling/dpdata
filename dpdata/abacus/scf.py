@@ -687,7 +687,8 @@ def make_unlabeled_stru(
         pp_file = ndarray2list(pp_file)
         ppfiles = None
         if isinstance(pp_file,(list, tuple)):
-            assert len(pp_file) == len(data["atom_names"]), "ERROR: make_unlabeled_stru: pp_file length is not equal to the number of atom types"
+            if len(pp_file) != len(data["atom_names"]):
+                raise RuntimeError("ERROR: make_unlabeled_stru: pp_file length is not equal to the number of atom types")
             ppfiles = pp_file
         elif isinstance(pp_file, dict):
             for iele in data["atom_names"]:
@@ -724,7 +725,8 @@ def make_unlabeled_stru(
         numerical_orbital = ndarray2list(numerical_orbital)
         orbfiles = []
         if isinstance(numerical_orbital, (list, tuple)):
-            assert len(numerical_orbital) == len(data["atom_names"]), "ERROR: make_unlabeled_stru: numerical_orbital length is not equal to the number of atom types"
+            if len(numerical_orbital) != len(data["atom_names"]):
+                raise RuntimeError("ERROR: make_unlabeled_stru: numerical_orbital length is not equal to the number of atom types")
             orbfiles = [numerical_orbital[i] for i in range(len(data["atom_names"])) if data["atom_numbs"][i] != 0]
         elif isinstance(numerical_orbital, dict):
             for iele in data["atom_names"]:
