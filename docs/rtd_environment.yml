@@ -1,4 +1,4 @@
-name: dpdata
+name: dpdata-rtd
 channels:
   - conda-forge
 dependencies:
