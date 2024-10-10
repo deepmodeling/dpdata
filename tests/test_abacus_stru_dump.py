@@ -50,7 +50,7 @@ class TestStruDump(unittest.TestCase):
 
         if os.path.isdir("abacus.scf/tmp"):
             shutil.rmtree("abacus.scf/tmp")
-    
+
     def test_dump_stru_pporb_mismatch(self):
         with self.assertRaises(KeyError, msg="pp_file is a dict and lack of pp for H"):
             self.system_ch4.to(
