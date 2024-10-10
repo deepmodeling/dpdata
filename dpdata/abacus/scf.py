@@ -578,7 +578,7 @@ def get_frame_from_stru(fname):
 def make_unlabeled_stru(
     data,
     frame_idx,
-    pp_file=None,
+    pp_file,
     numerical_orbital=None,
     numerical_descriptor=None,
     mass=None,
@@ -601,7 +601,7 @@ def make_unlabeled_stru(
         System data
     frame_idx : int
         The index of the frame to dump
-    pp_file : list of string or dict, optional
+    pp_file : list of string or dict
         List of pseudo potential files, or a dictionary of pseudo potential files for each atomnames
     numerical_orbital : list of string or dict, optional
         List of orbital files, or a dictionary of orbital files for each atomnames
@@ -656,6 +656,24 @@ def make_unlabeled_stru(
             return i.tolist()
         else:
             return i
+        
+    def process_file_input(file_input, atom_names, input_name):
+        # For pp_file and numerical_orbital, process the file input, and return a list of file names
+        # file_input can be a list of file names, or a dictionary of file names for each atom names
+        if isinstance(file_input, (list, tuple)):
+            if len(file_input) != len(atom_names):
+                raise ValueError(
+                    f"{input_name} length is not equal to the number of atom types"
+                )
+            return file_input
+        elif isinstance(file_input, dict):
+            for element in atom_names:
+                if element not in file_input:
+                    raise KeyError(f"{input_name} does not contain {element}")
+            return [file_input[element] for element in atom_names]
+        else:
+            raise ValueError(f"Invalid {input_name}: {file_input}")
+    
 
     if link_file and dest_dir is None:
         print(
@@ -682,26 +700,7 @@ def make_unlabeled_stru(
 
     # ATOMIC_SPECIES block
     out = "ATOMIC_SPECIES\n"
-    if pp_file is not None:
-        pp_file = ndarray2list(pp_file)
-        ppfiles = None
-        if isinstance(pp_file,(list, tuple)):
-            if len(pp_file) != len(data["atom_names"]):
-                raise RuntimeError("ERROR: make_unlabeled_stru: pp_file length is not equal to the number of atom types")
-            ppfiles = pp_file
-        elif isinstance(pp_file, dict):
-            for iele in data["atom_names"]:
-                if iele not in pp_file:
-                    raise RuntimeError(
-                        f"ERROR: make_unlabeled_stru: pp_file does not contain {iele}"
-                    )
-            ppfiles = [
-                pp_file[data["atom_names"][i]] for i in range(len(data["atom_names"]))
-            ]
-        else:
-            raise RuntimeError(f"ERROR: invalid pp_file: {pp_file}")
-    else:
-        ppfiles = None
+    ppfiles = process_file_input(ndarray2list(pp_file), data["atom_names"], "pp_file") 
 
     for iele in range(len(data["atom_names"])):
         if data["atom_numbs"][iele] == 0:
@@ -711,40 +710,26 @@ def make_unlabeled_stru(
             out += f"{mass[iele]:.3f} "
         else:
             out += "1 "
-        if ppfiles is not None:
-            ipp_file = ppfiles[iele]
-            if ipp_file is not None:
-                if not link_file:
-                    out += ipp_file
-                else:
-                    out += os.path.basename(ipp_file.rstrip("/"))
-                    if dest_dir is not None:
-                        _link_file(dest_dir, ipp_file)
+
+        ipp_file = ppfiles[iele]
+        if not link_file:
+            out += ipp_file
+        else:
+            out += os.path.basename(ipp_file.rstrip("/"))
+            if dest_dir is not None:
+                _link_file(dest_dir, ipp_file)
         out += "\n"
     out += "\n"
 
     # NUMERICAL_ORBITAL block
     if numerical_orbital is not None:
         numerical_orbital = ndarray2list(numerical_orbital)
-        orbfiles = []
-        if isinstance(numerical_orbital, (list, tuple)):
-            if len(numerical_orbital) != len(data["atom_names"]):
-                raise RuntimeError("ERROR: make_unlabeled_stru: numerical_orbital length is not equal to the number of atom types")
-            orbfiles = [numerical_orbital[i] for i in range(len(data["atom_names"])) if data["atom_numbs"][i] != 0]
-        elif isinstance(numerical_orbital, dict):
-            for iele in data["atom_names"]:
-                if iele not in numerical_orbital:
-                    raise RuntimeError(
-                        f"ERROR: make_unlabeled_stru: numerical_orbital does not contain {iele}"
-                    )
-            orbfiles = [
-                numerical_orbital[data["atom_names"][i]]
-                for i in range(len(data["atom_names"]))
-                if data["atom_numbs"][i] != 0
-            ]
-        else:
-            raise RuntimeError(f"ERROR: invalid numerical_orbital: {numerical_orbital}")
-
+        orbfiles = process_file_input(numerical_orbital, data["atom_names"], "numerical_orbital")
+        orbfiles = [
+            orbfiles[i]
+            for i in range(len(data["atom_names"]))
+            if data["atom_numbs"][i] != 0
+        ]
         out += "NUMERICAL_ORBITAL\n"
         for iorb in orbfiles:
             if not link_file:
