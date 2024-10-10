@@ -60,8 +60,10 @@ class TestStruDump(unittest.TestCase):
                 pp_file={"C": "C.upf", "O": "O.upf"},
                 numerical_orbital={"C": "C.orb", "H": "H.orb"},
             )
-            
-        with self.assertRaises(ValueError, msg="pp_file is a list and lack of pp for H"):
+
+        with self.assertRaises(
+            ValueError, msg="pp_file is a list and lack of pp for H"
+        ):
             self.system_ch4.to(
                 "stru",
                 "STRU_tmp",
@@ -69,8 +71,10 @@ class TestStruDump(unittest.TestCase):
                 pp_file=["C.upf"],
                 numerical_orbital={"C": "C.orb", "H": "H.orb"},
             )
-    
-        with self.assertRaises(KeyError, msg="numerical_orbital is a dict and lack of orbital for H"):
+
+        with self.assertRaises(
+            KeyError, msg="numerical_orbital is a dict and lack of orbital for H"
+        ):
             self.system_ch4.to(
                 "stru",
                 "STRU_tmp",
@@ -78,8 +82,10 @@ class TestStruDump(unittest.TestCase):
                 pp_file={"C": "C.upf", "H": "H.upf"},
                 numerical_orbital={"C": "C.orb", "O": "O.orb"},
             )
-            
-        with self.assertRaises(ValueError, msg="numerical_orbital is a list and lack of orbital for H"):
+
+        with self.assertRaises(
+            ValueError, msg="numerical_orbital is a list and lack of orbital for H"
+        ):
             self.system_ch4.to(
                 "stru",
                 "STRU_tmp",

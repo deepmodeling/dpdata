@@ -656,7 +656,7 @@ def make_unlabeled_stru(
             return i.tolist()
         else:
             return i
-        
+
     def process_file_input(file_input, atom_names, input_name):
         # For pp_file and numerical_orbital, process the file input, and return a list of file names
         # file_input can be a list of file names, or a dictionary of file names for each atom names
@@ -673,7 +673,6 @@ def make_unlabeled_stru(
             return [file_input[element] for element in atom_names]
         else:
             raise ValueError(f"Invalid {input_name}: {file_input}")
-    
 
     if link_file and dest_dir is None:
         print(
@@ -700,7 +699,7 @@ def make_unlabeled_stru(
 
     # ATOMIC_SPECIES block
     out = "ATOMIC_SPECIES\n"
-    ppfiles = process_file_input(ndarray2list(pp_file), data["atom_names"], "pp_file") 
+    ppfiles = process_file_input(ndarray2list(pp_file), data["atom_names"], "pp_file")
 
     for iele in range(len(data["atom_names"])):
         if data["atom_numbs"][iele] == 0:
@@ -724,7 +723,9 @@ def make_unlabeled_stru(
     # NUMERICAL_ORBITAL block
     if numerical_orbital is not None:
         numerical_orbital = ndarray2list(numerical_orbital)
-        orbfiles = process_file_input(numerical_orbital, data["atom_names"], "numerical_orbital")
+        orbfiles = process_file_input(
+            numerical_orbital, data["atom_names"], "numerical_orbital"
+        )
         orbfiles = [
             orbfiles[i]
             for i in range(len(data["atom_names"]))
