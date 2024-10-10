@@ -51,6 +51,49 @@ class TestStruDump(unittest.TestCase):
         if os.path.isdir("abacus.scf/tmp"):
             shutil.rmtree("abacus.scf/tmp")
 
+    def test_dump_stru_pporb_mismatch(self):
+        with self.assertRaises(KeyError, msg="pp_file is a dict and lack of pp for H"):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file={"C": "C.upf", "O": "O.upf"},
+                numerical_orbital={"C": "C.orb", "H": "H.orb"},
+            )
+
+        with self.assertRaises(
+            ValueError, msg="pp_file is a list and lack of pp for H"
+        ):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file=["C.upf"],
+                numerical_orbital={"C": "C.orb", "H": "H.orb"},
+            )
+
+        with self.assertRaises(
+            KeyError, msg="numerical_orbital is a dict and lack of orbital for H"
+        ):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file={"C": "C.upf", "H": "H.upf"},
+                numerical_orbital={"C": "C.orb", "O": "O.orb"},
+            )
+
+        with self.assertRaises(
+            ValueError, msg="numerical_orbital is a list and lack of orbital for H"
+        ):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file=["C.upf", "H.upf"],
+                numerical_orbital=["C.orb"],
+            )
+
     def test_dump_spinconstrain(self):
         self.system_ch4.to(
             "stru",
