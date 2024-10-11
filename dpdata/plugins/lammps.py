@@ -4,12 +4,26 @@ from typing import TYPE_CHECKING
 
 import dpdata.lammps.dump
 import dpdata.lammps.lmp
+from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
+
+import numpy as np
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
 
+
+def register_spin(data):
+    if "spins" in data:
+        dt = DataType(
+            "spins",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="spin",
+        )
+        dpdata.System.register_data_type(dt)
 
 @Format.register("lmp")
 @Format.register("lammps/lmp")
@@ -18,7 +32,9 @@ class LAMMPSLmpFormat(Format):
     def from_system(self, file_name: FileType, type_map=None, **kwargs):
         with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
-        return dpdata.lammps.lmp.to_system_data(lines, type_map)
+        data = dpdata.lammps.lmp.to_system_data(lines, type_map)
+        register_spin(data)
+        return data
 
     def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
         """Dump the system in lammps data format.
@@ -48,4 +64,6 @@ class LAMMPSDumpFormat(Format):
         self, file_name, type_map=None, begin=0, step=1, unwrap=False, **kwargs
     ):
         lines = dpdata.lammps.dump.load_file(file_name, begin=begin, step=step)
-        return dpdata.lammps.dump.system_data(lines, type_map, unwrap=unwrap)
+        data = dpdata.lammps.dump.system_data(lines, type_map, unwrap=unwrap)
+        register_spin(data)
+        return data

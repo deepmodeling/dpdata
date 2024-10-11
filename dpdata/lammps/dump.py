@@ -196,6 +196,42 @@ def load_file(fname: FileType, begin=0, step=1):
             if cc >= begin and (cc - begin) % step == 0:
                 buff.append(line)
 
+def get_spin(lines):
+    blk, head = _get_block(lines, "ATOMS")
+    heads = head.split()
+    """
+    the spin info is stored in c_spin[1], c_spin[2], c_spin[3], c_spin[4] or sp, spx, spy, spz, which is the spin norm and the spin vector
+ITEM: ATOMS id type x y z c_spin[1] c_spin[2] c_spin[3] c_spin[4] c_spin[5] c_spin[6] c_spin[7] c_spin[8] c_spin[9] c_spin[10]
+1 1 0.00141160 5.64868599 0.01005602 1.54706291 0.00000000 0.00000000 1.00000000 -1.40772100 -2.03739417 -1522.64797384 -0.00397809 -0.00190426 -0.00743976    
+    """
+    key1 = ["sp", "spx", "spy", "spz"]
+    key2 = ["c_spin[1]", "c_spin[2]", "c_spin[3]", "c_spin[4]"]
+    
+    # check if head contains spin info
+    if all(i in heads for i in key1):
+        key = key1
+    elif all(i in heads for i in key2):
+        key = key2
+    else:
+        return None
+    idx_id = heads.index("id") - 2
+    idx_sp = heads.index(key[0]) - 2
+    idx_spx = heads.index(key[1]) - 2
+    idx_spy = heads.index(key[2]) - 2
+    idx_spz = heads.index(key[3]) - 2
+    
+    norm = []
+    vec = []
+    id = []
+    for ii in blk:
+        words = ii.split()
+        norm.append([float(words[idx_sp])])
+        vec.append([float(words[idx_spx]), float(words[idx_spy]), float(words[idx_spz])])
+        id.append(int(words[idx_id]))
+    
+    spin = np.array(norm) * np.array(vec)
+    id, spin = zip(*sorted(zip(id, spin)))
+    return np.array(spin)
 
 def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False):
     array_lines = split_traj(lines)
@@ -216,6 +252,11 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False):
     system["cells"] = [np.array(cell)]
     system["atom_types"] = get_atype(lines, type_idx_zero=type_idx_zero)
     system["coords"] = [safe_get_posi(lines, cell, np.array(orig), unwrap)]
+    spin = get_spin(lines)
+    has_spin = False
+    if spin is not None:
+        system["spins"] = [spin]
+        has_spin = True
     for ii in range(1, len(array_lines)):
         bounds, tilt = get_dumpbox(array_lines[ii])
         orig, cell = dumpbox2box(bounds, tilt)
@@ -228,6 +269,16 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False):
         system["coords"].append(
             safe_get_posi(array_lines[ii], cell, np.array(orig), unwrap)[idx]
         )
+        if has_spin:
+            spin = get_spin(array_lines[ii])
+            if spin is not None:
+                system["spins"].append(spin[idx])
+            else:
+                print(f"Warning: spin info is not found in frame {ii}, remove spin info.")
+                system.pop("spins")
+                has_spin = False
+    if has_spin:
+        system["spins"] = np.array(system["spins"])
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
     return system
