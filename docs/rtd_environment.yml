@@ -3,6 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - python <3.13
-  - mamba
+  - mamba <2
   - pip:
     - ..[docs]
