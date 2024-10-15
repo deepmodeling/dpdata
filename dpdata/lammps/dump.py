@@ -196,6 +196,7 @@ def load_file(fname: FileType, begin=0, step=1):
             if cc >= begin and (cc - begin) % step == 0:
                 buff.append(line)
 
+
 def get_spin_keys(inputfile):
     # raed input file and get the keys for spin info in dump
     # 1. find the index of "compute X X X sp spx spy spz ..." in the input file
@@ -205,15 +206,23 @@ def get_spin_keys(inputfile):
             lines = f.readlines()
         for line in lines:
             ls = line.split()
-            if len(ls) > 7 and ls[0] == "compute" and "sp" in ls and "spx" in ls and "spy" in ls and "spz" in ls:
-                idx_sp = "c_" + ls[1] + "[" + str(ls.index("sp")-3) + "]"
-                idx_spx = "c_" + ls[1] + "[" + str(ls.index("spx")-3) + "]"
-                idx_spy = "c_" + ls[1] + "[" + str(ls.index("spy")-3) + "]"
-                idx_spz = "c_" + ls[1] + "[" + str(ls.index("spz")-3) + "]"
+            if (
+                len(ls) > 7
+                and ls[0] == "compute"
+                and "sp" in ls
+                and "spx" in ls
+                and "spy" in ls
+                and "spz" in ls
+            ):
+                idx_sp = "c_" + ls[1] + "[" + str(ls.index("sp") - 3) + "]"
+                idx_spx = "c_" + ls[1] + "[" + str(ls.index("spx") - 3) + "]"
+                idx_spy = "c_" + ls[1] + "[" + str(ls.index("spy") - 3) + "]"
+                idx_spz = "c_" + ls[1] + "[" + str(ls.index("spz") - 3) + "]"
                 return [idx_sp, idx_spx, idx_spy, idx_spz]
     return None
 
-def get_spin(lines,spin_keys):
+
+def get_spin(lines, spin_keys):
     """
     Get the spin info from the dump file.
     
@@ -226,14 +235,14 @@ def get_spin(lines,spin_keys):
     
     the spin info is stored in sp, spx, spy, spz or spin_keys, which is the spin norm and the spin vector
     spin_keys may be like: c_spin[1], c_spin[2], c_spin[3], c_spin[4]
-ITEM: ATOMS id type x y z c_spin[1] c_spin[2] c_spin[3] c_spin[4] c_spin[5] c_spin[6] c_spin[7] c_spin[8] c_spin[9] c_spin[10]
-1 1 0.00141160 5.64868599 0.01005602 1.54706291 0.00000000 0.00000000 1.00000000 -1.40772100 -2.03739417 -1522.64797384 -0.00397809 -0.00190426 -0.00743976
+    ITEM: ATOMS id type x y z c_spin[1] c_spin[2] c_spin[3] c_spin[4] c_spin[5] c_spin[6] c_spin[7] c_spin[8] c_spin[9] c_spin[10]
+    1 1 0.00141160 5.64868599 0.01005602 1.54706291 0.00000000 0.00000000 1.00000000 -1.40772100 -2.03739417 -1522.64797384 -0.00397809 -0.00190426 -0.00743976
     """
     blk, head = _get_block(lines, "ATOMS")
     heads = head.split()
-    
+
     key1 = ["sp", "spx", "spy", "spz"]
-    
+
     # check if head contains spin info
     if all(i in heads for i in key1):
         key = key1
@@ -262,7 +271,10 @@ ITEM: ATOMS id type x y z c_spin[1] c_spin[2] c_spin[3] c_spin[4] c_spin[5] c_sp
     id, spin = zip(*sorted(zip(id, spin)))
     return np.array(spin)
 
-def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False, input_name=None):
+
+def system_data(
+    lines, type_map=None, type_idx_zero=True, unwrap=False, input_name=None
+):
     array_lines = split_traj(lines)
     lines = array_lines[0]
     system = {}
@@ -282,7 +294,7 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False, input_na
     system["atom_types"] = get_atype(lines, type_idx_zero=type_idx_zero)
     system["coords"] = [safe_get_posi(lines, cell, np.array(orig), unwrap)]
     spin_keys = get_spin_keys(input_name)
-    spin = get_spin(lines,spin_keys)
+    spin = get_spin(lines, spin_keys)
     has_spin = False
     if spin is not None:
         system["spins"] = [spin]
@@ -300,11 +312,13 @@ def system_data(lines, type_map=None, type_idx_zero=True, unwrap=False, input_na
             safe_get_posi(array_lines[ii], cell, np.array(orig), unwrap)[idx]
         )
         if has_spin:
-            spin = get_spin(array_lines[ii],spin_keys)
+            spin = get_spin(array_lines[ii], spin_keys)
             if spin is not None:
                 system["spins"].append(spin[idx])
             else:
-                warnings.warn(f"Warning: spin info is not found in frame {ii}, remove spin info.")
+                warnings.warn(
+                    f"Warning: spin info is not found in frame {ii}, remove spin info."
+                )
                 system.pop("spins")
                 has_spin = False
     if has_spin:
