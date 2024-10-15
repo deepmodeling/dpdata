@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
+
 import dpdata.lammps.dump
 import dpdata.lammps.lmp
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
-
-import numpy as np
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
@@ -24,6 +24,7 @@ def register_spin(data):
             deepmd_name="spin",
         )
         dpdata.System.register_data_type(dt)
+
 
 @Format.register("lmp")
 @Format.register("lammps/lmp")

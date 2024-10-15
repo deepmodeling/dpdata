@@ -126,6 +126,7 @@ def get_posi(lines):
         posis.append([float(jj) for jj in ii.split()[2:5]])
     return np.array(posis)
 
+
 def get_spins(lines):
     atom_lines = get_atoms(lines)
     if len(atom_lines[0].split()) < 8:
@@ -180,11 +181,11 @@ def system_data(lines, type_map=None, type_idx_zero=True):
     system["coords"] = [get_posi(lines)]
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
-    
+
     spins = get_spins(lines)
     if spins is not None:
         system["spins"] = np.array([spins])
-    
+
     return system
 
 
@@ -233,7 +234,7 @@ def from_system_data(system, f_idx=0):
         + ptr_float_fmt
         + "\n"
     )
-    
+
     if "spins" in system:
         coord_fmt = (
             coord_fmt.strip("\n")

@@ -218,7 +218,7 @@ def get_spin(lines,spin_keys):
     the spin info is stored in sp, spx, spy, spz or spin_keys, which is the spin norm and the spin vector
     spin_keys may be like: c_spin[1], c_spin[2], c_spin[3], c_spin[4]
 ITEM: ATOMS id type x y z c_spin[1] c_spin[2] c_spin[3] c_spin[4] c_spin[5] c_spin[6] c_spin[7] c_spin[8] c_spin[9] c_spin[10]
-1 1 0.00141160 5.64868599 0.01005602 1.54706291 0.00000000 0.00000000 1.00000000 -1.40772100 -2.03739417 -1522.64797384 -0.00397809 -0.00190426 -0.00743976    
+1 1 0.00141160 5.64868599 0.01005602 1.54706291 0.00000000 0.00000000 1.00000000 -1.40772100 -2.03739417 -1522.64797384 -0.00397809 -0.00190426 -0.00743976
     """
     blk, head = _get_block(lines, "ATOMS")
     heads = head.split()
@@ -237,16 +237,18 @@ ITEM: ATOMS id type x y z c_spin[1] c_spin[2] c_spin[3] c_spin[4] c_spin[5] c_sp
     idx_spx = heads.index(key[1]) - 2
     idx_spy = heads.index(key[2]) - 2
     idx_spz = heads.index(key[3]) - 2
-    
+
     norm = []
     vec = []
     id = []
     for ii in blk:
         words = ii.split()
         norm.append([float(words[idx_sp])])
-        vec.append([float(words[idx_spx]), float(words[idx_spy]), float(words[idx_spz])])
+        vec.append(
+            [float(words[idx_spx]), float(words[idx_spy]), float(words[idx_spz])]
+        )
         id.append(int(words[idx_id]))
-    
+
     spin = np.array(norm) * np.array(vec)
     id, spin = zip(*sorted(zip(id, spin)))
     return np.array(spin)
