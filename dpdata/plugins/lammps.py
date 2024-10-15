@@ -61,9 +61,9 @@ class LAMMPSLmpFormat(Format):
 class LAMMPSDumpFormat(Format):
     @Format.post("shift_orig_zero")
     def from_system(
-        self, file_name, type_map=None, begin=0, step=1, unwrap=False, **kwargs
+        self, file_name, type_map=None, begin=0, step=1, unwrap=False, input_name=None, **kwargs
     ):
         lines = dpdata.lammps.dump.load_file(file_name, begin=begin, step=step)
-        data = dpdata.lammps.dump.system_data(lines, type_map, unwrap=unwrap)
+        data = dpdata.lammps.dump.system_data(lines, type_map, unwrap=unwrap,input_name=input_name)
         register_spin(data)
         return data

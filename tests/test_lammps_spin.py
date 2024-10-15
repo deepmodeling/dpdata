@@ -7,19 +7,33 @@ from context import dpdata
 import numpy as np
 
 class TestLmp(unittest.TestCase):
-    def test_dump_input(self):
-        tmp_system = dpdata.System(
+    def setUp(self):
+        self.tmp_system = dpdata.System(
             os.path.join("poscars", "conf.lmp"), type_map=["O", "H"]
         )
-        tmp_system.data["spins"] = [[[3,4,0],[0,4,3]],[]]
-        tmp_system.to("lammps/lmp", "tmp.lmp")
-        self.assertTrue(os.path.isfile("tmp.lmp"))
-        with open("tmp.lmp") as f:c = f.read()
+        self.tmp_system.data["spins"] = [[[3,4,0],[0,4,3]]]
+        self.lmp_coord_name = "tmp.lmp"
+    
+    def tearDown(self):
+        pass #if os.path.isfile(self.lmp_coord_name):os.remove(self.lmp_coord_name)
+    
+    def test_dump_input(self):
+        self.tmp_system.to("lammps/lmp", self.lmp_coord_name)
+        self.assertTrue(os.path.isfile(self.lmp_coord_name))
+        with open(self.lmp_coord_name) as f:c = f.read()
         
         coord_ref = """     1      1    0.0000000000    0.0000000000    0.0000000000    0.6000000000    0.8000000000    0.0000000000    5.0000000000
      2      2    1.2621856000    0.7018028000    0.5513885000    0.0000000000    0.8000000000    0.6000000000    5.0000000000"""
         self.assertTrue(coord_ref in c)
-        if os.path.isfile("tmp.lmp"):os.remove("tmp.lmp")
+    
+    def test_dump_input_zero_spin(self):
+        self.tmp_system.data["spins"] = [[[0,0,0],[0,0,0]]]
+        self.tmp_system.to("lammps/lmp", self.lmp_coord_name)
+        self.assertTrue(os.path.isfile(self.lmp_coord_name))
+        with open(self.lmp_coord_name) as f:c = f.read()
+        coord_ref = """     1      1    0.0000000000    0.0000000000    0.0000000000    0.0000000000    0.0000000000    1.0000000000    0.0000000000
+     2      2    1.2621856000    0.7018028000    0.5513885000    0.0000000000    0.0000000000    1.0000000000    0.0000000000"""
+        self.assertTrue(coord_ref in c)
     
     def test_read_input(self):    
         # check if dpdata can read the spins
@@ -33,7 +47,7 @@ class TestLmp(unittest.TestCase):
         
 class TestDump(unittest.TestCase):
     def test_read_dump_spin(self):
-        tmp_system = dpdata.System("lammps/traj.dump", fmt="lammps/dump", type_map=["O", "H"])
+        tmp_system = dpdata.System("lammps/traj.dump", fmt="lammps/dump", type_map=["O", "H"], input_name="lammps/in.lmp")
         self.assertTrue(len(tmp_system.data["spins"]) == 2)
         np.testing.assert_almost_equal(tmp_system.data["spins"][0][0],[0,0,1.54706291],decimal=8)
         np.testing.assert_almost_equal(tmp_system.data["spins"][0][1],[0,0,1.54412869],decimal=8)
