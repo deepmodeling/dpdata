@@ -225,17 +225,14 @@ def get_spin_keys(inputfile):
 def get_spin(lines, spin_keys):
     """
     Get the spin info from the dump file.
-    
+
     Parameters
     ----------
     lines : list
         The content of the dump file.
     spin_keys : list
         The keys for spin info in dump file.
-    
     the spin info is stored in sp, spx, spy, spz or spin_keys, which is the spin norm and the spin vector
-    spin_keys may be like: c_spin[1], c_spin[2], c_spin[3], c_spin[4]
-    ITEM: ATOMS id type x y z c_spin[1] c_spin[2] c_spin[3] c_spin[4] c_spin[5] c_spin[6] c_spin[7] c_spin[8] c_spin[9] c_spin[10]
     1 1 0.00141160 5.64868599 0.01005602 1.54706291 0.00000000 0.00000000 1.00000000 -1.40772100 -2.03739417 -1522.64797384 -0.00397809 -0.00190426 -0.00743976
     """
     blk, head = _get_block(lines, "ATOMS")
