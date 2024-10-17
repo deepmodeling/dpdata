@@ -196,17 +196,18 @@ def load_file(fname: FileType, begin=0, step=1):
             if cc >= begin and (cc - begin) % step == 0:
                 buff.append(line)
 
+
 def get_spin_keys(inputfile):
     """
     Read input file and get the keys for spin info in dump.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     inputfile : str
         Path to the input file.
 
-    Returns:
-    --------
+    Returns
+    -------
     list or None
         List of spin info keys if found, None otherwise.
     """
@@ -216,10 +217,16 @@ def get_spin_keys(inputfile):
     with open(inputfile) as f:
         for line in f.readlines():
             ls = line.split()
-            if (len(ls) > 7 and ls[0] == "compute" and
-                all(key in ls for key in ["sp", "spx", "spy", "spz"])):
+            if (
+                len(ls) > 7
+                and ls[0] == "compute"
+                and all(key in ls for key in ["sp", "spx", "spy", "spz"])
+            ):
                 compute_name = ls[1]
-                return [f"c_{compute_name}[{ls.index(key) - 3}]" for key in ["sp", "spx", "spy", "spz"]]
+                return [
+                    f"c_{compute_name}[{ls.index(key) - 3}]"
+                    for key in ["sp", "spx", "spy", "spz"]
+                ]
 
     return None
 
@@ -237,7 +244,6 @@ def get_spin(lines, spin_keys):
     the spin info is stored in sp, spx, spy, spz or spin_keys, which is the spin norm and the spin vector
     1 1 0.00141160 5.64868599 0.01005602 1.54706291 0.00000000 0.00000000 1.00000000 -1.40772100 -2.03739417 -1522.64797384 -0.00397809 -0.00190426 -0.00743976
     """
-
     blk, head = _get_block(lines, "ATOMS")
     heads = head.split()
 
@@ -252,7 +258,7 @@ def get_spin(lines, spin_keys):
 
     try:
         idx_id = heads.index("id") - 2
-        idx_sp, idx_spx, idx_spy, idx_spz = [heads.index(k) - 2 for k in key]
+        idx_sp, idx_spx, idx_spy, idx_spz = (heads.index(k) - 2 for k in key)
 
         norm = []
         vec = []
@@ -260,7 +266,9 @@ def get_spin(lines, spin_keys):
         for line in blk:
             words = line.split()
             norm.append([float(words[idx_sp])])
-            vec.append([float(words[idx_spx]), float(words[idx_spy]), float(words[idx_spz])])
+            vec.append(
+                [float(words[idx_spx]), float(words[idx_spy]), float(words[idx_spz])]
+            )
             atom_ids.append(int(words[idx_id]))
 
         spin = np.array(norm) * np.array(vec)
@@ -269,6 +277,7 @@ def get_spin(lines, spin_keys):
     except (ValueError, IndexError) as e:
         warnings.warn(f"Error processing spin data: {str(e)}")
         return None
+
 
 def system_data(
     lines, type_map=None, type_idx_zero=True, unwrap=False, input_name=None
