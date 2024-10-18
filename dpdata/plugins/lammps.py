@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 import numpy as np
 
@@ -9,7 +9,6 @@ import dpdata.lammps.lmp
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
-from typing import List, Dict
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
@@ -64,12 +63,12 @@ class LAMMPSDumpFormat(Format):
     @Format.post("shift_orig_zero")
     def from_system(
         self,
-        file_name : str,
-        type_map: List[str] =None,
-        begin: int =0,
-        step: int =1,
-        unwrap: bool =False,
-        input_file: str =None,
+        file_name: str,
+        type_map: List[str] = None,
+        begin: int = 0,
+        step: int = 1,
+        unwrap: bool = False,
+        input_file: str = None,
         **kwargs,
     ):
         """Read the data from a lammps dump file.
@@ -88,7 +87,7 @@ class LAMMPSDumpFormat(Format):
             Whether to unwrap the coordinates
         input_file : str, optional
             The input file name
-            
+
         Returns
         -------
         dict
