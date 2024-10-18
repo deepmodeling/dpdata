@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -64,7 +64,7 @@ class LAMMPSDumpFormat(Format):
     def from_system(
         self,
         file_name: str,
-        type_map: List[str] = None,
+        type_map: list[str] = None,
         begin: int = 0,
         step: int = 1,
         unwrap: bool = False,
