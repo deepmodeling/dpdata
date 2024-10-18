@@ -271,7 +271,7 @@ def get_spin(lines, spin_keys):
         return None
 
 def system_data(
-    lines, type_map=None, type_idx_zero=True, unwrap=False, input_name=None
+    lines, type_map=None, type_idx_zero=True, unwrap=False, input_file=None
 ):
     array_lines = split_traj(lines)
     lines = array_lines[0]
@@ -291,7 +291,7 @@ def system_data(
     system["cells"] = [np.array(cell)]
     system["atom_types"] = get_atype(lines, type_idx_zero=type_idx_zero)
     system["coords"] = [safe_get_posi(lines, cell, np.array(orig), unwrap)]
-    spin_keys = get_spin_keys(input_name)
+    spin_keys = get_spin_keys(input_file)
     spin = get_spin(lines, spin_keys)
     has_spin = False
     if spin is not None:

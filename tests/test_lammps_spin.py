@@ -59,7 +59,7 @@ class TestDump(unittest.TestCase):
             "lammps/traj.dump",
             fmt="lammps/dump",
             type_map=["O", "H"],
-            input_name="lammps/in.lmp",
+            input_file="lammps/in.lmp",
         )
         self.assertTrue(len(tmp_system.data["spins"]) == 2)
         np.testing.assert_almost_equal(

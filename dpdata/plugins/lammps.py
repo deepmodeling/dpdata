@@ -9,6 +9,7 @@ import dpdata.lammps.lmp
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
+from typing import List, Dict
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
@@ -63,17 +64,39 @@ class LAMMPSDumpFormat(Format):
     @Format.post("shift_orig_zero")
     def from_system(
         self,
-        file_name,
-        type_map=None,
-        begin=0,
-        step=1,
-        unwrap=False,
-        input_name=None,
+        file_name : str,
+        type_map: List[str] =None,
+        begin: int =0,
+        step: int =1,
+        unwrap: bool =False,
+        input_file: str =None,
         **kwargs,
     ):
+        """Read the data from a lammps dump file.
+
+        Parameters
+        ----------
+        file_name : str
+            The dump file name
+        type_map : List[str], optional
+            The atom type list
+        begin : int, optional
+            The begin step
+        step : int, optional
+            The step
+        unwrap : bool, optional
+            Whether to unwrap the coordinates
+        input_file : str, optional
+            The input file name
+            
+        Returns
+        -------
+        dict
+            The system data
+        """
         lines = dpdata.lammps.dump.load_file(file_name, begin=begin, step=step)
         data = dpdata.lammps.dump.system_data(
-            lines, type_map, unwrap=unwrap, input_name=input_name
+            lines, type_map, unwrap=unwrap, input_file=input_file
         )
         register_spin(data)
         return data
