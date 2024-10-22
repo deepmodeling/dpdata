@@ -6,6 +6,7 @@ import unittest
 
 import numpy as np
 from context import dpdata
+
 from dpdata.lammps.dump import get_spin
 
 TRAJ_NO_ID = """ITEM: TIMESTEP
@@ -127,7 +128,7 @@ class TestDump(unittest.TestCase):
 
         if os.path.isdir("lammps/dump"):
             shutil.rmtree("lammps/dump")
-        
+
     def test_read_dump_partial_spin(self):
         # test if dpdata can read the spins when the spin data is not complete
         with self.assertWarns(UserWarning) as cm:
@@ -138,12 +139,15 @@ class TestDump(unittest.TestCase):
                 input_file="lammps/in.lmp",
             )
             self.assertTrue("spins" not in tmp_system.data)
-            
+
         self.assertIn("Warning: spin info is not found in frame", str(cm.warning))
-    
+
     def test_get_spin_failed(self):
         with self.assertWarns(UserWarning) as cm:
-            spin = get_spin(TRAJ_NO_ID.split("\n"),["c_spin[1]", "c_spin[2]", "c_spin[3]", "c_spin[4]"])
+            spin = get_spin(
+                TRAJ_NO_ID.split("\n"),
+                ["c_spin[1]", "c_spin[2]", "c_spin[3]", "c_spin[4]"],
+            )
             self.assertTrue(spin is None)
-            
+
         self.assertIn("Error processing spin data:", str(cm.warning))
