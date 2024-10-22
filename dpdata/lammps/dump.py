@@ -247,11 +247,7 @@ def get_spin(lines, spin_keys):
     blk, head = _get_block(lines, "ATOMS")
     heads = head.split()
 
-    key1 = ["sp", "spx", "spy", "spz"]
-
-    if all(i in heads for i in key1):
-        key = key1
-    elif spin_keys is not None and all(i in heads for i in spin_keys):
+    if spin_keys is not None and all(i in heads for i in spin_keys):
         key = spin_keys
     else:
         return None
