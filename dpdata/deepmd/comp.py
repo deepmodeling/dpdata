@@ -26,7 +26,8 @@ def _load_set(folder, nopbc: bool):
         cells = np.zeros((coords.shape[0], 3, 3))
     else:
         cells = np.load(os.path.join(folder, "box.npy"))
-    return cells, coords
+    spins = _cond_load_data(os.path.join(folder, "spin.npy"))
+    return cells, coords, spins
 
 
 def to_system_data(folder, type_map=None, labels=True):
@@ -38,13 +39,18 @@ def to_system_data(folder, type_map=None, labels=True):
     sets = sorted(glob.glob(os.path.join(folder, "set.*")))
     all_cells = []
     all_coords = []
+    all_spins = []
     for ii in sets:
-        cells, coords = _load_set(ii, data.get("nopbc", False))
+        cells, coords, spins = _load_set(ii, data.get("nopbc", False))
         nframes = np.reshape(cells, [-1, 3, 3]).shape[0]
         all_cells.append(np.reshape(cells, [nframes, 3, 3]))
         all_coords.append(np.reshape(coords, [nframes, -1, 3]))
+        if spins is not None:
+            all_spins.append(np.reshape(spins, [nframes, -1, 3]))
     data["cells"] = np.concatenate(all_cells, axis=0)
     data["coords"] = np.concatenate(all_coords, axis=0)
+    if len(all_spins) > 0:
+        data["spins"] = np.concatenate(all_spins, axis=0)
     # allow custom dtypes
     if labels:
         dtypes = dpdata.system.LabeledSystem.DTYPES
@@ -59,6 +65,7 @@ def to_system_data(folder, type_map=None, labels=True):
             "orig",
             "cells",
             "coords",
+            "spins",
             "real_atom_names",
             "nopbc",
         ):

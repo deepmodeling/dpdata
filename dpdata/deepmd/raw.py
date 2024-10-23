@@ -64,6 +64,7 @@ def to_system_data(folder, type_map=None, labels=True):
                 "orig",
                 "cells",
                 "coords",
+                "spins",
                 "real_atom_types",
                 "real_atom_names",
                 "nopbc",
