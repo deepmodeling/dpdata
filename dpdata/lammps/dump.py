@@ -211,13 +211,13 @@ def get_spin_keys(inputfile):
     list or None
         List of spin info keys if found, None otherwise.
     """
-    if inputfile is None: 
+    if inputfile is None:
         return None
 
     if not os.path.isfile(inputfile):
         warnings.warn(f"Input file {inputfile} not found.")
         return None
-    
+
     with open(inputfile) as f:
         for line in f.readlines():
             ls = line.split()
