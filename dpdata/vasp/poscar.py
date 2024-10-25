@@ -4,13 +4,22 @@ from __future__ import annotations
 import numpy as np
 
 
-def _to_system_data_lower(lines, cartesian=True):
+def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
+    def move_flag_mapper(flag):
+        if flag == "T":
+            return True
+        elif flag == "F":
+            return False
+        else:
+            raise RuntimeError(f"Invalid selective dynamics flag: {flag}")
+
     """Treat as cartesian poscar."""
     system = {}
     system["atom_names"] = [str(ii) for ii in lines[5].split()]
     system["atom_numbs"] = [int(ii) for ii in lines[6].split()]
     scale = float(lines[1])
     cell = []
+    move_flags = []
     for ii in range(2, 5):
         boxv = [float(jj) for jj in lines[ii].split()]
         boxv = np.array(boxv) * scale
@@ -19,12 +28,16 @@ def _to_system_data_lower(lines, cartesian=True):
     natoms = sum(system["atom_numbs"])
     coord = []
     for ii in range(8, 8 + natoms):
-        tmpv = [float(jj) for jj in lines[ii].split()[:3]]
+        tmp = lines[ii].split()
+        tmpv = [float(jj) for jj in tmp[:3]]
         if cartesian:
             tmpv = np.array(tmpv) * scale
         else:
             tmpv = np.matmul(np.array(tmpv), system["cells"][0])
         coord.append(tmpv)
+        if selective_dynamics and len(tmp) == 6:
+            move_flags.append(list(map(move_flag_mapper, tmp[3:])))
+
     system["coords"] = [np.array(coord)]
     system["orig"] = np.zeros(3)
     atom_types = []
@@ -34,12 +47,15 @@ def _to_system_data_lower(lines, cartesian=True):
     system["atom_types"] = np.array(atom_types, dtype=int)
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
+    system["move"] = np.array(move_flags, dtype=bool)
     return system
 
 
 def to_system_data(lines):
     # remove the line that has 'selective dynamics'
+    selective_dynamics = False
     if lines[7][0] == "S" or lines[7][0] == "s":
+        selective_dynamics = True
         lines.pop(7)
     is_cartesian = lines[7][0] in ["C", "c", "K", "k"]
     if not is_cartesian:
@@ -47,7 +63,7 @@ def to_system_data(lines):
             raise RuntimeError(
                 "seem not to be a valid POSCAR of vasp 5.x, may be a POSCAR of vasp 4.x?"
             )
-    return _to_system_data_lower(lines, is_cartesian)
+    return _to_system_data_lower(lines, is_cartesian, selective_dynamics)
 
 
 def from_system_data(system, f_idx=0, skip_zeros=True):
