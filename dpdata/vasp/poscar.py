@@ -113,10 +113,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
         line = f"{ii_posi[0]:15.10f} {ii_posi[1]:15.10f} {ii_posi[2]:15.10f}"
         if len(move) > 0:
             move_flags = move[idx]
-            if (
-                isinstance(move_flags, list)
-                and len(move_flags) == 3
-            ):
+            if isinstance(move_flags, list) and len(move_flags) == 3:
                 line += " " + " ".join(["T" if flag else "F" for flag in move_flags])
             elif isinstance(move_flags, (int, float, bool)):
                 line += " " + " ".join(["T" if move_flags else "F"] * 3)

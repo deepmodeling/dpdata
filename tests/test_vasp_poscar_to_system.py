@@ -13,7 +13,7 @@ class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):
     def setUp(self):
         self.system = dpdata.System()
         self.system.from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.c"))
-    
+
     def test_move_flags(self):
         expected = np.array([[True, True, False], [False, False, False]])
         self.assertTrue(np.array_equal(self.system["move"], expected))

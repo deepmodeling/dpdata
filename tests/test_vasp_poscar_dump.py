@@ -40,10 +40,10 @@ class TestPOSCARDump1(unittest.TestCase, TestPOSCARoh):
         tmp_system.to_vasp_poscar("tmp.POSCAR")
         self.system = dpdata.System()
         self.system.from_vasp_poscar("tmp.POSCAR")
-        with open("tmp.POSCAR", "r") as f:
+        with open("tmp.POSCAR") as f:
             content = f.read()
 
-        stru_ref = f"""Cartesian
+        stru_ref = """Cartesian
    0.0000000000    0.0000000000    0.0000000000 T T F
    1.2621856044    0.7018027835    0.5513883414 F F F
 """

@@ -688,7 +688,7 @@ def make_unlabeled_stru(
 
     if mag is None and data.get("spins") is not None and len(data["spins"]) > 0:
         mag = data["spins"][frame_idx]
-    
+
     if move is None and data.get("move", None) is not None and len(data["move"]) > 0:
         move = data["move"]
 
