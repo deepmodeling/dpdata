@@ -145,15 +145,19 @@ H
 5.499851012568 4.003388899277 5.342621842622 0 0 0 mag 3.000000000000 3.000000000000 3.000000000000
 """
         self.assertTrue(stru_ref in c)
-    
+
     def test_dump_move_from_vasp(self):
         self.system = dpdata.System()
         self.system.from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.c"))
-        self.system.to("abacus/stru", "STRU_tmp")
+        self.system.to(
+            "abacus/stru",
+            "STRU_tmp",
+            pp_file={"O": "O.upf", "H": "H.upf"},
+        )
         assert os.path.isfile("STRU_tmp")
         with open("STRU_tmp") as f:
             c = f.read()
-        
+
         stru_ref = """O
 0.0
 1
@@ -164,12 +168,17 @@ H
 1.262185604418 0.701802783513 0.551388341420 0 0 0
 """
         self.assertTrue(stru_ref in c)
-        
-        self.system.to("abacus/stru", "STRU_tmp", move=[[True, False, True], [False, True, False]])
+
+        self.system.to(
+            "abacus/stru",
+            "STRU_tmp",
+            pp_file={"O": "O.upf", "H": "H.upf"},
+            move=[[True, False, True], [False, True, False]],
+        )
         assert os.path.isfile("STRU_tmp")
         with open("STRU_tmp") as f:
             c = f.read()
-        
+
         stru_ref = """O
 0.0
 1
@@ -180,9 +189,7 @@ H
 1.262185604418 0.701802783513 0.551388341420 0 1 0
 """
         self.assertTrue(stru_ref in c)
-        
-        
-            
+
 
 class TestABACUSParseStru(unittest.TestCase):
     def test_parse_stru_post(self):
