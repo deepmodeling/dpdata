@@ -34,6 +34,21 @@ class TestPOSCARDump1(unittest.TestCase, TestPOSCARoh):
         self.system = dpdata.System()
         self.system.from_vasp_poscar("tmp.POSCAR")
 
+    def test_dump_move_flags(self):
+        tmp_system = dpdata.System()
+        tmp_system.from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.c"))
+        tmp_system.to_vasp_poscar("tmp.POSCAR")
+        self.system = dpdata.System()
+        self.system.from_vasp_poscar("tmp.POSCAR")
+        with open("tmp.POSCAR", "r") as f:
+            content = f.read()
+
+        stru_ref = f"""Cartesian
+   0.0000000000    0.0000000000    0.0000000000 T T F
+   1.2621856044    0.7018027835    0.5513883414 F F F
+"""
+        self.assertTrue(stru_ref in content)
+
 
 class TestPOSCARSkipZeroAtomNumb(unittest.TestCase):
     def tearDown(self):

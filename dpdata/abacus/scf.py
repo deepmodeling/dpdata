@@ -310,7 +310,8 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
             line_idx += 1
     coords = np.array(coords)  # need transformation!!!
     atom_types = np.array(atom_types)
-    return atom_names, atom_numbs, atom_types, coords
+    move = np.array(move, dtype=bool)
+    return atom_names, atom_numbs, atom_types, coords, move
 
 
 def get_energy(outlines):
@@ -477,7 +478,7 @@ def get_frame(fname):
         outlines = fp.read().split("\n")
 
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords = get_coords(
+    atom_names, natoms, types, coords, move = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
     magmom, magforce = get_mag_force(outlines)
@@ -510,6 +511,8 @@ def get_frame(fname):
         data["spins"] = magmom
     if len(magforce) > 0:
         data["mag_forces"] = magforce
+    if len(move) > 0:
+        data["move"] = move
     # print("atom_names = ", data['atom_names'])
     # print("natoms = ", data['atom_numbs'])
     # print("types = ", data['atom_types'])
@@ -561,7 +564,7 @@ def get_frame_from_stru(fname):
     nele = get_nele_from_stru(geometry_inlines)
     inlines = [f"ntype {nele}"]
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords = get_coords(
+    atom_names, natoms, types, coords, move = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
     data = {}
@@ -571,6 +574,8 @@ def get_frame_from_stru(fname):
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
+    if len(move) > 0:
+        data["move"] = move
 
     return data
 

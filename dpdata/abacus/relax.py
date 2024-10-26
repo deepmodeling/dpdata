@@ -47,7 +47,7 @@ def get_coords_from_log(loglines, natoms):
             natoms_log += int(line.split()[-1])
 
     assert natoms_log > 0 and natoms_log == natoms, (
-        "ERROR: detected atom number in log file is %d" % natoms
+        f"ERROR: detected atom number in log file is {natoms_log}, while the number in STRU file is {natoms}"
     )
 
     energy = []
@@ -183,7 +183,7 @@ def get_frame(fname):
     with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coord_tmp = get_coords(
+    atom_names, natoms, types, coord_tmp, move = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
 
@@ -218,5 +218,7 @@ def get_frame(fname):
         data["spins"] = magmom
     if len(magforce) > 0:
         data["mag_forces"] = magforce
+    if len(move) > 0:
+        data["move"] = move
 
     return data

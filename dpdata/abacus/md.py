@@ -167,7 +167,7 @@ def get_frame(fname):
     with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords = get_coords(
+    atom_names, natoms, types, coords, move = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
     # This coords is not to be used.
@@ -221,5 +221,7 @@ def get_frame(fname):
         data["spins"] = magmom
     if len(magforce) > 0:
         data["mag_forces"] = magforce
+    if len(move) > 0:
+        data["move"] = move
 
     return data

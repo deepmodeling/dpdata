@@ -88,6 +88,10 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
             continue
         ret += "%d " % ii
     ret += "\n"
+    move = system.get("move", np.array([]))
+    if len(move) > 0:
+        ret += "Selective Dynamics\n"
+
     # should use Cartesian for VESTA software
     ret += "Cartesian\n"
     atype = system["atom_types"]
@@ -97,9 +101,32 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     sort_idx = np.lexsort((np.arange(len(atype)), atype))
     atype = atype[sort_idx]
     posis = posis[sort_idx]
+    if len(move) > 0:
+        move = move[sort_idx]
+
+    if isinstance(move, np.ndarray):
+        move = move.tolist()
+
     posi_list = []
-    for ii in posis:
-        posi_list.append(f"{ii[0]:15.10f} {ii[1]:15.10f} {ii[2]:15.10f}")
+    for idx in range(len(posis)):
+        ii_posi = posis[idx]
+        line = f"{ii_posi[0]:15.10f} {ii_posi[1]:15.10f} {ii_posi[2]:15.10f}"
+        if len(move) > 0:
+            move_flags = move[idx]
+            if (
+                isinstance(move_flags, list)
+                and len(move_flags) == 3
+            ):
+                line += " " + " ".join(["T" if flag else "F" for flag in move_flags])
+            elif isinstance(move_flags, (int, float, bool)):
+                line += " " + " ".join(["T" if move_flags else "F"] * 3)
+            else:
+                raise RuntimeError(
+                    f"Invalid move flags: {move_flags}, should be a list or a bool"
+                )
+
+        posi_list.append(line)
+
     posi_list.append("")
     ret += "\n".join(posi_list)
     return ret
