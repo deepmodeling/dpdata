@@ -47,7 +47,7 @@ def get_coords_from_log(loglines, natoms):
             natoms_log += int(line.split()[-1])
 
     assert natoms_log > 0 and natoms_log == natoms, (
-        f"ERROR: detected atom number in log file is {natoms_log}, while the number in STRU file is {natoms}"
+        "ERROR: detected atom number in log file is %d" % natoms
     )
 
     energy = []
