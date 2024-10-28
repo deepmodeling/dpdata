@@ -26,6 +26,7 @@ class TestPOSCARMoveFlags(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(self.tmp_file):
             os.remove(self.tmp_file)
+
     def test_move_flags_error1(self):
         with self.assertRaisesRegex(RuntimeError, "Invalid move flags.*?"):
             dpdata.System().from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.err1"))
