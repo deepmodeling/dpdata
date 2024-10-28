@@ -11,7 +11,7 @@ def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
         elif flag == "F":
             return False
         else:
-            raise RuntimeError(f"Invalid selective dynamics flag: {flag}")
+            raise RuntimeError(f"Invalid move flag: {flag}")
 
     """Treat as cartesian poscar."""
     system = {}
@@ -35,8 +35,13 @@ def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
         else:
             tmpv = np.matmul(np.array(tmpv), system["cells"][0])
         coord.append(tmpv)
-        if selective_dynamics and len(tmp) == 6:
-            move_flags.append(list(map(move_flag_mapper, tmp[3:])))
+        if selective_dynamics:
+            if len(tmp) == 6:
+                move_flags.append(list(map(move_flag_mapper, tmp[3:])))
+            else:
+                raise RuntimeError(
+                    f"Invalid move flags, should be 6 columns, got {tmp}"
+                )
 
     system["coords"] = [np.array(coord)]
     system["orig"] = np.zeros(3)
@@ -118,11 +123,9 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
             move_flags = move[idx]
             if isinstance(move_flags, list) and len(move_flags) == 3:
                 line += " " + " ".join(["T" if flag else "F" for flag in move_flags])
-            elif isinstance(move_flags, (int, float, bool)):
-                line += " " + " ".join(["T" if move_flags else "F"] * 3)
             else:
                 raise RuntimeError(
-                    f"Invalid move flags: {move_flags}, should be a list or a bool"
+                    f"Invalid move flags: {move_flags}, should be a list of 3 bools"
                 )
 
         posi_list.append(line)

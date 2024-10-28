@@ -615,8 +615,8 @@ def make_unlabeled_stru(
         numerical descriptor file
     mass : list of float, optional
         List of atomic masses
-    move : list of list of bool, optional
-        List of the move flag of each xyz direction of each atom
+    move : list of (list of list of bool), optional
+        List of the move flag of each xyz direction of each atom for each frame
     velocity : list of list of float, optional
         List of the velocity of each xyz direction of each atom
     mag : list of (list of float or float), optional

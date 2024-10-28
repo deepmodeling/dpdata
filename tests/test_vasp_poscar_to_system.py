@@ -19,6 +19,21 @@ class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):
         self.assertTrue(np.array_equal(self.system["move"], expected))
 
 
+class TestPOSCARCart(unittest.TestCase):
+    def test_move_flags_error1(self):
+        with self.assertRaisesRegex(RuntimeError, "Invalid move flags.*?"):
+            dpdata.System().from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.err1"))
+        
+    def test_move_flags_error2(self):
+        with self.assertRaisesRegex(RuntimeError, "Invalid move flag: a"):
+            dpdata.System().from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.err2"))
+
+    def test_move_flags_error3(self):
+        system = dpdata.System().from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.c"))
+        system.data["move"] = np.array([[[True, True], [False, False]]])
+        with self.assertRaisesRegex(RuntimeError, "Invalid move flags:.*?should be a list of 3 bools"):
+            system.to_vasp_poscar("POSCAR.tmp.1")
+
 class TestPOSCARDirect(unittest.TestCase, TestPOSCARoh):
     def setUp(self):
         self.system = dpdata.System()
