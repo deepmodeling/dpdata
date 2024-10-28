@@ -121,12 +121,11 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
         line = f"{ii_posi[0]:15.10f} {ii_posi[1]:15.10f} {ii_posi[2]:15.10f}"
         if move is not None and len(move) > 0:
             move_flags = move[idx]
-            if isinstance(move_flags, list) and len(move_flags) == 3:
-                line += " " + " ".join(["T" if flag else "F" for flag in move_flags])
-            else:
+            if not isinstance(move_flags, list) or len(move_flags) != 3:
                 raise RuntimeError(
                     f"Invalid move flags: {move_flags}, should be a list of 3 bools"
                 )
+            line += " " + " ".join("T" if flag else "F" for flag in move_flags)
 
         posi_list.append(line)
 

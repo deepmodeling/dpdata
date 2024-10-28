@@ -19,7 +19,7 @@ class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):
         self.assertTrue(np.array_equal(self.system["move"], expected))
 
 
-class TestPOSCARCart(unittest.TestCase):
+class TestPOSCARMoveFlags(unittest.TestCase):
     def test_move_flags_error1(self):
         with self.assertRaisesRegex(RuntimeError, "Invalid move flags.*?"):
             dpdata.System().from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.err1"))
