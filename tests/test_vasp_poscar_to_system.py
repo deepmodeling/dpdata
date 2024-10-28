@@ -20,6 +20,12 @@ class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):
 
 
 class TestPOSCARMoveFlags(unittest.TestCase):
+    def setUp(self):
+        self.tmp_file = "POSCAR.tmp.1"
+
+    def tearDown(self):
+        if os.path.exists(self.tmp_file):
+            os.remove(self.tmp_file)
     def test_move_flags_error1(self):
         with self.assertRaisesRegex(RuntimeError, "Invalid move flags.*?"):
             dpdata.System().from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.err1"))
@@ -36,7 +42,7 @@ class TestPOSCARMoveFlags(unittest.TestCase):
         with self.assertRaisesRegex(
             RuntimeError, "Invalid move flags:.*?should be a list of 3 bools"
         ):
-            system.to_vasp_poscar("POSCAR.tmp.1")
+            system.to_vasp_poscar(self.tmp_file)
 
 
 class TestPOSCARDirect(unittest.TestCase, TestPOSCARoh):
