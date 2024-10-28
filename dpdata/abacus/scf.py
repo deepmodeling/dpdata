@@ -299,7 +299,8 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
             coords.append(xyz)
             atom_types.append(it)
 
-            move.append(imove)
+            if imove is not None:
+                move.append(imove)
             velocity.append(ivelocity)
             mag.append(imagmom)
             angle1.append(iangle1)
@@ -512,7 +513,7 @@ def get_frame(fname):
     if len(magforce) > 0:
         data["mag_forces"] = magforce
     if len(move) > 0:
-        data["move"] = move
+        data["move"] = move[np.newaxis, :, :]
     # print("atom_names = ", data['atom_names'])
     # print("natoms = ", data['atom_numbs'])
     # print("types = ", data['atom_types'])
@@ -575,7 +576,7 @@ def get_frame_from_stru(fname):
     data["coords"] = coords[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
     if len(move) > 0:
-        data["move"] = move
+        data["move"] = move[np.newaxis, :, :]
 
     return data
 
@@ -690,7 +691,7 @@ def make_unlabeled_stru(
         mag = data["spins"][frame_idx]
 
     if move is None and data.get("move", None) is not None and len(data["move"]) > 0:
-        move = data["move"]
+        move = data["move"][frame_idx]
 
     atom_numbs = sum(data["atom_numbs"])
     for key in [move, velocity, mag, angle1, angle2, sc, lambda_]:

@@ -47,7 +47,10 @@ def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
     system["atom_types"] = np.array(atom_types, dtype=int)
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
-    system["move"] = np.array(move_flags, dtype=bool)
+    if move_flags:
+        move_flags = np.array(move_flags, dtype=bool)
+        move_flags = move_flags.reshape((1, natoms, 3))
+        system["move"] = np.array(move_flags, dtype=bool)
     return system
 
 
@@ -88,8 +91,8 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
             continue
         ret += "%d " % ii
     ret += "\n"
-    move = system.get("move", np.array([]))
-    if len(move) > 0:
+    move = system.get("move", None)
+    if move is not None and len(move) > 0:
         ret += "Selective Dynamics\n"
 
     # should use Cartesian for VESTA software
@@ -101,8 +104,8 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     sort_idx = np.lexsort((np.arange(len(atype)), atype))
     atype = atype[sort_idx]
     posis = posis[sort_idx]
-    if len(move) > 0:
-        move = move[sort_idx]
+    if move is not None and len(move) > 0:
+        move = move[f_idx][sort_idx]
 
     if isinstance(move, np.ndarray):
         move = move.tolist()
@@ -111,7 +114,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     for idx in range(len(posis)):
         ii_posi = posis[idx]
         line = f"{ii_posi[0]:15.10f} {ii_posi[1]:15.10f} {ii_posi[2]:15.10f}"
-        if len(move) > 0:
+        if move is not None and len(move) > 0:
             move_flags = move[idx]
             if isinstance(move_flags, list) and len(move_flags) == 3:
                 line += " " + " ".join(["T" if flag else "F" for flag in move_flags])

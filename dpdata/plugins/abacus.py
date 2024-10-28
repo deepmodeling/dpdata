@@ -65,6 +65,15 @@ def register_mag_data(data):
             deepmd_name="force_mag",
         )
         dpdata.LabeledSystem.register_data_type(dt)
+    if "move" in data:
+        dt = DataType(
+            "move",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="move",
+        )
+        dpdata.System.register_data_type(dt)
 
 
 @Format.register("abacus/scf")
