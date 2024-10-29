@@ -55,10 +55,10 @@ pymatgen = ['pymatgen']
 docs = [
     'sphinx',
     'recommonmark',
-    'sphinx_rtd_theme>=1.0.0rc1',
+    'sphinx-book-theme',
     'numpydoc',
     'myst-parser',
-    'deepmodeling-sphinx>=0.1.1',
+    'deepmodeling-sphinx>=0.3.0',
     'sphinx-argparse<0.5.0',
     'rdkit',
     'jupyterlite-sphinx',
