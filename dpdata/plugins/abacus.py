@@ -67,6 +67,18 @@ def register_mag_data(data):
         dpdata.LabeledSystem.register_data_type(dt)
 
 
+def register_move_data(data):
+    if "move" in data:
+        dt = DataType(
+            "move",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="move",
+        )
+        dpdata.System.register_data_type(dt)
+
+
 @Format.register("abacus/scf")
 @Format.register("abacus/pw/scf")
 @Format.register("abacus/lcao/scf")
@@ -75,6 +87,7 @@ class AbacusSCFFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.scf.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data
 
 
@@ -86,6 +99,7 @@ class AbacusMDFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.md.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data
 
 
@@ -97,4 +111,5 @@ class AbacusRelaxFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.relax.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data

@@ -141,8 +141,52 @@ H
 4
 5.416431453540 4.011298860305 3.511161492417 1 1 1 mag 4.000000000000 5.000000000000 6.000000000000
 4.131588222365 4.706745191323 4.431136645083 1 1 1 mag 1.000000000000 1.000000000000 1.000000000000
-5.630930319126 5.521640894956 4.450356541303 1 1 1 mag 2.000000000000 2.000000000000 2.000000000000
-5.499851012568 4.003388899277 5.342621842622 1 1 1 mag 3.000000000000 3.000000000000 3.000000000000
+5.630930319126 5.521640894956 4.450356541303 0 0 0 mag 2.000000000000 2.000000000000 2.000000000000
+5.499851012568 4.003388899277 5.342621842622 0 0 0 mag 3.000000000000 3.000000000000 3.000000000000
+"""
+        self.assertTrue(stru_ref in c)
+
+    def test_dump_move_from_vasp(self):
+        self.system = dpdata.System()
+        self.system.from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.c"))
+        self.system.to(
+            "abacus/stru",
+            "STRU_tmp",
+            pp_file={"O": "O.upf", "H": "H.upf"},
+        )
+        assert os.path.isfile("STRU_tmp")
+        with open("STRU_tmp") as f:
+            c = f.read()
+
+        stru_ref = """O
+0.0
+1
+0.000000000000 0.000000000000 0.000000000000 1 1 0
+H
+0.0
+1
+1.262185604418 0.701802783513 0.551388341420 0 0 0
+"""
+        self.assertTrue(stru_ref in c)
+
+        self.system.to(
+            "abacus/stru",
+            "STRU_tmp",
+            pp_file={"O": "O.upf", "H": "H.upf"},
+            move=[[True, False, True], [False, True, False]],
+        )
+        assert os.path.isfile("STRU_tmp")
+        with open("STRU_tmp") as f:
+            c = f.read()
+
+        stru_ref = """O
+0.0
+1
+0.000000000000 0.000000000000 0.000000000000 1 0 1
+H
+0.0
+1
+1.262185604418 0.701802783513 0.551388341420 0 1 0
 """
         self.assertTrue(stru_ref in c)
 
