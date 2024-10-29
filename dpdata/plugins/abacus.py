@@ -65,6 +65,9 @@ def register_mag_data(data):
             deepmd_name="force_mag",
         )
         dpdata.LabeledSystem.register_data_type(dt)
+
+
+def register_move_data(data):
     if "move" in data:
         dt = DataType(
             "move",
@@ -84,6 +87,7 @@ class AbacusSCFFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.scf.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data
 
 
@@ -95,6 +99,7 @@ class AbacusMDFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.md.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data
 
 
@@ -106,4 +111,5 @@ class AbacusRelaxFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.relax.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data
