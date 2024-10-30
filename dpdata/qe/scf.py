@@ -5,9 +5,29 @@ import os
 
 import numpy as np
 
-ry2ev = 13.605693009
-bohr2ang = 0.52917721067
-kbar2evperang3 = 1e3 / 1.602176621e6
+from dpdata.utils import open_file
+
+from .traj import (
+    kbar2evperang3,
+    ry2ev,
+)
+from .traj import (
+    length_convert as bohr2ang,
+)
+
+_QE_BLOCK_KEYWORDS = [
+    "ATOMIC_SPECIES",
+    "ATOMIC_POSITIONS",
+    "K_POINTS",
+    "ADDITIONAL_K_POINTS",
+    "CELL_PARAMETERS",
+    "CONSTRAINTS",
+    "OCCUPATIONS",
+    "ATOMIC_VELOCITIES",
+    "ATOMIC_FORCES",
+    "SOLVENTS",
+    "HUBBARD",
+]
 
 
 def get_block(lines, keyword, skip=0):
@@ -15,9 +35,12 @@ def get_block(lines, keyword, skip=0):
     for idx, ii in enumerate(lines):
         if keyword in ii:
             blk_idx = idx + 1 + skip
-            while len(lines[blk_idx]) == 0:
+            while len(lines[blk_idx].split()) == 0:
                 blk_idx += 1
-            while len(lines[blk_idx]) != 0 and blk_idx != len(lines):
+            while (
+                len(lines[blk_idx].split()) != 0
+                and (lines[blk_idx].split()[0] not in _QE_BLOCK_KEYWORDS)
+            ) and blk_idx != len(lines):
                 ret.append(lines[blk_idx])
                 blk_idx += 1
             break
@@ -121,7 +144,7 @@ def get_force(lines, natoms):
 def get_stress(lines):
     blk = get_block(lines, "total   stress")
     if len(blk) == 0:
-        return
+        return None
     ret = []
     for ii in blk:
         ret.append([float(jj) for jj in ii.split()[3:6]])
@@ -142,9 +165,9 @@ def get_frame(fname):
         path_out = fname[1]
     else:
         raise RuntimeError("invalid input")
-    with open(path_out) as fp:
+    with open_file(path_out) as fp:
         outlines = fp.read().split("\n")
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
     cell = get_cell(inlines)
     atom_names, natoms, types, coords = get_coords(inlines, cell)

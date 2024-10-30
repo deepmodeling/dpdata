@@ -6,6 +6,8 @@ import warnings
 
 import numpy as np
 
+from dpdata.utils import open_file
+
 from ..unit import EnergyConversion, LengthConversion, PressureConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
@@ -110,6 +112,152 @@ def get_cell(geometry_inlines):
     return celldm, cell
 
 
+def parse_stru_pos(pos_line):
+    """Parses a line from the atom position block in a structure file.
+
+    The content in atom position block can include:
+    - `m` or NO key word: Three numbers (0 or 1) controlling atom movement in geometry relaxation calculations.
+    - `v`, `vel`, or `velocity`: Three components of initial velocity of atoms in geometry relaxation calculations.
+    - `mag` or `magmom`: Start magnetization for each atom. Can be one number (colinear) or three numbers (non-colinear).
+    - `angle1`: In non-colinear case, angle between c-axis and real spin (in degrees).
+    - `angle2`: In non-colinear case, angle between a-axis and real spin projection in ab-plane (in degrees).
+    - `cs` or `constrain`: Three numbers (0 or 1) controlling the spin constraint of the atom.
+    - `lambda`: Three numbers controlling the lambda of the atom.
+
+    Parameters
+    ----------
+    pos_line : A line from the atom position block.
+
+    Returns
+    -------
+    tuple: A tuple containing:
+          - pos (list of float): The position coordinates.
+          - move (list of int or None): Movement control values.
+          - velocity (list of float or None): Initial velocity components.
+          - magmom (float, list of float, or None): Magnetization values.
+          - angle1 (float or None): Angle1 value.
+          - angle2 (float or None): Angle2 value.
+          - constrain (list of bool or None): Spin constraint values.
+          - lambda1 (float, list of float, or None): Lambda values.
+
+        e.g.:
+        ```
+        Fe
+        1.0
+        2
+        0.0 0.0 0.0 m 0 0 0 mag 1.0 angle1 90 angle2 0 cs 0 0 0
+        0.5 0.5 0.5 m 1 1 1 mag 1.0 angle1 90 angle2 180
+        ```
+    """
+    pos_line = pos_line.split("#")[0]  # remove comments
+    sline = pos_line.split()
+    pos = [float(i) for i in sline[:3]]
+    move = None
+    velocity = None
+    magmom = None
+    angle1 = None
+    angle2 = None
+    constrain = None
+    lambda1 = None
+    if len(sline) > 3:
+        mag_list = None
+        velocity_list = None
+        move_list = []
+        angle1_list = None
+        angle2_list = None
+        constrain_list = None
+        lambda_list = None
+        label = "move"
+        for i in range(3, len(sline)):
+            # firstly read the label
+            if sline[i] == "m":
+                label = "move"
+            elif sline[i] in ["v", "vel", "velocity"]:
+                label = "velocity"
+                velocity_list = []
+            elif sline[i] in ["mag", "magmom"]:
+                label = "magmom"
+                mag_list = []
+            elif sline[i] == "angle1":
+                label = "angle1"
+                angle1_list = []
+            elif sline[i] == "angle2":
+                label = "angle2"
+                angle2_list = []
+            elif sline[i] in ["constrain", "sc"]:
+                label = "constrain"
+                constrain_list = []
+            elif sline[i] in ["lambda"]:
+                label = "lambda"
+                lambda_list = []
+
+            # the read the value to the list
+            elif label == "move":
+                move_list.append(int(sline[i]))
+            elif label == "velocity":
+                velocity_list.append(float(sline[i]))
+            elif label == "magmom":
+                mag_list.append(float(sline[i]))
+            elif label == "angle1":
+                angle1_list.append(float(sline[i]))
+            elif label == "angle2":
+                angle2_list.append(float(sline[i]))
+            elif label == "constrain":
+                constrain_list.append(bool(int(sline[i])))
+            elif label == "lambda":
+                lambda_list.append(float(sline[i]))
+
+        if move_list is not None and len(move_list) > 0:
+            if len(move_list) == 3:
+                move = move_list
+            else:
+                raise RuntimeError(f"Invalid setting of move: {pos_line}")
+
+        if velocity_list is not None:
+            if len(velocity_list) == 3:
+                velocity = velocity_list
+            else:
+                raise RuntimeError(f"Invalid setting of velocity: {pos_line}")
+
+        if mag_list is not None:
+            if len(mag_list) == 3:
+                magmom = mag_list
+            elif len(mag_list) == 1:
+                magmom = mag_list[0]
+            else:
+                raise RuntimeError(f"Invalid magnetic moment {pos_line}")
+
+        if angle1_list is not None:
+            if len(angle1_list) == 1:
+                angle1 = angle1_list[0]
+            else:
+                raise RuntimeError(f"Invalid angle1 {pos_line}")
+
+        if angle2_list is not None:
+            if len(angle2_list) == 1:
+                angle2 = angle2_list[0]
+            else:
+                raise RuntimeError(f"Invalid angle2 {pos_line}")
+
+        if constrain_list is not None:
+            if len(constrain_list) == 3:
+                constrain = constrain_list
+            elif len(constrain_list) == 1:
+                constrain = constrain_list[0]
+            else:
+                raise RuntimeError(f"Invalid constrain {pos_line}")
+
+        if lambda_list is not None:
+            if len(lambda_list) == 3:
+                lambda1 = lambda_list
+            elif len(lambda_list) == 1:
+                lambda1 = lambda_list[0]
+            else:
+                raise RuntimeError(f"Invalid lambda {pos_line}")
+
+    return pos, move, velocity, magmom, angle1, angle2, constrain, lambda1
+
+
 def get_coords(celldm, cell, geometry_inlines, inlines=None):
     coords_lines = get_stru_block(geometry_inlines, "ATOMIC_POSITIONS")
     # assuming that ATOMIC_POSITIONS is at the bottom of the STRU file
@@ -118,6 +266,14 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
     atom_types = []  # index of atom_names of each atom in the geometry
     atom_numbs = []  # of atoms for each element
     coords = []  # coordinations of atoms
+    move = []  # move flag of each atom
+    velocity = []  # velocity of each atom
+    mag = []  # magnetic moment of each atom
+    angle1 = []  # angle1 of each atom
+    angle2 = []  # angle2 of each atom
+    sc = []  # spin constraint flag of each atom
+    lambda_ = []  # lambda of each atom
+
     ntype = get_nele_from_stru(geometry_inlines)
     line_idx = 1  # starting line of first element
     for it in range(ntype):
@@ -126,7 +282,10 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
         atom_numbs.append(int(coords_lines[line_idx].split()[0]))
         line_idx += 1
         for iline in range(atom_numbs[it]):
-            xyz = np.array([float(xx) for xx in coords_lines[line_idx].split()[0:3]])
+            pos, imove, ivelocity, imagmom, iangle1, iangle2, iconstrain, ilambda1 = (
+                parse_stru_pos(coords_lines[line_idx])
+            )
+            xyz = np.array(pos)
             if coord_type == "cartesian":
                 xyz = xyz * celldm
             elif coord_type == "direct":
@@ -139,10 +298,21 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
                 )
             coords.append(xyz)
             atom_types.append(it)
+
+            if imove is not None:
+                move.append(imove)
+            velocity.append(ivelocity)
+            mag.append(imagmom)
+            angle1.append(iangle1)
+            angle2.append(iangle2)
+            sc.append(iconstrain)
+            lambda_.append(ilambda1)
+
             line_idx += 1
     coords = np.array(coords)  # need transformation!!!
     atom_types = np.array(atom_types)
-    return atom_names, atom_numbs, atom_types, coords
+    move = np.array(move, dtype=bool)
+    return atom_names, atom_numbs, atom_types, coords, move
 
 
 def get_energy(outlines):
@@ -232,15 +402,57 @@ def get_stress(outlines):
         return np.array(stress[-1]) * kbar2evperang3  # only return the last stress
 
 
+def get_mag_force(outlines):
+    """Read atomic magmom and magnetic force from OUT.ABACUS/running_scf.log.
+
+    Returns
+    -------
+    magmom: list of list of atomic magnetic moments (three dimensions: ION_STEP * NATOMS * 1/3)
+    magforce: list of list of atomic magnetic forces (three dimensions: ION_STEP * NATOMS * 1/3)
+    e.g.:
+    -------------------------------------------------------------------------------------------
+    Total Magnetism (uB)
+    -------------------------------------------------------------------------------------------
+        Fe         0.0000000001         0.0000000000         3.0000000307
+        Fe        -0.0000000000        -0.0000000000         3.0000001151
+    -------------------------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------------
+    Magnetic force (eV/uB)
+    -------------------------------------------------------------------------------------------
+        Fe         0.0000000000         0.0000000000        -1.2117698671
+        Fe         0.0000000000         0.0000000000        -1.2117928796
+    -------------------------------------------------------------------------------------------
+
+    """
+    mags = []
+    magforces = []
+    for i, line in enumerate(outlines):
+        if "Total Magnetism (uB)" in line:
+            j = i + 2
+            mag = []
+            while "-------------------------" not in outlines[j]:
+                mag.append([float(ii) for ii in outlines[j].split()[1:]])
+                j += 1
+            mags.append(mag)
+        if "Magnetic force (eV/uB)" in line:
+            j = i + 2
+            magforce = []
+            while "-------------------------" not in outlines[j]:
+                magforce.append([float(ii) for ii in outlines[j].split()[1:]])
+                j += 1
+            magforces.append(magforce)
+    return np.array(mags), np.array(magforces)
+
+
 def get_frame(fname):
     data = {
         "atom_names": [],
         "atom_numbs": [],
         "atom_types": [],
-        "cells": [],
-        "coords": [],
-        "energies": [],
-        "forces": [],
+        "cells": np.array([]),
+        "coords": np.array([]),
+        "energies": np.array([]),
+        "forces": np.array([]),
     }
 
     if isinstance(fname, str):
@@ -253,7 +465,7 @@ def get_frame(fname):
     if not CheckFile(path_in):
         return data
 
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
 
     geometry_path_in = get_geometry_in(fname, inlines)
@@ -261,15 +473,21 @@ def get_frame(fname):
     if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
         return data
 
-    with open(geometry_path_in) as fp:
+    with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
-    with open(path_out) as fp:
+    with open_file(path_out) as fp:
         outlines = fp.read().split("\n")
 
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords = get_coords(
+    atom_names, natoms, types, coords, move = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
+    magmom, magforce = get_mag_force(outlines)
+    if len(magmom) > 0:
+        magmom = magmom[-1:]
+    if len(magforce) > 0:
+        magforce = magforce[-1:]
+
     data["atom_names"] = atom_names
     data["atom_numbs"] = natoms
     data["atom_types"] = types
@@ -289,6 +507,13 @@ def get_frame(fname):
     if stress is not None:
         data["virials"] = stress[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
+
+    if len(magmom) > 0:
+        data["spins"] = magmom
+    if len(magforce) > 0:
+        data["mag_forces"] = magforce
+    if len(move) > 0:
+        data["move"] = move[np.newaxis, :, :]
     # print("atom_names = ", data['atom_names'])
     # print("natoms = ", data['atom_numbs'])
     # print("types = ", data['atom_types'])
@@ -311,12 +536,9 @@ def get_nele_from_stru(geometry_inlines):
     ]
     keyword_sequence = []
     keyword_line_index = []
-    atom_names = []
-    atom_numbs = []
     for iline, line in enumerate(geometry_inlines):
         if line.split() == []:
             continue
-        have_key_word = False
         for keyword in key_words_list:
             if keyword in line and keyword == line.split()[0]:
                 keyword_sequence.append(keyword)
@@ -338,12 +560,12 @@ def get_nele_from_stru(geometry_inlines):
 
 def get_frame_from_stru(fname):
     assert isinstance(fname, str)
-    with open(fname) as fp:
+    with open_file(fname) as fp:
         geometry_inlines = fp.read().split("\n")
     nele = get_nele_from_stru(geometry_inlines)
-    inlines = ["ntype %d" % nele]
+    inlines = [f"ntype {nele}"]
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords = get_coords(
+    atom_names, natoms, types, coords, move = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
     data = {}
@@ -353,6 +575,8 @@ def get_frame_from_stru(fname):
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
+    if len(move) > 0:
+        data["move"] = move[np.newaxis, :, :]
 
     return data
 
@@ -360,36 +584,185 @@ def get_frame_from_stru(fname):
 def make_unlabeled_stru(
     data,
     frame_idx,
-    pp_file=None,
+    pp_file,
     numerical_orbital=None,
     numerical_descriptor=None,
     mass=None,
+    move=None,
+    velocity=None,
+    mag=None,
+    angle1=None,
+    angle2=None,
+    sc=None,
+    lambda_=None,
+    link_file=False,
+    dest_dir=None,
+    **kwargs,
 ):
+    """Make an unlabeled STRU file from a dictionary.
+
+    Parameters
+    ----------
+    data : dict
+        System data
+    frame_idx : int
+        The index of the frame to dump
+    pp_file : list of string or dict
+        List of pseudo potential files, or a dictionary of pseudo potential files for each atomnames
+    numerical_orbital : list of string or dict, optional
+        List of orbital files, or a dictionary of orbital files for each atomnames
+    numerical_descriptor : str, optional
+        numerical descriptor file
+    mass : list of float, optional
+        List of atomic masses
+    move : list of (list of list of bool), optional
+        List of the move flag of each xyz direction of each atom for each frame
+    velocity : list of list of float, optional
+        List of the velocity of each xyz direction of each atom
+    mag : list of (list of float or float), optional
+        List of the magnetic moment of each atom, can be a list of three floats or one float
+        For noncollinear, three floats are the xyz component of the magnetic moment.
+        For collinear, one float is the norm of the magnetic moment.
+    angle1 : list of float, optional
+        List of the angle1 of each atom. For noncollinear calculation, it is the angle between the magnetic moment and the z-axis.
+    angle2 : list of float, optional
+        List of the angle2 of each atom. For noncollinear calculation, it is the angle between the projection of magnetic moment on xy plane and the x-axis.
+    sc : list of (bool or list of 3 bool), optional
+        List of the spin constraint flag of each atom. Each element can be a bool or a list of three bools or None.
+    lambda_ : list of (float or list of 3 float), optional
+        List of the lambda of each atom. Each element can be a float or a list of three floats.
+    link_file : bool, optional
+        Whether to link the pseudo potential files and orbital files in the STRU file.
+        If True, then only filename will be written in the STRU file, and make a soft link to the real file.
+    dest_dir : str, optional
+        The destination directory to make the soft link of the pseudo potential files and orbital files.
+    For velocity, mag, angle1, angle2, sc, and lambda_, if the value is None, then the corresponding information will not be written.
+    ABACUS support defining "mag" and "angle1"/"angle2" at the same time, and in this case, the "mag" only define the norm of the magnetic moment, and "angle1" and "angle2" define the direction of the magnetic moment.
+    If data has spins, then it will be written as mag to STRU file; while if mag is passed at the same time, then mag will be used.
+    """
+
+    def _link_file(dest_dir, src_file):
+        if not os.path.isfile(src_file):
+            print(f"ERROR: link_file: {src_file} is not a file.")
+            return False
+        src_file = os.path.abspath(src_file)
+        if not os.path.isdir(dest_dir):
+            os.makedirs(dest_dir)
+        dest_file = os.path.join(dest_dir, os.path.basename(src_file))
+        if os.path.isfile(dest_file):
+            if os.path.samefile(src_file, dest_file):
+                return True
+            else:
+                os.remove(dest_file)
+        os.symlink(src_file, dest_file)
+        return True
+
+    def ndarray2list(i):
+        if isinstance(i, np.ndarray):
+            return i.tolist()
+        else:
+            return i
+
+    def process_file_input(file_input, atom_names, input_name):
+        # For pp_file and numerical_orbital, process the file input, and return a list of file names
+        # file_input can be a list of file names, or a dictionary of file names for each atom names
+        if isinstance(file_input, (list, tuple)):
+            if len(file_input) != len(atom_names):
+                raise ValueError(
+                    f"{input_name} length is not equal to the number of atom types"
+                )
+            return file_input
+        elif isinstance(file_input, dict):
+            for element in atom_names:
+                if element not in file_input:
+                    raise KeyError(f"{input_name} does not contain {element}")
+            return [file_input[element] for element in atom_names]
+        else:
+            raise ValueError(f"Invalid {input_name}: {file_input}")
+
+    if link_file and dest_dir is None:
+        print(
+            "WARNING: make_unlabeled_stru: link_file is True, but dest_dir is None. Will write the filename to STRU but not making soft link."
+        )
+    if dest_dir is not None and dest_dir.strip() == "":
+        dest_dir = "."
+
+    if mag is None and data.get("spins") is not None and len(data["spins"]) > 0:
+        mag = data["spins"][frame_idx]
+
+    if move is None and data.get("move", None) is not None and len(data["move"]) > 0:
+        move = data["move"][frame_idx]
+
+    atom_numbs = sum(data["atom_numbs"])
+    for key in [move, velocity, mag, angle1, angle2, sc, lambda_]:
+        if key is not None:
+            if (
+                not isinstance(ndarray2list(key), (list, tuple))
+                and len(key) != atom_numbs
+            ):
+                key_name = [name for name, value in locals().items() if value is key][0]
+                print(
+                    f"ERROR: make_unlabeled_stru: the length of '{key_name}' ({len(key)}) should be equal to the number of atom number ({atom_numbs})."
+                )
+                return ""
+
+    # ATOMIC_SPECIES block
     out = "ATOMIC_SPECIES\n"
+    ppfiles = process_file_input(ndarray2list(pp_file), data["atom_names"], "pp_file")
+
     for iele in range(len(data["atom_names"])):
+        if data["atom_numbs"][iele] == 0:
+            continue
         out += data["atom_names"][iele] + " "
         if mass is not None:
             out += f"{mass[iele]:.3f} "
         else:
             out += "1 "
-        if pp_file is not None:
-            out += f"{pp_file[iele]}\n"
+
+        ipp_file = ppfiles[iele]
+        if not link_file:
+            out += ipp_file
         else:
-            out += "\n"
+            out += os.path.basename(ipp_file.rstrip("/"))
+            if dest_dir is not None:
+                _link_file(dest_dir, ipp_file)
+        out += "\n"
     out += "\n"
 
+    # NUMERICAL_ORBITAL block
     if numerical_orbital is not None:
-        assert len(numerical_orbital) == len(data["atom_names"])
+        numerical_orbital = ndarray2list(numerical_orbital)
+        orbfiles = process_file_input(
+            numerical_orbital, data["atom_names"], "numerical_orbital"
+        )
+        orbfiles = [
+            orbfiles[i]
+            for i in range(len(data["atom_names"]))
+            if data["atom_numbs"][i] != 0
+        ]
         out += "NUMERICAL_ORBITAL\n"
-        for iele in range(len(numerical_orbital)):
-            out += f"{numerical_orbital[iele]}\n"
+        for iorb in orbfiles:
+            if not link_file:
+                out += iorb
+            else:
+                out += os.path.basename(iorb.rstrip("/"))
+                if dest_dir is not None:
+                    _link_file(dest_dir, iorb)
+            out += "\n"
         out += "\n"
 
+    # deepks block
     if numerical_descriptor is not None:
         assert isinstance(numerical_descriptor, str)
-        out += f"NUMERICAL_DESCRIPTOR\n{numerical_descriptor}\n"
+        if not link_file:
+            out += f"NUMERICAL_DESCRIPTOR\n{numerical_descriptor}\n"
+        else:
+            out += f"NUMERICAL_DESCRIPTOR\n{os.path.basename(numerical_descriptor)}\n"
+            if dest_dir is not None:
+                _link_file(dest_dir, numerical_descriptor)
         out += "\n"
 
+    # LATTICE_CONSTANT and LATTICE_VECTORS block
     out += "LATTICE_CONSTANT\n"
     out += str(1 / bohr2ang) + "\n\n"
 
@@ -400,24 +773,80 @@ def make_unlabeled_stru(
         out += "\n"
     out += "\n"
 
+    # ATOMIC_POSITIONS block
     out += "ATOMIC_POSITIONS\n"
     out += "Cartesian    # Cartesian(Unit is LATTICE_CONSTANT)\n"
     # ret += "\n"
-    natom_tot = 0
+    natom_tot = 0  # in for loop, it is also the atom index
     for iele in range(len(data["atom_names"])):
+        if data["atom_numbs"][iele] == 0:
+            continue
         out += data["atom_names"][iele] + "\n"
         out += "0.0\n"
         out += str(data["atom_numbs"][iele]) + "\n"
         for iatom in range(data["atom_numbs"][iele]):
             iatomtype = np.nonzero(data["atom_types"] == iele)[0][iatom]
-            out += "%.12f %.12f %.12f %d %d %d\n" % (
-                data["coords"][frame_idx][iatomtype, 0],
-                data["coords"][frame_idx][iatomtype, 1],
-                data["coords"][frame_idx][iatomtype, 2],
-                1,
-                1,
-                1,
-            )
+            iout = f"{data['coords'][frame_idx][iatomtype, 0]:.12f} {data['coords'][frame_idx][iatomtype, 1]:.12f} {data['coords'][frame_idx][iatomtype, 2]:.12f}"
+            # add flags for move, velocity, mag, angle1, angle2, and sc
+            if move is not None:
+                if (
+                    isinstance(ndarray2list(move[natom_tot]), (list, tuple))
+                    and len(move[natom_tot]) == 3
+                ):
+                    iout += " " + " ".join(
+                        ["1" if ii else "0" for ii in move[natom_tot]]
+                    )
+                elif isinstance(ndarray2list(move[natom_tot]), (int, float, bool)):
+                    iout += " 1 1 1" if move[natom_tot] else " 0 0 0"
+            else:
+                iout += " 1 1 1"
+
+            if (
+                velocity is not None
+                and isinstance(ndarray2list(velocity[natom_tot]), (list, tuple))
+                and len(velocity[natom_tot]) == 3
+            ):
+                iout += " v " + " ".join([f"{ii:.12f}" for ii in velocity[natom_tot]])
+
+            if mag is not None:
+                if isinstance(ndarray2list(mag[natom_tot]), (list, tuple)) and len(
+                    mag[natom_tot]
+                ) in [1, 3]:
+                    iout += " mag " + " ".join([f"{ii:.12f}" for ii in mag[natom_tot]])
+                elif isinstance(ndarray2list(mag[natom_tot]), (int, float)):
+                    iout += " mag " + f"{mag[natom_tot]:.12f}"
+
+            if angle1 is not None and isinstance(
+                ndarray2list(angle1[natom_tot]), (int, float)
+            ):
+                iout += " angle1 " + f"{angle1[natom_tot]:.12f}"
+
+            if angle2 is not None and isinstance(
+                ndarray2list(angle2[natom_tot]), (int, float)
+            ):
+                iout += " angle2 " + f"{angle2[natom_tot]:.12f}"
+
+            if sc is not None:
+                if isinstance(ndarray2list(sc[natom_tot]), (list, tuple)) and len(
+                    sc[natom_tot]
+                ) in [1, 3]:
+                    iout += " sc " + " ".join(
+                        ["1" if ii else "0" for ii in sc[natom_tot]]
+                    )
+                elif isinstance(ndarray2list(sc[natom_tot]), (int, float, bool)):
+                    iout += " sc " + "1" if sc[natom_tot] else "0"
+
+            if lambda_ is not None:
+                if isinstance(ndarray2list(lambda_[natom_tot]), (list, tuple)) and len(
+                    lambda_[natom_tot]
+                ) in [1, 3]:
+                    iout += " lambda " + " ".join(
+                        [f"{ii:.12f}" for ii in lambda_[natom_tot]]
+                    )
+                elif isinstance(ndarray2list(lambda_[natom_tot]), (int, float)):
+                    iout += " lambda " + f"{lambda_[natom_tot]:.12f}"
+
+            out += iout + "\n"
             natom_tot += 1
     assert natom_tot == sum(data["atom_numbs"])
     return out

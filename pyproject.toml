@@ -37,7 +37,7 @@ Homepage = "https://github.com/deepmodeling/dpdata"
 documentation = "https://docs.deepmodeling.com/projects/dpdata"
 repository = "https://github.com/deepmodeling/dpdata"
 
-[project.entry-points.console_scripts]
+[project.scripts]
 dpdata = "dpdata.cli:dpdata_cli"
 
 [project.optional-dependencies]
@@ -52,10 +52,10 @@ pymatgen = ['pymatgen']
 docs = [
     'sphinx',
     'recommonmark',
-    'sphinx_rtd_theme>=1.0.0rc1',
+    'sphinx-book-theme',
     'numpydoc',
-    'm2r2',
-    'deepmodeling-sphinx>=0.1.1',
+    'myst-parser',
+    'deepmodeling-sphinx>=0.3.0',
     'sphinx-argparse<0.5.0',
     'rdkit',
     'jupyterlite-sphinx',

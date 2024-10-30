@@ -5,11 +5,14 @@ import warnings
 
 import numpy as np
 
+from dpdata.utils import open_file
+
 from .scf import (
     bohr2ang,
     get_cell,
     get_coords,
     get_geometry_in,
+    get_mag_force,
     kbar2evperang3,
 )
 
@@ -156,15 +159,15 @@ def get_frame(fname):
         path_in = os.path.join(fname, "INPUT")
     else:
         raise RuntimeError("invalid input")
-    with open(path_in) as fp:
+    with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
     path_out = get_path_out(fname, inlines)
 
-    with open(geometry_path_in) as fp:
+    with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords = get_coords(
+    atom_names, natoms, types, coords, move = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
     # This coords is not to be used.
@@ -172,11 +175,11 @@ def get_frame(fname):
     # ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
     # number of dumped geometry files
     # coords = get_coords_from_cif(ndump, dump_freq, atom_names, natoms, types, path_out, cell)
-    with open(os.path.join(path_out, "MD_dump")) as fp:
+    with open_file(os.path.join(path_out, "MD_dump")) as fp:
         dumplines = fp.read().split("\n")
     coords, cells, force, stress = get_coords_from_dump(dumplines, natoms)
     ndump = np.shape(coords)[0]
-    with open(os.path.join(path_out, "running_md.log")) as fp:
+    with open_file(os.path.join(path_out, "running_md.log")) as fp:
         outlines = fp.read().split("\n")
     energy = get_energy(outlines, ndump, dump_freq)
 
@@ -197,6 +200,9 @@ def get_frame(fname):
         stress[iframe] *= np.linalg.det(cells[iframe, :, :].reshape([3, 3]))
     if np.sum(np.abs(stress[0])) < 1e-10:
         stress = None
+
+    magmom, magforce = get_mag_force(outlines)
+
     data = {}
     data["atom_names"] = atom_names
     data["atom_numbs"] = natoms
@@ -211,5 +217,11 @@ def get_frame(fname):
     if not isinstance(data["virials"], np.ndarray):
         del data["virials"]
     data["orig"] = np.zeros(3)
+    if len(magmom) > 0:
+        data["spins"] = magmom
+    if len(magforce) > 0:
+        data["mag_forces"] = magforce
+    if len(move) > 0:
+        data["move"] = move
 
     return data
