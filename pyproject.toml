@@ -42,9 +42,6 @@ dpdata = "dpdata.cli:dpdata_cli"
 
 [project.optional-dependencies]
 test = [
-    # https://github.com/materialsproject/pymatgen/issues/3882
-    # https://github.com/kuelumbus/rdkit-pypi/issues/102
-    "numpy<2",
 ]
 ase = ['ase']
 amber = [
