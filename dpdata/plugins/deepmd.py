@@ -10,34 +10,35 @@ import dpdata.deepmd.comp
 import dpdata.deepmd.hdf5
 import dpdata.deepmd.mixed
 import dpdata.deepmd.raw
+from dpdata.data_type import Axis, DataType
 from dpdata.driver import Driver
 from dpdata.format import Format
-
-from dpdata.data_type import Axis, DataType
 
 if TYPE_CHECKING:
     import h5py
 
+
 def register_spin():
     dt = DataType(
-            "spins",
-            np.ndarray,
-            (Axis.NFRAMES, Axis.NATOMS, 3),
-            required=False,
-            deepmd_name="spin",
-        )
+        "spins",
+        np.ndarray,
+        (Axis.NFRAMES, Axis.NATOMS, 3),
+        required=False,
+        deepmd_name="spin",
+    )
     dpdata.System.register_data_type(dt)
     dpdata.LabeledSystem.register_data_type(dt)
 
     dt = DataType(
-            "force_mags",
-            np.ndarray,
-            (Axis.NFRAMES, Axis.NATOMS, 3),
-            required=False,
-            deepmd_name="force_mag",
-        )
+        "force_mags",
+        np.ndarray,
+        (Axis.NFRAMES, Axis.NATOMS, 3),
+        required=False,
+        deepmd_name="force_mag",
+    )
     dpdata.System.register_data_type(dt)
     dpdata.LabeledSystem.register_data_type(dt)
+
 
 @Format.register("deepmd")
 @Format.register("deepmd/raw")
@@ -230,6 +231,7 @@ class DeePMDHDF5Format(Format):
             file_name is not str or h5py.Group or h5py.File
         """
         import h5py
+
         register_spin()
 
         if isinstance(file_name, (h5py.Group, h5py.File)):
