@@ -257,6 +257,49 @@ def parse_stru_pos(pos_line):
 
     return pos, move, velocity, magmom, angle1, angle2, constrain, lambda1
 
+def get_atom_mag_cartesian(atommag,angle1, angle2):
+    '''Transform atommag, angle1, angle2 to magmom in cartesian coordinates.
+    
+    Parameters
+    ----------
+    atommag : float/list of float/None
+        Atom magnetic moment.
+    angle1 : float/None
+        value of angle1.
+    angle2 : float/None
+        value of angle2.   
+    
+    ABACUS support defining mag, angle1, angle2 at the same time.
+    angle1 is the angle between z-axis and real spin (in degrees).
+    angle2 is the angle between x-axis and real spin projection in xy-plane (in degrees). 
+    If only mag is defined, then transfer it to magmom directly.
+    And if mag, angle1, angle2 are defined, then mag is only the norm of magmom, and the direction is defined by angle1 and angle2.
+    '''
+    if atommag is None:
+        return None
+    if not (isinstance(atommag, list) or isinstance(atommag, float)):
+        raise RuntimeError(f"Invalid atommag: {atommag}")
+    
+    if angle1 is None and angle2 is None:
+        if isinstance(atommag, list):
+            return atommag
+        else:
+            return [0,0,atommag]
+    else:
+        a1 = 0
+        a2 = 0
+        if angle1 is not None:
+            a1 = angle1
+        if angle2 is not None:
+            a2 = angle2
+        if isinstance(atommag, list):
+            mag_norm = np.linalg.norm(atommag)
+        else:
+            mag_norm = atommag
+        return [mag_norm*np.sin(np.radians(a1))*np.cos(np.radians(a2)),
+                    mag_norm*np.sin(np.radians(a1))*np.sin(np.radians(a2)),
+                    mag_norm*np.cos(np.radians(a1))]
+    
 
 def get_coords(celldm, cell, geometry_inlines, inlines=None):
     coords_lines = get_stru_block(geometry_inlines, "ATOMIC_POSITIONS")
@@ -268,9 +311,7 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
     coords = []  # coordinations of atoms
     move = []  # move flag of each atom
     velocity = []  # velocity of each atom
-    mag = []  # magnetic moment of each atom
-    angle1 = []  # angle1 of each atom
-    angle2 = []  # angle2 of each atom
+    mags = []  # magnetic moment of each atom
     sc = []  # spin constraint flag of each atom
     lambda_ = []  # lambda of each atom
 
@@ -278,6 +319,7 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
     line_idx = 1  # starting line of first element
     for it in range(ntype):
         atom_names.append(coords_lines[line_idx].split()[0])
+        atom_type_mag = float(coords_lines[line_idx+1].split()[0])
         line_idx += 2
         atom_numbs.append(int(coords_lines[line_idx].split()[0]))
         line_idx += 1
@@ -302,17 +344,20 @@ def get_coords(celldm, cell, geometry_inlines, inlines=None):
             if imove is not None:
                 move.append(imove)
             velocity.append(ivelocity)
-            mag.append(imagmom)
-            angle1.append(iangle1)
-            angle2.append(iangle2)
             sc.append(iconstrain)
             lambda_.append(ilambda1)
+            
+            # calculate the magnetic moment in cartesian coordinates
+            mag = get_atom_mag_cartesian(imagmom, iangle1, iangle2)
+            if mag is None:
+                mag = [0,0,atom_type_mag]
+            mags.append(mag)
 
             line_idx += 1
     coords = np.array(coords)  # need transformation!!!
     atom_types = np.array(atom_types)
     move = np.array(move, dtype=bool)
-    return atom_names, atom_numbs, atom_types, coords, move
+    return atom_names, atom_numbs, atom_types, coords, move, mags
 
 
 def get_energy(outlines):
@@ -479,9 +524,11 @@ def get_frame(fname):
         outlines = fp.read().split("\n")
 
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords, move = get_coords(
+    atom_names, natoms, types, coords, move, magmom = get_coords( # here the magmom is the initial magnetic moment in STRU
         celldm, cell, geometry_inlines, inlines
     )
+    
+    
     magmom, magforce = get_mag_force(outlines)
     if len(magmom) > 0:
         magmom = magmom[-1:]
@@ -565,7 +612,7 @@ def get_frame_from_stru(fname):
     nele = get_nele_from_stru(geometry_inlines)
     inlines = [f"ntype {nele}"]
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords, move = get_coords(
+    atom_names, natoms, types, coords, move, magmom = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
     data = {}
@@ -575,6 +622,7 @@ def get_frame_from_stru(fname):
     data["cells"] = cell[np.newaxis, :, :]
     data["coords"] = coords[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
+    data["spins"] = np.array([magmom])
     if len(move) > 0:
         data["move"] = move[np.newaxis, :, :]
 

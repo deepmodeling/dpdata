@@ -155,3 +155,10 @@ class TestABACUSSpin(unittest.TestCase):
         np.testing.assert_almost_equal(
             data["mag_forces"], sys2.data["mag_forces"], decimal=8
         )
+        
+    def test_read_stru_spin(self):
+        mysys = dpdata.System("abacus.spin/STRU", fmt="abacus/stru")
+        self.assertTrue("spins" in mysys.data)
+        np.testing.assert_almost_equal(mysys.data["spins"],[[[0,0,2.4],[0,0,2.4]]],decimal=8)
+        
+        
