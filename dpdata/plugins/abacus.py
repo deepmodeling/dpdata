@@ -20,9 +20,9 @@ if TYPE_CHECKING:
 @Format.register("stru")
 class AbacusSTRUFormat(Format):
     def from_system(self, file_name, **kwargs):
-        data = dpdata.abacus.scf.get_frame(file_name)
+        data = dpdata.abacus.scf.get_frame_from_stru(file_name)
         register_mag_data(data)
-        return dpdata.abacus.scf.get_frame_from_stru(file_name)
+        return data
 
     def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
         """Dump the system into ABACUS STRU format file.
