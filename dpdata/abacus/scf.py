@@ -511,7 +511,7 @@ def get_frame(fname):
     if len(magmom) > 0:
         data["spins"] = magmom
     if len(magforce) > 0:
-        data["mag_forces"] = magforce
+        data["force_mags"] = magforce
     if len(move) > 0:
         data["move"] = move[np.newaxis, :, :]
     # print("atom_names = ", data['atom_names'])
