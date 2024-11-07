@@ -183,7 +183,7 @@ def get_frame(fname):
     with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coord_tmp, move = get_coords(
+    atom_names, natoms, types, coord_tmp, move, magmom = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
 
