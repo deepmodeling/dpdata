@@ -635,7 +635,7 @@ def get_frame_from_stru(fname):
 def make_unlabeled_stru(
     data,
     frame_idx,
-    pp_file,
+    pp_file=None,
     numerical_orbital=None,
     numerical_descriptor=None,
     mass=None,
@@ -759,7 +759,11 @@ def make_unlabeled_stru(
 
     # ATOMIC_SPECIES block
     out = "ATOMIC_SPECIES\n"
-    ppfiles = process_file_input(ndarray2list(pp_file), data["atom_names"], "pp_file")
+    if pp_file is not None:
+        ppfiles = process_file_input(ndarray2list(pp_file), data["atom_names"], "pp_file")
+    else:
+        warnings.warn("pp_file is not provided, will use empty string for pseudo potential file.")
+        ppfiles = [""] * len(data["atom_names"])
 
     for iele in range(len(data["atom_names"])):
         if data["atom_numbs"][iele] == 0:
@@ -771,12 +775,13 @@ def make_unlabeled_stru(
             out += "1 "
 
         ipp_file = ppfiles[iele]
-        if not link_file:
-            out += ipp_file
-        else:
-            out += os.path.basename(ipp_file.rstrip("/"))
-            if dest_dir is not None:
-                _link_file(dest_dir, ipp_file)
+        if ipp_file != "":
+            if not link_file:
+                out += ipp_file
+            else:
+                out += os.path.basename(ipp_file.rstrip("/"))
+                if dest_dir is not None:
+                    _link_file(dest_dir, ipp_file)
         out += "\n"
     out += "\n"
 
