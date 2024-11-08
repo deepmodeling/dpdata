@@ -32,7 +32,7 @@ class TestStruDump(unittest.TestCase):
     def test_dump_stru_without_pporb(self):
         self.system_ch4.to("stru", "STRU_tmp", mass=[12, 1])
         self.assertTrue(os.path.isfile("STRU_tmp"))
-    
+
     def test_dumpStruLinkFile(self):
         os.makedirs("abacus.scf/tmp", exist_ok=True)
         self.system_ch4.to(
