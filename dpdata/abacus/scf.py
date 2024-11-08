@@ -760,9 +760,13 @@ def make_unlabeled_stru(
     # ATOMIC_SPECIES block
     out = "ATOMIC_SPECIES\n"
     if pp_file is not None:
-        ppfiles = process_file_input(ndarray2list(pp_file), data["atom_names"], "pp_file")
+        ppfiles = process_file_input(
+            ndarray2list(pp_file), data["atom_names"], "pp_file"
+        )
     else:
-        warnings.warn("pp_file is not provided, will use empty string for pseudo potential file.")
+        warnings.warn(
+            "pp_file is not provided, will use empty string for pseudo potential file."
+        )
         ppfiles = [""] * len(data["atom_names"])
 
     for iele in range(len(data["atom_names"])):
