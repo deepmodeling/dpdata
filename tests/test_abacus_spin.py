@@ -51,7 +51,7 @@ class TestABACUSSpin(unittest.TestCase):
         np.testing.assert_almost_equal(
             data["force_mags"], sys2.data["force_mags"], decimal=8
         )
-    
+
     def test_scf_nspin2(self):
         os.system("cp abacus.spin/INPUT.scf.nspin2 abacus.spin/INPUT")
         mysys = dpdata.LabeledSystem("abacus.spin", fmt="abacus/scf")
@@ -60,16 +60,16 @@ class TestABACUSSpin(unittest.TestCase):
         np.testing.assert_almost_equal(
             data["spins"][0],
             [
-                [0,0,2.4000001004],
-                [0,0,2.3999994597],
+                [0, 0, 2.4000001004],
+                [0, 0, 2.3999994597],
             ],
             decimal=8,
         )
         np.testing.assert_almost_equal(
             data["force_mags"][0],
             [
-                [0,0, -0.3669618965],
-                [0,0, -0.3669821632],
+                [0, 0, -0.3669618965],
+                [0, 0, -0.3669821632],
             ],
             decimal=8,
         )
@@ -84,7 +84,6 @@ class TestABACUSSpin(unittest.TestCase):
         np.testing.assert_almost_equal(
             data["force_mags"], sys2.data["force_mags"], decimal=8
         )
-
 
     def test_relax(self):
         os.system("cp abacus.spin/INPUT.relax abacus.spin/INPUT")
