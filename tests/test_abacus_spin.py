@@ -16,6 +16,8 @@ class TestABACUSSpin(unittest.TestCase):
     def tearDown(self):
         if os.path.isdir(self.dump_path):
             shutil.rmtree(self.dump_path)
+        if os.path.isfile("abacus.spin/INPUT"):
+            os.remove("abacus.spin/INPUT")
 
     def test_scf(self):
         os.system("cp abacus.spin/INPUT.scf abacus.spin/INPUT")
