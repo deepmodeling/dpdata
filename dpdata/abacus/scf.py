@@ -478,14 +478,20 @@ def get_mag_force(outlines):
             j = i + 2
             mag = []
             while "-------------------------" not in outlines[j]:
-                mag.append([float(ii) for ii in outlines[j].split()[1:]])
+                imag = [float(ii) for ii in outlines[j].split()[1:]]
+                if len(imag) == 1:
+                    imag = [0, 0, imag[0]]
+                mag.append(imag)
                 j += 1
             mags.append(mag)
         if "Magnetic force (eV/uB)" in line:
             j = i + 2
             magforce = []
             while "-------------------------" not in outlines[j]:
-                magforce.append([float(ii) for ii in outlines[j].split()[1:]])
+                imagforce = [float(ii) for ii in outlines[j].split()[1:]]
+                if len(imagforce) == 1:
+                    imagforce = [0, 0, imagforce[0]]
+                magforce.append(imagforce)
                 j += 1
             magforces.append(magforce)
     return np.array(mags), np.array(magforces)
