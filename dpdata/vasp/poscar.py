@@ -79,7 +79,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     for ii, name in zip(system["atom_numbs"], system["atom_names"]):
         if ii == 0:
             continue
-        ret += "%s%d " % (name, ii)
+        ret += "%s%d " % (name, ii)  # noqa: UP031
     ret += "\n"
     ret += "1.0\n"
     for ii in system["cells"][f_idx]:
@@ -94,7 +94,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     for ii in system["atom_numbs"]:
         if ii == 0:
             continue
-        ret += "%d " % ii
+        ret += "%d " % ii  # noqa: UP031
     ret += "\n"
     move = system.get("move", None)
     if move is not None and len(move) > 0:

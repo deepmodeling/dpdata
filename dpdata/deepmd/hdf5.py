@@ -59,7 +59,7 @@ def to_system_data(
     else:
         my_type_map = []
         for ii in range(ntypes):
-            my_type_map.append("Type_%d" % ii)
+            my_type_map.append("Type_%d" % ii)  # noqa: UP031
     assert len(my_type_map) >= len(data["atom_numbs"])
     for ii in range(len(data["atom_numbs"])):
         data["atom_names"].append(my_type_map[ii])
@@ -217,7 +217,7 @@ def dump(
     for ii in range(nsets):
         set_stt = ii * set_size
         set_end = (ii + 1) * set_size
-        set_folder = g.create_group("set.%03d" % ii)
+        set_folder = g.create_group("set.%03d" % ii)  # noqa: UP031
         for dt, prop in data_types.items():
             if dt in reshaped_data:
                 set_folder.create_dataset(

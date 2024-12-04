@@ -39,7 +39,7 @@ class TestRemovePBC(unittest.TestCase):
                     self.assertAlmostEqual(
                         sys["cells"][ff][ii][jj],
                         ref[ii][jj],
-                        msg="%d %d %d" % (ff, ii, jj),
+                        msg="%d %d %d" % (ff, ii, jj),  # noqa: UP031
                     )
             dists = []
             for ii in range(sys.get_natoms()):

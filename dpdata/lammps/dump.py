@@ -289,7 +289,7 @@ def system_data(
     system["atom_names"] = []
     if type_map is None:
         for ii in range(len(system["atom_numbs"])):
-            system["atom_names"].append("TYPE_%d" % ii)
+            system["atom_names"].append("TYPE_%d" % ii)  # noqa: UP031
     else:
         assert len(type_map) >= len(system["atom_numbs"])
         for ii in range(len(system["atom_numbs"])):
