@@ -136,8 +136,8 @@ class SQMDriver(Driver):
         labeled_system = dpdata.LabeledSystem()
         with tempfile.TemporaryDirectory() as d:
             for ii, ss in enumerate(ori_system):
-                inp_fn = os.path.join(d, "%d.in" % ii)
-                out_fn = os.path.join(d, "%d.out" % ii)
+                inp_fn = os.path.join(d, "%d.in" % ii)  # noqa: UP031
+                out_fn = os.path.join(d, "%d.out" % ii)  # noqa: UP031
                 ss.to("sqm/in", inp_fn, **self.kwargs)
                 try:
                     sp.check_output(

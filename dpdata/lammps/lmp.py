@@ -167,7 +167,7 @@ def system_data(lines, type_map=None, type_idx_zero=True):
     system["atom_names"] = []
     if type_map is None:
         for ii in range(len(system["atom_numbs"])):
-            system["atom_names"].append("Type_%d" % ii)
+            system["atom_names"].append("Type_%d" % ii)  # noqa: UP031
     else:
         assert len(type_map) >= len(system["atom_numbs"])
         for ii in range(len(system["atom_numbs"])):
@@ -198,27 +198,27 @@ def from_system_data(system, f_idx=0):
     ret += "\n"
     natoms = sum(system["atom_numbs"])
     ntypes = len(system["atom_numbs"])
-    ret += "%d atoms\n" % natoms
-    ret += "%d atom types\n" % ntypes
+    ret += "%d atoms\n" % natoms  # noqa: UP031
+    ret += "%d atom types\n" % ntypes  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " xlo xhi\n") % (
         0,
         system["cells"][f_idx][0][0],
-    )
+    )  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " ylo yhi\n") % (
         0,
         system["cells"][f_idx][1][1],
-    )
+    )  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " zlo zhi\n") % (
         0,
         system["cells"][f_idx][2][2],
-    )
+    )  # noqa: UP031
     ret += (
         ptr_float_fmt + " " + ptr_float_fmt + " " + ptr_float_fmt + " xy xz yz\n"
     ) % (
         system["cells"][f_idx][1][0],
         system["cells"][f_idx][2][0],
         system["cells"][f_idx][2][1],
-    )
+    )  # noqa: UP031
     ret += "\n"
     ret += "Atoms # atomic\n"
     ret += "\n"
@@ -233,7 +233,7 @@ def from_system_data(system, f_idx=0):
         + " "
         + ptr_float_fmt
         + "\n"
-    )
+    )  # noqa: UP031
 
     if "spins" in system:
         coord_fmt = (
@@ -247,7 +247,7 @@ def from_system_data(system, f_idx=0):
             + " "
             + ptr_float_fmt
             + "\n"
-        )
+        )  # noqa: UP031
         spins_norm = np.linalg.norm(system["spins"][f_idx], axis=1)
     for ii in range(natoms):
         if "spins" in system:
@@ -262,7 +262,7 @@ def from_system_data(system, f_idx=0):
                     system["spins"][f_idx][ii][1] / spins_norm[ii],
                     system["spins"][f_idx][ii][2] / spins_norm[ii],
                     spins_norm[ii],
-                )
+                )  # noqa: UP031
             else:
                 ret += coord_fmt % (
                     ii + 1,
@@ -274,7 +274,7 @@ def from_system_data(system, f_idx=0):
                     system["spins"][f_idx][ii][1],
                     system["spins"][f_idx][ii][2] + 1,
                     spins_norm[ii],
-                )
+                )  # noqa: UP031
         else:
             ret += coord_fmt % (
                 ii + 1,
@@ -282,7 +282,7 @@ def from_system_data(system, f_idx=0):
                 system["coords"][f_idx][ii][0] - system["orig"][0],
                 system["coords"][f_idx][ii][1] - system["orig"][1],
                 system["coords"][f_idx][ii][2] - system["orig"][2],
-            )
+            )  # noqa: UP031
     return ret
 
 

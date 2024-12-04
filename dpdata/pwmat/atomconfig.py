@@ -54,7 +54,7 @@ def to_system_data(lines):
 def from_system_data(system, f_idx=0, skip_zeros=True):
     ret = ""
     natoms = sum(system["atom_numbs"])
-    ret += "%d" % natoms
+    ret += "%d" % natoms  # noqa: UP031
     ret += "\n"
     ret += "LATTICE"
     ret += "\n"
@@ -83,7 +83,7 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
     posi_list = []
     for jj, ii in zip(atomic_numbers, posis):
         ii = np.matmul(ii, np.linalg.inv(system["cells"][0]))
-        posi_list.append("%d %15.10f %15.10f %15.10f 1 1 1" % (jj, ii[0], ii[1], ii[2]))
+        posi_list.append("%d %15.10f %15.10f %15.10f 1 1 1" % (jj, ii[0], ii[1], ii[2]))  # noqa: UP031
     for kk in range(len(posi_list)):
         min = kk
         for jj in range(kk, len(posi_list)):

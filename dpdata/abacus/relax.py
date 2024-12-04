@@ -47,7 +47,7 @@ def get_coords_from_log(loglines, natoms):
             natoms_log += int(line.split()[-1])
 
     assert natoms_log > 0 and natoms_log == natoms, (
-        "ERROR: detected atom number in log file is %d" % natoms
+        "ERROR: detected atom number in log file is %d" % natoms  # noqa: UP031
     )
 
     energy = []
@@ -76,7 +76,7 @@ def get_coords_from_log(loglines, natoms):
                         list(map(lambda x: float(x) * a0, loglines[i + k].split()[1:4]))
                     )
             else:
-                assert False, "Unrecongnized coordinate type, %s, line:%d" % (
+                assert False, "Unrecongnized coordinate type, %s, line:%d" % (  # noqa: UP031
                     loglines[i].split()[0],
                     i,
                 )
