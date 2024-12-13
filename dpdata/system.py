@@ -1049,7 +1049,7 @@ class System:
             atom_idx = self.data["atom_types"] == idx
             removed_atom_idx.append(atom_idx)
         picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
-        assert not isinstance(picked_atom_idx, np.bool)
+        assert not isinstance(picked_atom_idx, np.bool_)
         new_sys = self.pick_atom_idx(picked_atom_idx)
         # let's remove atom_names
         # firstly, rearrange atom_names and put these atom_names in the end
