@@ -1208,7 +1208,11 @@ class LabeledSystem(System):
     DTYPES: tuple[DataType, ...] = System.DTYPES + (
         DataType("energies", np.ndarray, (Axis.NFRAMES,), deepmd_name="energy"),
         DataType(
-            "forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), required=False, deepmd_name="force"
+            "forces",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="force",
         ),
         DataType(
             "virials",
