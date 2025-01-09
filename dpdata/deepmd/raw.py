@@ -27,7 +27,7 @@ def load_type(folder, type_map=None):
     else:
         my_type_map = []
         for ii in range(ntypes):
-            my_type_map.append("Type_%d" % ii)
+            my_type_map.append("Type_%d" % ii)  # noqa: UP031
     data["atom_names"] = my_type_map
     data["atom_numbs"] = []
     for ii, _ in enumerate(data["atom_names"]):

@@ -226,7 +226,7 @@ class System:
             dd.check(self)
         if sum(self.get_atom_numbs()) != self.get_natoms():
             raise DataError(
-                "Sum of atom_numbs (%d) is not equal to natoms (%d)."
+                "Sum of atom_numbs (%d) is not equal to natoms (%d)."  # noqa: UP031
                 % (sum(self.get_atom_numbs()), self.get_natoms())
             )
 
@@ -281,8 +281,8 @@ class System:
         ret = "Data Summary"
         ret += "\nUnlabeled System"
         ret += "\n-------------------"
-        ret += "\nFrame Numbers     : %d" % self.get_nframes()
-        ret += "\nAtom Numbers      : %d" % self.get_natoms()
+        ret += "\nFrame Numbers     : %d" % self.get_nframes()  # noqa: UP031
+        ret += "\nAtom Numbers      : %d" % self.get_natoms()  # noqa: UP031
         ret += "\nElement List      :"
         ret += "\n-------------------"
         ret += "\n" + "  ".join(map(str, self.get_atom_names()))
@@ -1049,6 +1049,7 @@ class System:
             atom_idx = self.data["atom_types"] == idx
             removed_atom_idx.append(atom_idx)
         picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
+        assert not isinstance(picked_atom_idx, np.bool_)
         new_sys = self.pick_atom_idx(picked_atom_idx)
         # let's remove atom_names
         # firstly, rearrange atom_names and put these atom_names in the end
@@ -1247,8 +1248,8 @@ class LabeledSystem(System):
         ret = "Data Summary"
         ret += "\nLabeled System"
         ret += "\n-------------------"
-        ret += "\nFrame Numbers      : %d" % self.get_nframes()
-        ret += "\nAtom Numbers       : %d" % self.get_natoms()
+        ret += "\nFrame Numbers      : %d" % self.get_nframes()  # noqa: UP031
+        ret += "\nAtom Numbers       : %d" % self.get_natoms()  # noqa: UP031
         status = "Yes" if self.has_virial() else "No"
         ret += f"\nIncluding Virials  : {status}"
         ret += "\nElement List       :"

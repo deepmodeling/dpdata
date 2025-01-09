@@ -367,10 +367,10 @@ def sanitize_mol(mol, verbose=False):
 # copy from FEprep
 def mol_edit_log(mol, i, j):
     if not mol.HasProp("edit"):
-        mol.SetProp("edit", "%d_%d" % (i, j))
+        mol.SetProp("edit", "%d_%d" % (i, j))  # noqa: UP031
     else:
         edited = mol.GetProp("edit")
-        mol.SetProp("edit", edited + ",%d_%d" % (i, j))
+        mol.SetProp("edit", edited + ",%d_%d" % (i, j))  # noqa: UP031
 
 
 def kekulize_aromatic_heterocycles(mol_in, assign_formal_charge=True, sanitize=True):

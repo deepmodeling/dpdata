@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "dpdata"
-copyright = "2019-%d, DeepModeling " % date.today().year
+copyright = "2019-%d, DeepModeling " % date.today().year  # noqa: UP031
 author = "Han Wang"
 
 # The short X.Y version
@@ -44,7 +44,7 @@ release = "0.0.0-rc"
 # ones.
 extensions = [
     "deepmodeling_sphinx",
-    "sphinx_rtd_theme",
+    "sphinx_book_theme",
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
@@ -87,7 +87,7 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_book_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

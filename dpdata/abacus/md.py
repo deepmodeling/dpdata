@@ -68,7 +68,7 @@ def get_coords_from_dump(dumplines, natoms):
     else:
         nframes_dump = int(nlines / (total_natoms + 9))
     assert nframes_dump > 0, (
-        "Number of lines in MD_dump file = %d. Number of atoms = %d. The MD_dump file is incomplete."
+        "Number of lines in MD_dump file = %d. Number of atoms = %d. The MD_dump file is incomplete."  # noqa: UP031
         % (nlines, total_natoms)
     )
     cells = np.zeros([nframes_dump, 3, 3])
@@ -125,7 +125,7 @@ def get_coords_from_dump(dumplines, natoms):
                     )
             iframe += 1
     assert iframe == nframes_dump, (
-        "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."
+        "iframe=%d, nframe_dump=%d. Number of frames does not match number of lines in MD_dump."  # noqa: UP031
         % (iframe, nframes_dump)
     )
     stresses *= kbar2evperang3
@@ -145,7 +145,7 @@ def get_energy(outlines, ndump, dump_freq):
                 energy.append(np.nan)
             nenergy += 1
     assert ndump == len(energy), (
-        "Number of total energies in running_md.log = %d. Number of frames in MD_dump = %d. Please check."
+        "Number of total energies in running_md.log = %d. Number of frames in MD_dump = %d. Please check."  # noqa: UP031
         % (len(energy), ndump)
     )
     energy = np.array(energy)
@@ -167,7 +167,7 @@ def get_frame(fname):
     with open_file(geometry_path_in) as fp:
         geometry_inlines = fp.read().split("\n")
     celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords = get_coords(
+    atom_names, natoms, types, coords, move, magmom = get_coords(
         celldm, cell, geometry_inlines, inlines
     )
     # This coords is not to be used.
@@ -191,7 +191,7 @@ def get_frame(fname):
             force = np.delete(force, i - ndump, axis=0)
             stress = np.delete(stress, i - ndump, axis=0)
             energy = np.delete(energy, i - ndump, axis=0)
-            unconv_stru += "%d " % i
+            unconv_stru += "%d " % i  # noqa: UP031
     ndump = len(energy)
     if unconv_stru != "":
         warnings.warn(f"Structure {unconv_stru} are unconverged and not collected!")
@@ -220,6 +220,8 @@ def get_frame(fname):
     if len(magmom) > 0:
         data["spins"] = magmom
     if len(magforce) > 0:
-        data["mag_forces"] = magforce
+        data["force_mags"] = magforce
+    if len(move) > 0:
+        data["move"] = move
 
     return data

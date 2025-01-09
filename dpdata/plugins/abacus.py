@@ -20,7 +20,9 @@ if TYPE_CHECKING:
 @Format.register("stru")
 class AbacusSTRUFormat(Format):
     def from_system(self, file_name, **kwargs):
-        return dpdata.abacus.scf.get_frame_from_stru(file_name)
+        data = dpdata.abacus.scf.get_frame_from_stru(file_name)
+        register_mag_data(data)
+        return data
 
     def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
         """Dump the system into ABACUS STRU format file.
@@ -55,16 +57,30 @@ def register_mag_data(data):
             required=False,
             deepmd_name="spin",
         )
+        dpdata.System.register_data_type(dt)
         dpdata.LabeledSystem.register_data_type(dt)
-    if "mag_forces" in data:
+    if "force_mags" in data:
         dt = DataType(
-            "mag_forces",
+            "force_mags",
             np.ndarray,
             (Axis.NFRAMES, Axis.NATOMS, 3),
             required=False,
             deepmd_name="force_mag",
         )
+        dpdata.System.register_data_type(dt)
         dpdata.LabeledSystem.register_data_type(dt)
+
+
+def register_move_data(data):
+    if "move" in data:
+        dt = DataType(
+            "move",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="move",
+        )
+        dpdata.System.register_data_type(dt)
 
 
 @Format.register("abacus/scf")
@@ -75,6 +91,7 @@ class AbacusSCFFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.scf.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data
 
 
@@ -86,6 +103,7 @@ class AbacusMDFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.md.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data
 
 
@@ -97,4 +115,5 @@ class AbacusRelaxFormat(Format):
     def from_labeled_system(self, file_name, **kwargs):
         data = dpdata.abacus.relax.get_frame(file_name)
         register_mag_data(data)
+        register_move_data(data)
         return data

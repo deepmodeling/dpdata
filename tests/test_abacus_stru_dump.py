@@ -29,6 +29,10 @@ class TestStruDump(unittest.TestCase):
         )
         myfilecmp(self, "abacus.scf/stru_test", "STRU_tmp")
 
+    def test_dump_stru_without_pporb(self):
+        self.system_ch4.to("stru", "STRU_tmp", mass=[12, 1])
+        self.assertTrue(os.path.isfile("STRU_tmp"))
+
     def test_dumpStruLinkFile(self):
         os.makedirs("abacus.scf/tmp", exist_ok=True)
         self.system_ch4.to(
@@ -50,6 +54,49 @@ class TestStruDump(unittest.TestCase):
 
         if os.path.isdir("abacus.scf/tmp"):
             shutil.rmtree("abacus.scf/tmp")
+
+    def test_dump_stru_pporb_mismatch(self):
+        with self.assertRaises(KeyError, msg="pp_file is a dict and lack of pp for H"):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file={"C": "C.upf", "O": "O.upf"},
+                numerical_orbital={"C": "C.orb", "H": "H.orb"},
+            )
+
+        with self.assertRaises(
+            ValueError, msg="pp_file is a list and lack of pp for H"
+        ):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file=["C.upf"],
+                numerical_orbital={"C": "C.orb", "H": "H.orb"},
+            )
+
+        with self.assertRaises(
+            KeyError, msg="numerical_orbital is a dict and lack of orbital for H"
+        ):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file={"C": "C.upf", "H": "H.upf"},
+                numerical_orbital={"C": "C.orb", "O": "O.orb"},
+            )
+
+        with self.assertRaises(
+            ValueError, msg="numerical_orbital is a list and lack of orbital for H"
+        ):
+            self.system_ch4.to(
+                "stru",
+                "STRU_tmp",
+                mass=[12, 1],
+                pp_file=["C.upf", "H.upf"],
+                numerical_orbital=["C.orb"],
+            )
 
     def test_dump_spinconstrain(self):
         self.system_ch4.to(
@@ -98,8 +145,52 @@ H
 4
 5.416431453540 4.011298860305 3.511161492417 1 1 1 mag 4.000000000000 5.000000000000 6.000000000000
 4.131588222365 4.706745191323 4.431136645083 1 1 1 mag 1.000000000000 1.000000000000 1.000000000000
-5.630930319126 5.521640894956 4.450356541303 1 1 1 mag 2.000000000000 2.000000000000 2.000000000000
-5.499851012568 4.003388899277 5.342621842622 1 1 1 mag 3.000000000000 3.000000000000 3.000000000000
+5.630930319126 5.521640894956 4.450356541303 0 0 0 mag 2.000000000000 2.000000000000 2.000000000000
+5.499851012568 4.003388899277 5.342621842622 0 0 0 mag 3.000000000000 3.000000000000 3.000000000000
+"""
+        self.assertTrue(stru_ref in c)
+
+    def test_dump_move_from_vasp(self):
+        self.system = dpdata.System()
+        self.system.from_vasp_poscar(os.path.join("poscars", "POSCAR.oh.c"))
+        self.system.to(
+            "abacus/stru",
+            "STRU_tmp",
+            pp_file={"O": "O.upf", "H": "H.upf"},
+        )
+        assert os.path.isfile("STRU_tmp")
+        with open("STRU_tmp") as f:
+            c = f.read()
+
+        stru_ref = """O
+0.0
+1
+0.000000000000 0.000000000000 0.000000000000 1 1 0
+H
+0.0
+1
+1.262185604418 0.701802783513 0.551388341420 0 0 0
+"""
+        self.assertTrue(stru_ref in c)
+
+        self.system.to(
+            "abacus/stru",
+            "STRU_tmp",
+            pp_file={"O": "O.upf", "H": "H.upf"},
+            move=[[True, False, True], [False, True, False]],
+        )
+        assert os.path.isfile("STRU_tmp")
+        with open("STRU_tmp") as f:
+            c = f.read()
+
+        stru_ref = """O
+0.0
+1
+0.000000000000 0.000000000000 0.000000000000 1 0 1
+H
+0.0
+1
+1.262185604418 0.701802783513 0.551388341420 0 1 0
 """
         self.assertTrue(stru_ref in c)
 

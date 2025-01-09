@@ -7,11 +7,24 @@ import numpy as np
 import dpdata.vasp.outcar
 import dpdata.vasp.poscar
 import dpdata.vasp.xml
+from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file, uniq_atom_names
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
+
+
+def register_move_data(data):
+    if "move" in data:
+        dt = DataType(
+            "move",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="move",
+        )
+        dpdata.System.register_data_type(dt)
 
 
 @Format.register("poscar")
@@ -25,6 +38,7 @@ class VASPPoscarFormat(Format):
             lines = [line.rstrip("\n") for line in fp]
         data = dpdata.vasp.poscar.to_system_data(lines)
         data = uniq_atom_names(data)
+        register_move_data(data)
         return data
 
     def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
@@ -99,6 +113,7 @@ class VASPOutcarFormat(Format):
                 vol = np.linalg.det(np.reshape(data["cells"][ii], [3, 3]))
                 data["virials"][ii] *= v_pref * vol
         data = uniq_atom_names(data)
+        register_move_data(data)
         return data
 
 
@@ -135,4 +150,5 @@ class VASPXMLFormat(Format):
                 vol = np.linalg.det(np.reshape(data["cells"][ii], [3, 3]))
                 data["virials"][ii] *= v_pref * vol
         data = uniq_atom_names(data)
+        register_move_data(data)
         return data
