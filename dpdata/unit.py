@@ -4,11 +4,49 @@ from abc import ABC
 
 from scipy import constants  # noqa: TID253
 
-AVOGADRO = constants.Avogadro  # Avagadro constant
-ELE_CHG = constants.elementary_charge  # Elementary Charge, in C
-BOHR = constants.value("atomic unit of length")  # Bohr, in m
-HARTREE = constants.value("atomic unit of energy")  # Hartree, in Jole
-RYDBERG = constants.Rydberg * constants.h * constants.c  # Rydberg, in Jole
+physical_constants = {}
+# use constants up to 2018
+physical_constants.update(constants._codata._physical_constants_2002)
+physical_constants.update(constants._codata._physical_constants_2006)
+physical_constants.update(constants._codata._physical_constants_2010)
+physical_constants.update(constants._codata._physical_constants_2014)
+physical_constants.update(constants._codata._physical_constants_2018)
+
+
+# copied from scipy
+def scipy_constant_value(key: str) -> float:
+    """Value in physical_constants indexed by key.
+
+    Parameters
+    ----------
+    key : Python string
+        Key in dictionary `physical_constants`
+
+    Returns
+    -------
+    value : float
+        Value in `physical_constants` corresponding to `key`
+
+    Examples
+    --------
+    >>> from scipy import constants
+    >>> constants.value('elementary charge')
+    1.602176634e-19
+
+    """
+    constants._codata._check_obsolete(key)
+    return physical_constants[key][0]
+
+
+AVOGADRO = scipy_constant_value("Avogadro constant")  # Avagadro constant
+ELE_CHG = scipy_constant_value("elementary charge")  # Elementary Charge, in C
+BOHR = scipy_constant_value("atomic unit of length")  # Bohr, in m
+HARTREE = scipy_constant_value("atomic unit of energy")  # Hartree, in Jole
+RYDBERG = (
+    scipy_constant_value("Rydberg constant")
+    * scipy_constant_value("Planck constant")
+    * scipy_constant_value("speed of light in vacuum")
+)  # Rydberg, in Jole
 
 # energy conversions
 econvs = {
