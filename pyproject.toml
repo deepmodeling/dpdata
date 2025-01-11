@@ -12,7 +12,6 @@ authors = [
 ]
 license = {file = "LICENSE"}
 classifiers = [
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -28,7 +27,7 @@ dependencies = [
     'importlib_metadata>=1.4; python_version < "3.8"',
     'typing_extensions; python_version < "3.8"',
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 readme = "README.md"
 keywords = ["lammps", "vasp", "deepmd-kit"]
 
@@ -46,7 +45,6 @@ test = [
 ase = ['ase']
 amber = [
     'parmed; python_version >= "3.8"',
-    'parmed<4; python_version < "3.8"',
 ]
 pymatgen = ['pymatgen']
 docs = [
