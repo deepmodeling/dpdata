@@ -4,10 +4,10 @@ import csv
 import os
 from collections import defaultdict
 from inspect import Parameter, Signature, cleandoc, signature
+from typing import Literal
 
 from numpydoc.docscrape import Parameter as numpydoc_Parameter
 from numpydoc.docscrape_sphinx import SphinxDocString
-from typing_extensions import Literal
 
 from dpdata.bond_order_system import BondOrderSystem
 

@@ -11,11 +11,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Iterable,
+    Literal,
     overload,
 )
 
 import numpy as np
-from typing_extensions import Literal
 
 import dpdata
 import dpdata.md.pbc

@@ -3,10 +3,9 @@ from __future__ import annotations
 import io
 import os
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Generator, overload
+from typing import TYPE_CHECKING, Generator, Literal, overload
 
 import numpy as np
-from typing_extensions import Literal
 
 from dpdata.periodic_table import Element
 
