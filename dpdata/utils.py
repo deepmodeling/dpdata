@@ -2,15 +2,11 @@ from __future__ import annotations
 
 import io
 import os
-import sys
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Generator, overload
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 import numpy as np
+from typing_extensions import Literal
 
 from dpdata.periodic_table import Element
 
