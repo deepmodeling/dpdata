@@ -1273,13 +1273,16 @@ class LabeledSystem(System):
             raise RuntimeError("Unspported data structure")
         return self.__class__.from_dict({"data": self_copy.data})
 
+    def has_forces(self) -> bool:
+        return "forces" in self.data
+
     def has_virial(self) -> bool:
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
         return "virials" in self.data
 
     def affine_map_fv(self, trans, f_idx: int | numbers.Integral):
         assert np.linalg.det(trans) != 0
-        if "forces" in self.data:
+        if self.has_forces():
             self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
         if self.has_virial():
             self.data["virials"][f_idx] = np.matmul(
