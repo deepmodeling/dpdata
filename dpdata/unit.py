@@ -2,13 +2,31 @@ from __future__ import annotations
 
 from abc import ABC
 
-from scipy import constants  # noqa: TID253
+# scipy physical constant version 2018
+physical_constants = {
+    "Avogadro constant": 6.02214076e23,  # mol^-1
+    "elementary charge": 1.602176634e-19,  # C
+    "atomic unit of length": 5.29177210903e-11,  # m
+    "atomic unit of energy": 4.3597447222071e-18,  # J
+    "Rydberg constant": 10973731.568160,  # m^-1
+    "Planck constant": 6.62607015e-34,  # J·s
+    "speed of light in vacuum": 299792458,  # m·s^-1
+}
 
-AVOGADRO = constants.Avogadro  # Avagadro constant
-ELE_CHG = constants.elementary_charge  # Elementary Charge, in C
-BOHR = constants.value("atomic unit of length")  # Bohr, in m
-HARTREE = constants.value("atomic unit of energy")  # Hartree, in Jole
-RYDBERG = constants.Rydberg * constants.h * constants.c  # Rydberg, in Jole
+
+def scipy_constant_value(key: str) -> float:
+    return physical_constants[key]
+
+
+AVOGADRO = scipy_constant_value("Avogadro constant")  # Avagadro constant
+ELE_CHG = scipy_constant_value("elementary charge")  # Elementary Charge, in C
+BOHR = scipy_constant_value("atomic unit of length")  # Bohr, in m
+HARTREE = scipy_constant_value("atomic unit of energy")  # Hartree, in Jole
+RYDBERG = (
+    scipy_constant_value("Rydberg constant")
+    * scipy_constant_value("Planck constant")
+    * scipy_constant_value("speed of light in vacuum")
+)  # Rydberg, in Jole
 
 # energy conversions
 econvs = {
