@@ -1279,7 +1279,8 @@ class LabeledSystem(System):
 
     def affine_map_fv(self, trans, f_idx: int | numbers.Integral):
         assert np.linalg.det(trans) != 0
-        self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
+        if "forces" in self.data:
+            self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
         if self.has_virial():
             self.data["virials"][f_idx] = np.matmul(
                 trans.T, np.matmul(self.data["virials"][f_idx], trans)
