@@ -161,7 +161,7 @@ class QuipGapxyzSystems:
                         list(filter(bool, field_dict["virial"].split(" ")))
                     ).reshape(3, 3)
                 ]
-            ).astype("float32")
+            ).astype(np.float64)
         else:
             virials = None
 
@@ -175,10 +175,10 @@ class QuipGapxyzSystems:
                     3, 3
                 )
             ]
-        ).astype("float32")
-        info_dict["coords"] = np.array([coords_array]).astype("float32")
-        info_dict["energies"] = np.array([field_dict["energy"]]).astype("float32")
-        info_dict["forces"] = np.array([force_array]).astype("float32")
+        ).astype(np.float64)
+        info_dict["coords"] = np.array([coords_array]).astype(np.float64)
+        info_dict["energies"] = np.array([field_dict["energy"]]).astype(np.float64)
+        info_dict["forces"] = np.array([force_array]).astype(np.float64)
         if virials is not None:
             info_dict["virials"] = virials
         info_dict["orig"] = np.zeros(3)
