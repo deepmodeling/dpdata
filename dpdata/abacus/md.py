@@ -56,9 +56,9 @@ def get_coords_from_dump(dumplines, natoms):
     if "VIRIAL" in dumplines[6]:
         calc_stress = True
         check_line = 10
-    assert (
-        "POSITION" in dumplines[check_line]
-    ), "keywords 'POSITION' cannot be found in the 6th line. Please check."
+    assert "POSITION" in dumplines[check_line], (
+        "keywords 'POSITION' cannot be found in the 6th line. Please check."
+    )
     if "FORCE" in dumplines[check_line]:
         calc_force = True
 

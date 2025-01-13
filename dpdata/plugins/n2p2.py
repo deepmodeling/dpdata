@@ -85,18 +85,18 @@ class N2P2Format(Format):
                     energy = None
                 elif line.lower() == "end":
                     # If we are at the end of a section, process the section
-                    assert (
-                        len(coord) == len(atype) == len(force)
-                    ), "Number of atoms, atom types, and forces must match."
+                    assert len(coord) == len(atype) == len(force), (
+                        "Number of atoms, atom types, and forces must match."
+                    )
 
                     # Check if the number of atoms is consistent across all frames
                     natom = len(coord)
                     if natom0 is None:
                         natom0 = natom
                     else:
-                        assert (
-                            natom == natom0
-                        ), "The number of atoms in all frames must be the same."
+                        assert natom == natom0, (
+                            "The number of atoms in all frames must be the same."
+                        )
 
                     # Check if the number of atoms of each type is consistent across all frames
                     atype = np.array(atype)
@@ -108,9 +108,9 @@ class N2P2Format(Format):
                     if natoms0 is None:
                         natoms0 = natoms
                     else:
-                        assert (
-                            natoms == natoms0
-                        ), "The number of atoms of each type in all frames must be the same."
+                        assert natoms == natoms0, (
+                            "The number of atoms of each type in all frames must be the same."
+                        )
                     if atom_types0 is None:
                         atom_types0 = atype
                     atom_order = match_indices(atom_types0, atype)
