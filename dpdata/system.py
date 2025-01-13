@@ -1316,7 +1316,8 @@ class LabeledSystem(System):
             raise RuntimeError("high_sys should be LabeledSystem")
         corrected_sys = self.copy()
         corrected_sys.data["energies"] = hl_sys.data["energies"] - self.data["energies"]
-        corrected_sys.data["forces"] = hl_sys.data["forces"] - self.data["forces"]
+        if "forces" in self.data and "forces" in hl_sys.data:
+            corrected_sys.data["forces"] = hl_sys.data["forces"] - self.data["forces"]
         if "virials" in self.data and "virials" in hl_sys.data:
             corrected_sys.data["virials"] = (
                 hl_sys.data["virials"] - self.data["virials"]
