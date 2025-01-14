@@ -55,12 +55,12 @@ class ErrorsBase(metaclass=ABCMeta):
     SYSTEM_TYPE = object
 
     def __init__(self, system_1: SYSTEM_TYPE, system_2: SYSTEM_TYPE) -> None:
-        assert isinstance(
-            system_1, self.SYSTEM_TYPE
-        ), f"system_1 should be {self.SYSTEM_TYPE.__name__}"
-        assert isinstance(
-            system_2, self.SYSTEM_TYPE
-        ), f"system_2 should be {self.SYSTEM_TYPE.__name__}"
+        assert isinstance(system_1, self.SYSTEM_TYPE), (
+            f"system_1 should be {self.SYSTEM_TYPE.__name__}"
+        )
+        assert isinstance(system_2, self.SYSTEM_TYPE), (
+            f"system_2 should be {self.SYSTEM_TYPE.__name__}"
+        )
         self.system_1 = system_1
         self.system_2 = system_2
 
