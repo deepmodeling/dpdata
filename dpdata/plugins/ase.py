@@ -175,7 +175,9 @@ class ASEStructureFormat(Format):
                 cell=data["cells"][ii],
             )
 
-            results = {"energy": data["energies"][ii], "forces": data["forces"][ii]}
+            results = {"energy": data["energies"][ii]}
+            if "forces" in data:
+                results["forces"] = data["forces"][ii]
             if "virials" in data:
                 # convert to GPa as this is ase convention
                 # v_pref = 1 * 1e4 / 1.602176621e6
