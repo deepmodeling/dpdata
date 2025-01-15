@@ -299,7 +299,9 @@ class ASETrajFormat(Format):
                 dict_frames["energies"], tmp["energies"][0]
             )
             if "forces" in tmp.keys() and "forces" in dict_frames.keys():
-                dict_frames["forces"] = np.append(dict_frames["forces"], tmp["forces"][0])
+                dict_frames["forces"] = np.append(
+                    dict_frames["forces"], tmp["forces"][0]
+                )
             if "virials" in tmp.keys() and "virials" in dict_frames.keys():
                 dict_frames["virials"] = np.append(
                     dict_frames["virials"], tmp["virials"][0]
