@@ -28,6 +28,6 @@ class TestMSD(unittest.TestCase):
         # print(msd)
         ncomp = msd.shape[0]
         for ii in range(ncomp):
-            self.assertAlmostEqual(msd0[ii], ii * ii, msg="msd0[%d]" % ii)
-            self.assertAlmostEqual(msd1[ii], ii * ii * 4, msg="msd1[%d]" % ii)
-            self.assertAlmostEqual(msd[ii], (msd0[ii] + msd1[ii]) * 0.5, "msd[%d]" % ii)
+            self.assertAlmostEqual(msd0[ii], ii * ii, msg="msd0[%d]" % ii)  # noqa: UP031
+            self.assertAlmostEqual(msd1[ii], ii * ii * 4, msg="msd1[%d]" % ii)  # noqa: UP031
+            self.assertAlmostEqual(msd[ii], (msd0[ii] + msd1[ii]) * 0.5, "msd[%d]" % ii)  # noqa: UP031

@@ -119,7 +119,7 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     for ii in range(nsets):
         set_stt = ii * set_size
         set_end = (ii + 1) * set_size
-        set_folder = os.path.join(folder, "set.%03d" % ii)
+        set_folder = os.path.join(folder, "set.%03d" % ii)  # noqa: UP031
         os.makedirs(set_folder)
     try:
         os.remove(os.path.join(folder, "nopbc"))
@@ -158,5 +158,5 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
         for ii in range(nsets):
             set_stt = ii * set_size
             set_end = (ii + 1) * set_size
-            set_folder = os.path.join(folder, "set.%03d" % ii)
+            set_folder = os.path.join(folder, "set.%03d" % ii)  # noqa: UP031
             np.save(os.path.join(set_folder, dtype.deepmd_name), ddata[set_stt:set_end])

@@ -1,5 +1,5 @@
 INPUT_PARAMETERS
-suffix	ABACUS
+suffix	ABACUS-nspin2
 calculation	scf
 ecutwfc	100
 scf_thr	1e-07
@@ -14,7 +14,7 @@ basis_type	lcao
 symmetry	0
 noncolin	1
 lspinorb	0
-nspin	4
+nspin	2
 out_mul	true
 sc_mag_switch	1
 decay_grad_switch	1

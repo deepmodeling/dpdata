@@ -7,9 +7,9 @@ import numpy as np
 
 
 def check_name(item, name):
-    assert (
-        item.attrib["name"] == name
-    ), "item attrib '{}' dose not math required '{}'".format(item.attrib["name"], name)
+    assert item.attrib["name"] == name, (
+        "item attrib '{}' dose not math required '{}'".format(item.attrib["name"], name)
+    )
 
 
 def get_varray(varray):
@@ -58,7 +58,7 @@ def formulate_config(eles, types, posi, cell, ener, forc, strs_):
     natoms = len(types)
     ntypes = len(eles)
     ret = ""
-    ret += "#N %d %d\n" % (natoms, ntypes - 1)
+    ret += "#N %d %d\n" % (natoms, ntypes - 1)  # noqa: UP031
     ret += "#C "
     for ii in eles:
         ret += " " + ii
@@ -73,7 +73,7 @@ def formulate_config(eles, types, posi, cell, ener, forc, strs_):
     ret += "#F\n"
     for ii in range(natoms):
         sp = np.matmul(cell.T, posi[ii])
-        ret += "%d" % (types[ii] - 1)
+        ret += "%d" % (types[ii] - 1)  # noqa: UP031
         ret += f" {sp[0]:12.6f} {sp[1]:12.6f} {sp[2]:12.6f}"
         ret += f" {forc[ii][0]:12.6f} {forc[ii][1]:12.6f} {forc[ii][2]:12.6f}"
         ret += "\n"

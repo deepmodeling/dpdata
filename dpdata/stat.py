@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
 from functools import lru_cache
+from typing import Any
 
 import numpy as np
 
 from dpdata.system import LabeledSystem, MultiSystems
 
 
-def mae(errors: np.ndarray) -> np.float64:
+def mae(errors: np.ndarray) -> np.floating[Any]:
     """Compute the mean absolute error (MAE).
 
     Parameters
@@ -18,13 +19,13 @@ def mae(errors: np.ndarray) -> np.float64:
 
     Returns
     -------
-    np.float64
+    floating[Any]
         mean absolute error (MAE)
     """
     return np.mean(np.abs(errors))
 
 
-def rmse(errors: np.ndarray) -> np.float64:
+def rmse(errors: np.ndarray) -> np.floating[Any]:
     """Compute the root mean squared error (RMSE).
 
     Parameters
@@ -34,7 +35,7 @@ def rmse(errors: np.ndarray) -> np.float64:
 
     Returns
     -------
-    np.float64
+    floating[Any]
         root mean squared error (RMSE)
     """
     return np.sqrt(np.mean(np.square(errors)))
@@ -54,12 +55,12 @@ class ErrorsBase(metaclass=ABCMeta):
     SYSTEM_TYPE = object
 
     def __init__(self, system_1: SYSTEM_TYPE, system_2: SYSTEM_TYPE) -> None:
-        assert isinstance(
-            system_1, self.SYSTEM_TYPE
-        ), f"system_1 should be {self.SYSTEM_TYPE.__name__}"
-        assert isinstance(
-            system_2, self.SYSTEM_TYPE
-        ), f"system_2 should be {self.SYSTEM_TYPE.__name__}"
+        assert isinstance(system_1, self.SYSTEM_TYPE), (
+            f"system_1 should be {self.SYSTEM_TYPE.__name__}"
+        )
+        assert isinstance(system_2, self.SYSTEM_TYPE), (
+            f"system_2 should be {self.SYSTEM_TYPE.__name__}"
+        )
         self.system_1 = system_1
         self.system_2 = system_2
 
@@ -74,22 +75,22 @@ class ErrorsBase(metaclass=ABCMeta):
         """Force errors."""
 
     @property
-    def e_mae(self) -> np.float64:
+    def e_mae(self) -> np.floating[Any]:
         """Energy MAE."""
         return mae(self.e_errors)
 
     @property
-    def e_rmse(self) -> np.float64:
+    def e_rmse(self) -> np.floating[Any]:
         """Energy RMSE."""
         return rmse(self.e_errors)
 
     @property
-    def f_mae(self) -> np.float64:
+    def f_mae(self) -> np.floating[Any]:
         """Force MAE."""
         return mae(self.f_errors)
 
     @property
-    def f_rmse(self) -> np.float64:
+    def f_rmse(self) -> np.floating[Any]:
         """Force RMSE."""
         return rmse(self.f_errors)
 

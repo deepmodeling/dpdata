@@ -226,7 +226,7 @@ class System:
             dd.check(self)
         if sum(self.get_atom_numbs()) != self.get_natoms():
             raise DataError(
-                "Sum of atom_numbs (%d) is not equal to natoms (%d)."
+                "Sum of atom_numbs (%d) is not equal to natoms (%d)."  # noqa: UP031
                 % (sum(self.get_atom_numbs()), self.get_natoms())
             )
 
@@ -281,8 +281,8 @@ class System:
         ret = "Data Summary"
         ret += "\nUnlabeled System"
         ret += "\n-------------------"
-        ret += "\nFrame Numbers     : %d" % self.get_nframes()
-        ret += "\nAtom Numbers      : %d" % self.get_natoms()
+        ret += "\nFrame Numbers     : %d" % self.get_nframes()  # noqa: UP031
+        ret += "\nAtom Numbers      : %d" % self.get_natoms()  # noqa: UP031
         ret += "\nElement List      :"
         ret += "\n-------------------"
         ret += "\n" + "  ".join(map(str, self.get_atom_names()))
@@ -1049,6 +1049,7 @@ class System:
             atom_idx = self.data["atom_types"] == idx
             removed_atom_idx.append(atom_idx)
         picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
+        assert not isinstance(picked_atom_idx, np.bool_)
         new_sys = self.pick_atom_idx(picked_atom_idx)
         # let's remove atom_names
         # firstly, rearrange atom_names and put these atom_names in the end
@@ -1208,7 +1209,11 @@ class LabeledSystem(System):
     DTYPES: tuple[DataType, ...] = System.DTYPES + (
         DataType("energies", np.ndarray, (Axis.NFRAMES,), deepmd_name="energy"),
         DataType(
-            "forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), deepmd_name="force"
+            "forces",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="force",
         ),
         DataType(
             "virials",
@@ -1243,8 +1248,8 @@ class LabeledSystem(System):
         ret = "Data Summary"
         ret += "\nLabeled System"
         ret += "\n-------------------"
-        ret += "\nFrame Numbers      : %d" % self.get_nframes()
-        ret += "\nAtom Numbers       : %d" % self.get_natoms()
+        ret += "\nFrame Numbers      : %d" % self.get_nframes()  # noqa: UP031
+        ret += "\nAtom Numbers       : %d" % self.get_natoms()  # noqa: UP031
         status = "Yes" if self.has_virial() else "No"
         ret += f"\nIncluding Virials  : {status}"
         ret += "\nElement List       :"
@@ -1268,13 +1273,17 @@ class LabeledSystem(System):
             raise RuntimeError("Unspported data structure")
         return self.__class__.from_dict({"data": self_copy.data})
 
+    def has_forces(self) -> bool:
+        return "forces" in self.data
+
     def has_virial(self) -> bool:
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
         return "virials" in self.data
 
     def affine_map_fv(self, trans, f_idx: int | numbers.Integral):
         assert np.linalg.det(trans) != 0
-        self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
+        if self.has_forces():
+            self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
         if self.has_virial():
             self.data["virials"][f_idx] = np.matmul(
                 trans.T, np.matmul(self.data["virials"][f_idx], trans)
@@ -1307,7 +1316,8 @@ class LabeledSystem(System):
             raise RuntimeError("high_sys should be LabeledSystem")
         corrected_sys = self.copy()
         corrected_sys.data["energies"] = hl_sys.data["energies"] - self.data["energies"]
-        corrected_sys.data["forces"] = hl_sys.data["forces"] - self.data["forces"]
+        if "forces" in self.data and "forces" in hl_sys.data:
+            corrected_sys.data["forces"] = hl_sys.data["forces"] - self.data["forces"]
         if "virials" in self.data and "virials" in hl_sys.data:
             corrected_sys.data["virials"] = (
                 hl_sys.data["virials"] - self.data["virials"]
