@@ -95,7 +95,7 @@ class VASPOutcarFormat(Format):
             data["cells"],
             data["coords"],
             data["energies"],
-            data["forces"],
+            tmp_force,
             tmp_virial,
         ) = dpdata.vasp.outcar.get_frames(
             file_name,
@@ -104,6 +104,8 @@ class VASPOutcarFormat(Format):
             ml=ml,
             convergence_check=convergence_check,
         )
+        if tmp_force is not None:
+            data["forces"] = tmp_force
         if tmp_virial is not None:
             data["virials"] = tmp_virial
         # scale virial to the unit of eV
