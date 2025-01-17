@@ -34,9 +34,7 @@ class PyMatgenStructureFormat(Format):
         except ModuleNotFoundError as e:
             raise ImportError("No module pymatgen.Structure") from e
 
-        species = []
-        for name, numb in zip(data["atom_names"], data["atom_numbs"]):
-            species.extend([name] * numb)
+        species = [data["atom_names"][tt] for tt in data["atom_types"]]
         for ii in range(data["coords"].shape[0]):
             structure = Structure(
                 data["cells"][ii],
