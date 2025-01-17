@@ -5,20 +5,15 @@ import glob
 import hashlib
 import numbers
 import os
-import sys
 import warnings
 from copy import deepcopy
 from typing import (
     TYPE_CHECKING,
     Any,
     Iterable,
+    Literal,
     overload,
 )
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 import numpy as np
 
