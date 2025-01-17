@@ -161,9 +161,9 @@ def analyze_block(lines, ntot, nelm, ml=False):
                 not lines[idx + in_kB_index].split()[0:2] == ["in", "kB"]
             ):
                 in_kB_index += 1
-            assert idx + in_kB_index < len(
-                lines
-            ), 'ERROR: "in kB" is not found in OUTCAR. Unable to extract virial.'
+            assert idx + in_kB_index < len(lines), (
+                'ERROR: "in kB" is not found in OUTCAR. Unable to extract virial.'
+            )
             tmp_v = [float(ss) for ss in lines[idx + in_kB_index].split()[2:8]]
             virial = np.zeros([3, 3])
             virial[0][0] = tmp_v[0]

@@ -175,7 +175,9 @@ class ASEStructureFormat(Format):
                 cell=data["cells"][ii],
             )
 
-            results = {"energy": data["energies"][ii], "forces": data["forces"][ii]}
+            results = {"energy": data["energies"][ii]}
+            if "forces" in data:
+                results["forces"] = data["forces"][ii]
             if "virials" in data:
                 # convert to GPa as this is ase convention
                 # v_pref = 1 * 1e4 / 1.602176621e6
@@ -296,7 +298,10 @@ class ASETrajFormat(Format):
             dict_frames["energies"] = np.append(
                 dict_frames["energies"], tmp["energies"][0]
             )
-            dict_frames["forces"] = np.append(dict_frames["forces"], tmp["forces"][0])
+            if "forces" in tmp.keys() and "forces" in dict_frames.keys():
+                dict_frames["forces"] = np.append(
+                    dict_frames["forces"], tmp["forces"][0]
+                )
             if "virials" in tmp.keys() and "virials" in dict_frames.keys():
                 dict_frames["virials"] = np.append(
                     dict_frames["virials"], tmp["virials"][0]
@@ -305,7 +310,8 @@ class ASETrajFormat(Format):
         ## Correct the shape of numpy arrays
         dict_frames["cells"] = dict_frames["cells"].reshape(-1, 3, 3)
         dict_frames["coords"] = dict_frames["coords"].reshape(len(sub_traj), -1, 3)
-        dict_frames["forces"] = dict_frames["forces"].reshape(len(sub_traj), -1, 3)
+        if "forces" in dict_frames.keys():
+            dict_frames["forces"] = dict_frames["forces"].reshape(len(sub_traj), -1, 3)
         if "virials" in dict_frames.keys():
             dict_frames["virials"] = dict_frames["virials"].reshape(-1, 3, 3)
 

@@ -166,7 +166,8 @@ class HybridDriver(Driver):
                 labeled_data = lb_data.copy()
             else:
                 labeled_data["energies"] += lb_data["energies"]
-                labeled_data["forces"] += lb_data["forces"]
+                if "forces" in labeled_data and "forces" in lb_data:
+                    labeled_data["forces"] += lb_data["forces"]
                 if "virials" in labeled_data and "virials" in lb_data:
                     labeled_data["virials"] += lb_data["virials"]
         return labeled_data
