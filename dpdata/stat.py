@@ -116,7 +116,7 @@ class Errors(ErrorsBase):
     SYSTEM_TYPE = LabeledSystem
 
     @property
-    @lru_cache()
+    @lru_cache
     def e_errors(self) -> np.ndarray:
         """Energy errors."""
         assert isinstance(self.system_1, self.SYSTEM_TYPE)
@@ -124,7 +124,7 @@ class Errors(ErrorsBase):
         return self.system_1["energies"] - self.system_2["energies"]
 
     @property
-    @lru_cache()
+    @lru_cache
     def f_errors(self) -> np.ndarray:
         """Force errors."""
         assert isinstance(self.system_1, self.SYSTEM_TYPE)
@@ -153,7 +153,7 @@ class MultiErrors(ErrorsBase):
     SYSTEM_TYPE = MultiSystems
 
     @property
-    @lru_cache()
+    @lru_cache
     def e_errors(self) -> np.ndarray:
         """Energy errors."""
         assert isinstance(self.system_1, self.SYSTEM_TYPE)
@@ -166,7 +166,7 @@ class MultiErrors(ErrorsBase):
         return np.concatenate(errors)
 
     @property
-    @lru_cache()
+    @lru_cache
     def f_errors(self) -> np.ndarray:
         """Force errors."""
         assert isinstance(self.system_1, self.SYSTEM_TYPE)
