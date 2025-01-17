@@ -7,9 +7,9 @@ import numpy as np
 
 
 def check_name(item, name):
-    assert (
-        item.attrib["name"] == name
-    ), "item attrib '{}' dose not math required '{}'".format(item.attrib["name"], name)
+    assert item.attrib["name"] == name, (
+        "item attrib '{}' dose not math required '{}'".format(item.attrib["name"], name)
+    )
 
 
 def get_varray(varray):

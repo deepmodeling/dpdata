@@ -118,15 +118,15 @@ def _make_comp_ms_test_func(comp_sys_test_func):
     """
 
     def comp_ms_test_func(iobj):
-        assert hasattr(iobj, "ms_1") and hasattr(
-            iobj, "ms_2"
-        ), "Multi-system objects must be present"
+        assert hasattr(iobj, "ms_1") and hasattr(iobj, "ms_2"), (
+            "Multi-system objects must be present"
+        )
         iobj.assertEqual(len(iobj.ms_1), len(iobj.ms_2))
         keys = [ii.formula for ii in iobj.ms_1]
         keys_2 = [ii.formula for ii in iobj.ms_2]
-        assert sorted(keys) == sorted(
-            keys_2
-        ), f"Keys of two MS are not equal: {keys} != {keys_2}"
+        assert sorted(keys) == sorted(keys_2), (
+            f"Keys of two MS are not equal: {keys} != {keys_2}"
+        )
         for kk in keys:
             iobj.system_1 = iobj.ms_1[kk]
             iobj.system_2 = iobj.ms_2[kk]
@@ -197,17 +197,17 @@ class IsNoPBC:
 
 class MSAllIsPBC:
     def test_is_pbc(self):
-        assert hasattr(self, "ms_1") and hasattr(
-            self, "ms_2"
-        ), "Multi-system objects must be present and iterable"
+        assert hasattr(self, "ms_1") and hasattr(self, "ms_2"), (
+            "Multi-system objects must be present and iterable"
+        )
         self.assertTrue(all([not ss.nopbc for ss in self.ms_1]))
         self.assertTrue(all([not ss.nopbc for ss in self.ms_2]))
 
 
 class MSAllIsNoPBC:
     def test_is_nopbc(self):
-        assert hasattr(self, "ms_1") and hasattr(
-            self, "ms_2"
-        ), "Multi-system objects must be present and iterable"
+        assert hasattr(self, "ms_1") and hasattr(self, "ms_2"), (
+            "Multi-system objects must be present and iterable"
+        )
         self.assertTrue(all([ss.nopbc for ss in self.ms_1]))
         self.assertTrue(all([ss.nopbc for ss in self.ms_2]))
