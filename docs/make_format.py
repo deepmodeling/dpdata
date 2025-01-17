@@ -2,14 +2,9 @@ from __future__ import annotations
 
 import csv
 import os
-import sys
 from collections import defaultdict
 from inspect import Parameter, Signature, cleandoc, signature
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
+from typing import Literal
 
 from numpydoc.docscrape import Parameter as numpydoc_Parameter
 from numpydoc.docscrape_sphinx import SphinxDocString
