@@ -30,14 +30,15 @@ class PyMatgenStructureFormat(Format):
         """Convert System to Pymatgen Structure obj."""
         structures = []
         try:
-            from pymatgen.core import Structure
+            from pymatgen.core import Lattice, Structure
         except ModuleNotFoundError as e:
             raise ImportError("No module pymatgen.Structure") from e
 
         species = [data["atom_names"][tt] for tt in data["atom_types"]]
+        pbc = not (data.get("nopbc", False))
         for ii in range(data["coords"].shape[0]):
             structure = Structure(
-                data["cells"][ii],
+                Lattice(data["cells"][ii], pbc=[pbc] * 3),
                 species,
                 data["coords"][ii],
                 coords_are_cartesian=True,

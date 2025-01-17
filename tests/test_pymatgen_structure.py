@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import unittest
 
-from comp_sys import CompSys, IsPBC
+from comp_sys import CompSys, IsNoPBC, IsPBC
 from context import dpdata
 
 try:
@@ -32,6 +32,21 @@ class TestFormPytmatgen(unittest.TestCase, CompSys):
 class TestFormToPytmatgen(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
         self.system = dpdata.System("pymatgen_data/deepmd/", fmt="deepmd/npy")
+        self.system_1 = self.system
+        self.system_2 = dpdata.System().from_pymatgen_structure(
+            self.system.to("pymatgen/structure")[0]
+        )
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+
+@unittest.skipIf(not exist_module, "skip pymatgen")
+class TestFormToPytmatgenNopbc(unittest.TestCase, CompSys, IsNoPBC):
+    def setUp(self):
+        self.system = dpdata.System("pymatgen_data/deepmd/", fmt="deepmd/npy")
+        self.system.data["nopbc"] = True
         self.system_1 = self.system
         self.system_2 = dpdata.System().from_pymatgen_structure(
             self.system.to("pymatgen/structure")[0]
