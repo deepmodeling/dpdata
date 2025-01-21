@@ -127,6 +127,19 @@ def get_posi(lines):
     return np.array(posis)
 
 
+def get_spins(lines):
+    atom_lines = get_atoms(lines)
+    if len(atom_lines[0].split()) < 8:
+        return None
+    spins_ori = []
+    spins_norm = []
+    for ii in atom_lines:
+        iis = ii.split()
+        spins_ori.append([float(jj) for jj in iis[5:8]])
+        spins_norm.append([float(iis[-1])])
+    return np.array(spins_ori) * np.array(spins_norm)
+
+
 def get_lmpbox(lines):
     box_info = []
     tilt = np.zeros(3)
@@ -154,7 +167,7 @@ def system_data(lines, type_map=None, type_idx_zero=True):
     system["atom_names"] = []
     if type_map is None:
         for ii in range(len(system["atom_numbs"])):
-            system["atom_names"].append("Type_%d" % ii)
+            system["atom_names"].append("Type_%d" % ii)  # noqa: UP031
     else:
         assert len(type_map) >= len(system["atom_numbs"])
         for ii in range(len(system["atom_numbs"])):
@@ -168,6 +181,11 @@ def system_data(lines, type_map=None, type_idx_zero=True):
     system["coords"] = [get_posi(lines)]
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
+
+    spins = get_spins(lines)
+    if spins is not None:
+        system["spins"] = np.array([spins])
+
     return system
 
 
@@ -180,27 +198,27 @@ def from_system_data(system, f_idx=0):
     ret += "\n"
     natoms = sum(system["atom_numbs"])
     ntypes = len(system["atom_numbs"])
-    ret += "%d atoms\n" % natoms
-    ret += "%d atom types\n" % ntypes
+    ret += "%d atoms\n" % natoms  # noqa: UP031
+    ret += "%d atom types\n" % ntypes  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " xlo xhi\n") % (
         0,
         system["cells"][f_idx][0][0],
-    )
+    )  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " ylo yhi\n") % (
         0,
         system["cells"][f_idx][1][1],
-    )
+    )  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " zlo zhi\n") % (
         0,
         system["cells"][f_idx][2][2],
-    )
+    )  # noqa: UP031
     ret += (
         ptr_float_fmt + " " + ptr_float_fmt + " " + ptr_float_fmt + " xy xz yz\n"
     ) % (
         system["cells"][f_idx][1][0],
         system["cells"][f_idx][2][0],
         system["cells"][f_idx][2][1],
-    )
+    )  # noqa: UP031
     ret += "\n"
     ret += "Atoms # atomic\n"
     ret += "\n"
@@ -215,15 +233,56 @@ def from_system_data(system, f_idx=0):
         + " "
         + ptr_float_fmt
         + "\n"
-    )
+    )  # noqa: UP031
+
+    if "spins" in system:
+        coord_fmt = (
+            coord_fmt.strip("\n")
+            + " "
+            + ptr_float_fmt
+            + " "
+            + ptr_float_fmt
+            + " "
+            + ptr_float_fmt
+            + " "
+            + ptr_float_fmt
+            + "\n"
+        )  # noqa: UP031
+        spins_norm = np.linalg.norm(system["spins"][f_idx], axis=1)
     for ii in range(natoms):
-        ret += coord_fmt % (
-            ii + 1,
-            system["atom_types"][ii] + 1,
-            system["coords"][f_idx][ii][0] - system["orig"][0],
-            system["coords"][f_idx][ii][1] - system["orig"][1],
-            system["coords"][f_idx][ii][2] - system["orig"][2],
-        )
+        if "spins" in system:
+            if spins_norm[ii] != 0:
+                ret += coord_fmt % (
+                    ii + 1,
+                    system["atom_types"][ii] + 1,
+                    system["coords"][f_idx][ii][0] - system["orig"][0],
+                    system["coords"][f_idx][ii][1] - system["orig"][1],
+                    system["coords"][f_idx][ii][2] - system["orig"][2],
+                    system["spins"][f_idx][ii][0] / spins_norm[ii],
+                    system["spins"][f_idx][ii][1] / spins_norm[ii],
+                    system["spins"][f_idx][ii][2] / spins_norm[ii],
+                    spins_norm[ii],
+                )  # noqa: UP031
+            else:
+                ret += coord_fmt % (
+                    ii + 1,
+                    system["atom_types"][ii] + 1,
+                    system["coords"][f_idx][ii][0] - system["orig"][0],
+                    system["coords"][f_idx][ii][1] - system["orig"][1],
+                    system["coords"][f_idx][ii][2] - system["orig"][2],
+                    system["spins"][f_idx][ii][0],
+                    system["spins"][f_idx][ii][1],
+                    system["spins"][f_idx][ii][2] + 1,
+                    spins_norm[ii],
+                )  # noqa: UP031
+        else:
+            ret += coord_fmt % (
+                ii + 1,
+                system["atom_types"][ii] + 1,
+                system["coords"][f_idx][ii][0] - system["orig"][0],
+                system["coords"][f_idx][ii][1] - system["orig"][1],
+                system["coords"][f_idx][ii][2] - system["orig"][2],
+            )  # noqa: UP031
     return ret
 
 

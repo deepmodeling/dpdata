@@ -109,8 +109,8 @@ class GaussianDriver(Driver):
         labeled_system = dpdata.LabeledSystem()
         with tempfile.TemporaryDirectory() as d:
             for ii, ss in enumerate(ori_system):
-                inp_fn = os.path.join(d, "%d.gjf" % ii)
-                out_fn = os.path.join(d, "%d.log" % ii)
+                inp_fn = os.path.join(d, "%d.gjf" % ii)  # noqa: UP031
+                out_fn = os.path.join(d, "%d.log" % ii)  # noqa: UP031
                 ss.to("gaussian/gjf", inp_fn, **self.kwargs)
                 try:
                     sp.check_output([*self.gaussian_exec.split(), inp_fn])

@@ -15,9 +15,9 @@ def to_system_data(folder, type_map=None, labels=True):
     if type_map is not None:
         assert isinstance(type_map, list)
         missing_type = [i for i in old_type_map if i not in type_map]
-        assert (
-            not missing_type
-        ), f"These types are missing in selected type_map: {missing_type} !"
+        assert not missing_type, (
+            f"These types are missing in selected type_map: {missing_type} !"
+        )
         index_map = np.array([type_map.index(i) for i in old_type_map])
         data["atom_names"] = type_map.copy()
     else:

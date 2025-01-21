@@ -12,7 +12,6 @@ authors = [
 ]
 license = {file = "LICENSE"}
 classifiers = [
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -28,7 +27,7 @@ dependencies = [
     'importlib_metadata>=1.4; python_version < "3.8"',
     'typing_extensions; python_version < "3.8"',
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 readme = "README.md"
 keywords = ["lammps", "vasp", "deepmd-kit"]
 
@@ -37,14 +36,11 @@ Homepage = "https://github.com/deepmodeling/dpdata"
 documentation = "https://docs.deepmodeling.com/projects/dpdata"
 repository = "https://github.com/deepmodeling/dpdata"
 
-[project.entry-points.console_scripts]
+[project.scripts]
 dpdata = "dpdata.cli:dpdata_cli"
 
 [project.optional-dependencies]
 test = [
-    # https://github.com/materialsproject/pymatgen/issues/3882
-    # https://github.com/kuelumbus/rdkit-pypi/issues/102
-    "numpy<2",
 ]
 ase = ['ase']
 amber = [
@@ -55,10 +51,10 @@ pymatgen = ['pymatgen']
 docs = [
     'sphinx',
     'recommonmark',
-    'sphinx_rtd_theme>=1.0.0rc1',
+    'sphinx-book-theme',
     'numpydoc',
     'myst-parser',
-    'deepmodeling-sphinx>=0.1.1',
+    'deepmodeling-sphinx>=0.3.0',
     'sphinx-argparse<0.5.0',
     'rdkit',
     'jupyterlite-sphinx',

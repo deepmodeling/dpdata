@@ -78,7 +78,7 @@ def load_atom_names(lines, ntypes):
 def load_celldm(lines):
     celldm = np.zeros(6)
     for ii in range(6):
-        key = "celldm(%d)" % (ii + 1)
+        key = "celldm(%d)" % (ii + 1)  # noqa: UP031
         val = load_key(lines, key)
         if val is not None:
             celldm[ii] = float(val)
@@ -169,7 +169,7 @@ def load_energy(fname, begin=0, step=1):
     data = np.loadtxt(fname)
     steps = []
     for ii in data[begin::step, 0]:
-        steps.append("%d" % ii)
+        steps.append("%d" % ii)  # noqa: UP031
     with open_file(fname) as fp:
         while True:
             line = fp.readline()
