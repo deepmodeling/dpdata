@@ -13,7 +13,6 @@ from .scf import (
     get_mag_force,
     kbar2evperang3,
 )
-
 from .stru import get_frame_from_stru
 
 # Read in geometries from an ABACUS MD trajectory.
@@ -169,7 +168,7 @@ def get_frame(fname):
     # should remove spins from STRU file
     if "spins" in data:
         data.pop("spins")
-    
+
     # This coords is not to be used.
     dump_freq = get_coord_dump_freq(inlines=inlines)
     # ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
@@ -217,7 +216,7 @@ def get_frame(fname):
         data["spins"] = magmom
     if len(magforce) > 0:
         data["force_mags"] = magforce
-    
+
     # need to expand the move.
     if "move" in data:
         data["move"] = [data["move"][0] for i in range(ndump)]

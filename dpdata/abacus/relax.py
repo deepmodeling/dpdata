@@ -14,7 +14,6 @@ from .scf import (
     get_mag_force,
     kbar2evperang3,
 )
-
 from .stru import get_frame_from_stru
 
 # Read in geometries from an ABACUS RELAX(CELL-RELAX) trajectory in OUT.XXXX/runnning_relax/cell-relax.log.
@@ -47,7 +46,7 @@ def get_coords_from_log(loglines, natoms):
             natoms_log += int(line.split()[-1])
 
     assert natoms_log > 0 and natoms_log == natoms, (
-        f"ERROR: detected atom number in log file is {natoms_log}, while the atom number in STRU file is {natoms}" 
+        f"ERROR: detected atom number in log file is {natoms_log}, while the atom number in STRU file is {natoms}"
     )
 
     energy = []
@@ -180,7 +179,7 @@ def get_frame(fname):
     with open_file(path_in) as fp:
         inlines = fp.read().split("\n")
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
-    
+
     data = get_frame_from_stru(geometry_path_in)
     natoms = sum(data["atom_numbs"])
     # should remove spins from STRU file
@@ -192,9 +191,7 @@ def get_frame(fname):
     with open_file(logf) as f1:
         lines = f1.readlines()
 
-    energy, cells, coords, force, stress, virial = get_coords_from_log(
-        lines, natoms
-    )
+    energy, cells, coords, force, stress, virial = get_coords_from_log(lines, natoms)
 
     magmom, magforce = get_mag_force(lines)
 

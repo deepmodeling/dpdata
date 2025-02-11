@@ -5,11 +5,10 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from dpdata.abacus.stru import get_frame_from_stru, make_unlabeled_stru
-
 import dpdata.abacus.md
 import dpdata.abacus.relax
 import dpdata.abacus.scf
+from dpdata.abacus.stru import get_frame_from_stru, make_unlabeled_stru
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file

@@ -8,8 +8,7 @@ import numpy as np
 
 from dpdata.utils import open_file
 
-from ..unit import EnergyConversion, LengthConversion, PressureConversion
-
+from ..unit import LengthConversion, PressureConversion
 from .stru import get_frame_from_stru
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
@@ -21,6 +20,7 @@ def CheckFile(ifile):
         print(f"Can not find file {ifile}")
         return False
     return True
+
 
 def get_geometry_in(fname, inlines):
     geometry_path_in = os.path.join(fname, "STRU")
@@ -40,6 +40,7 @@ def get_path_out(fname, inlines):
             path_out = os.path.join(fname, f"OUT.{suffix}/running_scf.log")
             break
     return path_out
+
 
 def get_energy(outlines):
     Etot = None
@@ -201,7 +202,7 @@ def get_frame(fname):
         inlines = fp.read().split("\n")
 
     geometry_path_in = get_geometry_in(fname, inlines)
-    
+
     # get OUT.ABACUS/running_scf.log
     path_out = get_path_out(fname, inlines)
     if not (CheckFile(geometry_path_in) and CheckFile(path_out)):
@@ -221,17 +222,17 @@ def get_frame(fname):
     if "spins" in data:
         data.pop("spins")
     move = data.pop("move", None)
-    
+
     # get magmom and magforce, force and stress
     magmom, magforce = get_mag_force(outlines)
     if len(magmom) > 0:
         magmom = magmom[-1:]
     if len(magforce) > 0:
         magforce = magforce[-1:]
-    
+
     force = get_force(outlines, natoms)
     stress = get_stress(outlines)
-    
+
     data["energies"] = np.array(energy)[np.newaxis]
     data["forces"] = np.empty((0,)) if force is None else force[np.newaxis, :, :]
     data["orig"] = np.zeros(3)
@@ -247,4 +248,3 @@ def get_frame(fname):
     if move is not None:
         data["move"] = move
     return data
-

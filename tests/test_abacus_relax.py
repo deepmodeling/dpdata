@@ -154,7 +154,7 @@ class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
             "abacus.relax/STRU",
         )
         self.system = dpdata.LabeledSystem("abacus.relax", fmt="abacus/relax")
-            
+
     def test_force(self):
         # with open("abacus.relax/force.v341.ref","w") as fp:
         #    for i in self.system.data["forces"]:

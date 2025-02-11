@@ -1,6 +1,11 @@
-import os, re
+from __future__ import annotations
+
+import os
+import re
 import warnings
+
 import numpy as np
+
 from ..unit import LengthConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
@@ -8,13 +13,15 @@ bohr2ang = LengthConversion("bohr", "angstrom").value()
 
 def split_stru_block(lines):
     """Split the ABACUS STRU file into blocks by keyword.
-    
+
     Args:
         lines (list): list of lines in the ABACUS STRU file.
-        
-    Returns:
-        dict: dictionary of blocks.
+
+    Returns
+    -------
+    dict: dictionary of blocks.
     """
+
     def clean_comment(line):
         return re.split("[#]", line)[0]
 
@@ -27,7 +34,7 @@ def split_stru_block(lines):
         "NUMERICAL_DESCRIPTOR",
         "PAW_FILES",
     ]
-    blocks = {i:[] for i in ABACUS_STRU_KEYS}
+    blocks = {i: [] for i in ABACUS_STRU_KEYS}
     i = 0
     while i < len(lines):
         line = clean_comment(lines[i]).strip()
@@ -43,69 +50,78 @@ def split_stru_block(lines):
             i = j
         else:
             i += 1
-    
+
     return blocks
+
 
 def parse_atomic_species_block(lines):
     """Parse the ATOMIC_SPECIES block.
-    
+
     Args:
         lines (list): list of lines in the ATOMIC_SPECIES block.
-        
-    Returns:
-        tuple: tuple of atom_names, masses, and pp_files.
-        
+
+    Returns
+    -------
+    tuple: tuple of atom_names, masses, and pp_files.
+
     """
     atom_names, masses, pp_files = [], [], []
     for line in lines:
         line = line.split()
         atom_names.append(line[0])
         masses.append(float(line[1]))
-        
-        # for standard STRU, the pseudo potential file is required, 
+
+        # for standard STRU, the pseudo potential file is required,
         # but it is not required for dpdata.
         if len(line) > 2:
             pp_files.append(line[2])
         else:
-            pp_files.append(None) 
-    
+            pp_files.append(None)
+
     return atom_names, masses, pp_files
+
 
 def parse_numerical_orbital_block(lines):
     """Parse the NUMERICAL_ORBITAL block.
-    
+
     Args:
         lines (list): list of lines in the NUMERICAL_ORBITAL block.
-        
-    Returns:
-        list: list of orbital files.
+
+    Returns
+    -------
+    list: list of orbital files.
     """
-    return [line.strip() for line in lines] 
+    return [line.strip() for line in lines]
+
 
 def parse_lattice_constant_block(lines):
     """Parse the LATTICE_CONSTANT block.
-    
+
     Args:
         lines (list): list of lines in the LATTICE_CONSTANT block.
-        
-    Returns:
-        float: the lattice constant.
+
+    Returns
+    -------
+    float: the lattice constant.
     """
     return float(lines[0])
 
+
 def parse_lattice_vectors_block(lines):
     """Parse the LATTICE_VECTORS block.
-    
+
     Args:
         lines (list): list of lines in the LATTICE_VECTORS block.
-        
-    Returns:
-        np.ndarray: the cell vectors.
+
+    Returns
+    -------
+    np.ndarray: the cell vectors.
     """
     cell = np.zeros((3, 3))
     for i, line in enumerate(lines):
         cell[i] = [float(x) for x in line.split()]
     return cell
+
 
 def parse_pos_oneline(pos_line):
     """Parses a line from the atom position block in a structure file.
@@ -252,6 +268,7 @@ def parse_pos_oneline(pos_line):
 
     return pos, move, velocity, magmom, angle1, angle2, constrain, lambda1
 
+
 def get_atom_mag_cartesian(atommag, angle1, angle2):
     """Transform atommag, angle1, angle2 to magmom in cartesian coordinates.
 
@@ -296,17 +313,19 @@ def get_atom_mag_cartesian(atommag, angle1, angle2):
             mag_norm * np.cos(np.radians(a1)),
         ]
 
+
 def get_carteisan_coords(coords, coord_type, celldm, cell):
     """Transform the atomic coordinates to cartesian coordinates.
-    
+
     Args:
         coords (np.ndarray): atomic coordinates read from the STRU file.
         coord_type (str): the coordination type, either "cartesian" or "direct".
         celldm (float): the lattice constant.
         cell (np.ndarray): the cell vectors in angstrom.
-        
-    Returns:
-        np.ndarray: the cartesian coordinates in angstrom.
+
+    Returns
+    -------
+    np.ndarray: the cartesian coordinates in angstrom.
     """
     if coord_type == "cartesian":
         return coords * celldm * bohr2ang
@@ -318,20 +337,20 @@ def get_carteisan_coords(coords, coord_type, celldm, cell):
 
 def parse_pos(coords_lines, atom_names, celldm, cell):
     """Read the atomic positions block in the ABACUS STRU file.
-    
+
     Args:
         coords_lines (list): list of lines in the atomic positions block.
         atom_names (list): list of atom names.
         celldm (float): the lattice constant.
         cell (np.ndarray): the cell vectors in angstrom, and has multipy celldm.
-        
-    Returns:
-        tuple: tuple of atom_numbs, coords, move, mags, velocity, sc, lambda_
-        
+
+    Returns
+    -------
+    tuple: tuple of atom_numbs, coords, move, mags, velocity, sc, lambda_
     Note: for atomic magnetic moment, we finnaly transform it to non-collinear magnetic moment in cartesian coordinates,
-          and do not return the angle1 and angle2, and the magnetic moment of each atom type.
-        
-    """ 
+        and do not return the angle1 and angle2, and the magnetic moment of each atom type.
+
+    """
     coord_type = coords_lines[0].split()[0].lower()  # cartisan or direct
     atom_numbs = []  # the number of each atom type
     coords = []  # coordinations of atoms
@@ -346,7 +365,9 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
     for it in range(ntype):
         atom_name = coords_lines[line_idx].split()[0]
         if atom_name != atom_names[it]:
-            raise RuntimeError(f"Read atom name '{atom_name}' is not equal to the expected atom name '{atom_names[it]}'")
+            raise RuntimeError(
+                f"Read atom name '{atom_name}' is not equal to the expected atom name '{atom_names[it]}'"
+            )
         atom_type_mag = float(coords_lines[line_idx + 1].split()[0])
         line_idx += 2
         atom_numbs.append(int(coords_lines[line_idx].split()[0]))
@@ -355,7 +376,7 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
             pos, imove, ivelocity, imagmom, iangle1, iangle2, iconstrain, ilambda1 = (
                 parse_pos_oneline(coords_lines[line_idx])
             )
-            
+
             coords.append(get_carteisan_coords(np.array(pos), coord_type, celldm, cell))
 
             move.append(imove)
@@ -371,63 +392,65 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
 
             line_idx += 1
     coords = np.array(coords)  # need transformation!!!
-    
+
     if all([i is None for i in move]):
         move = []
     else:
         move = np.array(move, dtype=bool)
-    
+
     if all([i is None for i in velocity]):
         velocity = []
     else:
         velocity = np.array(velocity)
-        
+
     if all([i is None for i in sc]):
         sc = []
-    
+
     if all([i is None for i in lambda_]):
         lambda_ = []
-        
+
     mags = np.array(mags)
-    
+
     return atom_numbs, coords, move, mags, velocity, sc, lambda_
+
 
 def get_frame_from_stru(stru):
     """Read the ABACUS STRU file and return the dpdata frame.
-    
+
     The description of ABACUS STRU can be found in https://abacus.deepmodeling.com/en/latest/advanced/input_files/stru.html
-    
+
     Args:
         stru (str): path to the ABACUS STRU file.
-        
-    Returns:
-        data: the parsed stru information in dictionary.
-        {
-            "atom_names": list of atom names,
-            "atom_numbs": list of atom numbers,
-            "atom_types": list of atom types,
-            "masses": list of atomic masses,
-            "pp_files", list of pseudo potential files,
-            "orb_files", list of orbital files,
-            "dpks_descriptor": the deepks descriptor file,
-            
-            # below are the information in each frame
-            
-            "cells": list of cell vectors,
-            "coords": list of atomic coordinates,
-            "spins": list of magnetic moments,
-            "moves": list of move flags,  
-        } 
-        For some keys, if the information is not provided in the STRU file, then it will not be included in the dictionary.
+
+    Returns
+    -------
+    data: the parsed stru information in dictionary.
+    {
+        "atom_names": list of atom names,
+        "atom_numbs": list of atom numbers,
+        "atom_types": list of atom types,
+        "masses": list of atomic masses,
+        "pp_files", list of pseudo potential files,
+        "orb_files", list of orbital files,
+        "dpks_descriptor": the deepks descriptor file,
+
+        # below are the information in each frame
+
+        "cells": list of cell vectors,
+        "coords": list of atomic coordinates,
+        "spins": list of magnetic moments,
+        "moves": list of move flags,
+    }
+    For some keys, if the information is not provided in the STRU file, then it will not be included in the dictionary.
     """
     if not os.path.isfile(stru):
         raise FileNotFoundError(f"ABACUS STRU file {stru} not found!!!")
-    
+
     # 1. read the file and split the lines to blocks
     with open(stru) as f:
         lines = f.readlines()
     blocks = split_stru_block(lines)
-        
+
     # 2. parse the blocks
     atom_names, masses, pp_files = parse_atomic_species_block(blocks["ATOMIC_SPECIES"])
     orb_files = parse_numerical_orbital_block(blocks.get("NUMERICAL_ORBITAL", []))
@@ -438,11 +461,13 @@ def get_frame_from_stru(stru):
     atom_numbs, coords, move, mags, velocity, sc, lambda_ = parse_pos(
         blocks["ATOMIC_POSITIONS"], atom_names, celldm, cell
     )
-    
+
     data = {
         "atom_names": atom_names,
         "atom_numbs": atom_numbs,
-        "atom_types": np.array([i for i in range(len(atom_numbs)) for j in range(atom_numbs[i])]),
+        "atom_types": np.array(
+            [i for i in range(len(atom_numbs)) for j in range(atom_numbs[i])]
+        ),
         "masses": np.array(masses),
         "pp_files": pp_files,
         "cells": np.array([cell]),
@@ -455,8 +480,9 @@ def get_frame_from_stru(stru):
         data["dpks_descriptor"] = dpks_descriptor[0].strip()
     if len(move) > 0:
         data["move"] = np.array([move])
-    
+
     return data
+
 
 def make_unlabeled_stru(
     data,
@@ -563,17 +589,25 @@ def make_unlabeled_stru(
         )
     if dest_dir is not None and dest_dir.strip() == "":
         dest_dir = "."
-    
+
     # check the input data
     if mass is None and data.get("masses") is not None and len(data["masses"]) > 0:
         mass = data["masses"]
-        
-    if pp_file is None and data.get("pp_files") is not None and len(data["pp_files"]) > 0:
+
+    if (
+        pp_file is None
+        and data.get("pp_files") is not None
+        and len(data["pp_files"]) > 0
+    ):
         pp_file = data["pp_files"]
-        
-    if numerical_orbital is None and data.get("orb_files") is not None and len(data["orb_files"]) > 0:
+
+    if (
+        numerical_orbital is None
+        and data.get("orb_files") is not None
+        and len(data["orb_files"]) > 0
+    ):
         numerical_orbital = data["orb_files"]
-    
+
     if numerical_descriptor is None and data.get("dpks_descriptor") is not None:
         numerical_descriptor = data["dpks_descriptor"]
 
