@@ -331,13 +331,7 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
     Note: for atomic magnetic moment, we finnaly transform it to non-collinear magnetic moment in cartesian coordinates,
           and do not return the angle1 and angle2, and the magnetic moment of each atom type.
         
-    """
-
-    def set_default(list_, default):
-        # set the default value for the None element in the list
-        return [default if i is None else i for i in list_]
-        
-    
+    """ 
     coord_type = coords_lines[0].split()[0].lower()  # cartisan or direct
     atom_numbs = []  # the number of each atom type
     coords = []  # coordinations of atoms
@@ -458,7 +452,7 @@ def get_frame_from_stru(stru):
     if len(orb_files) > 0:
         data["orb_files"] = orb_files
     if len(dpks_descriptor) > 0:
-        data["dpks_descriptor"] = dpks_descriptor[0]
+        data["dpks_descriptor"] = dpks_descriptor[0].strip()
     if len(move) > 0:
         data["move"] = np.array([move])
     

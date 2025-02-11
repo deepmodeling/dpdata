@@ -29,6 +29,18 @@ class TestStruDump(unittest.TestCase):
         )
         myfilecmp(self, "abacus.scf/stru_test", "STRU_tmp")
 
+    def test_read_stru(self):
+        my_sys = dpdata.System("abacus.scf/stru_test", fmt="stru")
+        self.assertEqual(my_sys.data["pp_files"], ["C.upf", "H.upf"])
+        self.assertEqual(my_sys.data["orb_files"], ["C.orb", "H.orb"])
+        self.assertEqual(my_sys.data["dpks_descriptor"], "jle.orb")
+        my_sys.to("stru", "STRU_tmp")
+        with open("STRU_tmp") as f:
+            c = f.read()
+        self.assertTrue("ATOMIC_SPECIES\nC 12.000 C.upf\nH 1.000 H.upf" in c)
+        self.assertTrue("NUMERICAL_ORBITAL\nC.orb\nH.orb" in c)
+        self.assertTrue("NUMERICAL_DESCRIPTOR\njle.orb" in c)
+
     def test_dump_stru_without_pporb(self):
         self.system_ch4.to("stru", "STRU_tmp", mass=[12, 1])
         self.assertTrue(os.path.isfile("STRU_tmp"))
