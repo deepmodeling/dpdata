@@ -9,12 +9,12 @@ from dpdata.utils import open_file
 
 from .scf import (
     bohr2ang,
-    get_cell,
-    get_coords,
     get_geometry_in,
     get_mag_force,
     kbar2evperang3,
 )
+
+from .stru import get_frame_from_stru
 
 # Read in geometries from an ABACUS MD trajectory.
 # The atomic coordinates are read in from generated files in OUT.XXXX.
@@ -164,12 +164,12 @@ def get_frame(fname):
     geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
     path_out = get_path_out(fname, inlines)
 
-    with open_file(geometry_path_in) as fp:
-        geometry_inlines = fp.read().split("\n")
-    celldm, cell = get_cell(geometry_inlines)
-    atom_names, natoms, types, coords, move, magmom = get_coords(
-        celldm, cell, geometry_inlines, inlines
-    )
+    data = get_frame_from_stru(geometry_path_in)
+    natoms = data["atom_numbs"]
+    # should remove spins from STRU file
+    if "spins" in data:
+        data.pop("spins")
+    
     # This coords is not to be used.
     dump_freq = get_coord_dump_freq(inlines=inlines)
     # ndump = int(os.popen("ls -l %s | grep 'md_pos_' | wc -l" %path_out).readlines()[0])
@@ -203,10 +203,6 @@ def get_frame(fname):
 
     magmom, magforce = get_mag_force(outlines)
 
-    data = {}
-    data["atom_names"] = atom_names
-    data["atom_numbs"] = natoms
-    data["atom_types"] = types
     data["cells"] = cells
     # for idx in range(ndump):
     #    data['cells'][:, :, :] = cell
@@ -221,7 +217,9 @@ def get_frame(fname):
         data["spins"] = magmom
     if len(magforce) > 0:
         data["force_mags"] = magforce
-    if len(move) > 0:
-        data["move"] = move
+    
+    # need to expand the move.
+    if "move" in data:
+        data["move"] = [data["move"][0] for i in range(ndump)]
 
     return data

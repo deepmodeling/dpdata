@@ -7,7 +7,7 @@ import unittest
 from context import dpdata
 from test_vasp_poscar_dump import myfilecmp
 
-from dpdata.abacus.scf import parse_stru_pos
+from dpdata.abacus.stru import parse_pos_oneline
 
 
 class TestStruDump(unittest.TestCase):
@@ -196,9 +196,9 @@ H
 
 
 class TestABACUSParseStru(unittest.TestCase):
-    def test_parse_stru_post(self):
+    def test_parse_pos_oneline(self):
         pos, move, velocity, magmom, angle1, angle2, constrain, lambda1 = (
-            parse_stru_pos(
+            parse_pos_oneline(
                 "1.0 2.0 3.0 1 1 1 mag 1.0 2.0 3.0 v 1 1 1 angle1 100 angle2 90 sc 1 0 1 lambda 0.1 0.2 0.3"
             )
         )
@@ -212,7 +212,7 @@ class TestABACUSParseStru(unittest.TestCase):
         self.assertEqual(lambda1, [0.1, 0.2, 0.3])
 
         pos, move, velocity, magmom, angle1, angle2, constrain, lambda1 = (
-            parse_stru_pos("1 2 3 mag 1 sc 1 lambda 0.1")
+            parse_pos_oneline("1 2 3 mag 1 sc 1 lambda 0.1")
         )
         self.assertEqual(pos, [1, 2, 3])
         self.assertEqual(move, None)
@@ -225,52 +225,52 @@ class TestABACUSParseStru(unittest.TestCase):
 
     def test_parse_stru_error(self):
         line = "1.0 2.0 3.0 1 1"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 mag 1.0 3.0 v 1 1 1"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 mag 1 2 3 4"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 v 1"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 v 1 1"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 v 1 1 1 1"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 1"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 angle1 "
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 angle1 1 2"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 1 1 1 angle2"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 angle2 1 2"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 sc"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 sc 1 2"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 lambda"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 lambda 1 2"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
         line = "1.0 2.0 3.0 lambda 1 2 3 4"
-        self.assertRaises(RuntimeError, parse_stru_pos, line), line
+        self.assertRaises(RuntimeError, parse_pos_oneline, line), line
 
 
 if __name__ == "__main__":
