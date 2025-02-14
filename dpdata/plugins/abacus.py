@@ -8,6 +8,7 @@ import numpy as np
 import dpdata.abacus.md
 import dpdata.abacus.relax
 import dpdata.abacus.scf
+from dpdata.abacus.stru import get_frame_from_stru, make_unlabeled_stru
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 @Format.register("stru")
 class AbacusSTRUFormat(Format):
     def from_system(self, file_name, **kwargs):
-        data = dpdata.abacus.scf.get_frame_from_stru(file_name)
+        data = get_frame_from_stru(file_name)
         register_mag_data(data)
         return data
 
@@ -38,7 +39,7 @@ class AbacusSTRUFormat(Format):
         **kwargs : dict
             other parameters
         """
-        stru_string = dpdata.abacus.scf.make_unlabeled_stru(
+        stru_string = make_unlabeled_stru(
             data=data,
             frame_idx=frame_idx,
             dest_dir=os.path.dirname(file_name),

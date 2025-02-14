@@ -18,11 +18,17 @@ class TestABACUSRelaxLabeledOutput(unittest.TestCase):
             "abacus.relax/OUT.abacus/running_cell-relax.log.normal",
             "abacus.relax/OUT.abacus/running_cell-relax.log",
         )
+        shutil.copy(
+            "abacus.relax/STRU.h2o",
+            "abacus.relax/STRU",
+        )
         self.system = dpdata.LabeledSystem("abacus.relax", fmt="abacus/relax")
 
     def tearDown(self):
         if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
             os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
+        if os.path.isfile("abacus.relax/STRU"):
+            os.remove("abacus.relax/STRU")
 
     def test_atom_names(self):
         self.assertEqual(self.system.data["atom_names"], ["H", "O"])
@@ -91,6 +97,10 @@ class TestABACUSRelaxLabeledOutputAbnormal(unittest.TestCase):
             "abacus.relax/OUT.abacus/running_cell-relax.log.abnormal",
             "abacus.relax/OUT.abacus/running_cell-relax.log",
         )
+        shutil.copy(
+            "abacus.relax/STRU.h2o",
+            "abacus.relax/STRU",
+        )
         self.system = dpdata.LabeledSystem("abacus.relax", fmt="abacus/relax")
 
     def test_result(self):
@@ -106,6 +116,8 @@ class TestABACUSRelaxLabeledOutputAbnormal(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
             os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
+        if os.path.isfile("abacus.relax/STRU"):
+            os.remove("abacus.relax/STRU")
 
 
 class TestABACUSRelaxLabeledOutputNoStress(unittest.TestCase):
@@ -113,10 +125,6 @@ class TestABACUSRelaxLabeledOutputNoStress(unittest.TestCase):
         shutil.copy(
             "abacus.relax/OUT.abacus/running_cell-relax.log.nostress",
             "abacus.relax/OUT.abacus/running_cell-relax.log",
-        )
-        shutil.move(
-            "abacus.relax/STRU",
-            "abacus.relax/STRU.bak",
         )
         shutil.copy(
             "abacus.relax/STRU.Si",
@@ -130,10 +138,8 @@ class TestABACUSRelaxLabeledOutputNoStress(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
             os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
-        shutil.move(
-            "abacus.relax/STRU.bak",
-            "abacus.relax/STRU",
-        )
+        if os.path.isfile("abacus.relax/STRU"):
+            os.remove("abacus.relax/STRU")
 
 
 class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
@@ -142,10 +148,6 @@ class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
         shutil.copy(
             "abacus.relax/OUT.abacus/running_cell-relax.log.v341",
             "abacus.relax/OUT.abacus/running_cell-relax.log",
-        )
-        shutil.move(
-            "abacus.relax/STRU",
-            "abacus.relax/STRU.bak",
         )
         shutil.copy(
             "abacus.relax/STRU.Si",
@@ -182,10 +184,8 @@ class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("abacus.relax/OUT.abacus/running_cell-relax.log"):
             os.remove("abacus.relax/OUT.abacus/running_cell-relax.log")
-        shutil.move(
-            "abacus.relax/STRU.bak",
-            "abacus.relax/STRU",
-        )
+        if os.path.isfile("abacus.relax/STRU"):
+            os.remove("abacus.relax/STRU")
 
 
 if __name__ == "__main__":
