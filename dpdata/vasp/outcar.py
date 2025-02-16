@@ -14,12 +14,16 @@ def system_info(lines, type_idx_zero=False):
         ii_word_list = ii.split()
         if "TITEL" in ii:
             # get atom names from POTCAR info, tested only for PAW_PBE ...
-            _ii = ii.split()[3]
-            if "_" in _ii:
-                # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
-                atom_names.append(_ii.split("_")[0])
-            else:
-                atom_names.append(_ii)
+            # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
+            atom_name = ii.split()[3].split("_")[0]
+            if atom_name not in atom_names:
+                atom_names.append(atom_name)
+        elif "POTCAR" in ii:
+            # get atom names from POTCAR info, tested only for PAW_PBE ...
+            # for case like : POTCAR:    PAW_PBE Ti_sv 26Sep2005
+            atom_name = ii.split()[2].split("_")[0]
+            if atom_name not in atom_names:
+                atom_names.append(atom_name)
         # a stricker check for "NELM"; compatible with distingct formats in different versions(6 and older, newers_expect-to-work) of vasp
         elif nelm is None:
             m = re.search(r"NELM\s*=\s*(\d+)", ii)
