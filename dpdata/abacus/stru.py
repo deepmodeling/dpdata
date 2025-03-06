@@ -390,7 +390,7 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
             if mag is None:
                 mag = [0, 0, atom_type_mag]
             mags.append(mag)
-            
+
             if imagmom is not None:
                 define_atom_mag = True
 
@@ -450,7 +450,6 @@ def get_frame_from_stru(stru):
         "moves": list of move flags,
     }
     For some keys, if the information is not provided in the STRU file, then it will not be included in the dictionary.
-    
     "spins" is designed for delta spin calculation, and when dpdata.System is write to lmp format, the spin will be written as magmom.
     But we should note that this file format is valid only for a spin lammps job, not for a normal job.
     If you want to use dpgen to run the non-spin job, then you should not define "mag x x x" in the STRU file.
@@ -483,7 +482,7 @@ def get_frame_from_stru(stru):
         "masses": np.array(masses),
         "pp_files": pp_files,
         "cells": np.array([cell]),
-        "coords": np.array([coords])
+        "coords": np.array([coords]),
     }
     if len(mags) > 0:
         data["spins"] = np.array([mags])
