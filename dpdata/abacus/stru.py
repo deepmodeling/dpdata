@@ -362,6 +362,7 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
 
     ntype = len(atom_names)
     line_idx = 1  # starting line of first element
+    define_atom_mag = False
     for it in range(ntype):
         atom_name = coords_lines[line_idx].split()[0]
         if atom_name != atom_names[it]:
@@ -390,6 +391,9 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
                 mag = [0, 0, atom_type_mag]
             mags.append(mag)
 
+            if imagmom is not None:
+                define_atom_mag = True
+
             line_idx += 1
     coords = np.array(coords)  # need transformation!!!
 
@@ -409,7 +413,11 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
     if all([i is None for i in lambda_]):
         lambda_ = []
 
-    mags = np.array(mags)
+    # here return the magnetic moment only when the atom magnetic moment is specified.
+    if not define_atom_mag:
+        mags = []
+    else:
+        mags = np.array(mags)
 
     return atom_numbs, coords, move, mags, velocity, sc, lambda_
 
@@ -438,10 +446,13 @@ def get_frame_from_stru(stru):
 
         "cells": list of cell vectors,
         "coords": list of atomic coordinates,
-        "spins": list of magnetic moments,
+        "spins": list of magnetic moments, # return only when set "mag xxx" for each atom in STRU file
         "moves": list of move flags,
     }
     For some keys, if the information is not provided in the STRU file, then it will not be included in the dictionary.
+    "spins" is designed for delta spin calculation, and when dpdata.System is write to lmp format, the spin will be written as magmom.
+    But we should note that this file format is valid only for a spin lammps job, not for a normal job.
+    If you want to use dpgen to run the non-spin job, then you should not define "mag x x x" in the STRU file.
     """
     if not os.path.isfile(stru):
         raise FileNotFoundError(f"ABACUS STRU file {stru} not found!!!")
@@ -472,8 +483,9 @@ def get_frame_from_stru(stru):
         "pp_files": pp_files,
         "cells": np.array([cell]),
         "coords": np.array([coords]),
-        "spins": np.array([mags]),
     }
+    if len(mags) > 0:
+        data["spins"] = np.array([mags])
     if len(orb_files) > 0:
         data["orb_files"] = orb_files
     if len(dpks_descriptor) > 0:
