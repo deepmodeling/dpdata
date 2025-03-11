@@ -710,9 +710,7 @@ class System:
 
     @post_funcs.register("shift_orig_zero")
     def _shift_orig_zero(self):
-        for ff in self.data["coords"]:
-            for ii in ff:
-                ii = ii - self.data["orig"]
+        self.data["coords"] = self.data["coords"] - self.data["orig"]
         self.data["orig"] = self.data["orig"] - self.data["orig"]
         assert (np.zeros([3]) == self.data["orig"]).all()
 
