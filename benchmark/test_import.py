@@ -1,20 +1,16 @@
 from __future__ import annotations
 
-import subprocess
-import sys
+import importlib
+from unittest import mock
 
 import pytest
 
 
-@pytest.mark.benchmark
-def test_import():
-    """Test import dpdata."""
-    subprocess.check_output(
-        [sys.executable, "-c", "'from dpdata import LabeledSystem'"]
-    ).decode("ascii")
+@pytest.mark.parametrize("mod_name", ["dpdata", "dpdata.cli"])
+def test_bench_module_import(benchmark, mod_name):
+    """Benchmark the import time."""
 
-
-@pytest.mark.benchmark
-def test_cli():
-    """Test dpdata command."""
-    subprocess.check_output([sys.executable, "-m", "dpdata", "-h"]).decode("ascii")
+    @benchmark
+    def _():
+        with mock.patch("sys.modules", {}):
+            importlib.import_module(mod_name, "test_bench_imports")
