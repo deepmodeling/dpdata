@@ -314,7 +314,7 @@ def get_atom_mag_cartesian(atommag, angle1, angle2):
         ]
 
 
-def get_carteisan_coords(coords, coord_type, celldm, cell):
+def get_cartesian_coords(coords, coord_type, celldm, cell):
     """Transform the atomic coordinates to cartesian coordinates.
 
     Args:
@@ -378,7 +378,7 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
                 parse_pos_oneline(coords_lines[line_idx])
             )
 
-            coords.append(get_carteisan_coords(np.array(pos), coord_type, celldm, cell))
+            coords.append(get_cartesian_coords(np.array(pos), coord_type, celldm, cell))
 
             move.append(imove)
             velocity.append(ivelocity)
