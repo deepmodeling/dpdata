@@ -193,20 +193,23 @@ def to_system_data(lines, type_map=None, type_idx_zero=True):
     return system_data(lines, type_map=type_map, type_idx_zero=type_idx_zero)
 
 
-def rotate_to_lower_triangle(cell: np.ndarray, 
-                             coord: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """ Rotate the cell to lower triangular form and adjust coordinates accordingly.
-    
+def rotate_to_lower_triangle(
+    cell: np.ndarray, coord: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """Rotate the cell to lower triangular form and adjust coordinates accordingly.
+
     Args:
         cell (np.ndarray): The original cell matrix.
         coord (np.ndarray): The coordinates of the atoms.
-    Returns:
-        tuple[np.ndarray, np.ndarray]: The rotated cell and adjusted coordinates.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]: The rotated cell and adjusted coordinates.
     """
     q, _ = np.linalg.qr(cell.T)
     cell = np.matmul(cell, q)
     coord = np.matmul(coord, q)
-    
+
     # Ensure the diagonal elements of the cell are non-negative
     rot = np.eye(3)
     if cell[0][0] < 0:
@@ -216,8 +219,9 @@ def rotate_to_lower_triangle(cell: np.ndarray,
     if cell[2][2] < 0:
         rot[2][2] = -1
     cell = np.matmul(cell, rot)
-    coord = np.matmul(coord, rot)   
+    coord = np.matmul(coord, rot)
     return cell, coord
+
 
 def from_system_data(system, f_idx=0):
     ret = ""
