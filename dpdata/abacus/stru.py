@@ -422,6 +422,23 @@ def parse_pos(coords_lines, atom_names, celldm, cell):
     return atom_numbs, coords, move, mags, velocity, sc, lambda_
 
 
+def right_hand_rule(cell: np.ndarray, 
+                    coord: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Rotate the cell and coord to make the cell fit the right-hand rule.
+    
+    Args:
+        cell (np.ndarray): the cell vectors.
+        coord (np.ndarray): the atomic coordinates in cartesian.
+    Returns
+    -------
+        tuple: the rotated cell and coord.
+    """
+    if np.linalg.det(cell) < 0:
+        cell = -cell
+        coord = -coord
+    return cell, coord
+    
+
 def get_frame_from_stru(stru):
     """Read the ABACUS STRU file and return the dpdata frame.
 
@@ -472,7 +489,9 @@ def get_frame_from_stru(stru):
     atom_numbs, coords, move, mags, velocity, sc, lambda_ = parse_pos(
         blocks["ATOMIC_POSITIONS"], atom_names, celldm, cell
     )
-
+    
+    
+    cell, coords = right_hand_rule(cell, coords)
     data = {
         "atom_names": atom_names,
         "atom_numbs": atom_numbs,
