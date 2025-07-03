@@ -42,11 +42,7 @@ class TestLmpRotateTriAngle(unittest.TestCase):
         self.assertTrue(np.allclose(rotated_coords, cubic_coords))
 
     def test_triclinic_cell(self):
-        triclinic_cell = np.array([
-            [4.0, 0.0, 0.0],
-            [1.0, 3.0, 0.0],
-            [0.5, 0.5, 2.5]
-        ])
+        triclinic_cell = np.array([[4.0, 0.0, 0.0], [1.0, 3.0, 0.0], [0.5, 0.5, 2.5]])
 
         triclinic_coords = np.array([[0.5, 0.5, 0.5], [3.0, 2.0, 1.0]])
         rotated_cell, rotated_coords = rotate_to_lower_triangle(
@@ -62,32 +58,36 @@ class TestLmpRotateTriAngle(unittest.TestCase):
         self.assertTrue(rotated_cell[2, 2] > 0)
 
         # check the distance between two atoms
-        self.assertTrue(np.isclose(
-            np.linalg.norm(rotated_coords[0] - rotated_coords[1]),
-            np.linalg.norm(triclinic_coords[0] - triclinic_coords[1]),
-            atol=1e-10,
-        ))
+        self.assertTrue(
+            np.isclose(
+                np.linalg.norm(rotated_coords[0] - rotated_coords[1]),
+                np.linalg.norm(triclinic_coords[0] - triclinic_coords[1]),
+                atol=1e-10,
+            )
+        )
 
     def test_negative_diagonal(self):
-        negative_cell = np.array([
-            [-3.0, 1.0, 0.5],
-            [0.0, -2.0, 0.3],
-            [0.0, 0.0, -4.0]
-            ])
+        negative_cell = np.array([[-3.0, 1.0, 0.5], [0.0, -2.0, 0.3], [0.0, 0.0, -4.0]])
         negative_coords = np.array([[1.0, 0.5, -1.0], [0.5, 1.0, -2.0]])
-        rotated_cell, rotated_coords = rotate_to_lower_triangle(negative_cell.copy(), negative_coords.copy())
+        rotated_cell, rotated_coords = rotate_to_lower_triangle(
+            negative_cell.copy(), negative_coords.copy()
+        )
 
         self.assertTrue(np.isclose(rotated_cell[0, 1], 0, atol=1e-10))
         self.assertTrue(np.isclose(rotated_cell[0, 2], 0, atol=1e-10))
         self.assertTrue(np.isclose(rotated_cell[1, 2], 0, atol=1e-10))
-        
+
         self.assertTrue(rotated_cell[0, 0] > 0)
         self.assertTrue(rotated_cell[1, 1] > 0)
         self.assertTrue(rotated_cell[2, 2] > 0)
 
-        self.assertTrue(np.isclose(np.linalg.norm(negative_coords[0] - negative_coords[1]), 
-                          np.linalg.norm(rotated_coords[0] - rotated_coords[1]), 
-                          atol=1e-6))
+        self.assertTrue(
+            np.isclose(
+                np.linalg.norm(negative_coords[0] - negative_coords[1]),
+                np.linalg.norm(rotated_coords[0] - rotated_coords[1]),
+                atol=1e-6,
+            )
+        )
 
 
 if __name__ == "__main__":
