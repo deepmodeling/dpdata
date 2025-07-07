@@ -71,5 +71,21 @@ class TestVaspXmlNoVirial(unittest.TestCase, CompSys, IsPBC):
         self.system_2 = xml_sys.sub_system([-1])
 
 
+class TestVaspOUTCARNWRITE0(unittest.TestCase):
+    def test(self):
+        # all frames are written to vasprun.xml that have forces are read
+        # even though the nwrite parameter is set to 0
+        ss = dpdata.LabeledSystem("poscars/Ti-aimd-nwrite0/vasprun.xml")
+        self.assertEqual(ss.get_nframes(), 10)
+
+
+class TestVaspAtomNamesV6(unittest.TestCase):
+    def test(self):
+        ss = dpdata.LabeledSystem("poscars/Ti-O-Ti-v6/vasprun.xml")
+        self.assertEqual(ss.get_atom_names(), ["Ti", "O"])
+        self.assertEqual(ss.get_atom_numbs(), [6, 2])
+        np.testing.assert_equal(ss.get_atom_types(), [0, 0, 0, 1, 1, 0, 0, 0])
+
+
 if __name__ == "__main__":
     unittest.main()
