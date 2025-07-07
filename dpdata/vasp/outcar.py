@@ -60,7 +60,6 @@ def system_info(
     nelm = None
     nwrite = None
     for ii in lines:
-        ii_word_list = ii.split()
         if "TITEL" in ii:
             # get atom names from POTCAR info, tested only for PAW_PBE ...
             # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
