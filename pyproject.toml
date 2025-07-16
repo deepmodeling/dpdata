@@ -59,6 +59,7 @@ docs = [
     'rdkit',
     'jupyterlite-sphinx',
     'jupyterlite-xeus',
+    'm2r>=0.3.1',
 ]
 benchmark = [
     'pytest',
