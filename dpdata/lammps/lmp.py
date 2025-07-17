@@ -196,7 +196,7 @@ def to_system_data(lines, type_map=None, type_idx_zero=True):
 def rotate_to_lower_triangle(
     cell: np.ndarray, coord: np.ndarray
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Rotate the cell to lower triangular form and adjust coordinates accordingly.
+    """Rotate the cell to lower triangular and ensure the diagonal elements are non-negative.
 
     Args:
         cell (np.ndarray): The original cell matrix.
