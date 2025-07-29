@@ -731,7 +731,9 @@ def make_unlabeled_stru(
         out += "0.0\n"
         out += str(data["atom_numbs"][iele]) + "\n"
         for iatom in range(data["atom_numbs"][iele]):
-            iatomtype = np.nonzero(data["atom_types"] == iele)[0][iatom] # it is the atom index
+            iatomtype = np.nonzero(data["atom_types"] == iele)[0][
+                iatom
+            ]  # it is the atom index
             iout = f"{data['coords'][frame_idx][iatomtype, 0]:.12f} {data['coords'][frame_idx][iatomtype, 1]:.12f} {data['coords'][frame_idx][iatomtype, 2]:.12f}"
             # add flags for move, velocity, mag, angle1, angle2, and sc
             if move is not None:
