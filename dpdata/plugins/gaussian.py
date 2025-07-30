@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import dpdata.gaussian.gjf
 import dpdata.gaussian.log
+import dpdata.gaussian.fchk
 from dpdata.driver import Driver
 from dpdata.format import Format
 from dpdata.utils import open_file
@@ -22,6 +23,14 @@ class GaussianLogFormat(Format):
             return dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             return {"energies": [], "forces": [], "nopbc": True}
+
+@Format.register("gaussian/fchk")
+class GaussianFChkFormat(Format):
+    def from_labeled_system(self, file_name: FileType, md=False, has_forces=True, has_hessian=True, **kwargs):
+        try:
+            return dpdata.gaussian.fchk.to_system_data(file_name, md=md,has_forces=has_forces, has_hessian=has_hessian)
+        except AssertionError:
+            return {"energies": [], "forces": [], "hessian": [], "nopbc": True}
 
 
 @Format.register("gaussian/md")
