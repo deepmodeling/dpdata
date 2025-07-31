@@ -206,20 +206,34 @@ H
 """
         self.assertTrue(stru_ref in c)
 
-    
     def test_dump_chaotic_atomic_species(self):
         import copy
+
         import numpy as np
-        from dpdata.abacus.stru import split_stru_block
+
         temp_system = copy.deepcopy(self.system_ch4)
-        temp_system.data["atom_types"] = np.array([1,0,1,1,1])
-        temp_system.data["coords"] = np.array([[[1,1,1],[0,0,0],[2,2,2],[3,3,3],[4,4,4]]])
-        temp_system.data["move"] = np.array([[[1,0,0],[0,1,1],[1,1,1],[1,1,1],[1,1,1]]])
-        velocity = np.array([[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5]])
-        mag = np.array([[11,11,11],[22,22,22],[33,33,33],[44,44,44],[55,55,55]])
+        temp_system.data["atom_types"] = np.array([1, 0, 1, 1, 1])
+        temp_system.data["coords"] = np.array(
+            [[[1, 1, 1], [0, 0, 0], [2, 2, 2], [3, 3, 3], [4, 4, 4]]]
+        )
+        temp_system.data["move"] = np.array(
+            [[[1, 0, 0], [0, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]]]
+        )
+        velocity = np.array([[1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4], [5, 5, 5]])
+        mag = np.array(
+            [[11, 11, 11], [22, 22, 22], [33, 33, 33], [44, 44, 44], [55, 55, 55]]
+        )
         constrain = np.array([1, 0, 1, 0, 1])
-        sc = np.array([[0,1,1],[0,0,1],[1,1,1],[1,1,1],[1,1,1]])
-        lambda_ = np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2], [1.3, 1.4, 1.5]])
+        sc = np.array([[0, 1, 1], [0, 0, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]])
+        lambda_ = np.array(
+            [
+                [0.1, 0.2, 0.3],
+                [0.4, 0.5, 0.6],
+                [0.7, 0.8, 0.9],
+                [1.0, 1.1, 1.2],
+                [1.3, 1.4, 1.5],
+            ]
+        )
         temp_system.to(
             "stru",
             "STRU_tmp",
@@ -229,9 +243,10 @@ H
             sc=sc,
             lambda_=lambda_,
         )
-        
+
         assert os.path.isfile("STRU_tmp")
-        with open("STRU_tmp") as f: lines = f.read()
+        with open("STRU_tmp") as f:
+            lines = f.read()
         ref_c = """C
 0.0
 1
@@ -243,8 +258,9 @@ H
 2.000000000000 2.000000000000 2.000000000000 1 1 1 v 3.000000000000 3.000000000000 3.000000000000 mag 33.000000000000 33.000000000000 33.000000000000 sc 1 1 1 lambda 0.700000000000 0.800000000000 0.900000000000
 3.000000000000 3.000000000000 3.000000000000 1 1 1 v 4.000000000000 4.000000000000 4.000000000000 mag 44.000000000000 44.000000000000 44.000000000000 sc 1 1 1 lambda 1.000000000000 1.100000000000 1.200000000000
 4.000000000000 4.000000000000 4.000000000000 1 1 1 v 5.000000000000 5.000000000000 5.000000000000 mag 55.000000000000 55.000000000000 55.000000000000 sc 1 1 1 lambda 1.300000000000 1.400000000000 1.500000000000"""
-        
+
         self.assertTrue(ref_c in lines)
+
 
 class TestABACUSParseStru(unittest.TestCase):
     def test_parse_pos_oneline(self):
