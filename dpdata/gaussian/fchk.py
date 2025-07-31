@@ -72,10 +72,9 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
         whether to read multiple frames (fchk usually contains only one frame)
     has_force : bool, default True
         whether to read force
-        if has_force is True, the force will be read from the last frame
+        Note: Cartesian Gradient in fchk file is converted to forces by taking negative sign
     has_hessian : bool, default True
         whether to read hessian
-        if has_hessian is True, the hessian will be read from the last frame
     Returns
     -------
     data : dict
@@ -124,7 +123,8 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
                     if isinstance(l, bytes):
                         l = l.decode(errors='ignore')
                     forces_raw += [float(x) for x in l.split()]
-                forces = np.array(forces_raw).reshape(-1, 3) * force_convert
+                # Cartesian Gradient is the negative of forces: F = -∇E
+                forces = -np.array(forces_raw).reshape(-1, 3) * force_convert
                 forces_t.append(forces)
             elif "Cartesian Force Constants" in line and "R" in line:
                 n = int(line.split()[-1])
@@ -158,5 +158,5 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
     if has_forces and forces_t:
         data["forces"] = np.array(forces_t)
     if has_hessian and hessian_t:
-        data["hessian"] = hessian_t[-1] if not md else np.array(hessian_t)
+        data["hessian"] = np.array(hessian_t)
     return data
