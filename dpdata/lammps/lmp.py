@@ -193,31 +193,64 @@ def to_system_data(lines, type_map=None, type_idx_zero=True):
     return system_data(lines, type_map=type_map, type_idx_zero=type_idx_zero)
 
 
+def rotate_to_lower_triangle(
+    cell: np.ndarray, coord: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """Rotate the cell to lower triangular and ensure the diagonal elements are non-negative.
+
+    Args:
+        cell (np.ndarray): The original cell matrix.
+        coord (np.ndarray): The coordinates of the atoms.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]: The rotated cell and adjusted coordinates.
+    """
+    q, _ = np.linalg.qr(cell.T)
+    cell = np.matmul(cell, q)
+    coord = np.matmul(coord, q)
+
+    # Ensure the diagonal elements of the cell are non-negative
+    rot = np.eye(3)
+    if cell[0][0] < 0:
+        rot[0][0] = -1
+    if cell[1][1] < 0:
+        rot[1][1] = -1
+    if cell[2][2] < 0:
+        rot[2][2] = -1
+    cell = np.matmul(cell, rot)
+    coord = np.matmul(coord, rot)
+    return cell, coord
+
+
 def from_system_data(system, f_idx=0):
     ret = ""
     ret += "\n"
     natoms = sum(system["atom_numbs"])
     ntypes = len(system["atom_numbs"])
+    cell, coord = rotate_to_lower_triangle(
+        system["cells"][f_idx], system["coords"][f_idx]
+    )
     ret += "%d atoms\n" % natoms  # noqa: UP031
     ret += "%d atom types\n" % ntypes  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " xlo xhi\n") % (
         0,
-        system["cells"][f_idx][0][0],
+        cell[0][0],
     )  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " ylo yhi\n") % (
         0,
-        system["cells"][f_idx][1][1],
+        cell[1][1],
     )  # noqa: UP031
     ret += (ptr_float_fmt + " " + ptr_float_fmt + " zlo zhi\n") % (
         0,
-        system["cells"][f_idx][2][2],
+        cell[2][2],
     )  # noqa: UP031
     ret += (
         ptr_float_fmt + " " + ptr_float_fmt + " " + ptr_float_fmt + " xy xz yz\n"
     ) % (
-        system["cells"][f_idx][1][0],
-        system["cells"][f_idx][2][0],
-        system["cells"][f_idx][2][1],
+        cell[1][0],
+        cell[2][0],
+        cell[2][1],
     )  # noqa: UP031
     ret += "\n"
     ret += "Atoms # atomic\n"
@@ -255,9 +288,9 @@ def from_system_data(system, f_idx=0):
                 ret += coord_fmt % (
                     ii + 1,
                     system["atom_types"][ii] + 1,
-                    system["coords"][f_idx][ii][0] - system["orig"][0],
-                    system["coords"][f_idx][ii][1] - system["orig"][1],
-                    system["coords"][f_idx][ii][2] - system["orig"][2],
+                    coord[ii][0] - system["orig"][0],
+                    coord[ii][1] - system["orig"][1],
+                    coord[ii][2] - system["orig"][2],
                     system["spins"][f_idx][ii][0] / spins_norm[ii],
                     system["spins"][f_idx][ii][1] / spins_norm[ii],
                     system["spins"][f_idx][ii][2] / spins_norm[ii],
@@ -267,9 +300,9 @@ def from_system_data(system, f_idx=0):
                 ret += coord_fmt % (
                     ii + 1,
                     system["atom_types"][ii] + 1,
-                    system["coords"][f_idx][ii][0] - system["orig"][0],
-                    system["coords"][f_idx][ii][1] - system["orig"][1],
-                    system["coords"][f_idx][ii][2] - system["orig"][2],
+                    coord[ii][0] - system["orig"][0],
+                    coord[ii][1] - system["orig"][1],
+                    coord[ii][2] - system["orig"][2],
                     system["spins"][f_idx][ii][0],
                     system["spins"][f_idx][ii][1],
                     system["spins"][f_idx][ii][2] + 1,
@@ -279,9 +312,9 @@ def from_system_data(system, f_idx=0):
             ret += coord_fmt % (
                 ii + 1,
                 system["atom_types"][ii] + 1,
-                system["coords"][f_idx][ii][0] - system["orig"][0],
-                system["coords"][f_idx][ii][1] - system["orig"][1],
-                system["coords"][f_idx][ii][2] - system["orig"][2],
+                coord[ii][0] - system["orig"][0],
+                coord[ii][1] - system["orig"][1],
+                coord[ii][2] - system["orig"][2],
             )  # noqa: UP031
     return ret
 

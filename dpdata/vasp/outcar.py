@@ -6,31 +6,93 @@ import warnings
 import numpy as np
 
 
-def system_info(lines, type_idx_zero=False):
+def atom_name_from_potcar_string(instr: str) -> str:
+    """Get atom name from a potcar element name.
+
+    e.g. Sn_d -> Sn
+
+    Parameters
+    ----------
+    instr : str
+        input potcar elemenet name
+
+    Returns
+    -------
+    name: str
+        name of atoms
+    """
+    if "_" in instr:
+        # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
+        return instr.split("_")[0]
+    else:
+        return instr
+
+
+def system_info(
+    lines: list[str],
+    type_idx_zero: bool = False,
+) -> tuple[list[str], list[int], np.ndarray, int | None, int | None]:
+    """Get system information from lines of an OUTCAR file.
+
+    Parameters
+    ----------
+    lines : list[str]
+        the lines of the OUTCAR file
+    type_idx_zero : bool
+        if true atom types starts from 0 otherwise from 1.
+
+    Returns
+    -------
+    atom_names: list[str]
+        name of atoms
+    atom_numbs: list[int]
+        number of atoms that have a certain name. same length as atom_names
+    atom_types: np.ndarray
+        type of each atom, the array has same lenght as number of atoms
+    nelm: optional[int]
+        the value of NELM parameter
+    nwrite: optional[int]
+        the value of NWRITE parameter
+    """
     atom_names = []
+    atom_names_potcar = []
     atom_numbs = None
     nelm = None
+    nwrite = None
     for ii in lines:
-        ii_word_list = ii.split()
         if "TITEL" in ii:
             # get atom names from POTCAR info, tested only for PAW_PBE ...
+            # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
             _ii = ii.split()[3]
-            if "_" in _ii:
-                # for case like : TITEL  = PAW_PBE Sn_d 06Sep2000
-                atom_names.append(_ii.split("_")[0])
-            else:
-                atom_names.append(_ii)
+            atom_names.append(atom_name_from_potcar_string(_ii))
+        elif "POTCAR:" in ii:
+            # get atom names from POTCAR info, tested only for PAW_PBE ...
+            # for case like : POTCAR:  PAW_PBE Ti 08Apr2002
+            _ii = ii.split()[2]
+            atom_names_potcar.append(atom_name_from_potcar_string(_ii))
         # a stricker check for "NELM"; compatible with distingct formats in different versions(6 and older, newers_expect-to-work) of vasp
         elif nelm is None:
             m = re.search(r"NELM\s*=\s*(\d+)", ii)
             if m:
                 nelm = int(m.group(1))
+        elif nwrite is None:
+            m = re.search(r"NWRITE\s*=\s*(\d+)", ii)
+            if m:
+                nwrite = int(m.group(1))
         if "ions per type" in ii:
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None:
                 atom_numbs = atom_numbs_
             else:
                 assert atom_numbs == atom_numbs_, "in consistent numb atoms in OUTCAR"
+    if len(atom_names) == 0:
+        # try to use atom_names_potcar
+        if len(atom_names_potcar) == 0:
+            raise ValueError("cannot get atom names from potcar")
+        nnames = len(atom_names_potcar)
+        # the names are repeated. check if it is the case
+        assert atom_names_potcar[: nnames // 2] == atom_names_potcar[nnames // 2 :]
+        atom_names = atom_names_potcar[: nnames // 2]
     assert nelm is not None, "cannot find maximum steps for each SC iteration"
     assert atom_numbs is not None, "cannot find ion type info in OUTCAR"
     atom_names = atom_names[: len(atom_numbs)]
@@ -41,7 +103,7 @@ def system_info(lines, type_idx_zero=False):
                 atom_types.append(idx)
             else:
                 atom_types.append(idx + 1)
-    return atom_names, atom_numbs, np.array(atom_types, dtype=int), nelm
+    return atom_names, atom_numbs, np.array(atom_types, dtype=int), nelm, nwrite
 
 
 def get_outcar_block(fp, ml=False):
@@ -57,12 +119,24 @@ def get_outcar_block(fp, ml=False):
     return blk
 
 
+def check_outputs(coord, cell, force):
+    if len(force) == 0:
+        raise ValueError("cannot find forces in OUTCAR block")
+    if len(coord) == 0:
+        raise ValueError("cannot find coordinates in OUTCAR block")
+    if len(cell) == 0:
+        raise ValueError("cannot find cell in OUTCAR block")
+    return True
+
+
 # we assume that the force is printed ...
 def get_frames(fname, begin=0, step=1, ml=False, convergence_check=True):
     fp = open(fname)
     blk = get_outcar_block(fp)
 
-    atom_names, atom_numbs, atom_types, nelm = system_info(blk, type_idx_zero=True)
+    atom_names, atom_numbs, atom_types, nelm, nwrite = system_info(
+        blk, type_idx_zero=True
+    )
     ntot = sum(atom_numbs)
 
     all_coords = []
@@ -78,9 +152,15 @@ def get_frames(fname, begin=0, step=1, ml=False, convergence_check=True):
             coord, cell, energy, force, virial, is_converge = analyze_block(
                 blk, ntot, nelm, ml
             )
-            if len(coord) == 0:
+            if energy is None:
                 break
-            if is_converge or not convergence_check:
+            if nwrite == 0:
+                has_label = len(force) > 0 and len(coord) > 0 and len(cell) > 0
+                if not has_label:
+                    warnings.warn("cannot find labels in the frame, ingore")
+            else:
+                has_label = check_outputs(coord, cell, force)
+            if (is_converge or not convergence_check) and has_label:
                 all_coords.append(coord)
                 all_cells.append(cell)
                 all_energies.append(energy)
@@ -144,12 +224,6 @@ def analyze_block(lines, ntot, nelm, ml=False):
                 is_converge = False
         elif energy_token[ml_index] in ii:
             energy = float(ii.split()[energy_index[ml_index]])
-            if len(force) == 0:
-                raise ValueError("cannot find forces in OUTCAR block")
-            if len(coord) == 0:
-                raise ValueError("cannot find coordinates in OUTCAR block")
-            if len(cell) == 0:
-                raise ValueError("cannot find cell in OUTCAR block")
             return coord, cell, energy, force, virial, is_converge
         elif cell_token[ml_index] in ii:
             for dd in range(3):
