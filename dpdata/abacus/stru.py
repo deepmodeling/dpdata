@@ -751,66 +751,68 @@ def make_unlabeled_stru(
         out += "0.0\n"
         out += str(data["atom_numbs"][iele]) + "\n"
         for iatom in range(data["atom_numbs"][iele]):
-            iatomtype = np.nonzero(data["atom_types"] == iele)[0][iatom]
+            iatomtype = np.nonzero(data["atom_types"] == iele)[0][
+                iatom
+            ]  # it is the atom index
             iout = f"{data['coords'][frame_idx][iatomtype, 0]:.12f} {data['coords'][frame_idx][iatomtype, 1]:.12f} {data['coords'][frame_idx][iatomtype, 2]:.12f}"
             # add flags for move, velocity, mag, angle1, angle2, and sc
             if move is not None:
                 if (
-                    isinstance(ndarray2list(move[natom_tot]), (list, tuple))
-                    and len(move[natom_tot]) == 3
+                    isinstance(ndarray2list(move[iatomtype]), (list, tuple))
+                    and len(move[iatomtype]) == 3
                 ):
                     iout += " " + " ".join(
-                        ["1" if ii else "0" for ii in move[natom_tot]]
+                        ["1" if ii else "0" for ii in move[iatomtype]]
                     )
-                elif isinstance(ndarray2list(move[natom_tot]), (int, float, bool)):
-                    iout += " 1 1 1" if move[natom_tot] else " 0 0 0"
+                elif isinstance(ndarray2list(move[iatomtype]), (int, float, bool)):
+                    iout += " 1 1 1" if move[iatomtype] else " 0 0 0"
             else:
                 iout += " 1 1 1"
 
             if (
                 velocity is not None
-                and isinstance(ndarray2list(velocity[natom_tot]), (list, tuple))
-                and len(velocity[natom_tot]) == 3
+                and isinstance(ndarray2list(velocity[iatomtype]), (list, tuple))
+                and len(velocity[iatomtype]) == 3
             ):
-                iout += " v " + " ".join([f"{ii:.12f}" for ii in velocity[natom_tot]])
+                iout += " v " + " ".join([f"{ii:.12f}" for ii in velocity[iatomtype]])
 
             if mag is not None:
-                if isinstance(ndarray2list(mag[natom_tot]), (list, tuple)) and len(
-                    mag[natom_tot]
+                if isinstance(ndarray2list(mag[iatomtype]), (list, tuple)) and len(
+                    mag[iatomtype]
                 ) in [1, 3]:
-                    iout += " mag " + " ".join([f"{ii:.12f}" for ii in mag[natom_tot]])
-                elif isinstance(ndarray2list(mag[natom_tot]), (int, float)):
-                    iout += " mag " + f"{mag[natom_tot]:.12f}"
+                    iout += " mag " + " ".join([f"{ii:.12f}" for ii in mag[iatomtype]])
+                elif isinstance(ndarray2list(mag[iatomtype]), (int, float)):
+                    iout += " mag " + f"{mag[iatomtype]:.12f}"
 
             if angle1 is not None and isinstance(
-                ndarray2list(angle1[natom_tot]), (int, float)
+                ndarray2list(angle1[iatomtype]), (int, float)
             ):
-                iout += " angle1 " + f"{angle1[natom_tot]:.12f}"
+                iout += " angle1 " + f"{angle1[iatomtype]:.12f}"
 
             if angle2 is not None and isinstance(
-                ndarray2list(angle2[natom_tot]), (int, float)
+                ndarray2list(angle2[iatomtype]), (int, float)
             ):
-                iout += " angle2 " + f"{angle2[natom_tot]:.12f}"
+                iout += " angle2 " + f"{angle2[iatomtype]:.12f}"
 
             if sc is not None:
-                if isinstance(ndarray2list(sc[natom_tot]), (list, tuple)) and len(
-                    sc[natom_tot]
+                if isinstance(ndarray2list(sc[iatomtype]), (list, tuple)) and len(
+                    sc[iatomtype]
                 ) in [1, 3]:
                     iout += " sc " + " ".join(
-                        ["1" if ii else "0" for ii in sc[natom_tot]]
+                        ["1" if ii else "0" for ii in sc[iatomtype]]
                     )
-                elif isinstance(ndarray2list(sc[natom_tot]), (int, float, bool)):
-                    iout += " sc " + "1" if sc[natom_tot] else "0"
+                elif isinstance(ndarray2list(sc[iatomtype]), (int, float, bool)):
+                    iout += " sc " + "1" if sc[iatomtype] else "0"
 
             if lambda_ is not None:
-                if isinstance(ndarray2list(lambda_[natom_tot]), (list, tuple)) and len(
-                    lambda_[natom_tot]
+                if isinstance(ndarray2list(lambda_[iatomtype]), (list, tuple)) and len(
+                    lambda_[iatomtype]
                 ) in [1, 3]:
                     iout += " lambda " + " ".join(
-                        [f"{ii:.12f}" for ii in lambda_[natom_tot]]
+                        [f"{ii:.12f}" for ii in lambda_[iatomtype]]
                     )
-                elif isinstance(ndarray2list(lambda_[natom_tot]), (int, float)):
-                    iout += " lambda " + f"{lambda_[natom_tot]:.12f}"
+                elif isinstance(ndarray2list(lambda_[iatomtype]), (int, float)):
+                    iout += " lambda " + f"{lambda_[iatomtype]:.12f}"
 
             out += iout + "\n"
             natom_tot += 1
