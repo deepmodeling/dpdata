@@ -64,6 +64,43 @@ class DataType:
         self.required = required
         self.deepmd_name = name if deepmd_name is None else deepmd_name
 
+    def __eq__(self, other) -> bool:
+        """Check if two DataType instances are equal.
+
+        Parameters
+        ----------
+        other : object
+            object to compare with
+
+        Returns
+        -------
+        bool
+            True if equal, False otherwise
+        """
+        if not isinstance(other, DataType):
+            return False
+        return (
+            self.name == other.name
+            and self.dtype == other.dtype
+            and self.shape == other.shape
+            and self.required == other.required
+            and self.deepmd_name == other.deepmd_name
+        )
+
+    def __repr__(self) -> str:
+        """Return string representation of DataType.
+
+        Returns
+        -------
+        str
+            string representation
+        """
+        return (
+            f"DataType(name='{self.name}', dtype={self.dtype.__name__}, "
+            f"shape={self.shape}, required={self.required}, "
+            f"deepmd_name='{self.deepmd_name}')"
+        )
+
     def real_shape(self, system: System) -> tuple[int]:
         """Returns expected real shape of a system."""
         assert self.shape is not None
