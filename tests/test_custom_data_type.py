@@ -51,7 +51,9 @@ class TestDataType(unittest.TestCase):
     def test_register_different_data_type_with_warning(self):
         """Test registering different DataType instances with same name should warn."""
         dt1 = DataType("test_diff", np.ndarray, shape=(Axis.NFRAMES, 3))
-        dt2 = DataType("test_diff", list, shape=(Axis.NFRAMES, 4))  # Different dtype and shape
+        dt2 = DataType(
+            "test_diff", list, shape=(Axis.NFRAMES, 4)
+        )  # Different dtype and shape
 
         # Register first time
         dpdata.System.register_data_type(dt1)
@@ -63,7 +65,9 @@ class TestDataType(unittest.TestCase):
             # Check warning was issued
             self.assertEqual(len(w), 1)
             self.assertTrue(issubclass(w[-1].category, UserWarning))
-            self.assertIn("registered twice with different definitions", str(w[-1].message))
+            self.assertIn(
+                "registered twice with different definitions", str(w[-1].message)
+            )
 
 
 class DeepmdLoadDumpCompTest:
