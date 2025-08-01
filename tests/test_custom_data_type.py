@@ -13,6 +13,14 @@ from dpdata.data_type import Axis, DataType
 class TestDataType(unittest.TestCase):
     """Test DataType class methods."""
 
+    def setUp(self):
+        # Store original DTYPES to restore later
+        self.original_dtypes = dpdata.System.DTYPES
+
+    def tearDown(self):
+        # Restore original DTYPES
+        dpdata.System.DTYPES = self.original_dtypes
+
     def test_eq(self):
         """Test equality method."""
         dt1 = DataType("test", np.ndarray, shape=(Axis.NFRAMES, 3))
