@@ -1,0 +1,56 @@
+&control
+calculation = 'cp'
+restart_mode = 'reset_counters'
+prefix = 'si'
+outdir = './outdir'
+pseudo_dir='./' 
+nstep=3000
+iprint=10
+isave=100
+dt=5.0
+ndr=51,  ndw=52   !folder for reading and writing
+tstress=.true., tprnfor=.true.
+!etot_conv_thr=1.d-9
+!ekin_conv_thr=1.d-7
+/
+
+&system
+ibrav=8,
+celldm(1)=10.6407620646
+celldm(2) = 1
+celldm(3) = 1 
+nat=8
+ntyp=1
+ecutwfc=50
+ecutrho=400,
+nr1b=20, nr2b=20, nr3b=20 !For US PP specify no. of points for FFT of aug. Charge
+/
+
+&electrons
+electron_dynamics = 'verlet'
+electron_velocities = 'zero'
+emass=300
+orthogonalization='ortho'
+ortho_eps=1d-11
+/
+
+&ions
+ion_dynamics = 'verlet'
+ion_velocities='zero'
+ion_temperature='nose'
+fnosep=25.0
+tempw=40.0
+/
+
+ATOMIC_SPECIES
+Si 28.0855  Si.pbe-n-rrkjus_psl.1.0.0.UPF
+
+ATOMIC_POSITIONS (crystal) 
+Si 0.0000 0.0000  0.000  1  1  1 
+Si 0.0000 0.5000  0.5000  1  1  1
+Si 0.5000 0.5000 0.0000  1  1  1
+Si 0.5000 0.0000 0.5000  1  1  1
+Si 0.25000 0.2500 0.2500  1  1  1
+Si 0.25000 0.7500 0.7500  1  1  1
+Si 0.75000 0.7500 0.2500  1  1  1
+Si 0.75000 0.2500 0.7500  1  1  1
