@@ -251,7 +251,7 @@ def to_system_data(input_name, prefix, begin=0, step=1):
             )
         # 2. Calculate volume from cell. revert unit to bohr before taking det
         volumes = np.linalg.det(data["cells"] / length_convert).reshape(-1)
-        # 3. Calculate virials for each structure
+        # 3. Calculate virials for each structure, shape [nf x 3 x 3]
         data["virials"] = gpa2evperbohr * volumes[:, None, None] * stress
 
     return data, csteps
