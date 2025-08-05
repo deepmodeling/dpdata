@@ -98,9 +98,9 @@ class TestVirial(unittest.TestCase):
             self.system = dpdata.LabeledSystem(
                 "qe.traj/si.wrongstr/si", fmt="qe/cp/traj"
             )
-            self.assertTrue(
-                "the step key between files are not consistent." in str(c.exception)
-            )
+        self.assertTrue(
+            "the step key between files are not consistent." in str(c.exception)
+        )
 
 
 if __name__ == "__main__":
