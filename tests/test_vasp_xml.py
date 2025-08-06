@@ -27,7 +27,7 @@ class TestVaspXmlConvTrue(unittest.TestCase, CompSys, IsPBC):
         self.system_1.from_vasp_xml("poscars/vasprun.h2o.md.conv.xml")
         self.system_2 = dpdata.LabeledSystem()
         self.system_2.from_vasp_xml("poscars/vasprun.h2o.md.xml")
-        # check if frames 1:2 match
+        # check if frames 1:3 match
         self.system_2 = self.system_2[1:]
         self.places = 6
 
