@@ -24,7 +24,9 @@ class TestVaspXmlConvTrue(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem()
         # the first frame is not converged.
-        self.system_1.from_vasp_xml("poscars/vasprun.h2o.md.conv.xml", convergence_check=True)
+        self.system_1.from_vasp_xml(
+            "poscars/vasprun.h2o.md.conv.xml", convergence_check=True
+        )
         self.system_2 = dpdata.LabeledSystem()
         self.system_2.from_vasp_xml("poscars/vasprun.h2o.md.xml")
         # check if frames 1:3 match
