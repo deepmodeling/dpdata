@@ -30,10 +30,28 @@ def register_spin(data):
 @Format.register("lammps/lmp")
 class LAMMPSLmpFormat(Format):
     @Format.post("shift_orig_zero")
-    def from_system(self, file_name: FileType, type_map=None, **kwargs):
+    def from_system(self, file_name: FileType, type_map=None, atom_style="atomic", **kwargs):
+        """Load LAMMPS data file to system data format.
+        
+        Parameters
+        ----------
+        file_name : str or Path
+            Path to LAMMPS data file
+        type_map : list, optional
+            Mapping from atom types to element names
+        atom_style : str
+            The LAMMPS atom style (atomic, full, charge, etc.)
+        **kwargs : dict
+            Other parameters
+            
+        Returns
+        -------
+        dict
+            System data dictionary
+        """
         with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
-        data = dpdata.lammps.lmp.to_system_data(lines, type_map)
+        data = dpdata.lammps.lmp.to_system_data(lines, type_map, atom_style=atom_style)
         register_spin(data)
         return data
 
