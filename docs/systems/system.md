@@ -58,19 +58,6 @@ d_outcar.to("lammps/lmp", "conf.lmp", frame_idx=0)
 ```
 The first frames of `d_outcar` will be dumped to 'conf.lmp'
 
-For LAMMPS data files, you can specify the atom style when loading:
-```python
-# Load LAMMPS data with default atomic style (atom-ID, atom-type, x, y, z)
-system = dpdata.System("data.lmp", fmt="lammps/lmp", type_map=["O", "H"])
-
-# Load LAMMPS data with full style (includes charges and molecule IDs)
-system = dpdata.System("data.lmp", fmt="lammps/lmp", type_map=["O", "H"], atom_style="full")
-
-# Load LAMMPS data with charge style (includes charges)
-system = dpdata.System("data.lmp", fmt="lammps/lmp", type_map=["O", "H"], atom_style="charge")
-```
-Supported atom styles include: atomic (default), full, charge, bond, angle, molecular, dipole, and sphere.
-
 ```python
 d_outcar.to("vasp/poscar", "POSCAR", frame_idx=-1)
 ```

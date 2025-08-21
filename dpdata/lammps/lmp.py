@@ -21,6 +21,69 @@ ATOM_STYLE_COLUMNS = {
 }
 
 
+def detect_atom_style(lines):
+    """Detect LAMMPS atom style from data file content.
+    
+    Parameters
+    ----------
+    lines : list
+        Lines from LAMMPS data file
+        
+    Returns
+    -------
+    str or None
+        Detected atom style, or None if not detected
+    """
+    # Look for atom style in comments after "Atoms" section header
+    atom_lines = get_atoms(lines)
+    if not atom_lines:
+        return None
+        
+    # Find the "Atoms" line
+    for idx, line in enumerate(lines):
+        if "Atoms" in line:
+            # Check if there's a comment with atom style after "Atoms"
+            if "#" in line:
+                comment_part = line.split("#")[1].strip().lower()
+                for style in ATOM_STYLE_COLUMNS:
+                    if style in comment_part:
+                        return style
+            break
+    
+    # If no explicit style found, try to infer from first data line
+    if atom_lines:
+        first_line = atom_lines[0].split()
+        num_cols = len(first_line)
+        
+        # Try to match based on number of columns and content patterns
+        # This is a heuristic approach
+        if num_cols == 5:
+            # Could be atomic style: atom-ID atom-type x y z
+            return "atomic"
+        elif num_cols == 6:
+            # Could be charge or bond/molecular style
+            # Try to determine if column 2 (index 2) looks like a charge (float) or type (int)
+            try:
+                val = float(first_line[2])
+                # If it's a small float, likely a charge
+                if abs(val) < 10 and val != int(val):
+                    return "charge"
+                else:
+                    # Likely molecule ID (integer), so bond/molecular style
+                    return "bond"
+            except ValueError:
+                return "atomic"  # fallback
+        elif num_cols == 7:
+            # Could be full style: atom-ID molecule-ID atom-type charge x y z
+            return "full"
+        elif num_cols >= 8:
+            # Could be dipole or sphere style
+            # For now, default to dipole if we have enough columns
+            return "dipole"
+    
+    return None  # Unable to detect
+
+
 def _get_block(lines, keys):
     for idx in range(len(lines)):
         if keys in lines[idx]:
@@ -352,13 +415,22 @@ def to_system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"
     type_idx_zero : bool
         Whether to use zero-based indexing for atom types
     atom_style : str
-        The LAMMPS atom style (atomic, full, charge, etc.)
+        The LAMMPS atom style. If "auto", attempts to detect automatically
+        from file. Default is "atomic".
         
     Returns
     -------
     dict
         System data dictionary
     """
+    # Attempt automatic detection if requested
+    if atom_style == "auto":
+        detected_style = detect_atom_style(lines)
+        if detected_style:
+            atom_style = detected_style
+        else:
+            atom_style = "atomic"  # fallback to default
+    
     return system_data(lines, type_map=type_map, type_idx_zero=type_idx_zero, atom_style=atom_style)
 
 
