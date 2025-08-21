@@ -23,12 +23,12 @@ ATOM_STYLE_COLUMNS = {
 
 def detect_atom_style(lines):
     """Detect LAMMPS atom style from data file content.
-    
+
     Parameters
     ----------
     lines : list
         Lines from LAMMPS data file
-        
+
     Returns
     -------
     str or None
@@ -38,7 +38,7 @@ def detect_atom_style(lines):
     atom_lines = get_atoms(lines)
     if not atom_lines:
         return None
-        
+
     # Find the "Atoms" line
     for idx, line in enumerate(lines):
         if "Atoms" in line:
@@ -49,12 +49,12 @@ def detect_atom_style(lines):
                     if style in comment_part:
                         return style
             break
-    
+
     # If no explicit style found, try to infer from first data line
     if atom_lines:
         first_line = atom_lines[0].split()
         num_cols = len(first_line)
-        
+
         # Try to match based on number of columns and content patterns
         # This is a heuristic approach
         if num_cols == 5:
@@ -80,7 +80,7 @@ def detect_atom_style(lines):
             # Could be dipole or sphere style
             # For now, default to dipole if we have enough columns
             return "dipole"
-    
+
     return None  # Unable to detect
 
 
@@ -173,14 +173,14 @@ def _atom_info_atom(line):
 
 def _atom_info_style(line, atom_style="atomic"):
     """Parse atom information based on the specified atom style.
-    
+
     Parameters
     ----------
     line : str
         The atom line from LAMMPS data file
     atom_style : str
         The LAMMPS atom style (atomic, full, charge, etc.)
-        
+
     Returns
     -------
     dict
@@ -188,40 +188,44 @@ def _atom_info_style(line, atom_style="atomic"):
         'atom_id', 'atom_type', 'x', 'y', 'z', 'molecule_id' (if present), 'charge' (if present)
     """
     if atom_style not in ATOM_STYLE_COLUMNS:
-        raise ValueError(f"Unsupported atom style: {atom_style}. Supported styles: {list(ATOM_STYLE_COLUMNS.keys())}")
-    
+        raise ValueError(
+            f"Unsupported atom style: {atom_style}. Supported styles: {list(ATOM_STYLE_COLUMNS.keys())}"
+        )
+
     vec = line.split()
     columns = ATOM_STYLE_COLUMNS[atom_style]
-    
+
     result = {
-        'atom_id': int(vec[columns[0]]),
-        'atom_type': int(vec[columns[1]]),
-        'x': float(vec[columns[2]]),
-        'y': float(vec[columns[3]]),
-        'z': float(vec[columns[4]]),
+        "atom_id": int(vec[columns[0]]),
+        "atom_type": int(vec[columns[1]]),
+        "x": float(vec[columns[2]]),
+        "y": float(vec[columns[3]]),
+        "z": float(vec[columns[4]]),
     }
-    
+
     # Add molecule ID if present
     if columns[5]:  # has_molecule_id
-        result['molecule_id'] = int(vec[1])  # molecule ID is always in column 1 when present
-    
+        result["molecule_id"] = int(
+            vec[1]
+        )  # molecule ID is always in column 1 when present
+
     # Add charge if present
     if columns[6]:  # has_charge
-        result['charge'] = float(vec[columns[7]])  # charge_col
-    
+        result["charge"] = float(vec[columns[7]])  # charge_col
+
     return result
 
 
 def get_natoms_vec(lines, atom_style="atomic"):
     """Get number of atoms for each atom type.
-    
+
     Parameters
     ----------
     lines : list
         Lines from LAMMPS data file
     atom_style : str
         The LAMMPS atom style
-        
+
     Returns
     -------
     list
@@ -238,7 +242,7 @@ def get_natoms_vec(lines, atom_style="atomic"):
 
 def get_atype(lines, type_idx_zero=False, atom_style="atomic"):
     """Get atom types from LAMMPS data file.
-    
+
     Parameters
     ----------
     lines : list
@@ -247,7 +251,7 @@ def get_atype(lines, type_idx_zero=False, atom_style="atomic"):
         Whether to use zero-based indexing for atom types
     atom_style : str
         The LAMMPS atom style
-        
+
     Returns
     -------
     np.ndarray
@@ -257,7 +261,7 @@ def get_atype(lines, type_idx_zero=False, atom_style="atomic"):
     atype = []
     for ii in alines:
         atom_info = _atom_info_style(ii, atom_style)
-        at = atom_info['atom_type']
+        at = atom_info["atom_type"]
         if type_idx_zero:
             atype.append(at - 1)
         else:
@@ -267,14 +271,14 @@ def get_atype(lines, type_idx_zero=False, atom_style="atomic"):
 
 def get_posi(lines, atom_style="atomic"):
     """Get atomic positions from LAMMPS data file.
-    
+
     Parameters
     ----------
     lines : list
         Lines from LAMMPS data file
     atom_style : str
         The LAMMPS atom style
-        
+
     Returns
     -------
     np.ndarray
@@ -284,20 +288,20 @@ def get_posi(lines, atom_style="atomic"):
     posis = []
     for ii in atom_lines:
         atom_info = _atom_info_style(ii, atom_style)
-        posis.append([atom_info['x'], atom_info['y'], atom_info['z']])
+        posis.append([atom_info["x"], atom_info["y"], atom_info["z"]])
     return np.array(posis)
 
 
 def get_charges(lines, atom_style="atomic"):
     """Get atomic charges from LAMMPS data file if the atom style supports charges.
-    
+
     Parameters
     ----------
     lines : list
         Lines from LAMMPS data file
     atom_style : str
         The LAMMPS atom style
-        
+
     Returns
     -------
     np.ndarray or None
@@ -305,16 +309,16 @@ def get_charges(lines, atom_style="atomic"):
     """
     if atom_style not in ATOM_STYLE_COLUMNS:
         raise ValueError(f"Unsupported atom style: {atom_style}")
-    
+
     # Check if this atom style has charges
     if not ATOM_STYLE_COLUMNS[atom_style][6]:  # has_charge
         return None
-    
+
     atom_lines = get_atoms(lines)
     charges = []
     for ii in atom_lines:
         atom_info = _atom_info_style(ii, atom_style)
-        charges.append(atom_info['charge'])
+        charges.append(atom_info["charge"])
     return np.array(charges)
 
 
@@ -354,7 +358,7 @@ def get_lmpbox(lines):
 
 def system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
     """Parse LAMMPS data file to system data format.
-    
+
     Parameters
     ----------
     lines : list
@@ -365,7 +369,7 @@ def system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
         Whether to use zero-based indexing for atom types
     atom_style : str
         The LAMMPS atom style (atomic, full, charge, etc.)
-        
+
     Returns
     -------
     dict
@@ -386,7 +390,9 @@ def system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
     system["orig"] = np.array(orig)
     system["cells"] = [np.array(cell)]
     natoms = sum(system["atom_numbs"])
-    system["atom_types"] = get_atype(lines, type_idx_zero=type_idx_zero, atom_style=atom_style)
+    system["atom_types"] = get_atype(
+        lines, type_idx_zero=type_idx_zero, atom_style=atom_style
+    )
     system["coords"] = [get_posi(lines, atom_style=atom_style)]
     system["cells"] = np.array(system["cells"])
     system["coords"] = np.array(system["coords"])
@@ -405,7 +411,7 @@ def system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
 
 def to_system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
     """Parse LAMMPS data file to system data format.
-    
+
     Parameters
     ----------
     lines : list
@@ -417,7 +423,7 @@ def to_system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"
     atom_style : str
         The LAMMPS atom style. If "auto", attempts to detect automatically
         from file. Default is "atomic".
-        
+
     Returns
     -------
     dict
@@ -430,8 +436,10 @@ def to_system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"
             atom_style = detected_style
         else:
             atom_style = "atomic"  # fallback to default
-    
-    return system_data(lines, type_map=type_map, type_idx_zero=type_idx_zero, atom_style=atom_style)
+
+    return system_data(
+        lines, type_map=type_map, type_idx_zero=type_idx_zero, atom_style=atom_style
+    )
 
 
 def rotate_to_lower_triangle(

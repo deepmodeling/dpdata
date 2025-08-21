@@ -30,13 +30,15 @@ def register_spin(data):
 @Format.register("lammps/lmp")
 class LAMMPSLmpFormat(Format):
     @Format.post("shift_orig_zero")
-    def from_system(self, file_name: FileType, type_map=None, atom_style="auto", **kwargs):
+    def from_system(
+        self, file_name: FileType, type_map=None, atom_style="auto", **kwargs
+    ):
         """Load LAMMPS data file to system data format.
-        
+
         This method supports multiple LAMMPS atom styles with automatic charge extraction
         and maintains backward compatibility. The parser can automatically detect the atom
         style from the LAMMPS data file header when possible.
-        
+
         Parameters
         ----------
         file_name : str or Path
@@ -49,38 +51,38 @@ class LAMMPSLmpFormat(Format):
             atomic, full, charge, bond, angle, molecular, dipole, sphere
         **kwargs : dict
             Other parameters
-            
+
         Returns
         -------
         dict
             System data dictionary with additional data based on atom style:
             - charges: For styles with charge information (full, charge, dipole)
             - molecule_ids: For styles with molecule information (full, bond, angle, molecular)
-            
+
         Examples
         --------
         Load LAMMPS data with automatic detection:
-        
+
         >>> system = dpdata.System("data.lmp", type_map=["O", "H"])
-        
+
         Load with specific atom styles:
-        
-        >>> # Full style with charges and molecule IDs  
+
+        >>> # Full style with charges and molecule IDs
         >>> system = dpdata.System("data.lmp", type_map=["O", "H"], atom_style="full")
         >>> print(system["charges"])  # Access extracted charges
-        
+
         >>> # Charge style with charges only
         >>> system = dpdata.System("data.lmp", type_map=["O", "H"], atom_style="charge")
-        
+
         >>> # Bond/molecular styles with molecule IDs
         >>> system = dpdata.System("data.lmp", type_map=["O", "H"], atom_style="bond")
-        
+
         Notes
         -----
         Atom Style Column Layouts:
         - atomic: atom-ID atom-type x y z (default)
         - full: atom-ID molecule-ID atom-type charge x y z
-        - charge: atom-ID atom-type charge x y z  
+        - charge: atom-ID atom-type charge x y z
         - bond: atom-ID molecule-ID atom-type x y z
         - angle: atom-ID molecule-ID atom-type x y z
         - molecular: atom-ID molecule-ID atom-type x y z
