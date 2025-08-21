@@ -26,6 +26,18 @@ def register_spin(data):
         dpdata.System.register_data_type(dt)
 
 
+def register_charge(data):
+    if "charges" in data:
+        dt = DataType(
+            "charges",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS),
+            required=False,
+            deepmd_name="charge",
+        )
+        dpdata.System.register_data_type(dt)
+
+
 @Format.register("lmp")
 @Format.register("lammps/lmp")
 class LAMMPSLmpFormat(Format):
@@ -93,6 +105,7 @@ class LAMMPSLmpFormat(Format):
             lines = [line.rstrip("\n") for line in fp]
         data = dpdata.lammps.lmp.to_system_data(lines, type_map, atom_style=atom_style)
         register_spin(data)
+        register_charge(data)
         return data
 
     def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):

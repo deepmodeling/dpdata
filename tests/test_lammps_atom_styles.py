@@ -80,12 +80,11 @@ Atoms # bond
         self.assertEqual(system["atom_types"][1], 1)  # H
 
     def test_full_style_parsing(self):
-        """Test parsing of full style LAMMPS data file."""
+        """Test parsing of full style LAMMPS data file with automatic detection."""
         system = dpdata.System(
             self.test_files["full"],
             fmt="lammps/lmp",
             type_map=["O", "H"],
-            atom_style="full",
         )
 
         # Check basic structure
@@ -103,12 +102,11 @@ Atoms # bond
         np.testing.assert_allclose(system["charges"][0], expected_charges, atol=1e-6)
 
     def test_charge_style_parsing(self):
-        """Test parsing of charge style LAMMPS data file."""
+        """Test parsing of charge style LAMMPS data file with automatic detection."""
         system = dpdata.System(
             self.test_files["charge"],
             fmt="lammps/lmp",
             type_map=["O", "H"],
-            atom_style="charge",
         )
 
         # Check basic structure

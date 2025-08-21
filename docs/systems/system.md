@@ -57,7 +57,6 @@ The data stored in {class}`System <dpdata.System>` or {class}`LabeledSystem <dpd
 d_outcar.to("lammps/lmp", "conf.lmp", frame_idx=0)
 ```
 The first frames of `d_outcar` will be dumped to 'conf.lmp'
-
 ```python
 d_outcar.to("vasp/poscar", "POSCAR", frame_idx=-1)
 ```
