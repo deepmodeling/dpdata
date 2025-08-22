@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import itertools
 import os
 import sys
 from typing import TYPE_CHECKING
@@ -175,7 +176,177 @@ def box2dumpbox(orig, box):
     return bounds, tilt
 
 
-def load_file(fname: FileType, begin=0, step=1):
+def get_frame_nlines(fname: FileType):
+    """
+    Determine the number of lines per frame in a LAMMPS dump file.
+    
+    Parameters
+    ----------
+    fname : FileType
+        The dump file name
+        
+    Returns
+    -------
+    int
+        Number of lines per frame
+    """
+    with open_file(fname) as fp:
+        frame_start = None
+        line_count = 0
+        
+        while True:
+            line = fp.readline()
+            if not line:
+                break
+            line_count += 1
+            
+            if "ITEM: TIMESTEP" in line:
+                if frame_start is None:
+                    frame_start = line_count
+                else:
+                    # Found the start of the second frame
+                    return line_count - frame_start
+    
+    # If we only have one frame, return the total line count
+    return line_count
+
+
+def read_frames(fname: FileType, f_idx: list[int]):
+    """
+    Efficiently read only specified frames from a LAMMPS dump file.
+    
+    Parameters
+    ----------
+    fname : FileType
+        The dump file name
+    f_idx : list[int]
+        List of frame indices to read (0-based)
+        
+    Returns
+    -------
+    list[str]
+        Lines for the requested frames
+    """
+    if not f_idx:
+        return []
+    
+    # Sort frame indices for efficient sequential reading
+    sorted_indices = sorted(set(f_idx))
+    nlines = get_frame_nlines(fname)
+    
+    lines = []
+    with open_file(fname) as fp:
+        frame_idx = 0
+        target_idx = 0
+        
+        # Use itertools.zip_longest to read frames in blocks
+        while target_idx < len(sorted_indices):
+            # Read a frame block
+            frame_lines = []
+            for _ in range(nlines):
+                line = fp.readline()
+                if not line:
+                    return lines  # End of file
+                frame_lines.append(line.rstrip("\n"))
+            
+            # Check if this is a frame we want
+            if frame_idx == sorted_indices[target_idx]:
+                lines.extend(frame_lines)
+                target_idx += 1
+            
+            frame_idx += 1
+            
+            # Skip ahead if the next target frame is far away
+            if target_idx < len(sorted_indices):
+                frames_to_skip = sorted_indices[target_idx] - frame_idx
+                if frames_to_skip > 0:
+                    # Skip frames by reading and discarding lines
+                    for _ in range(frames_to_skip * nlines):
+                        line = fp.readline()
+                        if not line:
+                            return lines
+                    frame_idx += frames_to_skip
+    
+    return lines
+
+
+def load_frames_from_trajectories(frames_dict, **kwargs):
+    """
+    Load frames from multiple trajectory files efficiently.
+    
+    This implements the pattern described in the issue:
+    frames_dict = {
+      Trajectory0: [23, 56, 78],
+      Trajectory1: [22],
+      ...
+    }
+    
+    Parameters
+    ----------
+    frames_dict : dict
+        Dictionary mapping trajectory file paths to lists of frame indices
+    **kwargs
+        Additional arguments passed to system_data (e.g., type_map, unwrap, input_file)
+        
+    Returns
+    -------
+    dict
+        Combined system data from all requested frames
+    """
+    combined_data = None
+    
+    for traj_file, f_idx in frames_dict.items():
+        if not f_idx:
+            continue
+            
+        # Read specific frames from this trajectory
+        lines = read_frames(traj_file, f_idx)
+        if not lines:
+            continue
+            
+        # Convert to system data
+        data = system_data(lines, **kwargs)
+        
+        if combined_data is None:
+            combined_data = data.copy()
+        else:
+            # Append data from this trajectory
+            combined_data["cells"] = np.concatenate([combined_data["cells"], data["cells"]], axis=0)
+            combined_data["coords"] = np.concatenate([combined_data["coords"], data["coords"]], axis=0)
+            
+            if "spins" in combined_data and "spins" in data:
+                combined_data["spins"] = np.concatenate([combined_data["spins"], data["spins"]], axis=0)
+            elif "spins" in data:
+                combined_data["spins"] = data["spins"]
+    
+    return combined_data if combined_data is not None else {}
+
+
+def load_file(fname: FileType, begin=0, step=1, f_idx: list[int] = None):
+    """
+    Load frames from a LAMMPS dump file.
+    
+    Parameters
+    ----------
+    fname : FileType
+        The dump file name
+    begin : int, optional
+        The begin frame index (used when f_idx is None)
+    step : int, optional
+        The step between frames (used when f_idx is None)
+    f_idx : list[int], optional
+        Specific frame indices to load. If provided, begin and step are ignored.
+        
+    Returns
+    -------
+    list[str]
+        Lines for the requested frames
+    """
+    if f_idx is not None:
+        # Use efficient frame reading for specific indices
+        return read_frames(fname, f_idx)
+    
+    # Original implementation for begin/step reading
     lines = []
     buff = []
     cc = -1
