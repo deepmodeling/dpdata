@@ -110,6 +110,20 @@ class TestAmberNonOrthogonalCells(unittest.TestCase):
         gamma_computed = np.rad2deg(np.arccos(cos_gamma))
         np.testing.assert_allclose(gamma_computed, 110.0, rtol=1e-8)
 
+    def test_extreme_angles_case(self):
+        """Test edge case with angles very far from 90°."""
+        cell_lengths = np.array([[5.0, 8.0, 12.0]])
+        cell_angles = np.array([[60.0, 70.0, 130.0]])  # all far from 90°
+
+        # Should work without error
+        result = cell_lengths_angles_to_cell(cell_lengths, cell_angles)
+        self.assertEqual(result.shape, (1, 3, 3))
+
+        # Verify the lengths are preserved
+        computed_lengths = np.linalg.norm(result[0], axis=1)
+        expected_lengths = np.array([5.0, 8.0, 12.0])
+        np.testing.assert_allclose(computed_lengths, expected_lengths, rtol=1e-10)
+
     def test_multiple_frames(self):
         """Test that multiple frames are handled correctly."""
         # Test case: 3 frames with different cell parameters
