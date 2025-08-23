@@ -18,7 +18,9 @@ energy_convert = kcalmol2eV
 force_convert = energy_convert
 
 
-def cell_lengths_angles_to_cell(cell_lengths: np.ndarray, cell_angles: np.ndarray) -> np.ndarray:
+def cell_lengths_angles_to_cell(
+    cell_lengths: np.ndarray, cell_angles: np.ndarray
+) -> np.ndarray:
     """Convert cell lengths and angles to cell vectors.
 
     Parameters
