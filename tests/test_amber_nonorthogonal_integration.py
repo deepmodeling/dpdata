@@ -9,23 +9,31 @@ from dpdata.amber.md import cell_lengths_angles_to_cell
 
 class TestAmberNonOrthogonalIntegration(unittest.TestCase):
     def test_no_runtime_error_for_nonorthogonal_cells(self):
-        """Test that non-orthogonal cells no longer raise RuntimeError."""
-        # Test case that would have previously raised RuntimeError
+        """Test that the new cell conversion function handles non-orthogonal cells.
+        
+        This test verifies that cell_lengths_angles_to_cell() can handle 
+        non-orthogonal cells that would have previously caused read_amber_traj()
+        to raise RuntimeError("Unsupported cells").
+        """
+        # Test case that would have previously raised RuntimeError in read_amber_traj
         cell_lengths = np.array([[10.0, 10.0, 15.0]])
         cell_angles = np.array([[90.0, 90.0, 120.0]])  # gamma != 90
 
-        # This should NOT raise a RuntimeError anymore
-        try:
-            result = cell_lengths_angles_to_cell(cell_lengths, cell_angles)
-            # Should return a valid 3x3 cell matrix
-            self.assertEqual(result.shape, (1, 3, 3))
-        except RuntimeError as e:
-            if "Unsupported cells" in str(e):
-                self.fail(
-                    "cell_lengths_angles_to_cell should support non-orthogonal cells"
-                )
-            else:
-                raise  # Re-raise if it's a different RuntimeError
+        # This function now replaces the code that raised RuntimeError
+        result = cell_lengths_angles_to_cell(cell_lengths, cell_angles)
+        
+        # Should return a valid 3x3 cell matrix
+        self.assertEqual(result.shape, (1, 3, 3))
+        
+        # Verify the conversion worked correctly for this hexagonal case
+        # For hexagonal: a=b, gamma=120°, alpha=beta=90°
+        expected_cell = np.array([
+            [[10.0, 0.0, 0.0],
+             [-5.0, 8.660254037844387, 0.0],  # 10*cos(120°), 10*sin(120°), 0
+             [0.0, 0.0, 15.0]]
+        ])
+        
+        np.testing.assert_allclose(result, expected_cell, rtol=1e-10, atol=1e-14)
 
     def test_extreme_angles_case(self):
         """Test edge case with angles very far from 90°."""
