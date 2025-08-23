@@ -21,7 +21,7 @@ ATOM_STYLE_COLUMNS = {
 }
 
 
-def detect_atom_style(lines):
+def detect_atom_style(lines: list[str]) -> str | None:
     """Detect LAMMPS atom style from data file content.
 
     Parameters
@@ -171,7 +171,7 @@ def _atom_info_atom(line):
     return int(vec[0]), int(vec[1]), float(vec[2]), float(vec[3]), float(vec[4])
 
 
-def _atom_info_style(line, atom_style="atomic"):
+def _atom_info_style(line: str, atom_style: str = "atomic") -> dict[str, int | float]:
     """Parse atom information based on the specified atom style.
 
     Parameters
@@ -216,7 +216,7 @@ def _atom_info_style(line, atom_style="atomic"):
     return result
 
 
-def get_natoms_vec(lines, atom_style="atomic"):
+def get_natoms_vec(lines: list[str], atom_style: str = "atomic") -> list[int]:
     """Get number of atoms for each atom type.
 
     Parameters
@@ -240,7 +240,7 @@ def get_natoms_vec(lines, atom_style="atomic"):
     return natoms_vec
 
 
-def get_atype(lines, type_idx_zero=False, atom_style="atomic"):
+def get_atype(lines: list[str], type_idx_zero: bool = False, atom_style: str = "atomic") -> np.ndarray:
     """Get atom types from LAMMPS data file.
 
     Parameters
@@ -269,7 +269,7 @@ def get_atype(lines, type_idx_zero=False, atom_style="atomic"):
     return np.array(atype, dtype=int)
 
 
-def get_posi(lines, atom_style="atomic"):
+def get_posi(lines: list[str], atom_style: str = "atomic") -> np.ndarray:
     """Get atomic positions from LAMMPS data file.
 
     Parameters
@@ -292,7 +292,7 @@ def get_posi(lines, atom_style="atomic"):
     return np.array(posis)
 
 
-def get_charges(lines, atom_style="atomic"):
+def get_charges(lines: list[str], atom_style: str = "atomic") -> np.ndarray | None:
     """Get atomic charges from LAMMPS data file if the atom style supports charges.
 
     Parameters
@@ -322,7 +322,7 @@ def get_charges(lines, atom_style="atomic"):
     return np.array(charges)
 
 
-def get_spins(lines, atom_style="atomic"):
+def get_spins(lines: list[str], atom_style: str = "atomic") -> np.ndarray | None:
     atom_lines = get_atoms(lines)
     if len(atom_lines[0].split()) < 8:
         return None
@@ -356,7 +356,7 @@ def get_lmpbox(lines):
     return box_info, tilt
 
 
-def system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
+def system_data(lines: list[str], type_map: list[str] | None = None, type_idx_zero: bool = True, atom_style: str = "atomic") -> dict:
     """Parse LAMMPS data file to system data format.
 
     Parameters
@@ -409,7 +409,7 @@ def system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
     return system
 
 
-def to_system_data(lines, type_map=None, type_idx_zero=True, atom_style="atomic"):
+def to_system_data(lines: list[str], type_map: list[str] | None = None, type_idx_zero: bool = True, atom_style: str = "atomic") -> dict:
     """Parse LAMMPS data file to system data format.
 
     Parameters

@@ -26,7 +26,7 @@ def register_spin(data):
         dpdata.System.register_data_type(dt)
 
 
-def register_charge(data):
+def register_charge(data: dict) -> None:
     if "charges" in data:
         dt = DataType(
             "charges",

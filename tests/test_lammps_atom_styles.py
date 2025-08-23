@@ -10,7 +10,7 @@ from context import dpdata
 class TestLammpsAtomStyles(unittest.TestCase):
     """Test support for different LAMMPS atom styles."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test fixtures."""
         # Create test data files for different atom styles
         self.test_files = {}
@@ -129,13 +129,13 @@ Atoms
             with open(filepath, "w") as f:
                 f.write(config["content"])
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Clean up test files."""
         for file_path in self.test_files.values():
             if os.path.exists(file_path):
                 os.remove(file_path)
 
-    def _load_system(self, style, explicit_style=None):
+    def _load_system(self, style: str, explicit_style: str | None = None) -> "dpdata.System":
         """Helper method to load a system with the given style.
 
         Parameters
@@ -160,17 +160,17 @@ Atoms
 
         return dpdata.System(**kwargs)
 
-    def _assert_basic_structure(self, system):
+    def _assert_basic_structure(self, system: "dpdata.System") -> None:
         """Helper method to check basic system structure."""
         self.assertEqual(len(system["atom_types"]), 2)
         self.assertEqual(system["atom_types"][0], 0)  # type 1 -> O
         self.assertEqual(system["atom_types"][1], 1)  # type 2 -> H
 
-    def _assert_coordinates(self, system, expected_coords):
+    def _assert_coordinates(self, system: "dpdata.System", expected_coords: list[list[float]]) -> None:
         """Helper method to check coordinates."""
         np.testing.assert_allclose(system["coords"][0], expected_coords, atol=1e-6)
 
-    def _assert_charges(self, system, expected_charges):
+    def _assert_charges(self, system: "dpdata.System", expected_charges: list[float] | None) -> None:
         """Helper method to check charges."""
         if expected_charges is not None:
             self.assertIn("charges", system.data)
@@ -180,7 +180,7 @@ Atoms
         else:
             self.assertNotIn("charges", system.data)
 
-    def _test_style_parsing(self, style_key, explicit_style=None):
+    def _test_style_parsing(self, style_key: str, explicit_style: str | None = None) -> None:
         """Generic helper method to test style parsing.
 
         Parameters
@@ -202,38 +202,38 @@ Atoms
         # Check charges
         self._assert_charges(system, config["expected_charges"])
 
-    def test_atomic_style_backward_compatibility(self):
+    def test_atomic_style_backward_compatibility(self) -> None:
         """Test that atomic style still works (backward compatibility)."""
         system = dpdata.System(os.path.join("poscars", "conf.lmp"), type_map=["O", "H"])
         self.assertEqual(len(system["atom_types"]), 2)
         self.assertEqual(system["atom_types"][0], 0)  # O
         self.assertEqual(system["atom_types"][1], 1)  # H
 
-    def test_full_style_parsing(self):
+    def test_full_style_parsing(self) -> None:
         """Test parsing of full style LAMMPS data file with automatic detection."""
         self._test_style_parsing("full")
 
-    def test_charge_style_parsing(self):
+    def test_charge_style_parsing(self) -> None:
         """Test parsing of charge style LAMMPS data file with automatic detection."""
         self._test_style_parsing("charge")
 
-    def test_bond_style_parsing(self):
+    def test_bond_style_parsing(self) -> None:
         """Test parsing of bond style LAMMPS data file."""
         self._test_style_parsing("bond", explicit_style="bond")
 
-    def test_full_style_no_comment_detection(self):
+    def test_full_style_no_comment_detection(self) -> None:
         """Test automatic detection of full style without style comment."""
         self._test_style_parsing("full_no_comment")
 
-    def test_charge_style_no_comment_detection(self):
+    def test_charge_style_no_comment_detection(self) -> None:
         """Test automatic detection of charge style without style comment."""
         self._test_style_parsing("charge_no_comment")
 
-    def test_bond_style_no_comment_detection(self):
+    def test_bond_style_no_comment_detection(self) -> None:
         """Test automatic detection of bond style without style comment."""
         self._test_style_parsing("bond_no_comment")
 
-    def test_unsupported_atom_style(self):
+    def test_unsupported_atom_style(self) -> None:
         """Test that unsupported atom styles raise appropriate errors."""
         with self.assertRaises(ValueError) as context:
             dpdata.System(
@@ -245,7 +245,7 @@ Atoms
 
         self.assertIn("Unsupported atom style", str(context.exception))
 
-    def test_default_atomic_style(self):
+    def test_default_atomic_style(self) -> None:
         """Test that default behavior is atomic style."""
         # Test using existing atomic style file
         system1 = dpdata.System(
