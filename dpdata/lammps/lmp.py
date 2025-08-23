@@ -240,7 +240,9 @@ def get_natoms_vec(lines: list[str], atom_style: str = "atomic") -> list[int]:
     return natoms_vec
 
 
-def get_atype(lines: list[str], type_idx_zero: bool = False, atom_style: str = "atomic") -> np.ndarray:
+def get_atype(
+    lines: list[str], type_idx_zero: bool = False, atom_style: str = "atomic"
+) -> np.ndarray:
     """Get atom types from LAMMPS data file.
 
     Parameters
@@ -356,7 +358,12 @@ def get_lmpbox(lines):
     return box_info, tilt
 
 
-def system_data(lines: list[str], type_map: list[str] | None = None, type_idx_zero: bool = True, atom_style: str = "atomic") -> dict:
+def system_data(
+    lines: list[str],
+    type_map: list[str] | None = None,
+    type_idx_zero: bool = True,
+    atom_style: str = "atomic",
+) -> dict:
     """Parse LAMMPS data file to system data format.
 
     Parameters
@@ -409,7 +416,12 @@ def system_data(lines: list[str], type_map: list[str] | None = None, type_idx_ze
     return system
 
 
-def to_system_data(lines: list[str], type_map: list[str] | None = None, type_idx_zero: bool = True, atom_style: str = "atomic") -> dict:
+def to_system_data(
+    lines: list[str],
+    type_map: list[str] | None = None,
+    type_idx_zero: bool = True,
+    atom_style: str = "atomic",
+) -> dict:
     """Parse LAMMPS data file to system data format.
 
     Parameters

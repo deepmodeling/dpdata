@@ -135,7 +135,9 @@ Atoms
             if os.path.exists(file_path):
                 os.remove(file_path)
 
-    def _load_system(self, style: str, explicit_style: str | None = None) -> "dpdata.System":
+    def _load_system(
+        self, style: str, explicit_style: str | None = None
+    ) -> dpdata.System:
         """Helper method to load a system with the given style.
 
         Parameters
@@ -160,17 +162,21 @@ Atoms
 
         return dpdata.System(**kwargs)
 
-    def _assert_basic_structure(self, system: "dpdata.System") -> None:
+    def _assert_basic_structure(self, system: dpdata.System) -> None:
         """Helper method to check basic system structure."""
         self.assertEqual(len(system["atom_types"]), 2)
         self.assertEqual(system["atom_types"][0], 0)  # type 1 -> O
         self.assertEqual(system["atom_types"][1], 1)  # type 2 -> H
 
-    def _assert_coordinates(self, system: "dpdata.System", expected_coords: list[list[float]]) -> None:
+    def _assert_coordinates(
+        self, system: dpdata.System, expected_coords: list[list[float]]
+    ) -> None:
         """Helper method to check coordinates."""
         np.testing.assert_allclose(system["coords"][0], expected_coords, atol=1e-6)
 
-    def _assert_charges(self, system: "dpdata.System", expected_charges: list[float] | None) -> None:
+    def _assert_charges(
+        self, system: dpdata.System, expected_charges: list[float] | None
+    ) -> None:
         """Helper method to check charges."""
         if expected_charges is not None:
             self.assertIn("charges", system.data)
@@ -180,7 +186,9 @@ Atoms
         else:
             self.assertNotIn("charges", system.data)
 
-    def _test_style_parsing(self, style_key: str, explicit_style: str | None = None) -> None:
+    def _test_style_parsing(
+        self, style_key: str, explicit_style: str | None = None
+    ) -> None:
         """Generic helper method to test style parsing.
 
         Parameters
