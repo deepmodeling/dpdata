@@ -20,65 +20,71 @@ force_convert = energy_convert
 
 def cell_lengths_angles_to_cell(cell_lengths, cell_angles):
     """Convert cell lengths and angles to cell vectors.
-    
+
     Parameters
     ----------
     cell_lengths : np.ndarray
         Cell lengths with shape (..., 3) where the last dimension
         corresponds to [a, b, c]
-    cell_angles : np.ndarray  
+    cell_angles : np.ndarray
         Cell angles in degrees with shape (..., 3) where the last dimension
         corresponds to [alpha, beta, gamma]
-        
+
     Returns
     -------
     np.ndarray
         Cell vectors with shape (..., 3, 3) where the last two dimensions
         form the cell matrix
-        
+
     Notes
     -----
     Uses the standard crystallographic convention:
     - v1 = [a, 0, 0]
-    - v2 = [b*cos(gamma), b*sin(gamma), 0]  
+    - v2 = [b*cos(gamma), b*sin(gamma), 0]
     - v3 = [c*cos(beta), c*(cos(alpha) - cos(beta)*cos(gamma))/sin(gamma), c*z]
     where z = sqrt(1 - cos²(alpha) - cos²(beta) - cos²(gamma) + 2*cos(alpha)*cos(beta)*cos(gamma))/sin(gamma)
     """
     # Convert to radians
     alpha = np.deg2rad(cell_angles[..., 0])  # angle between b and c
-    beta = np.deg2rad(cell_angles[..., 1])   # angle between a and c  
+    beta = np.deg2rad(cell_angles[..., 1])  # angle between a and c
     gamma = np.deg2rad(cell_angles[..., 2])  # angle between a and b
-    
+
     a = cell_lengths[..., 0]
-    b = cell_lengths[..., 1] 
+    b = cell_lengths[..., 1]
     c = cell_lengths[..., 2]
-    
+
     cos_alpha = np.cos(alpha)
     cos_beta = np.cos(beta)
     cos_gamma = np.cos(gamma)
     sin_gamma = np.sin(gamma)
-    
+
     # Calculate the z-component of the third vector
-    z_factor = 1 - cos_alpha**2 - cos_beta**2 - cos_gamma**2 + 2*cos_alpha*cos_beta*cos_gamma
+    z_factor = (
+        1
+        - cos_alpha**2
+        - cos_beta**2
+        - cos_gamma**2
+        + 2 * cos_alpha * cos_beta * cos_gamma
+    )
     z_factor = np.maximum(z_factor, 0)  # Ensure non-negative for sqrt
     z = np.sqrt(z_factor) / sin_gamma
-    
+
     # Build cell vectors
     shape = cell_lengths.shape[:-1] + (3, 3)
     cell = np.zeros(shape)
-    
+
     # First vector: [a, 0, 0]
     cell[..., 0, 0] = a
-    
+
     # Second vector: [b*cos(gamma), b*sin(gamma), 0]
     cell[..., 1, 0] = b * cos_gamma
     cell[..., 1, 1] = b * sin_gamma
-    
+
     # Third vector: [c*cos(beta), c*(cos(alpha) - cos(beta)*cos(gamma))/sin(gamma), c*z]
     cell[..., 2, 0] = c * cos_beta
     cell[..., 2, 1] = c * (cos_alpha - cos_beta * cos_gamma) / sin_gamma
     cell[..., 2, 2] = c * z
-    
+
     return cell
 
 
