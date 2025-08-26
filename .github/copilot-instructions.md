@@ -8,7 +8,7 @@ Always reference these instructions first and fallback to search or bash command
 
 - **Bootstrap and install the repository:**
   - `cd /home/runner/work/dpdata/dpdata` (or wherever the repo is cloned)
-  - `pip install -e .` -- installs dpdata in development mode with core dependencies (numpy, scipy, h5py, monty, wcmatch)
+  - `uv pip install -e .` -- installs dpdata in development mode with core dependencies (numpy, scipy, h5py, monty, wcmatch)
   - Test installation: `dpdata --version` -- should show version like "dpdata v0.1.dev2+..."
 
 - **Run tests:**
@@ -17,13 +17,13 @@ Always reference these instructions first and fallback to search or bash command
   - `cd tests && coverage run --source=../dpdata -m unittest discover && coverage report` -- run tests with coverage
 
 - **Linting and formatting:**
-  - Install ruff: `pip install ruff`
+  - Install ruff: `uv pip install ruff`
   - `ruff check dpdata/` -- lint the main package (takes ~1 second)
   - `ruff format dpdata/` -- format code according to project style
   - `ruff check --fix dpdata/` -- auto-fix linting issues where possible
 
 - **Pre-commit hooks:**
-  - Install: `pip install pre-commit`
+  - Install: `uv pip install pre-commit`
   - `pre-commit run --all-files` -- run all hooks on all files
   - Hooks include: ruff linting/formatting, trailing whitespace, end-of-file-fixer, yaml/json/toml checks
 
@@ -53,7 +53,7 @@ Always reference these instructions first and fallback to search or bash command
 
 - **Package building:**
   - Uses setuptools with pyproject.toml configuration
-  - `pip install build && python -m build` -- create source and wheel distributions
+  - `uv pip install build && python -m build` -- create source and wheel distributions
   - Version is managed by setuptools_scm from git tags
 
 ## Common Tasks
@@ -114,9 +114,9 @@ The following are outputs from frequently run commands. Reference them instead o
 
 ## Troubleshooting
 
-- **Installation timeouts:** Network timeouts during `pip install` are common. If this occurs, try:
-  - Individual package installation: `pip install numpy scipy h5py monty wcmatch` 
-  - Use `--timeout` option: `pip install --timeout 300 -e .`
+- **Installation timeouts:** Network timeouts during `uv pip install` are common. If this occurs, try:
+  - Individual package installation: `uv pip install numpy scipy h5py monty wcmatch` 
+  - Use `--timeout` option: `uv pip install --timeout 300 -e .`
   - Verify existing installation works: `dpdata --version` should work even if reinstall fails
 
 - **Optional dependency errors:** Many tests will skip or fail if optional dependencies (ase, parmed, pymatgen, rdkit) are not installed. This is expected. Core functionality will work with just the basic dependencies.
@@ -125,7 +125,7 @@ The following are outputs from frequently run commands. Reference them instead o
 
 - **Test artifacts:** The test suite generates temporary files (`tests/data_*`, `tests/tmp.*`, `tests/.coverage`). These are excluded by `.gitignore` and should not be committed.
 
-- **Import errors:** If you see import errors for specific modules, check if the corresponding optional dependency is installed. For example, ASE functionality requires `pip install ase`.
+- **Import errors:** If you see import errors for specific modules, check if the corresponding optional dependency is installed. For example, ASE functionality requires `uv pip install ase`.
 
 ## Critical Notes
 
@@ -134,3 +134,15 @@ The following are outputs from frequently run commands. Reference them instead o
 - Test artifacts in `tests/` directory are excluded by `.gitignore` - don't commit them
 - Optional dependencies are required for some formats but core functionality works without them
 - The CLI tool `dpdata` is the main user interface for format conversion
+
+## Commit and PR Guidelines
+
+- **Use semantic commit messages** for all commits and PR titles following the format: `type(scope): description`
+  - **Types:** `feat` (new feature), `fix` (bug fix), `docs` (documentation), `style` (formatting), `refactor` (code restructuring), `test` (testing), `chore` (maintenance)
+  - **Examples:** 
+    - `feat(vasp): add support for POSCAR format`
+    - `fix(cli): resolve parsing error for multi-frame files`
+    - `docs: update installation instructions`
+    - `test(amber): add tests for trajectory parsing`
+- **PR titles** must follow semantic commit format
+- **Commit messages** should be concise but descriptive of the actual changes made
