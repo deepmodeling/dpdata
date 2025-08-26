@@ -29,3 +29,8 @@ docs/minimizers.csv
 docs/api/
 docs/formats/
 .DS_Store
+# Test artifacts
+tests/data_*.h5
+tests/data_*/
+tests/tmp.*
+tests/.coverage
