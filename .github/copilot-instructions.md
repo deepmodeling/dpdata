@@ -115,7 +115,7 @@ The following are outputs from frequently run commands. Reference them instead o
 ## Troubleshooting
 
 - **Installation timeouts:** Network timeouts during `uv pip install` are common. If this occurs, try:
-  - Individual package installation: `uv pip install numpy scipy h5py monty wcmatch` 
+  - Individual package installation: `uv pip install numpy scipy h5py monty wcmatch`
   - Use `--timeout` option: `uv pip install --timeout 300 -e .`
   - Verify existing installation works: `dpdata --version` should work even if reinstall fails
 
@@ -139,7 +139,7 @@ The following are outputs from frequently run commands. Reference them instead o
 
 - **Use semantic commit messages** for all commits and PR titles following the format: `type(scope): description`
   - **Types:** `feat` (new feature), `fix` (bug fix), `docs` (documentation), `style` (formatting), `refactor` (code restructuring), `test` (testing), `chore` (maintenance)
-  - **Examples:** 
+  - **Examples:**
     - `feat(vasp): add support for POSCAR format`
     - `fix(cli): resolve parsing error for multi-frame files`
     - `docs: update installation instructions`
