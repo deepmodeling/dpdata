@@ -59,7 +59,7 @@ def get_energy(outlines):
 def collect_force(outlines):
     force = []
     for i, line in enumerate(outlines):
-        #if "TOTAL-FORCE (eV/Angstrom)" in line:
+        # if "TOTAL-FORCE (eV/Angstrom)" in line:
         if "TOTAL-FORCE" in line:
             value_pattern = re.compile(
                 r"^\s*[A-Z][a-z]?[1-9][0-9]*\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
@@ -96,7 +96,7 @@ def get_force(outlines, natoms):
 def collect_stress(outlines):
     stress = []
     for i, line in enumerate(outlines):
-        #if "TOTAL-STRESS (KBAR)" in line:
+        # if "TOTAL-STRESS (KBAR)" in line:
         if "TOTAL-STRESS" in line:
             value_pattern = re.compile(
                 r"^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
