@@ -45,6 +45,8 @@ def get_path_out(fname, inlines):
 def get_energy(outlines):
     Etot = None
     for line in reversed(outlines):
+        if "final etot is" in line:
+            Etot = float(line.split()[-2])  # in eV
         if "ETOT" in line:
             Etot = float(line.split()[1])  # in eV
             return Etot, True
