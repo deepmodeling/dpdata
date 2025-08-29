@@ -100,13 +100,9 @@ O 1.0 1.0 1.0 8 -0.1 -0.1 -0.1
             self.assertEqual(system.get_nframes(), 1)
             
             # Test with ASE (basic read)
-            try:
-                atoms = read(f.name, format="extxyz")
-                self.assertEqual(len(atoms), 2)
-                self.assertEqual(atoms.get_chemical_symbols(), ["C", "O"])
-            except Exception as e:
-                # If it fails, that's informative but not a test failure
-                print(f"Manual extxyz compatibility issue with ASE: {e}")
+            atoms = read(f.name, format="extxyz")
+            self.assertEqual(len(atoms), 2)
+            self.assertEqual(atoms.get_chemical_symbols(), ["C", "O"])
 
     def test_dpdata_xyz_to_ase_basic(self):
         """Test basic xyz reading between dpdata and ASE (simple compatibility check)."""
