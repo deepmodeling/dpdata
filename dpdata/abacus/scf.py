@@ -48,7 +48,7 @@ def get_energy(outlines):
         if "final etot is" in line:  # for LTS
             Etot = float(line.split()[-2])  # in eV
             return Etot, True
-        elif "TOTAL ENERGY" in line: # for develop
+        elif "TOTAL ENERGY" in line:  # for develop
             Etot = float(line.split()[-2])  # in eV
             return Etot, True
         elif "convergence has NOT been achieved!" in line:
