@@ -25,22 +25,25 @@ class TestSchNetPackRegistration(unittest.TestCase):
             "forces": [[[0.0, 0.0, 0.0]]],
         }
 
-        # This should raise ImportError since SchNetPack is not available
-        with self.assertRaises(ImportError) as cm:
-            test_system.to("schnetpack", "/tmp/test.db")
-
-        self.assertIn("ASE and SchNetPack are required", str(cm.exception))
+        # Since ASE is available, this should work and create the database
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_file = os.path.join(tmpdir, "test_registered.db")
+            test_system.to("schnetpack", db_file)
+            
+            # Verify the database was created
+            self.assertTrue(os.path.exists(db_file))
 
 
 try:
-    from schnetpack.data import ASEAtomsData
+    import ase.db  # noqa: F401
 
-    schnetpack_available = True
+    ase_available = True
 except ImportError:
-    schnetpack_available = False
+    ase_available = False
 
 
-@unittest.skipIf(not schnetpack_available, "skip test_schnetpack")
+@unittest.skipIf(not ase_available, "skip test_schnetpack")
 class TestSchNetPack(unittest.TestCase):
     def setUp(self):
         # Create a simple test system
@@ -71,7 +74,9 @@ class TestSchNetPack(unittest.TestCase):
         ]
 
     def test_to_schnetpack(self):
-        """Test conversion to SchNetPack format."""
+        """Test conversion to SchNetPack-compatible ASE database format."""
+        from ase.db import connect
+
         with tempfile.TemporaryDirectory() as tmpdir:
             db_file = os.path.join(tmpdir, "test_data.db")
 
@@ -81,32 +86,34 @@ class TestSchNetPack(unittest.TestCase):
             # Verify the database was created
             self.assertTrue(os.path.exists(db_file))
 
-            # Load the database and verify contents
-            dataset = ASEAtomsData(db_file)
+            # Load the database and verify contents using ASE
+            db = connect(db_file)
 
             # Check number of structures
-            self.assertEqual(len(dataset), 1)
+            self.assertEqual(len(db), 1)
 
-            # Check structure properties
-            data_point = dataset[0]
+            # Get the structure back
+            row = db.get(1)
+            atoms = row.toatoms()
 
             # Check basic structure information
-            self.assertEqual(len(data_point["_atomic_numbers"]), 3)  # O, H, H
+            self.assertEqual(len(atoms), 3)  # O, H, H
+            self.assertEqual(atoms.get_chemical_symbols(), ["O", "H", "H"])
 
-            # Check that properties are present
-            self.assertIn("energy", data_point)
-            self.assertIn("forces", data_point)
+            # Check that properties are present and accessible
+            self.assertTrue(hasattr(atoms, "calc") and atoms.calc is not None)
 
             # Check energy value
-            self.assertAlmostEqual(float(data_point["energy"]), -10.5, places=5)
+            self.assertAlmostEqual(atoms.get_potential_energy(), -10.5, places=5)
 
-            # Check forces shape
-            self.assertEqual(
-                data_point["forces"].shape, (3, 3)
-            )  # 3 atoms, 3 components
+            # Check forces shape and values
+            forces = atoms.get_forces()
+            self.assertEqual(forces.shape, (3, 3))  # 3 atoms, 3 components
 
     def test_to_schnetpack_custom_units(self):
         """Test conversion with custom units."""
+        from ase.db import connect
+
         with tempfile.TemporaryDirectory() as tmpdir:
             db_file = os.path.join(tmpdir, "test_data_units.db")
 
@@ -120,17 +127,23 @@ class TestSchNetPack(unittest.TestCase):
             # Verify the database was created
             self.assertTrue(os.path.exists(db_file))
 
-            # Load and verify
-            dataset = ASEAtomsData(db_file)
-            self.assertEqual(len(dataset), 1)
+            # Load and verify using ASE
+            db = connect(db_file)
+            self.assertEqual(len(db), 1)
 
             # Basic verification that data is present
-            data_point = dataset[0]
-            self.assertIn("energy", data_point)
-            self.assertIn("forces", data_point)
+            row = db.get(1)
+            atoms = row.toatoms()
+            self.assertTrue(hasattr(atoms, "calc") and atoms.calc is not None)
+            
+            # Check that units were stored in metadata
+            self.assertIn("property_units", row.data)
+            self.assertEqual(row.data["property_units"], property_units)
 
     def test_to_schnetpack_without_virials(self):
         """Test conversion without virials."""
+        from ase.db import connect
+
         with tempfile.TemporaryDirectory() as tmpdir:
             db_file = os.path.join(tmpdir, "test_no_virials.db")
 
@@ -148,17 +161,20 @@ class TestSchNetPack(unittest.TestCase):
             # Verify the database was created
             self.assertTrue(os.path.exists(db_file))
 
-            # Load and verify
-            dataset = ASEAtomsData(db_file)
-            self.assertEqual(len(dataset), 1)
+            # Load and verify using ASE
+            db = connect(db_file)
+            self.assertEqual(len(db), 1)
 
-            data_point = dataset[0]
-            self.assertIn("energy", data_point)
-            self.assertIn("forces", data_point)
-            # virials should not be present or can be ignored
+            row = db.get(1)
+            atoms = row.toatoms()
+            self.assertTrue(hasattr(atoms, "calc") and atoms.calc is not None)
+            # virials should not be present in row.data
+            self.assertNotIn("virials", row.data)
 
     def test_multiframe_system(self):
         """Test conversion of multi-frame system."""
+        from ase.db import connect
+
         with tempfile.TemporaryDirectory() as tmpdir:
             db_file = os.path.join(tmpdir, "test_multiframe.db")
 
@@ -190,18 +206,18 @@ class TestSchNetPack(unittest.TestCase):
             # Verify the database was created
             self.assertTrue(os.path.exists(db_file))
 
-            # Load and verify
-            dataset = ASEAtomsData(db_file)
+            # Load and verify using ASE
+            db = connect(db_file)
 
             # Should have 2 frames
-            self.assertEqual(len(dataset), 2)
+            self.assertEqual(len(db), 2)
 
             # Check both frames
-            for i in range(2):
-                data_point = dataset[i]
-                self.assertIn("energy", data_point)
-                self.assertIn("forces", data_point)
-                self.assertEqual(len(data_point["_atomic_numbers"]), 3)
+            for i in range(1, 3):  # ASE database IDs start from 1
+                row = db.get(i)
+                atoms = row.toatoms()
+                self.assertTrue(hasattr(atoms, "calc") and atoms.calc is not None)
+                self.assertEqual(len(atoms), 3)  # O, H, H
 
 
 class TestSchNetPackMocked(unittest.TestCase):

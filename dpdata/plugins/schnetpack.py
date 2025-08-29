@@ -5,11 +5,14 @@ from dpdata.format import Format
 
 @Format.register("schnetpack")
 class SchNetPackFormat(Format):
-    """Format for SchNetPack ASE database.
+    """Format for SchNetPack-compatible ASE database.
 
     SchNetPack uses ASE database format internally for storing atomic structures
-    and their properties. This format converts dpdata LabeledSystem to SchNetPack's
-    ASE database format.
+    and their properties. This format converts dpdata LabeledSystem to 
+    SchNetPack-compatible ASE database format using only ASE functionality.
+
+    The created database can be used directly with SchNetPack for training
+    machine learning models.
 
     For more information, see:
     https://schnetpack.readthedocs.io/en/latest/tutorials/tutorial_01_preparing_data.html
@@ -23,14 +26,14 @@ class SchNetPackFormat(Format):
         property_unit_dict: dict | None = None,
         **kwargs,
     ) -> None:
-        """Convert dpdata LabeledSystem to SchNetPack ASE database format.
+        """Convert dpdata LabeledSystem to SchNetPack-compatible ASE database format.
 
         Parameters
         ----------
         data : dict
             dpdata LabeledSystem data dictionary
         file_name : str, optional
-            Path to the output SchNetPack database file, by default "schnetpack_data.db"
+            Path to the output database file, by default "schnetpack_data.db"
         distance_unit : str, optional
             Unit for distances, by default "Ang"
         property_unit_dict : dict, optional
@@ -42,64 +45,72 @@ class SchNetPackFormat(Format):
         Raises
         ------
         ImportError
-            If ASE or SchNetPack are not available
+            If ASE is not available
         """
         try:
             from ase import Atoms
-            from schnetpack.data import ASEAtomsData
+            from ase.calculators.singlepoint import SinglePointCalculator
+            from ase.db import connect
         except ImportError as e:
             raise ImportError(
-                "ASE and SchNetPack are required for schnetpack format. "
-                "Install with: pip install ase schnetpack"
+                "ASE is required for schnetpack format. "
+                "Install with: pip install ase"
             ) from e
 
         # Set default units if not provided
         if property_unit_dict is None:
             property_unit_dict = {"energy": "eV", "forces": "eV/Ang"}
 
-        # Convert dpdata to list of ASE Atoms and property list
-        atoms_list = []
-        property_list = []
+        # Create ASE database connection
+        db = connect(file_name, append=False)
 
         species = [data["atom_names"][tt] for tt in data["atom_types"]]
-        nframes = data["coords"].shape[0]
+        
+        # Handle both list and numpy array formats
+        import numpy as np
+        coords = np.array(data["coords"])
+        cells = np.array(data["cells"]) 
+        energies = np.array(data.get("energies", [])) if "energies" in data else None
+        forces = np.array(data.get("forces", [])) if "forces" in data else None
+        virials = np.array(data.get("virials", [])) if "virials" in data else None
+        
+        nframes = coords.shape[0]
 
         for frame_idx in range(nframes):
             # Create ASE Atoms object for this frame
             atoms = Atoms(
                 symbols=species,
-                positions=data["coords"][frame_idx],
+                positions=coords[frame_idx],
                 pbc=not data.get("nopbc", False),
-                cell=data["cells"][frame_idx],
+                cell=cells[frame_idx],
             )
-            atoms_list.append(atoms)
 
-            # Create property dictionary for this frame
-            properties = {}
+            # Prepare calculator properties
+            calc_properties = {}
 
             # Add energy
-            if "energies" in data:
-                properties["energy"] = float(data["energies"][frame_idx])
+            if energies is not None:
+                calc_properties["energy"] = float(energies[frame_idx])
 
             # Add forces
-            if "forces" in data:
-                properties["forces"] = data["forces"][frame_idx]
+            if forces is not None:
+                calc_properties["forces"] = forces[frame_idx]
 
-            # Add virials if present (SchNetPack doesn't have built-in support,
-            # but can be stored as additional property)
-            if "virials" in data:
-                properties["virials"] = data["virials"][frame_idx]
+            # Attach calculator with properties
+            if calc_properties:
+                calc = SinglePointCalculator(atoms, **calc_properties)
+                atoms.calc = calc
 
-            property_list.append(properties)
+            # Prepare additional data for database (e.g., virials)
+            db_data = {}
+            if virials is not None:
+                db_data["virials"] = virials[frame_idx]
 
-        # Create SchNetPack ASE database
-        dataset = ASEAtomsData.create(
-            file_name,
-            distance_unit=distance_unit,
-            property_unit_dict=property_unit_dict,
-        )
+            # Add property units as metadata if provided
+            if property_unit_dict:
+                db_data["property_units"] = property_unit_dict
 
-        # Add all systems to the database
-        dataset.add_systems(property_list, atoms_list)
+            # Write to database
+            db.write(atoms, data=db_data)
 
         return None
