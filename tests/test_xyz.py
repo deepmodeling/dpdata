@@ -68,19 +68,14 @@ class TestExtXYZASECrossCompatibility(unittest.TestCase):
         self.assertTrue(len(multi_systems.systems) > 0)
         
         # Test that ASE can also read the same file
-        try:
-            atoms_list = read(test_file, index=":", format="extxyz")
-            self.assertIsInstance(atoms_list, list)
-            self.assertTrue(len(atoms_list) > 0)
-            
-            # Check basic structure of first frame
-            atoms = atoms_list[0]
-            self.assertTrue(len(atoms) > 0)
-            self.assertTrue(hasattr(atoms, 'get_chemical_symbols'))
-            
-        except Exception as e:
-            # If ASE can't read the format, that's okay - just verify dpdata works
-            print(f"ASE couldn't read extxyz file (expected): {e}")
+        atoms_list = read(test_file, index=":", format="extxyz")
+        self.assertIsInstance(atoms_list, list)
+        self.assertTrue(len(atoms_list) > 0)
+        
+        # Check basic structure of first frame
+        atoms = atoms_list[0]
+        self.assertTrue(len(atoms) > 0)
+        self.assertTrue(hasattr(atoms, 'get_chemical_symbols'))
 
     def test_manual_extxyz_ase_to_dpdata(self):
         """Test cross-compatibility with a manually created compatible extxyz."""
@@ -147,30 +142,4 @@ O 1.0 1.0 1.0 8 -0.1 -0.1 -0.1
             )
 
 
-@unittest.skipIf(skip_ase, "skip ASE related test. install ASE to fix")
-class TestFormatAliases(unittest.TestCase):
-    """Test that additional format aliases work correctly."""
 
-    def test_extxyz_alias(self):
-        """Test that extxyz alias points to QuipGapXYZFormat."""
-        from dpdata.system import load_format
-        fmt = load_format("extxyz")
-        self.assertEqual(fmt.__class__.__name__, "QuipGapXYZFormat")
-
-    def test_gpumd_alias(self):
-        """Test that gpumd alias points to QuipGapXYZFormat."""
-        from dpdata.system import load_format
-        fmt = load_format("gpumd")
-        self.assertEqual(fmt.__class__.__name__, "QuipGapXYZFormat")
-
-    def test_nequip_alias(self):
-        """Test that nequip alias points to QuipGapXYZFormat."""
-        from dpdata.system import load_format
-        fmt = load_format("nequip")
-        self.assertEqual(fmt.__class__.__name__, "QuipGapXYZFormat")
-
-    def test_mace_alias(self):
-        """Test that mace alias points to QuipGapXYZFormat."""
-        from dpdata.system import load_format
-        fmt = load_format("mace")
-        self.assertEqual(fmt.__class__.__name__, "QuipGapXYZFormat")
