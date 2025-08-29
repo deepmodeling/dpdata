@@ -170,3 +170,24 @@ class LAMMPSDumpFormat(Format):
         )
         register_spin(data)
         return data
+
+    def to_system(self, data, file_name: FileType, frame_idx=0, timestep=0, **kwargs):
+        """Dump the system in LAMMPS dump format.
+
+        Parameters
+        ----------
+        data : dict
+            System data
+        file_name : str
+            The output file name
+        frame_idx : int
+            The index of the frame to dump
+        timestep : int
+            The timestep number for the dump
+        **kwargs : dict
+            other parameters
+        """
+        assert frame_idx < len(data["coords"])
+        w_str = dpdata.lammps.dump.from_system_data(data, frame_idx, timestep)
+        with open_file(file_name, "w") as fp:
+            fp.write(w_str)
