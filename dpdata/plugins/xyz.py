@@ -49,6 +49,7 @@ class XYZFormat(Format):
 
 @Format.register("quip/gap/xyz")
 @Format.register("quip/gap/xyz_file")
+@Format.register("extxyz")
 class QuipGapXYZFormat(Format):
     def from_labeled_system(self, data, **kwargs):
         return data
