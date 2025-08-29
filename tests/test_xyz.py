@@ -61,21 +61,21 @@ class TestExtXYZASECrossCompatibility(unittest.TestCase):
         """Test that dpdata's extxyz format can be read by ASE."""
         # Use existing test data that's known to work with dpdata extxyz parser
         test_file = "xyz/xyz_unittest.xyz"
-        
+
         # First verify dpdata can read it
         multi_systems = dpdata.MultiSystems.from_file(test_file, fmt="extxyz")
         self.assertIsInstance(multi_systems, dpdata.MultiSystems)
         self.assertTrue(len(multi_systems.systems) > 0)
-        
+
         # Test that ASE can also read the same file
         atoms_list = read(test_file, index=":", format="extxyz")
         self.assertIsInstance(atoms_list, list)
         self.assertTrue(len(atoms_list) > 0)
-        
+
         # Check basic structure of first frame
         atoms = atoms_list[0]
         self.assertTrue(len(atoms) > 0)
-        self.assertTrue(hasattr(atoms, 'get_chemical_symbols'))
+        self.assertTrue(hasattr(atoms, "get_chemical_symbols"))
 
     def test_manual_extxyz_ase_to_dpdata(self):
         """Test cross-compatibility with a manually created compatible extxyz."""
@@ -85,20 +85,20 @@ energy=-10.5 Lattice="5.0 0.0 0.0 0.0 5.0 0.0 0.0 0.0 5.0" Properties=species:S:
 C 0.0 0.0 0.0 6 0.1 0.1 0.1
 O 1.0 1.0 1.0 8 -0.1 -0.1 -0.1
 """
-        
+
         with tempfile.NamedTemporaryFile(mode="w", suffix=".xyz", delete=False) as f:
             f.write(extxyz_content)
             f.flush()
-            
+
             # Test with dpdata
             multi_systems = dpdata.MultiSystems.from_file(f.name, fmt="extxyz")
             self.assertIsInstance(multi_systems, dpdata.MultiSystems)
             self.assertTrue(len(multi_systems.systems) > 0)
-            
+
             system_key = list(multi_systems.systems.keys())[0]
             system = multi_systems.systems[system_key]
             self.assertEqual(system.get_nframes(), 1)
-            
+
             # Test with ASE (basic read)
             atoms = read(f.name, format="extxyz")
             self.assertEqual(len(atoms), 2)
@@ -110,7 +110,7 @@ O 1.0 1.0 1.0 8 -0.1 -0.1 -0.1
         simple_system = dpdata.System(
             data={
                 "atom_names": ["C", "O"],
-                "atom_numbs": [1, 1], 
+                "atom_numbs": [1, 1],
                 "atom_types": np.array([0, 1]),
                 "coords": np.array([[[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]]),
                 "cells": np.zeros((1, 3, 3)),
@@ -118,24 +118,19 @@ O 1.0 1.0 1.0 8 -0.1 -0.1 -0.1
                 "nopbc": True,
             }
         )
-        
+
         with tempfile.NamedTemporaryFile(suffix=".xyz", mode="w+") as f:
             # Write basic xyz using dpdata
             simple_system.to("xyz", f.name)
-            
+
             # Read with ASE
             atoms = read(f.name, format="xyz")
-            
+
             # Verify basic structure
             self.assertEqual(len(atoms), 2)
             self.assertEqual(atoms.get_chemical_symbols(), ["C", "O"])
-            
+
             # Check positions
             np.testing.assert_allclose(
-                atoms.get_positions(), 
-                [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]], 
-                rtol=1e-6
+                atoms.get_positions(), [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]], rtol=1e-6
             )
-
-
-
