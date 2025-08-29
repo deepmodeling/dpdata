@@ -45,9 +45,9 @@ def get_path_out(fname, inlines):
 def get_energy(outlines):
     Etot = None
     for line in reversed(outlines):
-        if "final etot is" in line: # for LTS
+        if "final etot is" in line:  # for LTS
             Etot = float(line.split()[-2])  # in eV
-        elif "TOTAL ENERGY" in line: # for develop
+        elif "TOTAL ENERGY" in line:  # for develop
             Etot = float(line.split()[-2])  # in eV
             return Etot, True
         elif "convergence has NOT been achieved!" in line:
