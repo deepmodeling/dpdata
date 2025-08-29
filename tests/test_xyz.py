@@ -4,11 +4,11 @@ import tempfile
 import unittest
 
 import numpy as np
-from comp_sys import CompSys, IsNoPBC
+from comp_sys import CompLabeledSys, CompSys, IsNoPBC
 from context import dpdata
 
 try:
-    from ase.io import read
+    from ase.io import read, write
 except ModuleNotFoundError:
     skip_ase = True
 else:
@@ -134,3 +134,55 @@ O 1.0 1.0 1.0 8 -0.1 -0.1 -0.1
             np.testing.assert_allclose(
                 atoms.get_positions(), [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]], rtol=1e-6
             )
+
+
+@unittest.skipIf(skip_ase, "skip ASE related test. install ASE to fix")
+class TestExtXYZEnergyForceCompatibility(unittest.TestCase, CompLabeledSys):
+    """Test energy and force preservation between dpdata and ASE using CompLabeledSys."""
+
+    def setUp(self):
+        # Set precision for CompLabeledSys
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+        # Create a manually written extxyz content with known energies and forces
+        extxyz_content = """2
+energy=-10.5 Lattice="5.0 0.0 0.0 0.0 5.0 0.0 0.0 0.0 5.0" Properties=species:S:1:pos:R:3:Z:I:1:force:R:3
+C 0.0 1.0 2.0 6 0.1 0.1 0.1
+O 3.0 4.0 5.0 8 -0.1 -0.1 -0.1
+"""
+
+        # Write the extxyz content to a file
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".xyz", delete=False) as f:
+            f.write(extxyz_content)
+            f.flush()
+            self.temp_file = f.name
+
+        # Read with dpdata - this is our reference system
+        multi_systems = dpdata.MultiSystems.from_file(self.temp_file, fmt="extxyz")
+        system_key = list(multi_systems.systems.keys())[0]
+        self.system_1 = multi_systems.systems[system_key]
+
+        # Read with ASE
+        atoms = read(self.temp_file, format="extxyz")
+
+        # Write back to extxyz with ASE
+        with tempfile.NamedTemporaryFile(suffix=".xyz", mode="w+", delete=False) as f2:
+            self.temp_file2 = f2.name
+            write(f2.name, atoms, format="extxyz")
+
+        # Read back the ASE-written file with dpdata
+        roundtrip_ms = dpdata.MultiSystems.from_file(self.temp_file2, fmt="extxyz")
+        system_key = list(roundtrip_ms.systems.keys())[0]
+        self.system_2 = roundtrip_ms.systems[system_key]
+
+    def tearDown(self):
+        import os
+
+        try:
+            os.unlink(self.temp_file)
+            os.unlink(self.temp_file2)
+        except (OSError, AttributeError):
+            pass
