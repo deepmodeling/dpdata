@@ -108,7 +108,9 @@ class LAMMPSLmpFormat(Format):
         register_charge(data)
         return data
 
-    def to_system(self, data, file_name: FileType, frame_idx=0, output_spins=False, **kwargs):
+    def to_system(
+        self, data, file_name: FileType, frame_idx=0, output_spins=False, **kwargs
+    ):
         """Dump the system in lammps data format.
 
         Parameters
@@ -126,7 +128,9 @@ class LAMMPSLmpFormat(Format):
             other parameters
         """
         assert frame_idx < len(data["coords"])
-        w_str = dpdata.lammps.lmp.from_system_data(data, frame_idx, output_spins=output_spins)
+        w_str = dpdata.lammps.lmp.from_system_data(
+            data, frame_idx, output_spins=output_spins
+        )
         with open_file(file_name, "w") as fp:
             fp.write(w_str)
 
