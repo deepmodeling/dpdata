@@ -33,7 +33,7 @@ class TestQuipGapXYZToMethods(unittest.TestCase):
                 content = f.read()
             self.assertTrue(len(content) > 0)
             
-            # Read back and verify we can parse it
+            # Read back and verify we can parse it (use MultiSystems.from_file for QUIP/GAP XYZ)
             reloaded_multi = dpdata.MultiSystems.from_file(output_file, 'quip/gap/xyz')
             self.assertEqual(len(reloaded_multi.systems), 1)
             
