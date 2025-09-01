@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import io
+import os
 from typing import TYPE_CHECKING
 
 import numpy as np
 
 from dpdata.format import Format
-from dpdata.periodic_table import Element
 from dpdata.utils import open_file
 
 if TYPE_CHECKING:
@@ -51,7 +52,6 @@ class XYZFormat(Format):
 @Format.register("quip/gap/xyz")
 @Format.register("quip/gap/xyz_file")
 class QuipGapXYZFormat(Format):
-    
     def from_labeled_system(self, data, **kwargs):
         return data
 
@@ -61,58 +61,61 @@ class QuipGapXYZFormat(Format):
 
     def to_labeled_system(self, data, file_name: FileType, **kwargs):
         """Write LabeledSystem data to QUIP/GAP XYZ format file.
-        
+
         Parameters
         ----------
         data : dict
             system data
         file_name : FileType
-            output file name
+            output file name or file handler
         **kwargs : dict
             additional arguments
         """
         frames = []
         nframes = len(data["energies"])
-        
+
         for frame_idx in range(nframes):
             frame_lines = format_single_frame(data, frame_idx)
             frames.append("\n".join(frame_lines))
-        
-        # Check if file exists to determine write mode
-        file_path = str(file_name)
-        import os
-        if os.path.exists(file_path):
-            mode = "a"
+
+        # Always write unless input is a file handler
+        if isinstance(file_name, io.IOBase):
+            # File handler - check if we need to append
+            file_path = getattr(file_name, "name", None)
+            if file_path and os.path.exists(file_path):
+                mode = "a"
+            else:
+                mode = "w"
+            with open_file(file_name, mode) as fp:
+                if mode == "a":
+                    # Add newline separator if appending
+                    fp.write("\n")
+                fp.write("\n".join(frames))
         else:
-            mode = "w"
-        
-        with open_file(file_name, mode) as fp:
-            if mode == "a":
-                # Add newline separator if appending
-                fp.write("\n")
-            fp.write("\n".join(frames))
+            # File path - always write (overwrite)
+            with open_file(file_name, "w") as fp:
+                fp.write("\n".join(frames))
 
     def to_multi_systems(self, formulas, directory, **kwargs):
         """Return single filename for all systems in QUIP/GAP XYZ format.
-        
+
         For QUIP/GAP XYZ format, all systems are written to a single file.
-        
+
         Parameters
         ----------
         formulas : list[str]
-            list of system names/formulas  
+            list of system names/formulas
         directory : str
-            output filename 
+            output filename
         **kwargs : dict
             additional arguments
-            
+
         Yields
         ------
-        str
-            same filename for all systems
+        file handler
+            file handler for all systems
         """
-        with open_file(directory, 'w'):
-            # Just create/truncate the file, then yield filenames
-            pass
-        for _ in formulas:
-            yield directory
+        with open_file(directory, "w") as f:
+            # Just create/truncate the file, then yield file handlers
+            for _ in formulas:
+                yield f
