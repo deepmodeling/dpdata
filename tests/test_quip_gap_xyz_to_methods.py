@@ -9,10 +9,10 @@ from context import dpdata
 
 
 class TestQuipGapXYZToMethods(unittest.TestCase):
-    """Test the to_labeled_system and to_multi_systems methods for QuipGapXYZFormat"""
+    """Test the to_labeled_system and to_multi_systems methods for QuipGapXYZFormat."""
 
     def setUp(self):
-        """Set up test data"""
+        """Set up test data."""
         # Load test multi-systems
         self.multi_systems = dpdata.MultiSystems.from_file(
             "xyz/xyz_unittest.xyz", "quip/gap/xyz"
@@ -21,7 +21,7 @@ class TestQuipGapXYZToMethods(unittest.TestCase):
         self.system_b5c7 = self.multi_systems.systems["B5C7"]
 
     def test_to_labeled_system(self):
-        """Test writing a single labeled system to QUIP/GAP XYZ format"""
+        """Test writing a single labeled system to QUIP/GAP XYZ format."""
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".xyz", delete=False
         ) as tmp_file:
@@ -50,7 +50,7 @@ class TestQuipGapXYZToMethods(unittest.TestCase):
                 os.unlink(output_file)
 
     def test_to_multi_systems(self):
-        """Test writing multiple systems to a single QUIP/GAP XYZ format file"""
+        """Test writing multiple systems to a single QUIP/GAP XYZ format file."""
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".xyz", delete=False
         ) as tmp_file:
@@ -84,7 +84,7 @@ class TestQuipGapXYZToMethods(unittest.TestCase):
                 os.unlink(output_file)
 
     def test_roundtrip_consistency(self):
-        """Test that writing and reading back preserves data consistency"""
+        """Test that writing and reading back preserves data consistency."""
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".xyz", delete=False
         ) as tmp_file:
