@@ -188,6 +188,125 @@ class TestFeNNolFormat(unittest.TestCase):
             if os.path.exists(tmp_filename):
                 os.unlink(tmp_filename)
 
+    def test_fennol_multi_systems_export(self):
+        """Test FeNNol format export with MultiSystems."""
+        # Create a second test system: CO molecule
+        test_data2 = {
+            "atom_names": ["C", "O"],
+            "atom_numbs": [1, 1],
+            "atom_types": np.array([0, 1]),  # C, O
+            "coords": np.array(
+                [[[0.0, 0.0, 0.0], [1.2, 0.0, 0.0]]]  # 1 frame, 2 atoms, 3 coords
+            ),
+            "cells": np.array(
+                [[[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]]]  # 1 frame
+            ),
+            "energies": np.array([-2.5]),  # 1 frame energy in eV
+            "forces": np.array(
+                [[[0.05, 0.0, 0.0], [-0.05, 0.0, 0.0]]]  # 1 frame, 2 atoms, 3 force components
+            ),
+            "orig": np.array([0.0, 0.0, 0.0]),
+            "nopbc": False,
+        }
+
+        system2 = dpdata.LabeledSystem(data=test_data2)
+        
+        # Create MultiSystems with both systems
+        multi_systems = dpdata.MultiSystems(self.system, system2)
+
+        with tempfile.NamedTemporaryFile(suffix=".pkl", delete=False) as tmp_file:
+            tmp_filename = tmp_file.name
+
+        try:
+            # Export MultiSystems to FeNNol format
+            multi_systems.to("fennol", tmp_filename)
+
+            # Check that file was created
+            self.assertTrue(os.path.exists(tmp_filename))
+
+            # Load and verify the FeNNol data
+            with open(tmp_filename, "rb") as f:
+                fennol_data = pickle.load(f)
+
+            # Check main structure
+            self.assertIn("training", fennol_data)
+            self.assertIn("validation", fennol_data)
+            self.assertIn("description", fennol_data)
+
+            # Check that we have combined data from both systems
+            training = fennol_data["training"]
+            validation = fennol_data["validation"]
+            total_frames = len(training) + len(validation)
+
+            # Should have 3 total frames (2 from first system + 1 from second system)
+            self.assertEqual(total_frames, 3)
+
+            # Check that system names are tracked
+            all_samples = training + validation
+            system_names = set()
+            for sample in all_samples:
+                if "system_name" in sample:
+                    system_names.add(sample["system_name"])
+
+            # Should have data from both systems
+            self.assertEqual(len(system_names), 2)
+
+            # Verify sample structure includes system_name
+            if all_samples:
+                sample = all_samples[0]
+                expected_keys = {
+                    "species",
+                    "coordinates", 
+                    "formation_energy",
+                    "shifted_energy",
+                    "forces",
+                    "system_name",
+                }
+                self.assertEqual(set(sample.keys()), expected_keys)
+
+        finally:
+            if os.path.exists(tmp_filename):
+                os.unlink(tmp_filename)
+
+    def test_fennol_multi_systems_custom_train_size(self):
+        """Test FeNNol MultiSystems export with custom training size."""
+        # Create a simple second system
+        test_data2 = {
+            "atom_names": ["C"], 
+            "atom_numbs": [1],
+            "atom_types": np.array([0]),  # C
+            "coords": np.array([[[0.0, 0.0, 0.0]]]),  # 1 frame, 1 atom
+            "cells": np.array([[[5.0, 0.0, 0.0], [0.0, 5.0, 0.0], [0.0, 0.0, 5.0]]]),
+            "energies": np.array([-0.5]),  # 1 frame
+            "forces": np.array([[[0.0, 0.0, 0.0]]]),  # 1 frame, 1 atom
+            "orig": np.array([0.0, 0.0, 0.0]),
+            "nopbc": False,
+        }
+
+        system2 = dpdata.LabeledSystem(data=test_data2)
+        multi_systems = dpdata.MultiSystems(self.system, system2)
+
+        with tempfile.NamedTemporaryFile(suffix=".pkl", delete=False) as tmp_file:
+            tmp_filename = tmp_file.name
+
+        try:
+            # Export with train_size=1.0 (all training)
+            multi_systems.to("fennol", tmp_filename, train_size=1.0)
+
+            with open(tmp_filename, "rb") as f:
+                fennol_data = pickle.load(f)
+
+            training = fennol_data["training"]
+            validation = fennol_data["validation"]
+
+            # Should have all 3 frames as training, 0 validation
+            self.assertEqual(len(training), 3)
+            self.assertEqual(len(validation), 0)
+
+        finally:
+            if os.path.exists(tmp_filename):
+                os.unlink(tmp_filename)
+
 
 if __name__ == "__main__":
     unittest.main()

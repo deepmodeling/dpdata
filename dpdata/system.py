@@ -23,6 +23,7 @@ import dpdata.md.pbc
 # ensure all plugins are loaded!
 import dpdata.plugins
 import dpdata.plugins.deepmd
+import dpdata.plugins.fennol
 from dpdata.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
@@ -1403,13 +1404,23 @@ class MultiSystems:
 
     def to_fmt_obj(self, fmtobj: Format, directory, *args: Any, **kwargs: Any):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
-            for fn, ss in zip(
-                fmtobj.to_multi_systems(
-                    [ss.short_name for ss in self.systems.values()], directory, **kwargs
-                ),
-                self.systems.values(),
-            ):
-                ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
+            # Special case for FeNNol format that needs system names
+            if isinstance(fmtobj, dpdata.plugins.fennol.FeNNolFormat):
+                for fn, ss in zip(
+                    fmtobj.to_multi_systems(
+                        [ss.short_name for ss in self.systems.values()], directory, **kwargs
+                    ),
+                    self.systems.values(),
+                ):
+                    ss.to_fmt_obj(fmtobj, fn, *args, system_name=ss.short_name, **kwargs)
+            else:
+                for fn, ss in zip(
+                    fmtobj.to_multi_systems(
+                        [ss.short_name for ss in self.systems.values()], directory, **kwargs
+                    ),
+                    self.systems.values(),
+                ):
+                    ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
         else:
             mixed_systems = fmtobj.mix_system(
                 *list(self.systems.values()), type_map=self.atom_names, **kwargs
