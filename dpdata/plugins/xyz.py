@@ -78,21 +78,9 @@ class QuipGapXYZFormat(Format):
             frame_lines = format_single_frame(data, frame_idx)
             frames.append("\n".join(frame_lines))
 
-        # Always write unless input is a file handler
         if isinstance(file_name, io.IOBase):
-            # File handler - check if we need to append
-            file_path = getattr(file_name, "name", None)
-            if file_path and os.path.exists(file_path):
-                mode = "a"
-            else:
-                mode = "w"
-            with open_file(file_name, mode) as fp:
-                if mode == "a":
-                    # Add newline separator if appending
-                    fp.write("\n")
-                fp.write("\n".join(frames))
+            file_name.write("\n".join(frames))
         else:
-            # File path - always write (overwrite)
             with open_file(file_name, "w") as fp:
                 fp.write("\n".join(frames))
 
