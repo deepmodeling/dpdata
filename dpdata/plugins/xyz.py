@@ -50,9 +50,9 @@ class XYZFormat(Format):
 @Format.register("quip/gap/xyz")
 @Format.register("quip/gap/xyz_file")
 @Format.register("extxyz")
-@Format.register("gpumd")
-@Format.register("nequip")
-@Format.register("mace")
+@Format.register("gpumd/xyz")
+@Format.register("nequip/xyz")
+@Format.register("mace/xyz")
 class QuipGapXYZFormat(Format):
     def from_labeled_system(self, data, **kwargs):
         return data
