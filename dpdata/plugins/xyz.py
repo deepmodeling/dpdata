@@ -77,11 +77,18 @@ class QuipGapXYZFormat(Format):
             frame_lines = format_single_frame(data, frame_idx)
             frames.append("\n".join(frame_lines))
 
+        content = "\n".join(frames)
+
         if isinstance(file_name, io.IOBase):
-            file_name.write("\n".join(frames))
+            # When writing to a file handler, check if file is empty
+            # If not empty, add a newline separator before content
+            current_pos = file_name.tell()
+            if current_pos > 0:
+                file_name.write("\n")
+            file_name.write(content)
         else:
             with open_file(file_name, "w") as fp:
-                fp.write("\n".join(frames))
+                fp.write(content)
 
     def to_multi_systems(self, formulas, directory, **kwargs):
         """Return single filename for all systems in QUIP/GAP XYZ format.
