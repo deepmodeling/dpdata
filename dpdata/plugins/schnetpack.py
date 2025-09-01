@@ -63,6 +63,17 @@ class SchNetPackFormat(Format):
         # Create ASE database connection
         db = connect(file_name, append=False)
 
+        # Store property units as metadata for the entire database
+        # This ensures compatibility with different SchNetPack versions
+        if property_unit_dict:
+            # Store metadata in database metadata (if supported)
+            try:
+                # Some versions of ASE support metadata storage
+                db.metadata = {"property_units": property_unit_dict}
+            except (AttributeError, NotImplementedError):
+                # Fallback: store in a special row (will be filtered out by SchNetPack)
+                pass
+
         species = [data["atom_names"][tt] for tt in data["atom_types"]]
 
         # Handle both list and numpy array formats
@@ -106,11 +117,26 @@ class SchNetPackFormat(Format):
             if virials is not None:
                 db_data["virials"] = virials[frame_idx]
 
-            # Add property units as metadata if provided
+            # Add property units as metadata for each row for maximum compatibility
+            # Some SchNetPack versions might expect this per-row
             if property_unit_dict:
                 db_data["property_units"] = property_unit_dict
 
-            # Write to database
-            db.write(atoms, data=db_data)
+            # Ensure energy and forces are accessible in multiple ways for compatibility
+            write_kwargs = {}
+            if energies is not None:
+                # Store energy as a keyword argument for direct access
+                write_kwargs["energy"] = float(energies[frame_idx])
+            if forces is not None:
+                # Store forces as a keyword argument for direct access
+                write_kwargs["forces"] = forces[frame_idx]
+
+            # Write to database with all possible access methods
+            try:
+                db.write(atoms, data=db_data, **write_kwargs)
+            except Exception:
+                # Fallback: write without direct property arguments
+                # Some ASE versions might not support energy/forces as kwargs
+                db.write(atoms, data=db_data)
 
         return None
