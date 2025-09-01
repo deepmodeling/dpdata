@@ -27,10 +27,11 @@ class TestSchNetPackRegistration(unittest.TestCase):
 
         # Since ASE is available, this should work and create the database
         import tempfile
+
         with tempfile.TemporaryDirectory() as tmpdir:
             db_file = os.path.join(tmpdir, "test_registered.db")
             test_system.to("schnetpack", db_file)
-            
+
             # Verify the database was created
             self.assertTrue(os.path.exists(db_file))
 
@@ -135,7 +136,7 @@ class TestSchNetPack(unittest.TestCase):
             row = db.get(1)
             atoms = row.toatoms()
             self.assertTrue(hasattr(atoms, "calc") and atoms.calc is not None)
-            
+
             # Check that units were stored in metadata
             self.assertIn("property_units", row.data)
             self.assertEqual(row.data["property_units"], property_units)
@@ -218,6 +219,115 @@ class TestSchNetPack(unittest.TestCase):
                 atoms = row.toatoms()
                 self.assertTrue(hasattr(atoms, "calc") and atoms.calc is not None)
                 self.assertEqual(len(atoms), 3)  # O, H, H
+
+    def test_schnetpack_script_compatibility(self):
+        """Test compatibility with the specific SchNetPack script from user requirements."""
+        from ase.db import connect
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_file = os.path.join(tmpdir, "schnet.db")
+
+            # Create a system similar to what the user script expects
+            # with enough frames for num_train=1000, num_val=100 (need at least 1100)
+            import numpy as np
+
+            num_frames = 1200
+            coords = []
+            cells = []
+            energies = []
+            forces = []
+
+            for i in range(num_frames):
+                # Base cell
+                cell = [[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]]
+                cells.append(cell)
+
+                # Slightly perturbed coordinates for variety
+                coord = [
+                    [0.0 + 0.01 * i, 0.0, 0.0],  # O
+                    [1.0 + 0.01 * np.sin(i / 10), 0.0, 0.0],  # H
+                    [0.0, 1.0 + 0.01 * np.cos(i / 10), 0.0],  # H
+                ]
+                coords.append(coord)
+
+                # Energy (slightly varying)
+                energy = -10.5 - 0.1 * np.sin(i / 100)
+                energies.append(energy)
+
+                # Forces (varying)
+                force = [
+                    [0.1 + 0.01 * np.cos(i / 20), 0.0, 0.0],
+                    [0.0, 0.1 + 0.01 * np.sin(i / 20), 0.0],
+                    [0.0, 0.0, 0.1 + 0.01 * np.cos(i / 30)],
+                ]
+                forces.append(force)
+
+            labeled_system = dpdata.LabeledSystem()
+            labeled_system.data = {
+                "atom_names": ["O", "H"],
+                "atom_numbs": [1, 2],
+                "atom_types": [0, 1, 1],  # O, H, H
+                "cells": cells,
+                "coords": coords,
+                "orig": [0.0, 0.0, 0.0],
+                "energies": energies,
+                "forces": forces,
+            }
+
+            # Convert with exact units from user script
+            expected_units = {"energy": "eV", "forces": "eV/Ang"}
+            labeled_system.to("schnetpack", db_file, property_unit_dict=expected_units)
+
+            # Verify the database was created
+            self.assertTrue(os.path.exists(db_file))
+
+            # Load and verify using ASE
+            db = connect(db_file)
+
+            # Check we have enough entries for the user's requirements
+            self.assertGreaterEqual(
+                len(db),
+                1100,
+                "Need at least 1100 entries for num_train=1000, num_val=100",
+            )
+
+            # Check property units match exactly
+            first_row = db.get(1)
+            self.assertIn("property_units", first_row.data)
+            self.assertEqual(first_row.data["property_units"], expected_units)
+
+            # Test that all entries have the required properties for SchNetPack
+            sample_size = min(10, len(db))
+            for i in range(1, sample_size + 1):
+                row = db.get(i)
+                atoms = row.toatoms()
+
+                # Check calculator exists
+                self.assertTrue(hasattr(atoms, "calc") and atoms.calc is not None)
+
+                # Check energy is accessible
+                energy = atoms.get_potential_energy()
+                self.assertIsInstance(energy, (int, float))
+
+                # Check forces are accessible and correct shape
+                forces = atoms.get_forces()
+                self.assertEqual(forces.shape, (len(atoms), 3))
+
+                # Check positions are correct shape
+                self.assertEqual(atoms.positions.shape, (len(atoms), 3))
+
+            # Test database iteration (SchNetPack does this)
+            energies_from_db = []
+            for row in db.select(limit=5):
+                atoms = row.toatoms()
+                energy = atoms.get_potential_energy()
+                energies_from_db.append(energy)
+
+            self.assertEqual(len(energies_from_db), 5)
+
+            # Verify all energies are numbers
+            for energy in energies_from_db:
+                self.assertIsInstance(energy, (int, float))
 
 
 class TestSchNetPackMocked(unittest.TestCase):

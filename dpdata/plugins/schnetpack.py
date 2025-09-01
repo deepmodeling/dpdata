@@ -8,7 +8,7 @@ class SchNetPackFormat(Format):
     """Format for SchNetPack-compatible ASE database.
 
     SchNetPack uses ASE database format internally for storing atomic structures
-    and their properties. This format converts dpdata LabeledSystem to 
+    and their properties. This format converts dpdata LabeledSystem to
     SchNetPack-compatible ASE database format using only ASE functionality.
 
     The created database can be used directly with SchNetPack for training
@@ -53,8 +53,7 @@ class SchNetPackFormat(Format):
             from ase.db import connect
         except ImportError as e:
             raise ImportError(
-                "ASE is required for schnetpack format. "
-                "Install with: pip install ase"
+                "ASE is required for schnetpack format. Install with: pip install ase"
             ) from e
 
         # Set default units if not provided
@@ -65,15 +64,16 @@ class SchNetPackFormat(Format):
         db = connect(file_name, append=False)
 
         species = [data["atom_names"][tt] for tt in data["atom_types"]]
-        
+
         # Handle both list and numpy array formats
         import numpy as np
+
         coords = np.array(data["coords"])
-        cells = np.array(data["cells"]) 
+        cells = np.array(data["cells"])
         energies = np.array(data.get("energies", [])) if "energies" in data else None
         forces = np.array(data.get("forces", [])) if "forces" in data else None
         virials = np.array(data.get("virials", [])) if "virials" in data else None
-        
+
         nframes = coords.shape[0]
 
         for frame_idx in range(nframes):
