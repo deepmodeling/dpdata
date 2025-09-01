@@ -80,12 +80,9 @@ class QuipGapXYZFormat(Format):
         content = "\n".join(frames)
 
         if isinstance(file_name, io.IOBase):
-            # When writing to a file handler, check if file is empty
-            # If not empty, add a newline separator before content
-            current_pos = file_name.tell()
-            if current_pos > 0:
-                file_name.write("\n")
             file_name.write(content)
+            if not content.endswith("\n"):
+                file_name.write("\n")
         else:
             with open_file(file_name, "w") as fp:
                 fp.write(content)
