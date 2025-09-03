@@ -6,6 +6,35 @@ import warnings
 import numpy as np
 
 
+def _safe_float(value: str, context: str = "") -> float:
+    """Safely convert string to float with informative error message.
+    
+    Parameters
+    ----------
+    value : str
+        String value to convert to float
+    context : str, optional
+        Context information for error message
+        
+    Returns
+    -------
+    float
+        Converted float value
+        
+    Raises
+    ------
+    ValueError
+        If conversion fails, with informative error message
+    """
+    try:
+        return float(value)
+    except ValueError as e:
+        if context:
+            raise ValueError(f"Failed to parse {context}: {e}") from e
+        else:
+            raise ValueError(f"Failed to convert to float: {e}") from e
+
+
 def atom_name_from_potcar_string(instr: str) -> str:
     """Get atom name from a potcar element name.
 
@@ -240,12 +269,20 @@ def analyze_block(lines, ntot, nelm, ml=False):
             if sc_index >= nelm:
                 is_converge = False
         elif energy_token[ml_index] in ii:
-            energy = float(ii.split()[energy_index[ml_index]])
+            try:
+                energy = _safe_float(ii.split()[energy_index[ml_index]], "energy value from OUTCAR")
+            except (ValueError, IndexError) as e:
+                raise ValueError(f"Failed to parse energy from OUTCAR line: '{ii.strip()}'. {e}") from e
             return coord, cell, energy, force, virial, is_converge
         elif cell_token[ml_index] in ii:
             for dd in range(3):
                 tmp_l = lines[idx + cell_index[ml_index] + dd]
-                cell.append([float(ss) for ss in tmp_l.replace("-", " -").split()[0:3]])
+                try:
+                    cell_row = [_safe_float(ss, f"cell component on line {idx + cell_index[ml_index] + dd + 1}") 
+                               for ss in tmp_l.replace("-", " -").split()[0:3]]
+                    cell.append(cell_row)
+                except (ValueError, IndexError) as e:
+                    raise ValueError(f"Failed to parse cell vectors from OUTCAR line: '{tmp_l.strip()}'. {e}") from e
         elif virial_token[ml_index] in ii:
             in_kB_index = virial_index[ml_index]
             while idx + in_kB_index < len(lines) and (
@@ -255,7 +292,12 @@ def analyze_block(lines, ntot, nelm, ml=False):
             assert idx + in_kB_index < len(lines), (
                 'ERROR: "in kB" is not found in OUTCAR. Unable to extract virial.'
             )
-            tmp_v = [float(ss) for ss in lines[idx + in_kB_index].split()[2:8]]
+            virial_line = lines[idx + in_kB_index]
+            try:
+                tmp_v = [_safe_float(ss, "virial component from OUTCAR") 
+                        for ss in virial_line.split()[2:8]]
+            except (ValueError, IndexError) as e:
+                raise ValueError(f"Failed to parse virial from OUTCAR line: '{virial_line.strip()}'. {e}") from e
             virial = np.zeros([3, 3])
             virial[0][0] = tmp_v[0]
             virial[1][1] = tmp_v[1]
@@ -269,7 +311,11 @@ def analyze_block(lines, ntot, nelm, ml=False):
         elif "TOTAL-FORCE" in ii and (("ML" in ii) == ml):
             for jj in range(idx + 2, idx + 2 + ntot):
                 tmp_l = lines[jj]
-                info = [float(ss) for ss in tmp_l.split()]
+                try:
+                    info = [_safe_float(ss, "force/coordinate component from OUTCAR") 
+                           for ss in tmp_l.split()]
+                except (ValueError, IndexError) as e:
+                    raise ValueError(f"Failed to parse forces/coordinates from OUTCAR line: '{tmp_l.strip()}'. {e}") from e
                 coord.append(info[:3])
                 force.append(info[3:6])
     return coord, cell, energy, force, virial, is_converge
