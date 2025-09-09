@@ -109,7 +109,7 @@ class LAMMPSLmpFormat(Format):
         return data
 
     def to_system(
-        self, data, file_name: FileType, frame_idx=0, output_spins=False, **kwargs
+        self, data, file_name: FileType, frame_idx=0, **kwargs
     ):
         """Dump the system in lammps data format.
 
@@ -121,13 +121,11 @@ class LAMMPSLmpFormat(Format):
             The output file name
         frame_idx : int
             The index of the frame to dump
-        output_spins : bool, optional
-            Whether to output spin information columns. Default is False.
-            When True, outputs additional columns for spin direction and magnitude.
         **kwargs : dict
             other parameters
         """
         assert frame_idx < len(data["coords"])
+        output_spins = bool(kwargs.pop("output_spins", False))
         w_str = dpdata.lammps.lmp.from_system_data(
             data, frame_idx, output_spins=output_spins
         )
