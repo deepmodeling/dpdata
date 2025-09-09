@@ -108,9 +108,7 @@ class LAMMPSLmpFormat(Format):
         register_charge(data)
         return data
 
-    def to_system(
-        self, data, file_name: FileType, frame_idx=0, **kwargs
-    ):
+    def to_system(self, data, file_name: FileType, frame_idx=0, **kwargs):
         """Dump the system in lammps data format.
 
         Parameters
