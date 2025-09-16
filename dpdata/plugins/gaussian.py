@@ -5,16 +5,30 @@ import subprocess as sp
 import tempfile
 from typing import TYPE_CHECKING
 
+import numpy as np
 import dpdata.gaussian.gjf
 import dpdata.gaussian.log
 import dpdata.gaussian.fchk
 from dpdata.driver import Driver
 from dpdata.format import Format
 from dpdata.utils import open_file
+from dpdata.data_type import Axis, DataType
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
 
+
+def register_hessian_data(data):
+    if "hessian" in data:
+        dt = DataType(
+            "hessian",
+            np.ndarray,
+            (Axis.NFRAMES, -1, -1),
+            required=False,
+            deepmd_name="hessian",
+        )
+        dpdata.System.register_data_type(dt)
+        dpdata.LabeledSystem.register_data_type(dt)
 
 @Format.register("gaussian/log")
 class GaussianLogFormat(Format):
@@ -28,7 +42,9 @@ class GaussianLogFormat(Format):
 class GaussianFChkFormat(Format):
     def from_labeled_system(self, file_name: FileType, md=False, has_forces=True, has_hessian=True, **kwargs):
         try:
-            return dpdata.gaussian.fchk.to_system_data(file_name, md=md,has_forces=has_forces, has_hessian=has_hessian)
+            data = dpdata.gaussian.fchk.to_system_data(file_name, md=md,has_forces=has_forces, has_hessian=has_hessian)
+            register_hessian_data(data)
+            return data
         except AssertionError:
             return {"energies": [], "forces": [], "hessian": [], "nopbc": True}
 
@@ -129,3 +145,5 @@ class GaussianDriver(Driver):
                     raise RuntimeError("Run gaussian failed! Output:\n" + out) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="gaussian/log"))
         return labeled_system.data
+
+
