@@ -151,6 +151,7 @@ class ForceConversion(Conversion):
         lconv = LengthConversion(unitA.split("/")[1], unitB.split("/")[1]).value()
         self.set_value(econv / lconv)
 
+
 class HessianConversion(Conversion):
     def __init__(self, unitA, unitB):
         """Class for Hessian (second derivative) unit conversion.
@@ -177,6 +178,7 @@ class HessianConversion(Conversion):
         eunit = unit.split("/")[0]
         lunit = unit.split("/")[1][:-2]
         return eunit, lunit
+
 
 class PressureConversion(Conversion):
     def __init__(self, unitA, unitB):
