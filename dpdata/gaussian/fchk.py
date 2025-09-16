@@ -42,7 +42,7 @@ def create_full_hessian(hessian_raw: list | np.ndarray, natoms: int) -> np.ndarr
     ------
     ValueError: If the number of elements in `hessian_raw` does not match
         the expected number for the lower triangle of a
-        (3*natoms, 3*natoms) matrix.
+        (natoms, 3, natoms, 3) matrix.
     """
     # Convert input to a NumPy array in case it's a list
     hessian_block = np.array(hessian_raw)
