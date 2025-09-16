@@ -55,8 +55,7 @@ def create_full_hessian(hessian_raw: list | np.ndarray, natoms: int) -> np.ndarr
     expected_length = dim * (dim + 1) // 2
     if hessian_block.size != expected_length:
         raise ValueError(
-            f"Input data length ({hessian_block.size}) does not match expected length ({expected_length}) "
-            f"for {natoms} atoms (matrix dimension {dim}x{dim})."
+            f"Input length {hessian_block.size} != expected {expected_length}"
         )
 
     # Create a zero matrix, then fill the lower triangle
@@ -71,7 +70,7 @@ def create_full_hessian(hessian_raw: list | np.ndarray, natoms: int) -> np.ndarr
     return hessian_full
 
 
-def to_system_data(file_name: FileType, md=False, has_forces=True, has_hessian=True):
+def to_system_data(file_name: FileType, has_forces=True, has_hessian=True):
     """Read Gaussian fchk file.
 
     Parameters
@@ -109,18 +108,18 @@ def to_system_data(file_name: FileType, md=False, has_forces=True, has_hessian=T
                 n = int(line.split()[-1])
                 atom_numbers = []
                 while len(atom_numbers) < n:
-                    l = next(fp)
-                    if isinstance(l, bytes):
-                        l = l.decode(errors="ignore")
-                    atom_numbers += [int(x) for x in l.split()]
+                    next_line = next(fp)
+                    if isinstance(next_line, bytes):
+                        next_line = next_line.decode(errors="ignore")
+                    atom_numbers += [int(x) for x in next_line.split()]
             elif "Current cartesian coordinates" in line and "R" in line:
                 n = int(line.split()[-1])
                 coords_raw = []
                 while len(coords_raw) < n:
-                    l = next(fp)
-                    if isinstance(l, bytes):
-                        l = l.decode(errors="ignore")
-                    coords_raw += [float(x) for x in l.split()]
+                    next_line = next(fp)
+                    if isinstance(next_line, bytes):
+                        next_line = next_line.decode(errors="ignore")
+                    coords_raw += [float(x) for x in next_line.split()]
                 coords = np.array(coords_raw).reshape(-1, 3) * length_convert
                 coords_t.append(coords)
             elif "Total Energy" in line:
@@ -130,10 +129,10 @@ def to_system_data(file_name: FileType, md=False, has_forces=True, has_hessian=T
                 n = int(line.split()[-1])
                 forces_raw = []
                 while len(forces_raw) < n:
-                    l = next(fp)
-                    if isinstance(l, bytes):
-                        l = l.decode(errors="ignore")
-                    forces_raw += [float(x) for x in l.split()]
+                    next_line = next(fp)
+                    if isinstance(next_line, bytes):
+                        next_line = next_line.decode(errors="ignore")
+                    forces_raw += [float(x) for x in next_line.split()]
                 # Cartesian Gradient is the negative of forces: F = -∇E
                 forces = -np.array(forces_raw).reshape(-1, 3) * force_convert
                 forces_t.append(forces)
@@ -141,10 +140,10 @@ def to_system_data(file_name: FileType, md=False, has_forces=True, has_hessian=T
                 n = int(line.split()[-1])
                 hessian_raw = []
                 while len(hessian_raw) < n:
-                    l = next(fp)
-                    if isinstance(l, bytes):
-                        l = l.decode(errors="ignore")
-                    hessian_raw += [float(x) for x in l.split()]
+                    next_line = next(fp)
+                    if isinstance(next_line, bytes):
+                        next_line = next_line.decode(errors="ignore")
+                    hessian_raw += [float(x) for x in next_line.split()]
                 hessian_full = (
                     create_full_hessian(hessian_raw, natoms) * hessian_convert
                 )
