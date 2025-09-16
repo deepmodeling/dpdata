@@ -52,7 +52,7 @@ class TestGaussianLoadFchk(unittest.TestCase):
     def test_hessian_exist(self):
         """Test that hessian matrix is present and has correct shape."""
         self.assertIn("hessian", self.system.data)
-        self.assertEqual(self.system.data["hessian"].shape, (1, 9, 9))
+        self.assertEqual(self.system.data["hessian"].shape, (1, 3, 3, 3, 3))
         self.assertIsInstance(self.system.data["hessian"], np.ndarray)
 
     def test_coords_exist(self):
