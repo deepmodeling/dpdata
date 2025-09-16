@@ -145,7 +145,9 @@ def to_system_data(file_name: FileType, md=False, has_forces=True, has_hessian=T
                     if isinstance(l, bytes):
                         l = l.decode(errors="ignore")
                     hessian_raw += [float(x) for x in l.split()]
-                hessian_full = create_full_hessian(hessian_raw, natoms) * hessian_convert
+                hessian_full = (
+                    create_full_hessian(hessian_raw, natoms) * hessian_convert
+                )
                 # store as (natoms, 3, natoms, 3) to align with registered shape
                 hessian_t.append(hessian_full.reshape(natoms, 3, natoms, 3))
     # Assert key data
