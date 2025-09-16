@@ -3,6 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - python <3.13
-  - mamba <2
+  - jupyterlite-xeus
   - pip:
     - ..[docs]

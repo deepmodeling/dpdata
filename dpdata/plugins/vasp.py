@@ -124,7 +124,9 @@ class VASPOutcarFormat(Format):
 @Format.register("vasp/xml")
 class VASPXMLFormat(Format):
     @Format.post("rot_lower_triangular")
-    def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
+    def from_labeled_system(
+        self, file_name, begin=0, step=1, convergence_check=True, **kwargs
+    ):
         data = {}
         (
             data["atom_names"],
@@ -135,7 +137,11 @@ class VASPXMLFormat(Format):
             data["forces"],
             tmp_virial,
         ) = dpdata.vasp.xml.analyze(
-            file_name, type_idx_zero=True, begin=begin, step=step
+            file_name,
+            type_idx_zero=True,
+            begin=begin,
+            step=step,
+            convergence_check=convergence_check,
         )
         data["atom_numbs"] = []
         for ii in range(len(data["atom_names"])):

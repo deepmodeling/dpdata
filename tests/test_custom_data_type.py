@@ -1,12 +1,81 @@
 from __future__ import annotations
 
 import unittest
+import warnings
 
 import h5py  # noqa: TID253
 import numpy as np
 
 import dpdata
 from dpdata.data_type import Axis, DataType
+
+
+class TestDataType(unittest.TestCase):
+    """Test DataType class methods."""
+
+    def setUp(self):
+        # Store original DTYPES to restore later
+        self.original_dtypes = dpdata.System.DTYPES
+
+    def tearDown(self):
+        # Restore original DTYPES
+        dpdata.System.DTYPES = self.original_dtypes
+
+    def test_eq(self):
+        """Test equality method."""
+        dt1 = DataType("test", np.ndarray, shape=(Axis.NFRAMES, 3))
+        dt2 = DataType("test", np.ndarray, shape=(Axis.NFRAMES, 3))
+        dt3 = DataType("other", np.ndarray, shape=(Axis.NFRAMES, 3))
+
+        self.assertTrue(dt1 == dt2)
+        self.assertFalse(dt1 == dt3)
+        self.assertFalse(dt1 == "not a DataType")
+
+    def test_repr(self):
+        """Test string representation."""
+        dt = DataType("test", np.ndarray, shape=(Axis.NFRAMES, 3))
+        expected = (
+            "DataType(name='test', dtype=ndarray, "
+            "shape=(<Axis.NFRAMES: 'nframes'>, 3), required=True, "
+            "deepmd_name='test')"
+        )
+        self.assertEqual(repr(dt), expected)
+
+    def test_register_same_data_type_no_warning(self):
+        """Test registering identical DataType instances should not warn."""
+        dt1 = DataType("test_same", np.ndarray, shape=(Axis.NFRAMES, 3))
+        dt2 = DataType("test_same", np.ndarray, shape=(Axis.NFRAMES, 3))
+
+        # Register first time
+        dpdata.System.register_data_type(dt1)
+
+        # Register same DataType again - should not warn
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            dpdata.System.register_data_type(dt2)
+            # Check no warnings were issued
+            self.assertEqual(len(w), 0)
+
+    def test_register_different_data_type_with_warning(self):
+        """Test registering different DataType instances with same name should warn."""
+        dt1 = DataType("test_diff", np.ndarray, shape=(Axis.NFRAMES, 3))
+        dt2 = DataType(
+            "test_diff", list, shape=(Axis.NFRAMES, 4)
+        )  # Different dtype and shape
+
+        # Register first time
+        dpdata.System.register_data_type(dt1)
+
+        # Register different DataType with same name - should warn
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            dpdata.System.register_data_type(dt2)
+            # Check warning was issued
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, UserWarning))
+            self.assertIn(
+                "registered twice with different definitions", str(w[-1].message)
+            )
 
 
 class DeepmdLoadDumpCompTest:
@@ -48,14 +117,6 @@ class DeepmdLoadDumpCompTest:
         self.system.to_deepmd_hdf5("data_foo.h5")
         x = self.cls("data_foo.h5", fmt="deepmd/hdf5")
         np.testing.assert_allclose(x.data["foo"], self.foo)
-
-    def test_duplicated_data_type(self):
-        dt = DataType("foo", np.ndarray, (Axis.NFRAMES, *self.shape), required=False)
-        n_dtypes_old = len(self.cls.DTYPES)
-        with self.assertWarns(UserWarning):
-            self.cls.register_data_type(dt)
-        n_dtypes_new = len(self.cls.DTYPES)
-        self.assertEqual(n_dtypes_old, n_dtypes_new)
 
     def test_to_deepmd_npy_mixed(self):
         ms = dpdata.MultiSystems(self.system)

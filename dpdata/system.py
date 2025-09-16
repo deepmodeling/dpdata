@@ -1102,9 +1102,9 @@ class System:
         all_dtypes = cls.DTYPES + tuple(data_type)
         dtypes_dict = {}
         for dt in all_dtypes:
-            if dt.name in dtypes_dict:
+            if dt.name in dtypes_dict and dt != dtypes_dict[dt.name]:
                 warnings.warn(
-                    f"Data type {dt.name} is registered twice; only the newly registered one will be used.",
+                    f"Data type {dt.name} is registered twice with different definitions; only the newly registered one will be used.",
                     UserWarning,
                 )
             dtypes_dict[dt.name] = dt

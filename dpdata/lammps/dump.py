@@ -355,6 +355,62 @@ def split_traj(dump_lines):
     return None
 
 
+def from_system_data(system, f_idx=0, timestep=0):
+    """Convert system data to LAMMPS dump format string.
+
+    Parameters
+    ----------
+    system : dict
+        System data dictionary containing atoms, coordinates, cell, etc.
+    f_idx : int, optional
+        Frame index to dump (default: 0)
+    timestep : int, optional
+        Timestep number for the dump (default: 0)
+
+    Returns
+    -------
+    str
+        LAMMPS dump format string
+    """
+    ret = ""
+
+    # Get basic system info
+    natoms = sum(system["atom_numbs"])
+    coords = system["coords"][f_idx]
+    cell = system["cells"][f_idx]
+    atom_types = system["atom_types"]
+    orig = system.get("orig", np.zeros(3))
+
+    # Convert cell to dump format (bounds and tilt)
+    bounds, tilt = box2dumpbox(orig, cell)
+
+    # Write timestep
+    ret += "ITEM: TIMESTEP\n"
+    ret += f"{timestep}\n"
+
+    # Write number of atoms
+    ret += "ITEM: NUMBER OF ATOMS\n"
+    ret += f"{natoms}\n"
+
+    # Write box bounds
+    ret += "ITEM: BOX BOUNDS xy xz yz pp pp pp\n"
+    ret += f"{bounds[0][0]:.10f} {bounds[0][1]:.10f} {tilt[0]:.10f}\n"
+    ret += f"{bounds[1][0]:.10f} {bounds[1][1]:.10f} {tilt[1]:.10f}\n"
+    ret += f"{bounds[2][0]:.10f} {bounds[2][1]:.10f} {tilt[2]:.10f}\n"
+
+    # Write atoms header
+    ret += "ITEM: ATOMS id type x y z\n"
+
+    # Write atom data
+    for ii in range(natoms):
+        atom_id = ii + 1  # LAMMPS uses 1-based indexing
+        atom_type = atom_types[ii] + 1  # LAMMPS uses 1-based type indexing
+        x, y, z = coords[ii]
+        ret += f"{atom_id} {atom_type} {x:.10f} {y:.10f} {z:.10f}\n"
+
+    return ret
+
+
 if __name__ == "__main__":
     # fname = 'dump.hti'
     # lines = open(fname).read().split('\n')

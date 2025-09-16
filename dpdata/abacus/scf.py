@@ -45,7 +45,10 @@ def get_path_out(fname, inlines):
 def get_energy(outlines):
     Etot = None
     for line in reversed(outlines):
-        if "final etot is" in line:
+        if "final etot is" in line:  # for LTS
+            Etot = float(line.split()[-2])  # in eV
+            return Etot, True
+        elif "TOTAL ENERGY" in line:  # for develop
             Etot = float(line.split()[-2])  # in eV
             return Etot, True
         elif "convergence has NOT been achieved!" in line:
@@ -59,7 +62,8 @@ def get_energy(outlines):
 def collect_force(outlines):
     force = []
     for i, line in enumerate(outlines):
-        if "TOTAL-FORCE (eV/Angstrom)" in line:
+        # if "TOTAL-FORCE (eV/Angstrom)" in line:
+        if "TOTAL-FORCE" in line:
             value_pattern = re.compile(
                 r"^\s*[A-Z][a-z]?[1-9][0-9]*\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
             )
@@ -95,7 +99,8 @@ def get_force(outlines, natoms):
 def collect_stress(outlines):
     stress = []
     for i, line in enumerate(outlines):
-        if "TOTAL-STRESS (KBAR)" in line:
+        # if "TOTAL-STRESS (KBAR)" in line:
+        if "TOTAL-STRESS" in line:
             value_pattern = re.compile(
                 r"^\s*[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s+[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\s*$"
             )

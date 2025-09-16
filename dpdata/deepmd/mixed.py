@@ -4,6 +4,8 @@ import copy
 
 import numpy as np
 
+import dpdata
+
 from .comp import dump as comp_dump
 from .comp import to_system_data as comp_to_system_data
 
@@ -27,10 +29,32 @@ def to_system_data(folder, type_map=None, labels=True):
         all_real_atom_types_concat = index_map[all_real_atom_types_concat]
     all_cells_concat = data["cells"]
     all_coords_concat = data["coords"]
+
+    # handle custom registered data types
     if labels:
-        all_eners_concat = data.get("energies")
-        all_forces_concat = data.get("forces")
-        all_virs_concat = data.get("virials")
+        dtypes = dpdata.system.LabeledSystem.DTYPES
+    else:
+        dtypes = dpdata.system.System.DTYPES
+    reserved = {
+        "atom_numbs",
+        "atom_names",
+        "atom_types",
+        "real_atom_names",
+        "real_atom_types",
+        "cells",
+        "coords",
+        "orig",
+        "nopbc",
+    }
+    extra_data = {}
+    for dtype in dtypes:
+        name = dtype.name
+        if name in reserved:
+            continue
+        if not (len(dtype.shape) and dtype.shape[0] == dpdata.system.Axis.NFRAMES):
+            continue
+        if name in data:
+            extra_data[name] = data.pop(name)
 
     data_list = []
     while True:
@@ -56,16 +80,12 @@ def to_system_data(folder, type_map=None, labels=True):
         all_cells_concat = all_cells_concat[rest_idx]
         temp_data["coords"] = all_coords_concat[temp_idx]
         all_coords_concat = all_coords_concat[rest_idx]
-        if labels:
-            if all_eners_concat is not None and all_eners_concat.size > 0:
-                temp_data["energies"] = all_eners_concat[temp_idx]
-                all_eners_concat = all_eners_concat[rest_idx]
-            if all_forces_concat is not None and all_forces_concat.size > 0:
-                temp_data["forces"] = all_forces_concat[temp_idx]
-                all_forces_concat = all_forces_concat[rest_idx]
-            if all_virs_concat is not None and all_virs_concat.size > 0:
-                temp_data["virials"] = all_virs_concat[temp_idx]
-                all_virs_concat = all_virs_concat[rest_idx]
+
+        for name in extra_data:
+            all_dtype_concat = extra_data[name]
+            temp_data[name] = all_dtype_concat[temp_idx]
+            extra_data[name] = all_dtype_concat[rest_idx]
+
         data_list.append(temp_data)
     return data_list
 
