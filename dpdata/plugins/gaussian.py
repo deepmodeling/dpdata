@@ -23,11 +23,10 @@ def register_hessian_data(data):
         dt = DataType(
             "hessian",
             np.ndarray,
-            (Axis.NFRAMES, -1, -1),
+            (Axis.NFRAMES, Axis.NATOMS, 3, Axis.NATOMS, 3),
             required=False,
             deepmd_name="hessian",
         )
-        dpdata.System.register_data_type(dt)
         dpdata.LabeledSystem.register_data_type(dt)
 
 @Format.register("gaussian/log")
