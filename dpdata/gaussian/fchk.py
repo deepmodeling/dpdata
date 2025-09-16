@@ -3,22 +3,29 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+
 from dpdata.utils import open_file
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
 
 from ..periodic_table import ELEMENTS
-from ..unit import EnergyConversion, ForceConversion, LengthConversion, HessianConversion
+from ..unit import (
+    EnergyConversion,
+    ForceConversion,
+    HessianConversion,
+    LengthConversion,
+)
 
 length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 hessian_convert = HessianConversion("hartree/bohr^2", "eV/angstrom^2").value()
 
+
 def create_full_hessian(hessian_raw: list | np.ndarray, natoms: int) -> np.ndarray:
     """
-    Reconstructs the full, symmetric Hessian matrix from a 1D array 
+    Reconstructs the full, symmetric Hessian matrix from a 1D array
     containing its lower triangular elements.
 
     Args:
@@ -27,13 +34,15 @@ def create_full_hessian(hessian_raw: list | np.ndarray, natoms: int) -> np.ndarr
                                          diagonal) of the Hessian matrix.
         natoms (int): The number of atoms in the system.
 
-    Returns:
-        np.ndarray: A full, symmetric (3*natoms, 3*natoms) Hessian matrix.
-        
-    Raises:
-        ValueError: If the number of elements in `hessian_raw` does not match
-                    the expected number for the lower triangle of a
-                    (3*natoms, 3*natoms) matrix.
+    Returns
+    -------
+    np.ndarray: A full, symmetric (3*natoms, 3*natoms) Hessian matrix.
+
+    Raises
+    ------
+    ValueError: If the number of elements in `hessian_raw` does not match
+        the expected number for the lower triangle of a
+        (3*natoms, 3*natoms) matrix.
     """
     # Convert input to a NumPy array in case it's a list
     hessian_block = np.array(hessian_raw)
@@ -61,7 +70,8 @@ def create_full_hessian(hessian_raw: list | np.ndarray, natoms: int) -> np.ndarr
 
     return hessian_full
 
-def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian=True):
+
+def to_system_data(file_name: FileType, md=False, has_forces=True, has_hessian=True):
     """Read Gaussian fchk file.
 
     Parameters
@@ -70,11 +80,12 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
         file name
     md : bool, default False
         whether to read multiple frames (fchk usually contains only one frame)
-    has_force : bool, default True
+    has_forces : bool, default True
         whether to read force
         Note: Cartesian Gradient in fchk file is converted to forces by taking negative sign
     has_hessian : bool, default True
         whether to read hessian
+
     Returns
     -------
     data : dict
@@ -91,7 +102,7 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
     with open_file(file_name) as fp:
         for line in fp:
             if isinstance(line, bytes):
-                line = line.decode(errors='ignore')
+                line = line.decode(errors="ignore")
             if "Number of atoms" in line:
                 natoms = int(line.split()[-1])
             elif "Atomic numbers" in line and "I" in line:
@@ -100,7 +111,7 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
                 while len(atom_numbers) < n:
                     l = next(fp)
                     if isinstance(l, bytes):
-                        l = l.decode(errors='ignore')
+                        l = l.decode(errors="ignore")
                     atom_numbers += [int(x) for x in l.split()]
             elif "Current cartesian coordinates" in line and "R" in line:
                 n = int(line.split()[-1])
@@ -108,7 +119,7 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
                 while len(coords_raw) < n:
                     l = next(fp)
                     if isinstance(l, bytes):
-                        l = l.decode(errors='ignore')
+                        l = l.decode(errors="ignore")
                     coords_raw += [float(x) for x in l.split()]
                 coords = np.array(coords_raw).reshape(-1, 3) * length_convert
                 coords_t.append(coords)
@@ -121,7 +132,7 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
                 while len(forces_raw) < n:
                     l = next(fp)
                     if isinstance(l, bytes):
-                        l = l.decode(errors='ignore')
+                        l = l.decode(errors="ignore")
                     forces_raw += [float(x) for x in l.split()]
                 # Cartesian Gradient is the negative of forces: F = -∇E
                 forces = -np.array(forces_raw).reshape(-1, 3) * force_convert
@@ -132,9 +143,14 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
                 while len(hessian_raw) < n:
                     l = next(fp)
                     if isinstance(l, bytes):
-                        l = l.decode(errors='ignore')
+                        l = l.decode(errors="ignore")
                     hessian_raw += [float(x) for x in l.split()]
-                hessian = create_full_hessian(hessian_raw,natoms).reshape((3*natoms, 3*natoms)) * hessian_convert
+                hessian = (
+                    create_full_hessian(hessian_raw, natoms).reshape(
+                        (3 * natoms, 3 * natoms)
+                    )
+                    * hessian_convert
+                )
                 hessian_t.append(hessian)
     # Assert key data
     assert coords_t, "cannot find coords"
@@ -144,14 +160,16 @@ def to_system_data(file_name: 'FileType', md=False, has_forces=True, has_hessian
     if has_hessian:
         assert hessian_t, "cannot find hessian"
     # Assemble data
-    atom_symbols = [ELEMENTS[z-1] for z in atom_numbers]
-    atom_names, atom_types, atom_numbs = np.unique(atom_symbols, return_inverse=True, return_counts=True)
+    atom_symbols = [ELEMENTS[z - 1] for z in atom_numbers]
+    atom_names, atom_types, atom_numbs = np.unique(
+        atom_symbols, return_inverse=True, return_counts=True
+    )
     data["atom_names"] = list(atom_names)
     data["atom_numbs"] = list(atom_numbs)
     data["atom_types"] = atom_types
     data["coords"] = np.array(coords_t).reshape(-1, natoms, 3)
     data["orig"] = np.zeros(3)
-    data["cells"] = np.array([np.eye(3)*100])
+    data["cells"] = np.array([np.eye(3) * 100])
     data["nopbc"] = True
     if energy_t:
         data["energies"] = np.array(energy_t)
