@@ -43,11 +43,11 @@ class GaussianLogFormat(Format):
 @Format.register("gaussian/fchk")
 class GaussianFChkFormat(Format):
     def from_labeled_system(
-        self, file_name: FileType, md=False, has_forces=True, has_hessian=True, **kwargs
+        self, file_name: FileType, has_forces=True, has_hessian=True, **kwargs
     ):
         try:
             data = dpdata.gaussian.fchk.to_system_data(
-                file_name, md=md, has_forces=has_forces, has_hessian=has_hessian
+                file_name, has_forces=has_forces, has_hessian=has_hessian
             )
             register_hessian_data(data)
             return data

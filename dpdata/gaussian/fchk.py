@@ -77,8 +77,6 @@ def to_system_data(file_name: FileType, has_forces=True, has_hessian=True):
     ----------
     file_name : str
         file name
-    md : bool, default False
-        whether to read multiple frames (fchk usually contains only one frame)
     has_forces : bool, default True
         whether to read force
         Note: Cartesian Gradient in fchk file is converted to forces by taking negative sign
