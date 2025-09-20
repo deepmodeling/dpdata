@@ -169,7 +169,7 @@ def load_data(fname: FileType, natoms, begin=0, step=1, convert=1.0):
 
 
 def load_energy(fname, begin=0, step=1):
-    data = np.loadtxt(fname)
+    data = np.loadtxt(fname, ndmin=2)
     steps = []
     for ii in data[begin::step, 0]:
         steps.append("%d" % ii)  # noqa: UP031
