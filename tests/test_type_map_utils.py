@@ -68,12 +68,13 @@ class TestSortAtomNames(unittest.TestCase):
     def test_sort_atom_names_with_zero_count_elements_removed(self):
         # Test the case where original elements are A B C, but counts are 0 1 2,
         # which should be able to map to B C (removing A which has count 0)
+        # Example: A, B, C = Cl, O, C
         data = {
             "atom_names": ["Cl", "O", "C"],
             "atom_numbs": [0, 1, 2],
             "atom_types": np.array([1, 2, 2]),
         }
-        type_map = ["O", "C"]  # A is omitted because it has 0 atoms
+        type_map = ["O", "C"]  # Cl is omitted because it has 0 atoms
         result = sort_atom_names(data, type_map=type_map)
 
         self.assertEqual(result["atom_names"], ["O", "C"])
