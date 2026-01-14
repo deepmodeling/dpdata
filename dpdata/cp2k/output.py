@@ -65,7 +65,7 @@ class Cp2kSystems:
         # assert all(eq2), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         # assert all(eq3), (log_info_dict,xyz_info_dict,'There may be errors in the file. If it is a restart task; use restart=True')
         assert math.isclose(
-            log_info_dict["energies"], xyz_info_dict["energies"], abs_tol=1.0e-6
+            log_info_dict["energies"][0], xyz_info_dict["energies"][0], abs_tol=1.0e-6
         ), (
             log_info_dict["energies"],
             xyz_info_dict["energies"],
