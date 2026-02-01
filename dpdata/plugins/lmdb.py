@@ -24,76 +24,59 @@ class LMDBFormat(Format):
     systems (with potentially different numbers of atoms) are stored in a
     single LMDB database file.
 
-    Attributes
-    ----------
-    See `dpdata.format.Format` for conventions.
+    For single systems, the standard ``dpdata.System.to('lmdb', ...)`` and
+    ``dpdata.System('...', fmt='lmdb')`` APIs can be used.
 
-    How to Use
-    ----------
+    .. note::
 
-    **1. Single System (`System` or `LabeledSystem`)**
+        The standard ``dpdata.MultiSystems.to()`` and ``dpdata.MultiSystems()``
+        constructor are not supported for this format. This is due to an
+        architectural limitation, as those APIs are designed for a "directory
+        of files" paradigm, whereas this format creates a single, unified
+        database file. To save and load multiple systems, you must call the
+        format's methods directly, as shown in the examples below.
 
-    For single systems, the standard `dpdata` API can be used.
+    Examples
+    --------
+    **Saving a single LabeledSystem**
 
-    - **Saving to LMDB:**
-      ```python
-      import dpdata
+    >>> import dpdata
+    >>> system = dpdata.LabeledSystem("path/to/input.vasp", fmt="vasp/outcar")
+    >>> system.to("lmdb", "my_single_system.lmdb")
 
-      # Load your system from any supported format
-      system = dpdata.LabeledSystem("path/to/your/input.vasp", fmt="vasp/outcar")
+    **Loading a single LabeledSystem**
 
-      # Save to an LMDB database. The path will be treated as a directory.
-      system.to("lmdb", "my_single_system.lmdb")
-      ```
+    >>> loaded_system = dpdata.LabeledSystem("my_single_system.lmdb", fmt="lmdb")
 
-    - **Loading from LMDB:**
-      ```python
-      import dpdata
+    **Saving multiple systems to a single LMDB database**
 
-      # Load the system from the LMDB directory
-      loaded_system = dpdata.LabeledSystem("my_single_system.lmdb", fmt="lmdb")
-      ```
+    >>> from dpdata.plugins.lmdb import LMDBFormat
+    >>> system_1 = dpdata.LabeledSystem("path/to/system1/OUTCAR", fmt="vasp/outcat")
+    >>> system_2 = dpdata.LabeledSystem("path/to/system2/OUTCAR", fmt="vasp/outcar")
+    >>> multi_systems_obj = dpdata.MultiSystems(system_1, system_2)
+    >>> lmdb_formatter = LMDBFormat()
+    >>> lmdb_formatter.to_multi_systems(
+    ...     list(multi_systems_obj.systems.values()), "my_multi_system_db.lmdb"
+    ... )
 
-    **2. Multiple Systems (`MultiSystems`) in a Single Database**
+    **Loading multiple systems from a single LMDB database**
 
-    To store multiple systems in a single LMDB file for efficient sampling,
-    you must call the format plugin's methods directly. This is because the
-    standard `MultiSystems.to()` and `MultiSystems(fmt=...)` APIs are
-    architecturally designed for a "directory of files" paradigm, where each
-    system is written to a separate file. This conflicts with our goal of
-    creating a single, unified database.
-
-    - **Saving `MultiSystems` to a single LMDB file:**
-      ```python
-      import dpdata
-      from dpdata.plugins.lmdb import LMDBFormat
-
-      # Create your individual systems
-      system_1 = dpdata.LabeledSystem("path/to/system1.log", fmt="gaussian/log")
-      system_2 = dpdata.LabeledSystem("path/to/system2.out", fmt="vasp/outcar")
-
-      multi_systems_obj = dpdata.MultiSystems(system_1, system_2)
-
-      # Instantiate the LMDBFormat plugin and call its method directly
-      lmdb_formatter = LMDBFormat()
-      lmdb_formatter.to_multi_systems(
-          list(multi_systems_obj.systems.values()), "my_multi_system_db.lmdb"
-      )
-      ```
-
-    - **Loading `MultiSystems` from a single LMDB file:**
-      ```python
-      import dpdata
-      from dpdata.plugins.lmdb import LMDBFormat
-
-      # Instantiate the LMDBFormat plugin and call its method directly
-      lmdb_formatter = LMDBFormat()
-      loaded_multi_systems = lmdb_formatter.from_multi_systems("my_multi_system_db.lmdb")
-      ```
+    >>> from dpdata.plugins.lmdb import LMDBFormat
+    >>> lmdb_formatter = LMDBFormat()
+    >>> loaded_multi_systems = lmdb_formatter.from_multi_systems("my_multi_system_db.lmdb")
     """
 
     def to_multi_systems(self, systems, file_name, **kwargs):
-        """Save multiple systems to a single LMDB database."""
+        """Save multiple systems to a single LMDB database.
+
+        Parameters
+        ----------
+        systems : list of dpdata.System
+            A list of System objects to be saved.
+        file_name : str
+            The path to the LMDB database directory. It will be created if it
+            doesn't exist.
+        """
         os.makedirs(file_name, exist_ok=True)
         env = lmdb.open(file_name, map_size=1000000000)
         global_frame_idx = 0
@@ -142,17 +125,46 @@ class LMDBFormat(Format):
             txn.put(b"__metadata__", msgpack.packb(metadata, use_bin_type=True))
 
     def to_labeled_system(self, data, file_name, **kwargs):
+        """Save a single LabeledSystem to an LMDB database.
+
+        Parameters
+        ----------
+        data : dict
+            The data dictionary of a LabeledSystem.
+        file_name : str
+            The path to the LMDB database directory.
+        """
         from dpdata.system import LabeledSystem
 
         self.to_multi_systems([LabeledSystem(data=data)], file_name, **kwargs)
 
     def to_system(self, data, file_name, **kwargs):
+        """Save a single System to an LMDB database.
+
+        Parameters
+        ----------
+        data : dict
+            The data dictionary of a System.
+        file_name : str
+            The path to the LMDB database directory.
+        """
         from dpdata.system import System
 
         self.to_multi_systems([System(data=data)], file_name, **kwargs)
 
     def from_multi_systems(self, file_name, **kwargs):
-        """Load multiple systems from a single LMDB database."""
+        """Load multiple systems from a single LMDB database.
+
+        Parameters
+        ----------
+        file_name : str
+            The path to the LMDB database directory.
+
+        Returns
+        -------
+        dpdata.MultiSystems
+            A MultiSystems object containing all systems stored in the LMDB.
+        """
         from dpdata.system import LabeledSystem, System
 
         systems = []
@@ -203,12 +215,36 @@ class LMDBFormat(Format):
         return dpdata.MultiSystems(*systems)
 
     def from_labeled_system(self, file_name, **kwargs):
+        """Load data for a single LabeledSystem from an LMDB database.
+
+        Parameters
+        ----------
+        file_name : str
+            The path to the LMDB database directory.
+
+        Returns
+        -------
+        dict
+            The data dictionary for the loaded LabeledSystem.
+        """
         # from_multi_systems returns a MultiSystems object
         multisystems_obj = self.from_multi_systems(file_name, **kwargs)
         # We need the data dictionary of the first (and only) system for from_labeled_system
         return multisystems_obj[0].data
 
     def from_system(self, file_name, **kwargs):
+        """Load data for a single System from an LMDB database.
+
+        Parameters
+        ----------
+        file_name : str
+            The path to the LMDB database directory.
+
+        Returns
+        -------
+        dict
+            The data dictionary for the loaded System.
+        """
         # from_multi_systems returns a MultiSystems object
         multisystems_obj = self.from_multi_systems(file_name, **kwargs)
         # We need the data dictionary of the first (and only) system for from_system
