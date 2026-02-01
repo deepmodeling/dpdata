@@ -171,6 +171,8 @@ class LMDBFormat(Format):
         with lmdb.open(file_name, readonly=True) as env:
             with env.begin() as txn:
                 metadata_packed = txn.get(b"__metadata__")
+                if metadata_packed is None:
+                    raise KeyError("LMDB database does not contain metadata.")
                 metadata = msgpack.unpackb(metadata_packed, raw=False)
 
                 for sys_info in metadata["system_info"]:
@@ -181,6 +183,8 @@ class LMDBFormat(Format):
                     for i in range(start_idx, start_idx + nframes):
                         key = f"{i:012d}".encode("ascii")
                         value = txn.get(key)
+                        if value is None:
+                            raise KeyError(f"Frame data not found for key: {key}")
                         frame_data = msgpack.unpackb(value, raw=False)
                         system_frames.append(frame_data)
 

@@ -4,6 +4,9 @@ import os
 import shutil
 import unittest
 
+import lmdb
+import msgpack
+import msgpack_numpy as m
 from comp_sys import (
     CompLabeledMultiSys,
     CompLabeledSys,
@@ -79,6 +82,60 @@ class TestLMDBMultiSystems(unittest.TestCase, CompLabeledMultiSys, MSAllIsNoPBC)
     def tearDown(self):
         if os.path.exists(self.lmdb_path):
             shutil.rmtree(self.lmdb_path)
+
+
+class TestLMDBErrorHandling(unittest.TestCase):
+    def setUp(self):
+        self.lmdb_path_missing_metadata = "tmp_missing_metadata.lmdb"
+        self.lmdb_path_missing_frame = "tmp_missing_frame.lmdb"
+
+        # Ensure cleanup in case of previous test failures
+        if os.path.exists(self.lmdb_path_missing_metadata):
+            shutil.rmtree(self.lmdb_path_missing_metadata)
+        if os.path.exists(self.lmdb_path_missing_frame):
+            shutil.rmtree(self.lmdb_path_missing_frame)
+
+        # For test_load_missing_frame_data, create a valid LMDB environment
+        # and write metadata, but no actual frames.
+        env = lmdb.open(self.lmdb_path_missing_frame, map_size=1000000000)
+        with env.begin(write=True) as txn:
+            metadata = {
+                "nframes": 1,
+                "system_info": [
+                    {
+                        "formula": "H2O",
+                        "natoms": [1, 2],
+                        "nframes": 1,
+                        "start_idx": 0,
+                    }
+                ],
+            }
+            m.patch()  # Ensure numpy patching for metadata
+            txn.put(b"__metadata__", msgpack.packb(metadata, use_bin_type=True))
+        env.close()
+
+    def tearDown(self):
+        if os.path.exists(self.lmdb_path_missing_metadata):
+            shutil.rmtree(self.lmdb_path_missing_metadata)
+        if os.path.exists(self.lmdb_path_missing_frame):
+            shutil.rmtree(self.lmdb_path_missing_frame)
+
+    def test_load_missing_metadata(self):
+        # Create a valid, empty LMDB environment, then test for missing metadata
+        lmdb.open(
+            self.lmdb_path_missing_metadata, map_size=1000000000
+        ).close()  # Creates empty LMDB environment
+
+        with self.assertRaisesRegex(
+            KeyError, "LMDB database does not contain metadata."
+        ):
+            LMDBFormat().from_multi_systems(self.lmdb_path_missing_metadata)
+
+    def test_load_missing_frame_data(self):
+        with self.assertRaisesRegex(
+            KeyError, "Frame data not found for key: b'000000000000'"
+        ):
+            LMDBFormat().from_multi_systems(self.lmdb_path_missing_frame)
 
 
 if __name__ == "__main__":
