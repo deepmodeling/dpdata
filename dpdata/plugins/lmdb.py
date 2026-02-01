@@ -51,7 +51,7 @@ class LMDBFormat(Format):
     **Saving multiple systems to a single LMDB database**
 
     >>> from dpdata.plugins.lmdb import LMDBFormat
-    >>> system_1 = dpdata.LabeledSystem("path/to/system1/OUTCAR", fmt="vasp/outcat")
+    >>> system_1 = dpdata.LabeledSystem("path/to/system1/OUTCAR", fmt="vasp/outcar")
     >>> system_2 = dpdata.LabeledSystem("path/to/system2/OUTCAR", fmt="vasp/outcar")
     >>> multi_systems_obj = dpdata.MultiSystems(system_1, system_2)
     >>> lmdb_formatter = LMDBFormat()
