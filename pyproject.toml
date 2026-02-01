@@ -24,6 +24,8 @@ dependencies = [
     'scipy',
     'h5py',
     'wcmatch',
+    'lmdb',
+    'msgpack-numpy',
     'importlib_metadata>=1.4; python_version < "3.8"',
     'typing_extensions; python_version < "3.8"',
 ]
