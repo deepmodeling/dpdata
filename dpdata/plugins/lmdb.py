@@ -66,7 +66,7 @@ class LMDBFormat(Format):
     >>> loaded_multi_systems = lmdb_formatter.from_multi_systems("my_multi_system_db.lmdb")
     """
 
-    def to_multi_systems(self, systems, file_name, **kwargs):
+    def to_multi_systems(self, systems, file_name, map_size=1000000000, **kwargs):
         """Save multiple systems to a single LMDB database.
 
         Parameters
@@ -76,9 +76,11 @@ class LMDBFormat(Format):
         file_name : str
             The path to the LMDB database directory. It will be created if it
             doesn't exist.
+        map_size : int, optional
+            Maximum size of the LMDB database in bytes. Default is 1GB.
         """
         os.makedirs(file_name, exist_ok=True)
-        with lmdb.open(file_name, map_size=1000000000) as env:
+        with lmdb.open(file_name, map_size=map_size) as env:
             global_frame_idx = 0
             system_info = []
 
@@ -152,13 +154,17 @@ class LMDBFormat(Format):
 
         self.to_multi_systems([System(data=data)], file_name, **kwargs)
 
-    def from_multi_systems(self, file_name, **kwargs):
+    def from_multi_systems(self, file_name, map_size=1000000000, **kwargs):
         """Load multiple systems from a single LMDB database.
 
         Parameters
         ----------
         file_name : str
             The path to the LMDB database directory.
+        map_size : int, optional
+            Maximum size of the LMDB database in bytes. This parameter is included
+            for consistency with `to_multi_systems` but is generally ignored
+            when opening in `readonly=True` mode.
 
         Returns
         -------
