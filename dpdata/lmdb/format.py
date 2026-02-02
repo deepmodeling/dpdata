@@ -78,6 +78,8 @@ class LMDBFormat(Format):
         map_size : int, optional
             Maximum size of the LMDB database in bytes. Default is 1GB.
         """
+        from dpdata.data_type import Axis
+
         os.makedirs(file_name, exist_ok=True)
         with lmdb.open(file_name, map_size=map_size) as env:
             global_frame_idx = 0
@@ -86,36 +88,42 @@ class LMDBFormat(Format):
             with env.begin(write=True) as txn:
                 for system_obj in systems:
                     data = system_obj.data
-                    nframes = data["coords"].shape[0]
-                    natoms = data["atom_numbs"]
+                    nframes = system_obj.get_nframes()
                     formula = system_obj.formula
+
+                    # Identify symbolic shapes and frame-dependent keys
+                    data_shapes = {}
+                    frame_dependent_keys = []
+                    for dt in type(system_obj).DTYPES:
+                        if dt.name in data:
+                            if dt.shape is not None:
+                                data_shapes[dt.name] = [
+                                    s.value if isinstance(s, Axis) else s
+                                    for s in dt.shape
+                                ]
+                                if Axis.NFRAMES in dt.shape:
+                                    frame_dependent_keys.append(dt.name)
+                            else:
+                                data_shapes[dt.name] = None
 
                     system_info.append(
                         {
                             "formula": formula,
-                            "natoms": natoms,
+                            "natoms": system_obj.get_atom_numbs(),
                             "nframes": nframes,
                             "start_idx": global_frame_idx,
+                            "data_shapes": data_shapes,
+                            "frame_dependent_keys": frame_dependent_keys,
                         }
                     )
 
                     for i in range(nframes):
-                        frame_data = {
-                            "atom_names": data["atom_names"],
-                            "atom_numbs": data["atom_numbs"],
-                            "atom_types": data["atom_types"],
-                            "orig": data["orig"],
-                            "coords": data["coords"][i],
-                            "cells": data["cells"][i],
-                        }
-                        if "energies" in data:
-                            frame_data["energies"] = data["energies"][i]
-                        if "forces" in data:
-                            frame_data["forces"] = data["forces"][i]
-                        if "virials" in data:
-                            frame_data["virials"] = data["virials"][i]
-                        if "nopbc" in data:
-                            frame_data["nopbc"] = data["nopbc"]
+                        frame_data = {}
+                        for key, val in data.items():
+                            if key in frame_dependent_keys:
+                                frame_data[key] = val[i]
+                            else:
+                                frame_data[key] = val
 
                         key = f"{global_frame_idx:012d}".encode("ascii")
                         value = msgpack.packb(frame_data, use_bin_type=True)
@@ -170,6 +178,7 @@ class LMDBFormat(Format):
         dpdata.MultiSystems
             A MultiSystems object containing all systems stored in the LMDB.
         """
+        from dpdata.data_type import Axis, DataType
         from dpdata.system import LabeledSystem, System
 
         systems = []
@@ -184,6 +193,8 @@ class LMDBFormat(Format):
                     system_frames = []
                     start_idx = sys_info["start_idx"]
                     nframes = sys_info["nframes"]
+                    data_shapes = sys_info.get("data_shapes", {})
+                    frame_dependent_keys = sys_info.get("frame_dependent_keys", [])
 
                     for i in range(start_idx, start_idx + nframes):
                         key = f"{i:012d}".encode("ascii")
@@ -194,33 +205,38 @@ class LMDBFormat(Format):
                         system_frames.append(frame_data)
 
                     # Aggregate data for one system
-                    agg_data = {
-                        "atom_names": system_frames[0]["atom_names"],
-                        "atom_numbs": system_frames[0]["atom_numbs"],
-                        "atom_types": system_frames[0]["atom_types"],
-                        "orig": system_frames[0]["orig"],
-                        "coords": np.array([d["coords"] for d in system_frames]),
-                        "cells": np.array([d["cells"] for d in system_frames]),
-                    }
-                    is_labeled = "energies" in system_frames[0]
-                    if is_labeled:
-                        agg_data["energies"] = np.array(
-                            [d["energies"] for d in system_frames]
-                        )
-                        agg_data["forces"] = np.array(
-                            [d["forces"] for d in system_frames]
-                        )
-                        if "virials" in system_frames[0]:
-                            agg_data["virials"] = np.array(
-                                [d.get("virials") for d in system_frames]
+                    first_frame = system_frames[0]
+                    is_labeled = "energies" in first_frame
+                    cls = LabeledSystem if is_labeled else System
+
+                    # Auto-register unknown data types
+                    existing_dt_names = [dt.name for dt in cls.DTYPES]
+                    new_dts = []
+                    axis_map = {a.value: a for a in Axis}
+                    for key, val in first_frame.items():
+                        if key not in existing_dt_names and key in data_shapes:
+                            shape_raw = data_shapes[key]
+                            if shape_raw is not None:
+                                shape = tuple([axis_map.get(s, s) for s in shape_raw])
+                            else:
+                                shape = None
+
+                            v_arr = np.array(val)
+                            new_dts.append(
+                                DataType(key, type(v_arr), shape=shape, required=False)
                             )
-                        if "nopbc" in system_frames[0]:
-                            agg_data["nopbc"] = system_frames[0]["nopbc"]
-                        systems.append(LabeledSystem(data=agg_data))
-                    else:
-                        if "nopbc" in system_frames[0]:
-                            agg_data["nopbc"] = system_frames[0]["nopbc"]
-                        systems.append(System(data=agg_data))
+
+                    if new_dts:
+                        cls.register_data_type(*new_dts)
+
+                    agg_data = {}
+                    for key, val in first_frame.items():
+                        if key in frame_dependent_keys:
+                            agg_data[key] = np.array([d[key] for d in system_frames])
+                        else:
+                            agg_data[key] = val
+
+                    systems.append(cls(data=agg_data))
 
         return dpdata.MultiSystems(*systems)
 
