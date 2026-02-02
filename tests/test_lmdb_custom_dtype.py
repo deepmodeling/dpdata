@@ -179,6 +179,47 @@ class TestLMDBFparamAparam(unittest.TestCase):
             system_loaded.data["aparam"], self.system.data["aparam"]
         )
 
+    def test_symbolic_axis_natoms_preservation(self):
+        # 1. Save system with aparam (which uses Axis.NATOMS)
+        self.system.to("lmdb", self.lmdb_path)
+
+        # 2. Simulate new session
+        dpdata.System.DTYPES = self.original_system_dtypes
+        dpdata.LabeledSystem.DTYPES = self.original_labeled_system_dtypes
+
+        # 3. Load triggers auto-registration
+        dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+
+        # 4. Find the newly registered DataType for 'aparam'
+        aparam_dt = next(
+            dt for dt in dpdata.LabeledSystem.DTYPES if dt.name == "aparam"
+        )
+
+        # 5. Assert that it contains Axis.NATOMS, not a fixed integer
+        # If it were a fixed integer, this test would fail if we were to use it
+        # for a system with a different number of atoms.
+        self.assertIn(Axis.NATOMS, aparam_dt.shape)
+
+        # 6. Functional verification: use the registered type for a system with DIFFERENT natoms
+        # original system has 6 atoms. Let's create one with 5.
+        data_diff = {
+            "atom_numbs": [5],
+            "atom_names": ["H"],
+            "atom_types": np.array([0, 0, 0, 0, 0]),
+            "coords": np.random.rand(1, 5, 3),
+            "cells": np.random.rand(1, 3, 3),
+            "orig": np.array([0, 0, 0]),
+            "energies": np.array([1.0]),
+            "forces": np.random.rand(1, 5, 3),
+            "aparam": np.random.rand(1, 5, 3),  # Custom data for 5 atoms
+        }
+        # This will call check_data() and use the auto-registered 'aparam' DataType
+        # If Axis.NATOMS was hardcoded to 6, this would raise DataError
+        try:
+            dpdata.LabeledSystem(data=data_diff)
+        except dpdata.data_type.DataError as e:
+            self.fail(f"DataError raised despite symbolic NATOMS: {e}")
+
 
 if __name__ == "__main__":
     unittest.main()
