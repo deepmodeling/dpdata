@@ -8,7 +8,6 @@ import numpy as np
 
 import dpdata
 from dpdata.data_type import Axis, DataType
-from dpdata.lmdb.format import LMDBFormat
 
 
 class TestLMDBCustomDType(unittest.TestCase):
@@ -62,8 +61,8 @@ class TestLMDBCustomDType(unittest.TestCase):
 
     def test_multi_systems_custom_dtype(self):
         ms = dpdata.MultiSystems(self.system)
-        LMDBFormat().to_multi_systems(list(ms.systems.values()), self.lmdb_path)
-        ms_loaded = LMDBFormat().from_multi_systems(self.lmdb_path)
+        ms.to("lmdb", self.lmdb_path)
+        ms_loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
 
         system_loaded = list(ms_loaded.systems.values())[0]
         np.testing.assert_allclose(

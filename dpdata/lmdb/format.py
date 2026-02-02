@@ -7,7 +7,6 @@ import msgpack
 import msgpack_numpy as m
 import numpy as np
 
-import dpdata
 from dpdata.format import Format
 
 m.patch()
@@ -35,17 +34,8 @@ class LMDBFormat(Format):
     systems (with potentially different numbers of atoms) are stored in a
     single LMDB database file.
 
-    For single systems, the standard ``dpdata.System.to('lmdb', ...)`` and
-    ``dpdata.System('...', fmt='lmdb')`` APIs can be used.
-
-    .. note::
-
-        The standard ``dpdata.MultiSystems.to()`` and ``dpdata.MultiSystems()``
-        constructor are not supported for this format. This is due to an
-        architectural limitation, as those APIs are designed for a "directory
-        of files" paradigm, whereas this format creates a single, unified
-        database file. To save and load multiple systems, you must call the
-        format's methods directly, as shown in the examples below.
+    Both single systems and multiple systems are supported via the standard
+    ``dpdata`` APIs.
 
     Examples
     --------
@@ -61,125 +51,146 @@ class LMDBFormat(Format):
 
     **Saving multiple systems to a single LMDB database**
 
-    >>> from dpdata.plugins.lmdb import LMDBFormat
+    >>> import dpdata
     >>> system_1 = dpdata.LabeledSystem("path/to/system1/OUTCAR", fmt="vasp/outcar")
     >>> system_2 = dpdata.LabeledSystem("path/to/system2/OUTCAR", fmt="vasp/outcar")
     >>> multi_systems_obj = dpdata.MultiSystems(system_1, system_2)
-    >>> lmdb_formatter = LMDBFormat()
-    >>> lmdb_formatter.to_multi_systems(
-    ...     list(multi_systems_obj.systems.values()), "my_multi_system_db.lmdb"
-    ... )
+    >>> multi_systems_obj.to("lmdb", "my_multi_system_db.lmdb")
 
     **Loading multiple systems from a single LMDB database**
 
-    >>> from dpdata.plugins.lmdb import LMDBFormat
-    >>> lmdb_formatter = LMDBFormat()
-    >>> loaded_multi_systems = lmdb_formatter.from_multi_systems("my_multi_system_db.lmdb")
+    >>> import dpdata
+    >>> loaded_multi_systems = dpdata.MultiSystems.from_file("my_multi_system_db.lmdb", fmt="lmdb")
     """
 
     def to_multi_systems(
-        self, systems, file_name, map_size=1000000000, frame_idx_fmt="012d", **kwargs
+        self, formulas, directory, map_size=1000000000, frame_idx_fmt="012d", **kwargs
     ):
-        """Save multiple systems to a single LMDB database.
+        """Implement MultiSystems.to for LMDB format.
 
         Parameters
         ----------
-        systems : list of dpdata.System
-            A list of System objects to be saved.
-        file_name : str
-            The path to the LMDB database directory. It will be created if it
-            doesn't exist.
+        formulas : list[str]
+            list of formulas
+        directory : str
+            directory of system
         map_size : int, optional
             Maximum size of the LMDB database in bytes. Default is 1GB.
         frame_idx_fmt : str, optional
             The format string used to encode the frame index as a key. Default is "012d".
+        **kwargs : dict
+            other parameters
+
+        Yields
+        ------
+        tuple
+            (self, formula) to be used by to_system
         """
-        from dpdata.data_type import Axis
-
-        os.makedirs(file_name, exist_ok=True)
-        with lmdb.open(file_name, map_size=map_size) as env:
-            global_frame_idx = 0
-            system_info = []
-
+        self._frame_idx_fmt = frame_idx_fmt
+        self._global_frame_idx = 0
+        self._system_info = []
+        os.makedirs(directory, exist_ok=True)
+        with lmdb.open(directory, map_size=map_size) as env:
             with env.begin(write=True) as txn:
-                for system_obj in systems:
-                    data = system_obj.data
-                    nframes = system_obj.get_nframes()
-                    formula = system_obj.formula
-
-                    # Identify symbolic shapes and frame-dependent keys
-                    data_shapes = {}
-                    frame_dependent_keys = []
-                    for dt in type(system_obj).DTYPES:
-                        if dt.name in data:
-                            if dt.shape is not None:
-                                data_shapes[dt.name] = [
-                                    s.value if isinstance(s, Axis) else s
-                                    for s in dt.shape
-                                ]
-                                if Axis.NFRAMES in dt.shape:
-                                    frame_dependent_keys.append(dt.name)
-                            else:
-                                data_shapes[dt.name] = None
-
-                    system_info.append(
-                        {
-                            "formula": formula,
-                            "natoms": system_obj.get_atom_numbs(),
-                            "nframes": nframes,
-                            "start_idx": global_frame_idx,
-                            "data_shapes": data_shapes,
-                            "frame_dependent_keys": frame_dependent_keys,
-                        }
-                    )
-
-                    for i in range(nframes):
-                        frame_data = {}
-                        for key, val in data.items():
-                            if key in frame_dependent_keys:
-                                frame_data[key] = val[i]
-                            else:
-                                frame_data[key] = val
-
-                        key = f"{global_frame_idx:{frame_idx_fmt}}".encode("ascii")
-                        value = msgpack.packb(frame_data, use_bin_type=True)
-                        txn.put(key, value)
-                        global_frame_idx += 1
-
+                self._txn = txn
+                for ff in formulas:
+                    yield (self, ff)
+                # Finalize metadata
                 metadata = {
-                    "nframes": global_frame_idx,
-                    "system_info": system_info,
-                    "frame_idx_fmt": frame_idx_fmt,
+                    "nframes": self._global_frame_idx,
+                    "system_info": self._system_info,
+                    "frame_idx_fmt": self._frame_idx_fmt,
                 }
                 txn.put(b"__metadata__", msgpack.packb(metadata, use_bin_type=True))
+                self._txn = None
+
+    def _dump_to_txn(self, data, txn, formula, dtypes):
+        from dpdata.data_type import Axis
+
+        nframes = data["coords"].shape[0]
+
+        # Identify symbolic shapes and frame-dependent keys
+        data_shapes = {}
+        frame_dependent_keys = []
+        for dt in dtypes:
+            if dt.name in data:
+                if dt.shape is not None:
+                    data_shapes[dt.name] = [
+                        s.value if isinstance(s, Axis) else s for s in dt.shape
+                    ]
+                    if Axis.NFRAMES in dt.shape:
+                        frame_dependent_keys.append(dt.name)
+                else:
+                    data_shapes[dt.name] = None
+
+        # Record system info
+        # natoms needs to be extracted from data
+        if "atom_numbs" in data:
+            natoms_list = data["atom_numbs"]
+        else:
+            # Fallback for systems without atom_numbs (should not happen in valid dpdata systems)
+            natoms_list = []
+
+        self._system_info.append(
+            {
+                "formula": formula,
+                "natoms": natoms_list,
+                "nframes": nframes,
+                "start_idx": self._global_frame_idx,
+                "data_shapes": data_shapes,
+                "frame_dependent_keys": frame_dependent_keys,
+            }
+        )
+
+        for i in range(nframes):
+            frame_data = {}
+            for key, val in data.items():
+                if key in frame_dependent_keys:
+                    frame_data[key] = val[i]
+                else:
+                    frame_data[key] = val
+
+            key = f"{self._global_frame_idx:{self._frame_idx_fmt}}".encode("ascii")
+            value = msgpack.packb(frame_data, use_bin_type=True)
+            txn.put(key, value)
+            self._global_frame_idx += 1
 
     def to_labeled_system(self, data, file_name, **kwargs):
-        """Save a single LabeledSystem to an LMDB database.
-
-        Parameters
-        ----------
-        data : dict
-            The data dictionary of a LabeledSystem.
-        file_name : str
-            The path to the LMDB database directory.
-        """
+        """Save a single LabeledSystem to an LMDB database."""
         from dpdata.system import LabeledSystem
 
-        self.to_multi_systems([LabeledSystem(data=data)], file_name, **kwargs)
+        if isinstance(file_name, tuple) and file_name[0] is self:
+            txn, formula = self._txn, file_name[1]
+            self._dump_to_txn(data, txn, formula, LabeledSystem.DTYPES)
+        else:
+            # Single system call: use to_multi_systems logic
+            # Infer formula from data if possible, or use default
+            formula = kwargs.get("formula", "unknown")
+            gen = self.to_multi_systems([formula], file_name, **kwargs)
+            handle = next(gen)
+            self.to_labeled_system(data, handle, **kwargs)
+            try:
+                next(gen)
+            except StopIteration:
+                pass
 
     def to_system(self, data, file_name, **kwargs):
-        """Save a single System to an LMDB database.
-
-        Parameters
-        ----------
-        data : dict
-            The data dictionary of a System.
-        file_name : str
-            The path to the LMDB database directory.
-        """
+        """Save a single System to an LMDB database."""
         from dpdata.system import System
 
-        self.to_multi_systems([System(data=data)], file_name, **kwargs)
+        if isinstance(file_name, tuple) and file_name[0] is self:
+            txn, formula = self._txn, file_name[1]
+            self._dump_to_txn(data, txn, formula, System.DTYPES)
+        else:
+            # Single system call
+            formula = kwargs.get("formula", "unknown")
+            gen = self.to_multi_systems([formula], file_name, **kwargs)
+            handle = next(gen)
+            self.to_system(data, handle, **kwargs)
+            try:
+                next(gen)
+            except StopIteration:
+                pass
 
     def from_multi_systems(self, file_name, map_size=1000000000, **kwargs):
         """Load multiple systems from a single LMDB database.
@@ -189,19 +200,18 @@ class LMDBFormat(Format):
         file_name : str
             The path to the LMDB database directory.
         map_size : int, optional
-            Maximum size of the LMDB database in bytes. This parameter is included
-            for consistency with `to_multi_systems` but is generally ignored
-            when opening in `readonly=True` mode.
+            Maximum size of the LMDB database in bytes.
+        **kwargs : dict
+            other parameters
 
-        Returns
-        -------
-        dpdata.MultiSystems
-            A MultiSystems object containing all systems stored in the LMDB.
+        Yields
+        ------
+        dict
+            data dictionary for each system
         """
         from dpdata.data_type import Axis, DataType
         from dpdata.system import LabeledSystem, System
 
-        systems = []
         with lmdb.open(file_name, readonly=True) as env:
             with env.begin() as txn:
                 metadata_packed = txn.get(b"__metadata__")
@@ -257,42 +267,20 @@ class LMDBFormat(Format):
                         else:
                             agg_data[key] = val
 
-                    systems.append(cls(data=agg_data))
-
-        return dpdata.MultiSystems(*systems)
+                    yield agg_data
 
     def from_labeled_system(self, file_name, **kwargs):
-        """Load data for a single LabeledSystem from an LMDB database.
-
-        Parameters
-        ----------
-        file_name : str
-            The path to the LMDB database directory.
-
-        Returns
-        -------
-        dict
-            The data dictionary for the loaded LabeledSystem.
-        """
-        # from_multi_systems returns a MultiSystems object
-        multisystems_obj = self.from_multi_systems(file_name, **kwargs)
-        # We need the data dictionary of the first (and only) system for from_labeled_system
-        return multisystems_obj[0].data
+        """Load data for a single LabeledSystem from an LMDB database."""
+        if isinstance(file_name, dict):
+            return file_name
+        # from_multi_systems returns a generator of dicts
+        gen = self.from_multi_systems(file_name, **kwargs)
+        return next(gen)
 
     def from_system(self, file_name, **kwargs):
-        """Load data for a single System from an LMDB database.
-
-        Parameters
-        ----------
-        file_name : str
-            The path to the LMDB database directory.
-
-        Returns
-        -------
-        dict
-            The data dictionary for the loaded System.
-        """
-        # from_multi_systems returns a MultiSystems object
-        multisystems_obj = self.from_multi_systems(file_name, **kwargs)
-        # We need the data dictionary of the first (and only) system for from_system
-        return multisystems_obj[0].data
+        """Load data for a single System from an LMDB database."""
+        if isinstance(file_name, dict):
+            return file_name
+        # from_multi_systems returns a generator of dicts
+        gen = self.from_multi_systems(file_name, **kwargs)
+        return next(gen)

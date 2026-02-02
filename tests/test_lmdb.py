@@ -18,7 +18,6 @@ from comp_sys import (
 from context import dpdata
 
 from dpdata.lmdb.format import LMDBFrameError, LMDBMetadataError
-from dpdata.plugins.lmdb import LMDBFormat
 
 
 class TestLMDBLabeledSystem(unittest.TestCase, CompLabeledSys, IsPBC):
@@ -68,13 +67,11 @@ class TestLMDBMultiSystems(unittest.TestCase, CompLabeledMultiSys, MSAllIsNoPBC)
 
         self.ms_1 = dpdata.MultiSystems(system_1, system_2, system_3)
 
-        # Manually call the format object's to_multi_systems as dpdata.MultiSystems.to
-        # is not designed for single-file multi-system formats.
-        LMDBFormat().to_multi_systems(list(self.ms_1.systems.values()), self.lmdb_path)
+        # Standard API
+        self.ms_1.to("lmdb", self.lmdb_path)
 
-        # Manually call the format object's from_multi_systems as dpdata.MultiSystems.from_fmt
-        # is not designed for single-file multi-system formats.
-        self.ms_2 = LMDBFormat().from_multi_systems(self.lmdb_path)
+        # Standard API
+        self.ms_2 = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
 
         self.places = 6
         self.e_places = 6
@@ -131,13 +128,15 @@ class TestLMDBErrorHandling(unittest.TestCase):
         with self.assertRaisesRegex(
             LMDBMetadataError, "LMDB database does not contain metadata."
         ):
-            LMDBFormat().from_multi_systems(self.lmdb_path_missing_metadata)
+            # Standard API
+            dpdata.MultiSystems.from_file(self.lmdb_path_missing_metadata, fmt="lmdb")
 
     def test_load_missing_frame_data(self):
         with self.assertRaisesRegex(
             LMDBFrameError, "Frame data not found for key: b'000000000000'"
         ):
-            LMDBFormat().from_multi_systems(self.lmdb_path_missing_frame)
+            # Standard API
+            dpdata.MultiSystems.from_file(self.lmdb_path_missing_frame, fmt="lmdb")
 
 
 class TestLMDBConfig(unittest.TestCase):
@@ -151,12 +150,9 @@ class TestLMDBConfig(unittest.TestCase):
 
     def test_custom_frame_idx_fmt(self):
         fmt = "06d"
-        # Manually call to_multi_systems to pass custom kwarg
-        LMDBFormat().to_multi_systems(
-            list(dpdata.MultiSystems(self.system).systems.values()),
-            self.lmdb_path,
-            frame_idx_fmt=fmt,
-        )
+        # Standard API with custom kwarg
+        ms = dpdata.MultiSystems(self.system)
+        ms.to("lmdb", self.lmdb_path, frame_idx_fmt=fmt)
 
         # 1. Verify key format in database
         with lmdb.open(self.lmdb_path, readonly=True) as env:
@@ -166,7 +162,7 @@ class TestLMDBConfig(unittest.TestCase):
                 # Frame 0 should NOT be "000000000000"
                 self.assertIsNone(txn.get(b"000000000000"))
 
-        # 2. Verify loading works automatically
+        # 2. Verify loading works automatically via standard API
         system_loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
         self.assertEqual(len(system_loaded), len(self.system))
         np.testing.assert_allclose(
