@@ -7,6 +7,7 @@ import unittest
 import lmdb
 import msgpack
 import msgpack_numpy as m
+import numpy as np
 from comp_sys import (
     CompLabeledMultiSys,
     CompLabeledSys,
@@ -136,6 +137,40 @@ class TestLMDBErrorHandling(unittest.TestCase):
             KeyError, "Frame data not found for key: b'000000000000'"
         ):
             LMDBFormat().from_multi_systems(self.lmdb_path_missing_frame)
+
+
+class TestLMDBConfig(unittest.TestCase):
+    def setUp(self):
+        self.lmdb_path = "tmp_config.lmdb"
+        self.system = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
+
+    def tearDown(self):
+        if os.path.exists(self.lmdb_path):
+            shutil.rmtree(self.lmdb_path)
+
+    def test_custom_frame_idx_fmt(self):
+        fmt = "06d"
+        # Manually call to_multi_systems to pass custom kwarg
+        LMDBFormat().to_multi_systems(
+            list(dpdata.MultiSystems(self.system).systems.values()),
+            self.lmdb_path,
+            frame_idx_fmt=fmt,
+        )
+
+        # 1. Verify key format in database
+        with lmdb.open(self.lmdb_path, readonly=True) as env:
+            with env.begin() as txn:
+                # Frame 0 should be "000000"
+                self.assertIsNotNone(txn.get(b"000000"))
+                # Frame 0 should NOT be "000000000000"
+                self.assertIsNone(txn.get(b"000000000000"))
+
+        # 2. Verify loading works automatically
+        system_loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        self.assertEqual(len(system_loaded), len(self.system))
+        np.testing.assert_allclose(
+            system_loaded.data["coords"], self.system.data["coords"]
+        )
 
 
 if __name__ == "__main__":

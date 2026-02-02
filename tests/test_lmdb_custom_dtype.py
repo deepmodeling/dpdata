@@ -196,12 +196,9 @@ class TestLMDBFparamAparam(unittest.TestCase):
         )
 
         # 5. Assert that it contains Axis.NATOMS, not a fixed integer
-        # If it were a fixed integer, this test would fail if we were to use it
-        # for a system with a different number of atoms.
         self.assertIn(Axis.NATOMS, aparam_dt.shape)
 
-        # 6. Functional verification: use the registered type for a system with DIFFERENT natoms
-        # original system has 6 atoms. Let's create one with 5.
+        # 6. Functional verification
         data_diff = {
             "atom_numbs": [5],
             "atom_names": ["H"],
@@ -211,10 +208,8 @@ class TestLMDBFparamAparam(unittest.TestCase):
             "orig": np.array([0, 0, 0]),
             "energies": np.array([1.0]),
             "forces": np.random.rand(1, 5, 3),
-            "aparam": np.random.rand(1, 5, 3),  # Custom data for 5 atoms
+            "aparam": np.random.rand(1, 5, 3),
         }
-        # This will call check_data() and use the auto-registered 'aparam' DataType
-        # If Axis.NATOMS was hardcoded to 6, this would raise DataError
         try:
             dpdata.LabeledSystem(data=data_diff)
         except dpdata.data_type.DataError as e:

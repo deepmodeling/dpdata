@@ -65,7 +65,9 @@ class LMDBFormat(Format):
     >>> loaded_multi_systems = lmdb_formatter.from_multi_systems("my_multi_system_db.lmdb")
     """
 
-    def to_multi_systems(self, systems, file_name, map_size=1000000000, **kwargs):
+    def to_multi_systems(
+        self, systems, file_name, map_size=1000000000, frame_idx_fmt="012d", **kwargs
+    ):
         """Save multiple systems to a single LMDB database.
 
         Parameters
@@ -77,6 +79,8 @@ class LMDBFormat(Format):
             doesn't exist.
         map_size : int, optional
             Maximum size of the LMDB database in bytes. Default is 1GB.
+        frame_idx_fmt : str, optional
+            The format string used to encode the frame index as a key. Default is "012d".
         """
         from dpdata.data_type import Axis
 
@@ -125,12 +129,16 @@ class LMDBFormat(Format):
                             else:
                                 frame_data[key] = val
 
-                        key = f"{global_frame_idx:012d}".encode("ascii")
+                        key = f"{global_frame_idx:{frame_idx_fmt}}".encode("ascii")
                         value = msgpack.packb(frame_data, use_bin_type=True)
                         txn.put(key, value)
                         global_frame_idx += 1
 
-                metadata = {"nframes": global_frame_idx, "system_info": system_info}
+                metadata = {
+                    "nframes": global_frame_idx,
+                    "system_info": system_info,
+                    "frame_idx_fmt": frame_idx_fmt,
+                }
                 txn.put(b"__metadata__", msgpack.packb(metadata, use_bin_type=True))
 
     def to_labeled_system(self, data, file_name, **kwargs):
@@ -188,6 +196,7 @@ class LMDBFormat(Format):
                 if metadata_packed is None:
                     raise KeyError("LMDB database does not contain metadata.")
                 metadata = msgpack.unpackb(metadata_packed, raw=False)
+                frame_idx_fmt = metadata.get("frame_idx_fmt", "012d")
 
                 for sys_info in metadata["system_info"]:
                     system_frames = []
@@ -197,7 +206,7 @@ class LMDBFormat(Format):
                     frame_dependent_keys = sys_info.get("frame_dependent_keys", [])
 
                     for i in range(start_idx, start_idx + nframes):
-                        key = f"{i:012d}".encode("ascii")
+                        key = f"{i:{frame_idx_fmt}}".encode("ascii")
                         value = txn.get(key)
                         if value is None:
                             raise KeyError(f"Frame data not found for key: {key}")
