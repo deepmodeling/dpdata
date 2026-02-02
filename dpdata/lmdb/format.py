@@ -13,6 +13,18 @@ from dpdata.format import Format
 m.patch()
 
 
+class LMDBError(Exception):
+    """Base class for LMDB errors."""
+
+
+class LMDBMetadataError(LMDBError):
+    """Metadata not found in LMDB."""
+
+
+class LMDBFrameError(LMDBError):
+    """Frame data not found in LMDB."""
+
+
 class LMDBFormat(Format):
     """
     Class for handling the LMDB format, which stores atomic configurations in a
@@ -194,7 +206,7 @@ class LMDBFormat(Format):
             with env.begin() as txn:
                 metadata_packed = txn.get(b"__metadata__")
                 if metadata_packed is None:
-                    raise KeyError("LMDB database does not contain metadata.")
+                    raise LMDBMetadataError("LMDB database does not contain metadata.")
                 metadata = msgpack.unpackb(metadata_packed, raw=False)
                 frame_idx_fmt = metadata.get("frame_idx_fmt", "012d")
 
@@ -209,7 +221,7 @@ class LMDBFormat(Format):
                         key = f"{i:{frame_idx_fmt}}".encode("ascii")
                         value = txn.get(key)
                         if value is None:
-                            raise KeyError(f"Frame data not found for key: {key}")
+                            raise LMDBFrameError(f"Frame data not found for key: {key}")
                         frame_data = msgpack.unpackb(value, raw=False)
                         system_frames.append(frame_data)
 

@@ -17,6 +17,7 @@ from comp_sys import (
 )
 from context import dpdata
 
+from dpdata.lmdb.format import LMDBFrameError, LMDBMetadataError
 from dpdata.plugins.lmdb import LMDBFormat
 
 
@@ -128,13 +129,13 @@ class TestLMDBErrorHandling(unittest.TestCase):
         ).close()  # Creates empty LMDB environment
 
         with self.assertRaisesRegex(
-            KeyError, "LMDB database does not contain metadata."
+            LMDBMetadataError, "LMDB database does not contain metadata."
         ):
             LMDBFormat().from_multi_systems(self.lmdb_path_missing_metadata)
 
     def test_load_missing_frame_data(self):
         with self.assertRaisesRegex(
-            KeyError, "Frame data not found for key: b'000000000000'"
+            LMDBFrameError, "Frame data not found for key: b'000000000000'"
         ):
             LMDBFormat().from_multi_systems(self.lmdb_path_missing_frame)
 
