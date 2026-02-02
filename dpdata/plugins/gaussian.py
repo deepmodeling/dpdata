@@ -5,14 +5,30 @@ import subprocess as sp
 import tempfile
 from typing import TYPE_CHECKING
 
+import numpy as np
+
+import dpdata.gaussian.fchk
 import dpdata.gaussian.gjf
 import dpdata.gaussian.log
+from dpdata.data_type import Axis, DataType
 from dpdata.driver import Driver
 from dpdata.format import Format
 from dpdata.utils import open_file
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
+
+
+def register_hessian_data(data):
+    if "hessian" in data:
+        dt = DataType(
+            "hessian",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="hessian",
+        )
+        dpdata.LabeledSystem.register_data_type(dt)
 
 
 @Format.register("gaussian/log")
@@ -22,6 +38,21 @@ class GaussianLogFormat(Format):
             return dpdata.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             return {"energies": [], "forces": [], "nopbc": True}
+
+
+@Format.register("gaussian/fchk")
+class GaussianFChkFormat(Format):
+    def from_labeled_system(
+        self, file_name: FileType, has_forces=True, has_hessian=True, **kwargs
+    ):
+        try:
+            data = dpdata.gaussian.fchk.to_system_data(
+                file_name, has_forces=has_forces, has_hessian=has_hessian
+            )
+            register_hessian_data(data)
+            return data
+        except AssertionError:
+            return {"energies": [], "forces": [], "hessian": [], "nopbc": True}
 
 
 @Format.register("gaussian/md")

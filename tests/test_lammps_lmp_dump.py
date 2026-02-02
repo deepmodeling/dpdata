@@ -30,6 +30,16 @@ class TestToFunc(unittest.TestCase, TestPOSCARoh):
         self.system.from_fmt("tmp.lmp", fmt="lammps/lmp", type_map=["O", "H"])
 
 
+class TestDumpToFunc(unittest.TestCase, TestPOSCARoh):
+    def setUp(self):
+        tmp_system = dpdata.System(
+            os.path.join("poscars", "conf.lmp"), type_map=["O", "H"]
+        )
+        tmp_system.to("lammps/dump", "tmp.dump")
+        self.system = dpdata.System()
+        self.system.from_fmt("tmp.dump", fmt="lammps/dump", type_map=["O", "H"])
+
+
 class TestLmpRotateTriAngle(unittest.TestCase):
     def test_simple_cubic(self):
         cubic_cell = np.diag([5, 5, 5])

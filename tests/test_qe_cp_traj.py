@@ -68,5 +68,40 @@ class TestConverCellDim(unittest.TestCase):
                 self.assertAlmostEqual(cell[ii][jj], ref[ii][jj])
 
 
+class TestVirial(unittest.TestCase):
+    def test(self):
+        self.system = dpdata.LabeledSystem("qe.traj/si/si", fmt="qe/cp/traj")
+        self.assertEqual(self.system["virials"].shape, (2, 3, 3))
+        np.testing.assert_almost_equal(
+            self.system["virials"][0],
+            np.array(
+                [
+                    [0.31120718, -0.03261485, -0.02537362],
+                    [-0.03261485, 0.3100397, 0.04211053],
+                    [-0.02537362, 0.04211057, 0.30571264],
+                ]
+            ),
+        )
+        np.testing.assert_almost_equal(
+            self.system["virials"][1],
+            np.array(
+                [
+                    [0.31072979, -0.03151186, -0.02302297],
+                    [-0.03151186, 0.30951293, 0.04078447],
+                    [-0.02302297, 0.04078451, 0.30544987],
+                ]
+            ),
+        )
+
+    def test_raise(self):
+        with self.assertRaises(RuntimeError) as c:
+            self.system = dpdata.LabeledSystem(
+                "qe.traj/si.wrongstr/si", fmt="qe/cp/traj"
+            )
+        self.assertTrue(
+            "the step key between files are not consistent." in str(c.exception)
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

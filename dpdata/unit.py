@@ -152,6 +152,34 @@ class ForceConversion(Conversion):
         self.set_value(econv / lconv)
 
 
+class HessianConversion(Conversion):
+    def __init__(self, unitA, unitB):
+        """Class for Hessian (second derivative) unit conversion.
+
+        Parameters
+        ----------
+        unitA, unitB : str
+            in format of "energy_unit/length_unit^2"
+
+        Examples
+        --------
+        >>> conv = HessianConversion("hartree/bohr^2", "eV/angstrom^2")
+        >>> conv.value()
+        97.1736242922823
+        """
+        super().__init__(unitA, unitB, check=False)
+        eunitA, lunitA = self._split_unit(unitA)
+        eunitB, lunitB = self._split_unit(unitB)
+        econv = EnergyConversion(eunitA, eunitB).value()
+        lconv = LengthConversion(lunitA, lunitB).value()
+        self.set_value(econv / lconv**2)
+
+    def _split_unit(self, unit):
+        eunit = unit.split("/")[0]
+        lunit = unit.split("/")[1][:-2]
+        return eunit, lunit
+
+
 class PressureConversion(Conversion):
     def __init__(self, unitA, unitB):
         """Class for pressure conversion.

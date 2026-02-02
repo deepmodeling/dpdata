@@ -1,10 +1,17 @@
 # dpdata
 
+[![DOI:10.1021/acs.jcim.5c01767](https://img.shields.io/badge/DOI-10.1021%2Facs.jcim.5c01767-blue)](https://doi.org/10.1021/acs.jcim.5c01767)
 [![conda-forge](https://img.shields.io/conda/dn/conda-forge/dpdata?color=red&label=conda-forge&logo=conda-forge)](https://anaconda.org/conda-forge/dpdata)
 [![pip install](https://img.shields.io/pypi/dm/dpdata?label=pip%20install&logo=pypi)](https://pypi.org/project/dpdata)
 [![Documentation Status](https://readthedocs.org/projects/dpdata/badge/)](https://dpdata.readthedocs.io/)
 
 **dpdata** is a Python package for manipulating atomistic data of software in computational science.
+
+## Credits
+
+If you use this software, please cite the following paper:
+
+- Jinzhe Zeng, Xingliang Peng, Yong-Bin Zhuang, Haidi Wang, Fengbo Yuan, Duo Zhang, Renxi Liu, Yingze Wang, Ping Tuo, Yuzhi Zhang, Yixiao Chen, Yifan Li, Cao Thang Nguyen, Jiameng Huang, Anyang Peng, Marián Rynik, Wei-Hong Xu, Zezhong Zhang, Xu-Yuan Zhou, Tao Chen, Jiahao Fan, Wanrun Jiang, Bowen Li, Denan Li, Haoxi Li, Wenshuo Liang, Ruihao Liao, Liping Liu, Chenxing Luo, Logan Ward, Kaiwei Wan, Junjie Wang, Pan Xiang, Chengqian Zhang, Jinchao Zhang, Rui Zhou, Jia-Xin Zhu, Linfeng Zhang, Han Wang, dpdata: A Scalable Python Toolkit for Atomistic Machine Learning Data Sets, *J. Chem. Inf. Model.*, 2025, DOI: [10.1021/acs.jcim.5c01767](https://doi.org/10.1021/acs.jcim.5c01767). [![Citations](https://citations.njzjz.win/10.1021/acs.jcim.5c01767)](https://badge.dimensions.ai/details/doi/10.1021/acs.jcim.5c01767)
 
 ## Installation
 

@@ -1,8 +1,8 @@
 name: Python package
 
 on:
-  - push
-  - pull_request
+- push
+- pull_request
 
 jobs:
   build:
@@ -12,13 +12,13 @@ jobs:
         python-version: ["3.8", "3.12"]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     # set up conda
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: astral-sh/setup-uv@v6
+    - uses: astral-sh/setup-uv@v7
       with:
         enable-cache: true
         cache-dependency-glob: |
@@ -33,6 +33,8 @@ jobs:
       uses: codecov/codecov-action@v5
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      with:
+        use_oidc: true
   pass:
     needs: [build]
     runs-on: ubuntu-latest
@@ -42,3 +44,5 @@ jobs:
       uses: re-actors/alls-green@release/v1
       with:
         jobs: ${{ toJSON(needs) }}
+permissions:
+  id-token: write

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+from typing import Any
 
 import numpy as np
 
@@ -33,13 +34,46 @@ def analyze_atominfo(atominfo_xml):
     return eles, types
 
 
-def analyze_calculation(cc):
+def analyze_calculation(
+    cc: Any,
+    nelm: int | None,
+) -> tuple[np.ndarray, np.ndarray, float, np.ndarray, np.ndarray | None, bool | None]:
+    """Analyze a calculation block.
+
+    Parameters
+    ----------
+    cc : xml.etree.ElementTree.Element
+        The xml element for a ion step calculation
+    nelm : Optional[int]
+        The number nelm, if it is not None, convergence check is performed.
+
+    Returns
+    -------
+    posi : np.ndarray
+        The positions
+    cell : np.ndarray
+        The cell
+    ener : float
+        The energy
+    force : np.ndarray
+        The forces
+    str : Optional[np.ndarray]
+        The stress
+    is_converged: Optional[bool]
+        If the scf calculation is converged. Only return boolean when
+        nelm is not None. Otherwise return None.
+
+    """
     structure_xml = cc.find("structure")
     check_name(structure_xml.find("crystal").find("varray"), "basis")
     check_name(structure_xml.find("varray"), "positions")
     cell = get_varray(structure_xml.find("crystal").find("varray"))
     posi = get_varray(structure_xml.find("varray"))
     strs = None
+    is_converged = None
+    if nelm is not None:
+        niter = len(cc.findall(".//scstep"))
+        is_converged = niter < nelm
     for vv in cc.findall("varray"):
         if vv.attrib["name"] == "forces":
             forc = get_varray(vv)
@@ -48,9 +82,7 @@ def analyze_calculation(cc):
     for ii in cc.find("energy").findall("i"):
         if ii.attrib["name"] == "e_fr_energy":
             ener = float(ii.text)
-    # print(ener)
-    # return 'a'
-    return posi, cell, ener, forc, strs
+    return posi, cell, ener, forc, strs, is_converged
 
 
 def formulate_config(eles, types, posi, cell, ener, forc, strs_):
@@ -80,7 +112,7 @@ def formulate_config(eles, types, posi, cell, ener, forc, strs_):
     return ret
 
 
-def analyze(fname, type_idx_zero=False, begin=0, step=1):
+def analyze(fname, type_idx_zero=False, begin=0, step=1, convergence_check=True):
     """Deal with broken xml file."""
     all_posi = []
     all_cell = []
@@ -88,6 +120,16 @@ def analyze(fname, type_idx_zero=False, begin=0, step=1):
     all_forc = []
     all_strs = []
     cc = 0
+    if convergence_check:
+        tree = ET.parse(fname)
+        root = tree.getroot()
+        parameters = root.find(".//parameters")
+        nelm = parameters.find(".//i[@name='NELM']")
+        # will check convergence
+        nelm = int(nelm.text)
+    else:
+        # not checking convergence
+        nelm = None
     try:
         for event, elem in ET.iterparse(fname):
             if elem.tag == "atominfo":
@@ -96,8 +138,16 @@ def analyze(fname, type_idx_zero=False, begin=0, step=1):
                 if type_idx_zero:
                     types = types - 1
             if elem.tag == "calculation":
-                posi, cell, ener, forc, strs = analyze_calculation(elem)
-                if cc >= begin and (cc - begin) % step == 0:
+                posi, cell, ener, forc, strs, is_converged = analyze_calculation(
+                    elem, nelm
+                )
+                # record when not checking convergence or is_converged
+                # and the step criteria is satisfied
+                if (
+                    (nelm is None or is_converged)
+                    and cc >= begin
+                    and (cc - begin) % step == 0
+                ):
                     all_posi.append(posi)
                     all_cell.append(cell)
                     all_ener.append(ener)

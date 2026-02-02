@@ -132,5 +132,17 @@ class TestVaspAtomNamesV6(unittest.TestCase):
         np.testing.assert_equal(ss.get_atom_types(), [0, 0, 0, 1, 1, 0, 0, 0])
 
 
+class TestVaspOUTCARLongIonTypes(unittest.TestCase):
+    def test(self):
+        # vasp<=6.3 only print ions per type for the first 10 types of atoms
+        # raise exception when the bug is triggered.
+        with self.assertRaises(RuntimeError) as c:
+            ss = dpdata.LabeledSystem("poscars/outcar.longit/OUTCAR")
+        self.assertTrue(
+            "The number of the atom numbers per each type" in str(c.exception)
+        )
+        self.assertTrue("does not match that of the atom types" in str(c.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

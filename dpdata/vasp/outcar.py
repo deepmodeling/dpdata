@@ -95,6 +95,13 @@ def system_info(
         atom_names = atom_names_potcar[: nnames // 2]
     assert nelm is not None, "cannot find maximum steps for each SC iteration"
     assert atom_numbs is not None, "cannot find ion type info in OUTCAR"
+    if len(atom_numbs) != len(atom_names):
+        raise RuntimeError(
+            f"The number of the atom numbers per each type ({len(atom_numbs)}) "
+            f"does not match that of the atom types ({len(atom_names)}) detected "
+            f"from the OUTCAR. This issue may be cause by a bug in vasp <= 6.3. "
+            f"Please try to convert data from vasprun.xml instead."
+        )
     atom_names = atom_names[: len(atom_numbs)]
     atom_types = []
     for idx, ii in enumerate(atom_numbs):
@@ -131,7 +138,18 @@ def check_outputs(coord, cell, force):
 
 # we assume that the force is printed ...
 def get_frames(fname, begin=0, step=1, ml=False, convergence_check=True):
-    fp = open(fname)
+    with open(fname) as fp:
+        return _get_frames_lower(
+            fp,
+            fname,
+            begin=begin,
+            step=step,
+            ml=ml,
+            convergence_check=convergence_check,
+        )
+
+
+def _get_frames_lower(fp, fname, begin=0, step=1, ml=False, convergence_check=True):
     blk = get_outcar_block(fp)
 
     atom_names, atom_numbs, atom_types, nelm, nwrite = system_info(
@@ -187,7 +205,6 @@ def get_frames(fname, begin=0, step=1, ml=False, convergence_check=True):
         all_virials = None
     else:
         all_virials = np.array(all_virials)
-    fp.close()
     return (
         atom_names,
         atom_numbs,
