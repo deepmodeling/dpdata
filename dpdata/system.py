@@ -1370,7 +1370,7 @@ class MultiSystems:
         """
         self.systems: dict[str, System] = {}
         # short name to name
-        self.__short_name_map = dict[str, str] = {}
+        self.__short_name_map: dict[str, str] = {}
         if type_map is not None:
             self.atom_names: list[str] = type_map
         else:
