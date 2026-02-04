@@ -1369,6 +1369,8 @@ class MultiSystems:
             Maps atom type to name
         """
         self.systems: dict[str, System] = {}
+        # short name to name
+        self.__short_name_map = dict[str, str] = {}
         if type_map is not None:
             self.atom_names: list[str] = type_map
         else:
@@ -1443,6 +1445,8 @@ class MultiSystems:
         """Returns proerty stored in System by key or by idx."""
         if isinstance(key, int):
             return list(self.systems.values())[key]
+        if key in self.__short_name_map:
+            return self.systems[self.__short_name_map[key]]
         return self.systems[key]
 
     def __len__(self):
@@ -1524,6 +1528,7 @@ class MultiSystems:
             self.systems[formula].append(system)
         else:
             self.systems[formula] = system.copy()
+        self.__short_name_map[system.short_name] = formula
 
     def check_atom_names(self, system: System):
         """Make atom_names in all systems equal, prevent inconsistent atom_types."""
