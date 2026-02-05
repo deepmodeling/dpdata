@@ -1369,6 +1369,8 @@ class MultiSystems:
             Maps atom type to name
         """
         self.systems: dict[str, System] = {}
+        # short name to name
+        self._short_name_map: dict[str, str] = {}
         if type_map is not None:
             self.atom_names: list[str] = type_map
         else:
@@ -1443,6 +1445,8 @@ class MultiSystems:
         """Returns proerty stored in System by key or by idx."""
         if isinstance(key, int):
             return list(self.systems.values())[key]
+        if key in self._short_name_map:
+            return self.systems[self._short_name_map[key]]
         return self.systems[key]
 
     def __len__(self):
@@ -1524,6 +1528,7 @@ class MultiSystems:
             self.systems[formula].append(system)
         else:
             self.systems[formula] = system.copy()
+        self._short_name_map[system.short_name] = formula
 
     def check_atom_names(self, system: System):
         """Make atom_names in all systems equal, prevent inconsistent atom_types."""
@@ -1536,11 +1541,14 @@ class MultiSystems:
             self.atom_names.extend(new_in_system)
             # Add this atom_name to each system, and change their names
             new_systems = {}
+            new_short_name_map = {}
             for each_system in self.systems.values():
                 each_system.add_atom_names(new_in_system)
                 each_system.sort_atom_names(type_map=self.atom_names)
                 new_systems[each_system.formula] = each_system
+                new_short_name_map[each_system.short_name] = each_system.formula
             self.systems = new_systems
+            self._short_name_map = new_short_name_map
         if len(new_in_self):
             # Previous atom_name not in this system
             system.add_atom_names(new_in_self)
