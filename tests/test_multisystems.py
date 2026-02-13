@@ -219,6 +219,8 @@ class TestLongFilename(unittest.TestCase):
         ms = dpdata.MultiSystems(system)
         with tempfile.TemporaryDirectory() as tmpdir:
             ms.to_deepmd_npy(tmpdir)
+        # test visiting system by short_name
+        ms[system.short_name]
 
     def test_long_filename2(self):
         system = dpdata.System(
@@ -234,6 +236,8 @@ class TestLongFilename(unittest.TestCase):
         ms = dpdata.MultiSystems(system)
         with tempfile.TemporaryDirectory() as tmpdir:
             ms.to_deepmd_npy(tmpdir)
+        # test visiting system by short_name
+        ms[system.short_name]
 
 
 if __name__ == "__main__":
