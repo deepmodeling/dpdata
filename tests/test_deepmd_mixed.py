@@ -597,3 +597,338 @@ class TestMixedSystemWithFparamAparam(
                     self.systems[formula].data["aparam"],
                     decimal=self.places,
                 )
+
+
+class TestMixedMultiSystemsPadding(
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
+):
+    """Test round-trip with atom_numb_pad.
+
+    C1H4 (5 atoms) and C1H3 (4 atoms) are both padded to 8 atoms,
+    so only 1 subfolder should be created.
+    """
+
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        # C1H4 (5 atoms)
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        # C1H3 (4 atoms)
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        self.ms = dpdata.MultiSystems(system_1, system_2)
+        self.ms.to_deepmd_npy_mixed("tmp.deepmd.mixed.pad", atom_numb_pad=8)
+        self.systems = dpdata.MultiSystems()
+        self.systems.from_deepmd_npy_mixed(
+            "tmp.deepmd.mixed.pad", fmt="deepmd/npy/mixed"
+        )
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
+
+        self.system_names = ["C1H4", "C1H3"]
+        self.system_sizes = {"C1H4": 1, "C1H3": 1}
+        self.atom_names = ["C", "H"]
+
+    def tearDown(self):
+        if os.path.exists("tmp.deepmd.mixed.pad"):
+            shutil.rmtree("tmp.deepmd.mixed.pad")
+
+    def test_single_subfolder(self):
+        """Both 4-atom and 5-atom systems padded to 8 -> 1 subfolder."""
+        subdirs = [
+            d
+            for d in os.listdir("tmp.deepmd.mixed.pad")
+            if os.path.isdir(os.path.join("tmp.deepmd.mixed.pad", d))
+        ]
+        self.assertEqual(len(subdirs), 1)
+        self.assertEqual(subdirs[0], "8")
+
+    def test_padded_virtual_atoms(self):
+        """Verify on-disk real atom count matches loaded natoms, and virtual
+        atoms have type -1 with zero coords and forces.
+        """
+        loaded_natoms = {f: s.get_natoms() for f, s in self.systems.systems.items()}
+        mixed_sets = glob("tmp.deepmd.mixed.pad/*/set.*")
+        self.assertGreater(len(mixed_sets), 0)
+        for s in mixed_sets:
+            rat = np.load(os.path.join(s, "real_atom_types.npy"))
+            coord = np.load(os.path.join(s, "coord.npy"))
+            force = np.load(os.path.join(s, "force.npy"))
+            padded_natoms = rat.shape[1]
+            for ii in range(rat.shape[0]):
+                row = rat[ii]
+                n_real = int(np.sum(row >= 0))
+                # on-disk real atom count must match one of the loaded systems
+                self.assertIn(n_real, loaded_natoms.values())
+                # real atoms first, then virtual atoms
+                np.testing.assert_array_equal(row[:n_real] >= 0, True)
+                np.testing.assert_array_equal(row[n_real:], -1)
+                # virtual atom coords and forces must be zero
+                coord_frame = coord[ii].reshape(padded_natoms, 3)
+                np.testing.assert_array_equal(coord_frame[n_real:], 0.0)
+                force_frame = force[ii].reshape(padded_natoms, 3)
+                np.testing.assert_array_equal(force_frame[n_real:], 0.0)
+
+    def test_loaded_natoms(self):
+        """Loaded systems should have original (unpadded) atom counts."""
+        for formula, sys in self.systems.systems.items():
+            if "H4" in formula:
+                self.assertEqual(sys.get_natoms(), 5)
+            elif "H3" in formula:
+                self.assertEqual(sys.get_natoms(), 4)
+            # no virtual atoms should remain in loaded data
+            self.assertTrue(np.all(sys.data["atom_types"] >= 0))
+
+    def test_len(self):
+        self.assertEqual(len(self.ms), 2)
+        self.assertEqual(len(self.systems), 2)
+
+    def test_get_nframes(self):
+        self.assertEqual(self.ms.get_nframes(), 2)
+        self.assertEqual(self.systems.get_nframes(), 2)
+
+
+class TestMixedMultiSystemsPaddingMultipleGroups(
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
+):
+    """Test padding with systems that span multiple padded groups.
+
+    With atom_numb_pad=4: C1H3 (4 atoms) -> 4, C1H4 (5 atoms) -> 8.
+    Two subfolders should be created.
+    """
+
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        # C1H4 (5 atoms)
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        # C1H3 (4 atoms)
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        self.ms = dpdata.MultiSystems(system_1, system_2)
+        self.ms.to_deepmd_npy_mixed("tmp.deepmd.mixed.pad2", atom_numb_pad=4)
+        self.systems = dpdata.MultiSystems()
+        self.systems.from_deepmd_npy_mixed(
+            "tmp.deepmd.mixed.pad2", fmt="deepmd/npy/mixed"
+        )
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
+
+        self.system_names = ["C1H4", "C1H3"]
+        self.system_sizes = {"C1H4": 1, "C1H3": 1}
+        self.atom_names = ["C", "H"]
+
+    def tearDown(self):
+        if os.path.exists("tmp.deepmd.mixed.pad2"):
+            shutil.rmtree("tmp.deepmd.mixed.pad2")
+
+    def test_two_subfolders(self):
+        """4-atom -> 4, 5-atom -> 8 => 2 subfolders."""
+        subdirs = sorted(
+            d
+            for d in os.listdir("tmp.deepmd.mixed.pad2")
+            if os.path.isdir(os.path.join("tmp.deepmd.mixed.pad2", d))
+        )
+        self.assertEqual(len(subdirs), 2)
+        self.assertIn("4", subdirs)
+        self.assertIn("8", subdirs)
+
+    def test_len(self):
+        self.assertEqual(len(self.ms), 2)
+        self.assertEqual(len(self.systems), 2)
+
+    def test_get_nframes(self):
+        self.assertEqual(self.ms.get_nframes(), 2)
+        self.assertEqual(self.systems.get_nframes(), 2)
+
+
+class TestMixedMultiSystemsPaddingTypeMap(
+    unittest.TestCase, CompLabeledMultiSys, MSAllIsNoPBC
+):
+    """Test padding + custom type_map on reload.
+
+    This verifies the index_map bug fix for -1 values in real_atom_types.
+    """
+
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        # C1H4 (5 atoms)
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        # C1H3 (4 atoms)
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        self.ms = dpdata.MultiSystems(system_1, system_2)
+        self.ms.to_deepmd_npy_mixed("tmp.deepmd.mixed.pad.tm", atom_numb_pad=8)
+
+        new_type_map = ["H", "C"]
+        self.systems = dpdata.MultiSystems()
+        self.systems.from_deepmd_npy_mixed(
+            "tmp.deepmd.mixed.pad.tm",
+            fmt="deepmd/npy/mixed",
+            type_map=new_type_map,
+        )
+
+        # Apply same type_map to original for comparison
+        for kk in [ii.formula for ii in self.ms]:
+            self.ms[kk].apply_type_map(new_type_map)
+            tmp_ss = self.ms.systems.pop(kk)
+            self.ms.systems[tmp_ss.formula] = tmp_ss
+
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
+
+    def tearDown(self):
+        if os.path.exists("tmp.deepmd.mixed.pad.tm"):
+            shutil.rmtree("tmp.deepmd.mixed.pad.tm")
+
+    def test_len(self):
+        self.assertEqual(len(self.ms), 2)
+        self.assertEqual(len(self.systems), 2)
+
+    def test_get_nframes(self):
+        self.assertEqual(self.ms.get_nframes(), 2)
+        self.assertEqual(self.systems.get_nframes(), 2)
+
+
+class TestMixedMultiSystemsPaddingAparam(
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
+):
+    """Test padding with custom per-atom data (aparam)."""
+
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        new_datatypes = [
+            DataType(
+                "fparam",
+                np.ndarray,
+                shape=(Axis.NFRAMES, 2),
+                required=False,
+            ),
+            DataType(
+                "aparam",
+                np.ndarray,
+                shape=(Axis.NFRAMES, Axis.NATOMS, 3),
+                required=False,
+            ),
+        ]
+        for datatype in new_datatypes:
+            dpdata.System.register_data_type(datatype)
+            dpdata.LabeledSystem.register_data_type(datatype)
+
+        # C1H4 (5 atoms)
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        # C1H3 (4 atoms)
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        tmp_data_1 = system_1.data.copy()
+        nframes_1 = tmp_data_1["coords"].shape[0]
+        natoms_1 = tmp_data_1["atom_types"].shape[0]
+        tmp_data_1["fparam"] = np.random.random([nframes_1, 2])
+        tmp_data_1["aparam"] = np.random.random([nframes_1, natoms_1, 3])
+        system_1_with_params = dpdata.LabeledSystem(data=tmp_data_1)
+
+        tmp_data_2 = system_2.data.copy()
+        nframes_2 = tmp_data_2["coords"].shape[0]
+        natoms_2 = tmp_data_2["atom_types"].shape[0]
+        tmp_data_2["fparam"] = np.random.random([nframes_2, 2])
+        tmp_data_2["aparam"] = np.random.random([nframes_2, natoms_2, 3])
+        system_2_with_params = dpdata.LabeledSystem(data=tmp_data_2)
+
+        self.ms = dpdata.MultiSystems(system_1_with_params, system_2_with_params)
+        self.ms.to_deepmd_npy_mixed("tmp.deepmd.mixed.pad.ap", atom_numb_pad=8)
+        self.systems = dpdata.MultiSystems()
+        self.systems.from_deepmd_npy_mixed(
+            "tmp.deepmd.mixed.pad.ap", fmt="deepmd/npy/mixed"
+        )
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
+
+        self.system_names = ["C1H4", "C1H3"]
+        self.system_sizes = {"C1H4": 1, "C1H3": 1}
+        self.atom_names = ["C", "H"]
+
+    def tearDown(self):
+        if os.path.exists("tmp.deepmd.mixed.pad.ap"):
+            shutil.rmtree("tmp.deepmd.mixed.pad.ap")
+
+    def test_single_subfolder(self):
+        subdirs = [
+            d
+            for d in os.listdir("tmp.deepmd.mixed.pad.ap")
+            if os.path.isdir(os.path.join("tmp.deepmd.mixed.pad.ap", d))
+        ]
+        self.assertEqual(len(subdirs), 1)
+
+    def test_fparam_preserved(self):
+        for formula in self.system_names:
+            if formula in self.ms.systems and formula in self.systems.systems:
+                np.testing.assert_almost_equal(
+                    self.ms[formula].data["fparam"],
+                    self.systems[formula].data["fparam"],
+                    decimal=self.places,
+                )
+
+    def test_aparam_preserved(self):
+        """Per-atom aparam should be correctly padded and unpadded."""
+        for formula in self.system_names:
+            if formula in self.ms.systems and formula in self.systems.systems:
+                np.testing.assert_almost_equal(
+                    self.ms[formula].data["aparam"],
+                    self.systems[formula].data["aparam"],
+                    decimal=self.places,
+                )
+
+    def test_virtual_atoms_zero_on_disk(self):
+        """Verify virtual atoms have zero aparam on disk."""
+        loaded_natoms = {f: s.get_natoms() for f, s in self.systems.systems.items()}
+        mixed_sets = glob("tmp.deepmd.mixed.pad.ap/*/set.*")
+        self.assertGreater(len(mixed_sets), 0)
+        for s in mixed_sets:
+            rat = np.load(os.path.join(s, "real_atom_types.npy"))
+            aparam = np.load(os.path.join(s, "aparam.npy"))
+            padded_natoms = rat.shape[1]
+            for ii in range(rat.shape[0]):
+                row = rat[ii]
+                n_real = int(np.sum(row >= 0))
+                self.assertIn(n_real, loaded_natoms.values())
+                # aparam shape on disk: (nframes, padded_natoms * 3)
+                aparam_frame = aparam[ii].reshape(padded_natoms, 3)
+                np.testing.assert_array_equal(aparam_frame[n_real:], 0.0)
+
+    def test_len(self):
+        self.assertEqual(len(self.ms), 2)
+        self.assertEqual(len(self.systems), 2)
+
+    def test_get_nframes(self):
+        self.assertEqual(self.ms.get_nframes(), 2)
+        self.assertEqual(self.systems.get_nframes(), 2)

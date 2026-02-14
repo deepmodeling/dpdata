@@ -117,6 +117,12 @@ class DeePMDMixedFormat(Format):
     >>> import dpdata
     >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir")
 
+    Dump with ``atom_numb_pad`` to reduce the number of subdirectories.
+    Systems are padded with virtual atoms (type -1) so that atom counts are
+    rounded up to the nearest multiple of the given number:
+
+    >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir", atom_numb_pad=8)
+
     Load a mixed type data into a MultiSystems:
 
     >>> import dpdata
@@ -156,7 +162,7 @@ class DeePMDMixedFormat(Format):
             file_name, type_map=type_map, labels=True
         )
 
-    def mix_system(self, *system, type_map, **kwargs):
+    def mix_system(self, *system, type_map, atom_numb_pad=None, **kwargs):
         """Mix the systems into mixed_type ones according to the unified given type_map.
 
         Parameters
@@ -165,6 +171,13 @@ class DeePMDMixedFormat(Format):
             The systems to mix
         type_map : list of str
             Maps atom type to name
+        atom_numb_pad : int, optional
+            If provided, pad atom counts to the next multiple of this number
+            using virtual atoms (type -1 in real_atom_types). This reduces the
+            number of subdirectories when systems have many different atom counts.
+            For example, ``atom_numb_pad=8`` groups systems into multiples of 8:
+            a 5-atom system is padded to 8, a 9-atom system is padded to 16, etc.
+            Virtual atoms are transparently removed when loading the data back.
         **kwargs : dict
             other parameters
 
@@ -172,8 +185,17 @@ class DeePMDMixedFormat(Format):
         -------
         mixed_systems: dict
             dict of mixed system with key 'atom_numbs'
+
+        Examples
+        --------
+        Dump with padding so that atom counts are rounded up to multiples of 8:
+
+        >>> import dpdata
+        >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir", atom_numb_pad=8)
         """
-        return dpdata.deepmd.mixed.mix_system(*system, type_map=type_map, **kwargs)
+        return dpdata.deepmd.mixed.mix_system(
+            *system, type_map=type_map, atom_numb_pad=atom_numb_pad, **kwargs
+        )
 
     def from_multi_systems(self, directory, **kwargs):
         register_spin()
