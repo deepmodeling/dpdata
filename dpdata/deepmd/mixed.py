@@ -48,23 +48,13 @@ def _pad_to(sys_data, target_natoms, dtypes):
         axis=1,
     )
 
-    # Pad coords with zeros
-    sys_data["coords"] = np.concatenate(
-        [
-            sys_data["coords"],
-            np.zeros((nframes, npad, 3), dtype=sys_data["coords"].dtype),
-        ],
-        axis=1,
-    )
-
-    # Pad all other per-atom data generically
+    # Pad coords and all other per-atom data generically
     reserved = {
         "atom_numbs",
         "atom_names",
         "atom_types",
         "orig",
         "cells",
-        "coords",
         "real_atom_names",
         "real_atom_types",
         "nopbc",
@@ -105,8 +95,6 @@ def _strip_virtual_atoms(atom_types_row, coords, extra_data, dtypes):
 
     Returns
     -------
-    real_mask : np.ndarray
-        Boolean mask of real atoms.
     atom_types : np.ndarray
         Atom types with virtual atoms removed.
     coords : np.ndarray
@@ -121,17 +109,6 @@ def _strip_virtual_atoms(atom_types_row, coords, extra_data, dtypes):
     atom_types = atom_types_row[real_mask]
     coords = coords[:, real_mask, :]
 
-    reserved = {
-        "atom_numbs",
-        "atom_names",
-        "atom_types",
-        "real_atom_names",
-        "real_atom_types",
-        "cells",
-        "coords",
-        "orig",
-        "nopbc",
-    }
     stripped = {}
     for name, arr in extra_data.items():
         for dtype in dtypes:

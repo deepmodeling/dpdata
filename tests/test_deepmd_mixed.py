@@ -650,15 +650,31 @@ class TestMixedMultiSystemsPadding(
         self.assertEqual(len(subdirs), 1)
         self.assertEqual(subdirs[0], "8")
 
-    def test_real_atom_types_on_disk(self):
-        """Verify real_atom_types.npy contains -1 for virtual atoms."""
+    def test_padded_virtual_atoms(self):
+        """Verify on-disk real atom count matches loaded natoms, and virtual
+        atoms have type -1 with zero coords and forces.
+        """
+        loaded_natoms = {f: s.get_natoms() for f, s in self.systems.systems.items()}
         mixed_sets = glob("tmp.deepmd.mixed.pad/*/set.*")
+        self.assertGreater(len(mixed_sets), 0)
         for s in mixed_sets:
             rat = np.load(os.path.join(s, "real_atom_types.npy"))
-            # padded to 8, so last columns should be -1
-            self.assertTrue(np.any(rat == -1))
-            # first columns should be >= 0
-            self.assertTrue(np.all(rat[:, 0] >= 0))
+            coord = np.load(os.path.join(s, "coord.npy"))
+            force = np.load(os.path.join(s, "force.npy"))
+            padded_natoms = rat.shape[1]
+            for ii in range(rat.shape[0]):
+                row = rat[ii]
+                n_real = int(np.sum(row >= 0))
+                # on-disk real atom count must match one of the loaded systems
+                self.assertIn(n_real, loaded_natoms.values())
+                # real atoms first, then virtual atoms
+                np.testing.assert_array_equal(row[:n_real] >= 0, True)
+                np.testing.assert_array_equal(row[n_real:], -1)
+                # virtual atom coords and forces must be zero
+                coord_frame = coord[ii].reshape(padded_natoms, 3)
+                np.testing.assert_array_equal(coord_frame[n_real:], 0.0)
+                force_frame = force[ii].reshape(padded_natoms, 3)
+                np.testing.assert_array_equal(force_frame[n_real:], 0.0)
 
     def test_loaded_natoms(self):
         """Loaded systems should have original (unpadded) atom counts."""
@@ -667,6 +683,8 @@ class TestMixedMultiSystemsPadding(
                 self.assertEqual(sys.get_natoms(), 5)
             elif "H3" in formula:
                 self.assertEqual(sys.get_natoms(), 4)
+            # no virtual atoms should remain in loaded data
+            self.assertTrue(np.all(sys.data["atom_types"] >= 0))
 
     def test_len(self):
         self.assertEqual(len(self.ms), 2)
@@ -889,6 +907,23 @@ class TestMixedMultiSystemsPaddingAparam(
                     self.systems[formula].data["aparam"],
                     decimal=self.places,
                 )
+
+    def test_virtual_atoms_zero_on_disk(self):
+        """Verify virtual atoms have zero aparam on disk."""
+        loaded_natoms = {f: s.get_natoms() for f, s in self.systems.systems.items()}
+        mixed_sets = glob("tmp.deepmd.mixed.pad.ap/*/set.*")
+        self.assertGreater(len(mixed_sets), 0)
+        for s in mixed_sets:
+            rat = np.load(os.path.join(s, "real_atom_types.npy"))
+            aparam = np.load(os.path.join(s, "aparam.npy"))
+            padded_natoms = rat.shape[1]
+            for ii in range(rat.shape[0]):
+                row = rat[ii]
+                n_real = int(np.sum(row >= 0))
+                self.assertIn(n_real, loaded_natoms.values())
+                # aparam shape on disk: (nframes, padded_natoms * 3)
+                aparam_frame = aparam[ii].reshape(padded_natoms, 3)
+                np.testing.assert_array_equal(aparam_frame[n_real:], 0.0)
 
     def test_len(self):
         self.assertEqual(len(self.ms), 2)
