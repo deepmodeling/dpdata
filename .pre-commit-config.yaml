@@ -49,6 +49,3 @@ repos:
           - mdformat-config==0.2.1
           - mdformat-beautysh==1.0.0
           - mdformat-gfm-alerts==2.0.0
-
-ci:
-  autofix_prs: false
