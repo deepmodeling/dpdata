@@ -7,22 +7,26 @@ Always reference these instructions first and fallback to search or bash command
 ## Working Effectively
 
 - **Bootstrap and install the repository:**
+
   - `cd /home/runner/work/dpdata/dpdata` (or wherever the repo is cloned)
   - `uv pip install -e .` -- installs dpdata in development mode with core dependencies (numpy, scipy, h5py, monty, wcmatch)
   - Test installation: `dpdata --version` -- should show version like "dpdata v0.1.dev2+..."
 
 - **Run tests:**
+
   - `cd tests && python -m unittest discover` -- runs all 1826 tests in ~10 seconds. NEVER CANCEL.
   - `cd tests && python -m unittest test_<module>.py` -- run specific test modules (individual modules take ~0.5 seconds)
   - `cd tests && coverage run --source=../dpdata -m unittest discover && coverage report` -- run tests with coverage
 
 - **Linting and formatting:**
+
   - Install ruff: `uv pip install ruff`
   - `ruff check dpdata/` -- lint the main package (takes ~1 second)
   - `ruff format dpdata/` -- format code according to project style
   - `ruff check --fix dpdata/` -- auto-fix linting issues where possible
 
 - **Pre-commit hooks:**
+
   - Install: `uv pip install pre-commit`
   - `pre-commit run --all-files` -- run all hooks on all files
   - Hooks include: ruff linting/formatting, trailing whitespace, end-of-file-fixer, yaml/json/toml checks
@@ -30,15 +34,18 @@ Always reference these instructions first and fallback to search or bash command
 ## Validation
 
 - **Always test CLI functionality after making changes:**
+
   - `dpdata --help` -- ensure CLI still works
   - `dpdata --version` -- verify version is correct
   - Test a basic conversion if sample data is available
 
 - **Always run linting before committing:**
+
   - `ruff check dpdata/` -- ensure no new linting errors
   - `ruff format dpdata/` -- ensure code is properly formatted
 
 - **Run relevant tests for your changes:**
+
   - For format-specific changes: `cd tests && python -m unittest test_<format>*.py`
   - For core system changes: `cd tests && python -m unittest test_system*.py test_multisystems.py`
   - For CLI changes: `cd tests && python -m unittest test_cli.py` (if exists)
@@ -46,12 +53,14 @@ Always reference these instructions first and fallback to search or bash command
 ## Build and Documentation
 
 - **Documentation:**
+
   - `cd docs && make help` -- see all available build targets
   - `cd docs && make html` -- build HTML documentation (requires additional dependencies)
   - Documentation source is in `docs/` directory using Sphinx
   - **NOTE:** Full docs build requires additional dependencies like `deepmodeling-sphinx` that may not be readily available
 
 - **Package building:**
+
   - Uses setuptools with pyproject.toml configuration
   - `uv pip install build && python -m build` -- create source and wheel distributions
   - Version is managed by setuptools_scm from git tags
@@ -61,6 +70,7 @@ Always reference these instructions first and fallback to search or bash command
 The following are outputs from frequently run commands. Reference them instead of re-running to save time.
 
 ### Repository structure
+
 ```
 /home/runner/work/dpdata/dpdata/
 ├── dpdata/           # Main package code
@@ -82,6 +92,7 @@ The following are outputs from frequently run commands. Reference them instead o
 ```
 
 ### Key dependencies
+
 - Core: numpy>=1.14.3, scipy, h5py, monty, wcmatch
 - Optional: ase (ASE integration), parmed (AMBER), pymatgen (Materials Project), rdkit (molecular analysis)
 - Testing: unittest (built-in), coverage
@@ -89,25 +100,30 @@ The following are outputs from frequently run commands. Reference them instead o
 - Docs: sphinx with various extensions
 
 ### Test timing expectations
+
 - Full test suite: ~10 seconds (1826 tests). NEVER CANCEL.
 - Individual test modules: ~0.5 seconds
 - Linting with ruff: ~1 second
 - Documentation build: ~30 seconds
 
 ### Common workflows
+
 1. **Adding a new format:**
+
    - Create module in `dpdata/<format>/`
    - Implement format classes inheriting from appropriate base classes
    - Add tests in `tests/test_<format>*.py`
    - Register format in the plugin system
 
-2. **Fixing bugs:**
+1. **Fixing bugs:**
+
    - Write test that reproduces the bug first
    - Make minimal fix to pass the test
    - Run full test suite to ensure no regressions
    - Run linting to ensure code style compliance
 
-3. **CLI changes:**
+1. **CLI changes:**
+
    - Modify `dpdata/cli.py`
    - Test with `dpdata --help` and specific commands
    - Add/update tests if needed
@@ -115,6 +131,7 @@ The following are outputs from frequently run commands. Reference them instead o
 ## Troubleshooting
 
 - **Installation timeouts:** Network timeouts during `uv pip install` are common. If this occurs, try:
+
   - Individual package installation: `uv pip install numpy scipy h5py monty wcmatch`
   - Use `--timeout` option: `uv pip install --timeout 300 -e .`
   - Verify existing installation works: `dpdata --version` should work even if reinstall fails

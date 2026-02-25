@@ -40,18 +40,23 @@ Convert LAMMPS dump file to VASP POSCAR
 Formats may be updated. See [Formats Reference (stable)](https://docs.deepmodeling.com/projects/dpdata/en/stable/formats.html) for the latest list.
 
 ### DeePMD-kit
+
 `deepmd/raw`, `deepmd/comp`, `deepmd/npy`, `deepmd/npy/mixed`, `deepmd/hdf5`
 
 ### VASP
+
 `vasp/poscar`, `vasp/contcar`, `vasp/outcar`, `vasp/xml`
 
 ### LAMMPS
+
 `lammps/lmp`, `lammps/dump`
 
 ### ABACUS
+
 `stru`, `abacus/scf`, `abacus/md`, `abacus/relax`
 
 ### And many more...
+
 QE, CP2K, Gaussian, ORCA, PSI4, FHI-aims, SIESTA, PWmat, AMBER, GROMACS, ASE, pymatgen, XYZ, etc.
 
 ## Requirements
