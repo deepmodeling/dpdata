@@ -39,7 +39,7 @@ repos:
     rev: 1.0.0
     hooks:
     -   id: mdformat
-        exclude: "^tests/poscars/.*\\.md$"
+        exclude: "^tests/.*$"
         additional_dependencies:
           # - mdformat-myst==0.3.0
           # See https://github.com/executablebooks/mdformat-myst/issues/13
