@@ -4,7 +4,7 @@ description: Convert and manipulate atomic simulation data formats using dpdata 
 compatibility: Requires uvx (uv) for running dpdata
 metadata:
   author: njzjz-bot
-  version: "1.0"
+  version: '1.0'
   repository: https://github.com/deepmodeling/dpdata
 ---
 
@@ -32,16 +32,16 @@ usage: dpdata [-h] [--to_file TO_FILE] [--from_format FROM_FORMAT]
 
 ### Arguments
 
-| Argument | Description |
-|----------|-------------|
-| `from_file` | Read data from a file (positional) |
-| `--to_file`, `-O` | Dump data to a file |
-| `--from_format`, `-i` | Format of from_file (default: "auto") |
-| `--to_format`, `-o` | Format of to_file |
-| `--no-labeled`, `-n` | Labels aren't provided (default: False) |
-| `--multi`, `-m` | System contains multiple directories (default: False) |
-| `--type-map`, `-t` | Type map for atom types |
-| `--version` | Show dpdata version and exit |
+| Argument              | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| `from_file`           | Read data from a file (positional)                    |
+| `--to_file`, `-O`     | Dump data to a file                                   |
+| `--from_format`, `-i` | Format of from_file (default: "auto")                 |
+| `--to_format`, `-o`   | Format of to_file                                     |
+| `--no-labeled`, `-n`  | Labels aren't provided (default: False)               |
+| `--multi`, `-m`       | System contains multiple directories (default: False) |
+| `--type-map`, `-t`    | Type map for atom types                               |
+| `--version`           | Show dpdata version and exit                          |
 
 ## Common Examples
 
@@ -84,100 +84,101 @@ uvx dpdata OUTCAR -i vasp/outcar -O data.h5 -o deepmd/hdf5
 ## Supported Formats
 
 Formats may be updated. For the complete and latest list, see:
+
 - [Formats Reference (stable)](https://docs.deepmodeling.com/projects/dpdata/en/stable/formats.html)
 
 ### DeePMD-kit Formats
 
-| Format Name | Description |
-|-------------|-------------|
-| `deepmd/raw` | DeePMD-kit raw text format |
+| Format Name                  | Description                        |
+| ---------------------------- | ---------------------------------- |
+| `deepmd/raw`                 | DeePMD-kit raw text format         |
 | `deepmd/comp` / `deepmd/npy` | DeePMD-kit compressed numpy format |
-| `deepmd/npy/mixed` | DeePMD-kit mixed type format |
-| `deepmd/hdf5` | DeePMD-kit HDF5 format |
+| `deepmd/npy/mixed`           | DeePMD-kit mixed type format       |
+| `deepmd/hdf5`                | DeePMD-kit HDF5 format             |
 
 ### VASP Formats
 
-| Format Name | Description |
-|-------------|-------------|
+| Format Name                                           | Description          |
+| ----------------------------------------------------- | -------------------- |
 | `vasp/poscar` / `vasp/contcar` / `poscar` / `contcar` | VASP structure files |
-| `vasp/outcar` / `outcar` | VASP OUTCAR output |
-| `vasp/xml` / `xml` | VASP XML output |
-| `vasp/string` | VASP string format |
+| `vasp/outcar` / `outcar`                              | VASP OUTCAR output   |
+| `vasp/xml` / `xml`                                    | VASP XML output      |
+| `vasp/string`                                         | VASP string format   |
 
 ### LAMMPS Formats
 
-| Format Name | Description |
-|-------------|-------------|
-| `lammps/lmp` / `lmp` | LAMMPS data file |
+| Format Name            | Description      |
+| ---------------------- | ---------------- |
+| `lammps/lmp` / `lmp`   | LAMMPS data file |
 | `lammps/dump` / `dump` | LAMMPS dump file |
 
 ### ABACUS Formats
 
-| Format Name | Description |
-|-------------|-------------|
-| `stru` / `abacus/stru` | ABACUS structure file |
-| `abacus/lcao/scf` / `abacus/pw/scf` / `abacus/scf` | ABACUS SCF output |
-| `abacus/lcao/md` / `abacus/pw/md` / `abacus/md` | ABACUS MD output |
-| `abacus/lcao/relax` / `abacus/pw/relax` / `abacus/relax` | ABACUS relax output |
+| Format Name                                              | Description           |
+| -------------------------------------------------------- | --------------------- |
+| `stru` / `abacus/stru`                                   | ABACUS structure file |
+| `abacus/lcao/scf` / `abacus/pw/scf` / `abacus/scf`       | ABACUS SCF output     |
+| `abacus/lcao/md` / `abacus/pw/md` / `abacus/md`          | ABACUS MD output      |
+| `abacus/lcao/relax` / `abacus/pw/relax` / `abacus/relax` | ABACUS relax output   |
 
 ### Quantum ESPRESSO Formats
 
-| Format Name | Description |
-|-------------|-------------|
+| Format Name  | Description      |
+| ------------ | ---------------- |
 | `qe/cp/traj` | QE CP trajectory |
-| `qe/pw/scf` | QE PWscf output |
+| `qe/pw/scf`  | QE PWscf output  |
 
 ### CP2K Formats
 
-| Format Name | Description |
-|-------------|-------------|
-| `cp2k/output` | CP2K output |
+| Format Name        | Description      |
+| ------------------ | ---------------- |
+| `cp2k/output`      | CP2K output      |
 | `cp2k/aimd_output` | CP2K AIMD output |
 
 ### Gaussian Formats
 
-| Format Name | Description |
-|-------------|-------------|
-| `gaussian/log` | Gaussian log file |
+| Format Name     | Description                   |
+| --------------- | ----------------------------- |
+| `gaussian/log`  | Gaussian log file             |
 | `gaussian/fchk` | Gaussian formatted checkpoint |
-| `gaussian/md` | Gaussian MD output |
-| `gaussian/gjf` | Gaussian input file |
+| `gaussian/md`   | Gaussian MD output            |
+| `gaussian/gjf`  | Gaussian input file           |
 
 ### Other Formats
 
-| Format Name | Description |
-|-------------|-------------|
-| `xyz` | XYZ format |
+| Format Name                                                         | Description           |
+| ------------------------------------------------------------------- | --------------------- |
+| `xyz`                                                               | XYZ format            |
 | `mace/xyz` / `nequip/xyz` / `gpumd/xyz` / `extxyz` / `quip/gap/xyz` | Extended XYZ variants |
-| `ase/structure` | ASE structure format |
-| `ase/traj` | ASE trajectory |
-| `pymatgen/structure` | pymatgen structure |
-| `pymatgen/molecule` | pymatgen molecule |
-| `gromacs/gro` / `gro` | GROMACS gro file |
-| `siesta/output` | SIESTA output |
-| `siesta/aimd_output` | SIESTA AIMD output |
-| `pwmat/output` / `pwmat/mlmd` / `pwmat/movement` | PWmat output |
-| `pwmat/final.config` / `pwmat/atom.config` | PWmat config |
-| `orca/spout` | ORCA output |
-| `psi4/out` | PSI4 output |
-| `dftbplus` | DFTB+ output |
-| `fhi_aims/output` / `fhi_aims/md` | FHI-aims output |
-| `amber/md` | AMBER MD |
-| `n2p2` | n2p2 format |
-| `mol_file` / `mol` | MOL file |
-| `sdf_file` / `sdf` | SDF file |
-| `openmx/md` | OpenMX MD |
-| `sqm/out` | SQM output |
-| `sqm/in` | SQM input |
-| `list` | List format |
-| `3dmol` | 3Dmol visualization |
+| `ase/structure`                                                     | ASE structure format  |
+| `ase/traj`                                                          | ASE trajectory        |
+| `pymatgen/structure`                                                | pymatgen structure    |
+| `pymatgen/molecule`                                                 | pymatgen molecule     |
+| `gromacs/gro` / `gro`                                               | GROMACS gro file      |
+| `siesta/output`                                                     | SIESTA output         |
+| `siesta/aimd_output`                                                | SIESTA AIMD output    |
+| `pwmat/output` / `pwmat/mlmd` / `pwmat/movement`                    | PWmat output          |
+| `pwmat/final.config` / `pwmat/atom.config`                          | PWmat config          |
+| `orca/spout`                                                        | ORCA output           |
+| `psi4/out`                                                          | PSI4 output           |
+| `dftbplus`                                                          | DFTB+ output          |
+| `fhi_aims/output` / `fhi_aims/md`                                   | FHI-aims output       |
+| `amber/md`                                                          | AMBER MD              |
+| `n2p2`                                                              | n2p2 format           |
+| `mol_file` / `mol`                                                  | MOL file              |
+| `sdf_file` / `sdf`                                                  | SDF file              |
+| `openmx/md`                                                         | OpenMX MD             |
+| `sqm/out`                                                           | SQM output            |
+| `sqm/in`                                                            | SQM input             |
+| `list`                                                              | List format           |
+| `3dmol`                                                             | 3Dmol visualization   |
 
 ## Tips
 
 1. **Auto-detection**: Use `-i auto` (default) to let dpdata detect format automatically
-2. **Type mapping**: Use `-t` to specify atom type order for deepmd formats
-3. **Multi-system**: Use `--multi` for directories containing multiple systems
-4. **Compressed output**: Use `deepmd/npy` or `deepmd/hdf5` for smaller file sizes
+1. **Type mapping**: Use `-t` to specify atom type order for deepmd formats
+1. **Multi-system**: Use `--multi` for directories containing multiple systems
+1. **Compressed output**: Use `deepmd/npy` or `deepmd/hdf5` for smaller file sizes
 
 ## References
 
