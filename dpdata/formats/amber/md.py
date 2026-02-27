@@ -5,11 +5,11 @@ import re
 
 import numpy as np
 
-from dpdata.amber.mask import pick_by_amber_mask
+from dpdata.formats.amber.mask import pick_by_amber_mask
 from dpdata.unit import EnergyConversion
 from dpdata.utils import open_file
 
-from ..periodic_table import ELEMENTS
+from ...periodic_table import ELEMENTS
 
 kcalmol2eV = EnergyConversion("kcal_mol", "eV").value()
 symbols = ["X"] + ELEMENTS

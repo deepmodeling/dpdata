@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-import dpdata.gaussian.fchk
-import dpdata.gaussian.gjf
-import dpdata.gaussian.log
+import dpdata.formats.gaussian.fchk
+import dpdata.formats.gaussian.gjf
+import dpdata.formats.gaussian.log
 from dpdata.data_type import Axis, DataType
 from dpdata.driver import Driver
 from dpdata.format import Format
@@ -35,7 +35,7 @@ def register_hessian_data(data):
 class GaussianLogFormat(Format):
     def from_labeled_system(self, file_name: FileType, md=False, **kwargs):
         try:
-            return dpdata.gaussian.log.to_system_data(file_name, md=md)
+            return dpdata.formats.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             return {"energies": [], "forces": [], "nopbc": True}
 
@@ -46,7 +46,7 @@ class GaussianFChkFormat(Format):
         self, file_name: FileType, has_forces=True, has_hessian=True, **kwargs
     ):
         try:
-            data = dpdata.gaussian.fchk.to_system_data(
+            data = dpdata.formats.gaussian.fchk.to_system_data(
                 file_name, has_forces=has_forces, has_hessian=has_hessian
             )
             register_hessian_data(data)
@@ -77,7 +77,7 @@ class GaussiaGJFFormat(Format):
         """
         with open_file(file_name) as fp:
             text = fp.read()
-        return dpdata.gaussian.gjf.read_gaussian_input(text)
+        return dpdata.formats.gaussian.gjf.read_gaussian_input(text)
 
     def to_system(self, data: dict, file_name: FileType, **kwargs):
         """Generate Gaussian input file.
@@ -89,9 +89,9 @@ class GaussiaGJFFormat(Format):
         file_name : str
             file name
         **kwargs : dict
-            Other parameters to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
+            Other parameters to make input files. See :meth:`dpdata.formats.gaussian.gjf.make_gaussian_input`
         """
-        text = dpdata.gaussian.gjf.make_gaussian_input(data, **kwargs)
+        text = dpdata.formats.gaussian.gjf.make_gaussian_input(data, **kwargs)
         with open_file(file_name, "w") as fp:
             fp.write(text)
 
@@ -108,7 +108,7 @@ class GaussianDriver(Driver):
     gaussian_exec : str, default=g16
         path to gaussian program
     **kwargs : dict
-        other arguments to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
+        other arguments to make input files. See :meth:`dpdata.formats.gaussian.gjf.make_gaussian_input`
 
     Examples
     --------

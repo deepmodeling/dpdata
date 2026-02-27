@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from dpdata.format import Format
-from dpdata.psi4.input import write_psi4_input
-from dpdata.psi4.output import read_psi4_output
+from dpdata.formats.psi4.input import write_psi4_input
+from dpdata.formats.psi4.output import read_psi4_output
 from dpdata.unit import EnergyConversion, ForceConversion
 from dpdata.utils import open_file
 

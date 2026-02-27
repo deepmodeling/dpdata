@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from dpdata.dftbplus.output import read_dftb_plus
+from dpdata.formats.dftbplus.output import read_dftb_plus
 from dpdata.format import Format
 from dpdata.unit import EnergyConversion, ForceConversion
 

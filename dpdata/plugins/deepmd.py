@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 import dpdata
-import dpdata.deepmd.comp
-import dpdata.deepmd.hdf5
-import dpdata.deepmd.mixed
-import dpdata.deepmd.raw
+import dpdata.formats.deepmd.comp
+import dpdata.formats.deepmd.hdf5
+import dpdata.formats.deepmd.mixed
+import dpdata.formats.deepmd.raw
 from dpdata.data_type import Axis, DataType
 from dpdata.driver import Driver
 from dpdata.format import Format
@@ -45,17 +45,17 @@ def register_spin():
 class DeePMDRawFormat(Format):
     def from_system(self, file_name, type_map=None, **kwargs):
         register_spin()
-        return dpdata.deepmd.raw.to_system_data(
+        return dpdata.formats.deepmd.raw.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
     def to_system(self, data, file_name, **kwargs):
         """Dump the system in deepmd raw format to directory `file_name`."""
-        dpdata.deepmd.raw.dump(file_name, data)
+        dpdata.formats.deepmd.raw.dump(file_name, data)
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
         register_spin()
-        return dpdata.deepmd.raw.to_system_data(
+        return dpdata.formats.deepmd.raw.to_system_data(
             file_name, type_map=type_map, labels=True
         )
 
@@ -67,7 +67,7 @@ class DeePMDRawFormat(Format):
 class DeePMDCompFormat(Format):
     def from_system(self, file_name, type_map=None, **kwargs):
         register_spin()
-        return dpdata.deepmd.comp.to_system_data(
+        return dpdata.formats.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
@@ -92,11 +92,11 @@ class DeePMDCompFormat(Format):
         **kwargs : dict
             other parameters
         """
-        dpdata.deepmd.comp.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.formats.deepmd.comp.dump(file_name, data, set_size=set_size, comp_prec=prec)
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
         register_spin()
-        return dpdata.deepmd.comp.to_system_data(
+        return dpdata.formats.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=True
         )
 
@@ -130,7 +130,7 @@ class DeePMDMixedFormat(Format):
     """
 
     def from_system_mix(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.mixed.to_system_data(
+        return dpdata.formats.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
@@ -155,10 +155,10 @@ class DeePMDMixedFormat(Format):
         **kwargs : dict
             other parameters
         """
-        dpdata.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.formats.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
 
     def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.mixed.to_system_data(
+        return dpdata.formats.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=True
         )
 
@@ -193,7 +193,7 @@ class DeePMDMixedFormat(Format):
         >>> import dpdata
         >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir", atom_numb_pad=8)
         """
-        return dpdata.deepmd.mixed.mix_system(
+        return dpdata.formats.deepmd.mixed.mix_system(
             *system, type_map=type_map, atom_numb_pad=atom_numb_pad, **kwargs
         )
 
@@ -257,14 +257,14 @@ class DeePMDHDF5Format(Format):
         register_spin()
 
         if isinstance(file_name, (h5py.Group, h5py.File)):
-            return dpdata.deepmd.hdf5.to_system_data(
+            return dpdata.formats.deepmd.hdf5.to_system_data(
                 file_name, "", type_map=type_map, labels=labels
             )
         elif isinstance(file_name, str):
             s = file_name.split("#")
             name = s[1] if len(s) > 1 else ""
             with h5py.File(s[0], "r") as f:
-                return dpdata.deepmd.hdf5.to_system_data(
+                return dpdata.formats.deepmd.hdf5.to_system_data(
                     f, name, type_map=type_map, labels=labels
                 )
         else:
@@ -357,14 +357,14 @@ class DeePMDHDF5Format(Format):
         import h5py
 
         if isinstance(file_name, (h5py.Group, h5py.File)):
-            dpdata.deepmd.hdf5.dump(
+            dpdata.formats.deepmd.hdf5.dump(
                 file_name, "", data, set_size=set_size, comp_prec=comp_prec
             )
         elif isinstance(file_name, str):
             s = file_name.split("#")
             name = s[1] if len(s) > 1 else ""
             with h5py.File(s[0], "w") as f:
-                dpdata.deepmd.hdf5.dump(
+                dpdata.formats.deepmd.hdf5.dump(
                     f, name, data, set_size=set_size, comp_prec=comp_prec
                 )
         else:

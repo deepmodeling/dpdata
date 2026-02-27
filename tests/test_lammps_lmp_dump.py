@@ -7,7 +7,7 @@ import numpy as np
 from context import dpdata
 from poscars.poscar_ref_oh import TestPOSCARoh
 
-from dpdata.lammps.lmp import rotate_to_lower_triangle
+from dpdata.formats.lammps.lmp import rotate_to_lower_triangle
 
 
 class TestLmpDump(unittest.TestCase, TestPOSCARoh):

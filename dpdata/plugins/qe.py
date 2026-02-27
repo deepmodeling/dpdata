@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import dpdata.md.pbc
-import dpdata.qe.scf
-import dpdata.qe.traj
+import dpdata.formats.md.pbc
+import dpdata.formats.qe.scf
+import dpdata.formats.qe.traj
 from dpdata.format import Format
 
 
@@ -10,10 +10,10 @@ from dpdata.format import Format
 class QECPTrajFormat(Format):
     @Format.post("rot_lower_triangular")
     def from_system(self, file_name, begin=0, step=1, **kwargs):
-        data, _ = dpdata.qe.traj.to_system_data(
+        data, _ = dpdata.formats.qe.traj.to_system_data(
             file_name + ".in", file_name, begin=begin, step=step
         )
-        data["coords"] = dpdata.md.pbc.apply_pbc(
+        data["coords"] = dpdata.formats.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
         )
@@ -21,14 +21,14 @@ class QECPTrajFormat(Format):
 
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
-        data, cs = dpdata.qe.traj.to_system_data(
+        data, cs = dpdata.formats.qe.traj.to_system_data(
             file_name + ".in", file_name, begin=begin, step=step
         )
-        data["coords"] = dpdata.md.pbc.apply_pbc(
+        data["coords"] = dpdata.formats.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
         )
-        data["energies"], data["forces"], es = dpdata.qe.traj.to_system_label(
+        data["energies"], data["forces"], es = dpdata.formats.qe.traj.to_system_label(
             file_name + ".in", file_name, begin=begin, step=step
         )
         assert cs == es, "the step key between files are not consistent"
@@ -49,7 +49,7 @@ class QECPPWSCFFormat(Format):
             data["energies"],
             data["forces"],
             tmp_virial,
-        ) = dpdata.qe.scf.get_frame(file_name)
+        ) = dpdata.formats.qe.scf.get_frame(file_name)
         if tmp_virial is not None:
             data["virials"] = tmp_virial
         return data

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import dpdata.siesta.aiMD_output
-import dpdata.siesta.output
+import dpdata.formats.siesta.aiMD_output
+import dpdata.formats.siesta.output
 from dpdata.format import Format
 
 
@@ -18,7 +18,7 @@ class SiestaOutputFormat(Format):
             _e,
             _f,
             _v,
-        ) = dpdata.siesta.output.obtain_frame(file_name)
+        ) = dpdata.formats.siesta.output.obtain_frame(file_name)
         return data
 
     def from_labeled_system(self, file_name, **kwargs):
@@ -32,7 +32,7 @@ class SiestaOutputFormat(Format):
             data["energies"],
             data["forces"],
             data["virials"],
-        ) = dpdata.siesta.output.obtain_frame(file_name)
+        ) = dpdata.formats.siesta.output.obtain_frame(file_name)
         return data
 
 
@@ -50,7 +50,7 @@ class SiestaAIMDOutputFormat(Format):
             _e,
             _f,
             _v,
-        ) = dpdata.siesta.aiMD_output.get_aiMD_frame(file_name)
+        ) = dpdata.formats.siesta.aiMD_output.get_aiMD_frame(file_name)
         return data
 
     def from_labeled_system(self, file_name, **kwargs):
@@ -64,5 +64,5 @@ class SiestaAIMDOutputFormat(Format):
             data["energies"],
             data["forces"],
             data["virials"],
-        ) = dpdata.siesta.aiMD_output.get_aiMD_frame(file_name)
+        ) = dpdata.formats.siesta.aiMD_output.get_aiMD_frame(file_name)
         return data

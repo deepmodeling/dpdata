@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import glob
 
-import dpdata.cp2k.output
-from dpdata.cp2k.output import Cp2kSystems
+import dpdata.formats.cp2k.output
+from dpdata.formats.cp2k.output import Cp2kSystems
 from dpdata.format import Format
 
 string_warning = """
@@ -42,7 +42,7 @@ class CP2KOutputFormat(Format):
                 data["energies"],
                 data["forces"],
                 tmp_virial,
-            ) = dpdata.cp2k.output.get_frames(file_name)
+            ) = dpdata.formats.cp2k.output.get_frames(file_name)
             if tmp_virial is not None:
                 data["virials"] = tmp_virial
             return data

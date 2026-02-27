@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from dpdata.format import Format
-from dpdata.xyz.xyz import coord_to_xyz
+from dpdata.formats.xyz.xyz import coord_to_xyz
 
 
 @Format.register("3dmol")

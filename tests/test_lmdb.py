@@ -17,7 +17,7 @@ from comp_sys import (
 )
 from context import dpdata
 
-from dpdata.lmdb.format import LMDBFrameError, LMDBMetadataError
+from dpdata.formats.lmdb.format import LMDBFrameError, LMDBMetadataError
 
 
 class TestLMDBLabeledSystem(unittest.TestCase, CompLabeledSys, IsPBC):
