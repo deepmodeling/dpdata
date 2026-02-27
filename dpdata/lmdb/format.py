@@ -57,6 +57,7 @@ class LMDBFormat(Format):
     >>> import dpdata
     >>> loaded_multi_systems = dpdata.MultiSystems.from_file("my_multi_system_db.lmdb", fmt="lmdb")
     """
+
     def __init__(self, *args, **kwargs) -> None:
         import msgpack_numpy as m
 
@@ -108,6 +109,7 @@ class LMDBFormat(Format):
 
     def _dump_to_txn(self, data, txn, formula, dtypes):
         import msgpack
+
         from dpdata.data_type import Axis
 
         nframes = data["coords"].shape[0]
@@ -212,8 +214,9 @@ class LMDBFormat(Format):
         dict
             data dictionary for each system
         """
-        import msgpack
         import lmdb
+        import msgpack
+
         from dpdata.data_type import Axis, DataType
         from dpdata.system import LabeledSystem, System
 
