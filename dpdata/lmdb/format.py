@@ -85,6 +85,7 @@ class LMDBFormat(Format):
         tuple
             (self, formula) to be used by to_system
         """
+        import lmdb
         import msgpack
 
         self._frame_idx_fmt = frame_idx_fmt
