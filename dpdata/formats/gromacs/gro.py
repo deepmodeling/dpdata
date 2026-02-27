@@ -11,7 +11,7 @@ from dpdata.utils import open_file
 if TYPE_CHECKING:
     from dpdata.utils import FileType
 
-from ..unit import LengthConversion
+from ...unit import LengthConversion
 
 nm2ang = LengthConversion("nm", "angstrom").value()
 ang2nm = LengthConversion("angstrom", "nm").value()

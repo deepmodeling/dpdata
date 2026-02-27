@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-import dpdata.abacus.md
-import dpdata.abacus.relax
-import dpdata.abacus.scf
-from dpdata.abacus.stru import get_frame_from_stru, make_unlabeled_stru
+import dpdata.formats.abacus.md
+import dpdata.formats.abacus.relax
+import dpdata.formats.abacus.scf
+from dpdata.formats.abacus.stru import get_frame_from_stru, make_unlabeled_stru
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
@@ -90,7 +90,7 @@ def register_move_data(data):
 class AbacusSCFFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
-        data = dpdata.abacus.scf.get_frame(file_name)
+        data = dpdata.formats.abacus.scf.get_frame(file_name)
         register_mag_data(data)
         register_move_data(data)
         return data
@@ -102,7 +102,7 @@ class AbacusSCFFormat(Format):
 class AbacusMDFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
-        data = dpdata.abacus.md.get_frame(file_name)
+        data = dpdata.formats.abacus.md.get_frame(file_name)
         register_mag_data(data)
         register_move_data(data)
         return data
@@ -114,7 +114,7 @@ class AbacusMDFormat(Format):
 class AbacusRelaxFormat(Format):
     # @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, **kwargs):
-        data = dpdata.abacus.relax.get_frame(file_name)
+        data = dpdata.formats.abacus.relax.get_frame(file_name)
         register_mag_data(data)
         register_move_data(data)
         return data

@@ -10,7 +10,7 @@ from dpdata.utils import open_file
 if TYPE_CHECKING:
     from dpdata.utils import FileType
 
-from ..unit import (
+from ...unit import (
     EnergyConversion,
     ForceConversion,
     LengthConversion,

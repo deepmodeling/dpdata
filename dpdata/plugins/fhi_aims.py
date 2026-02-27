@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import dpdata.fhi_aims.output
+import dpdata.formats.fhi_aims.output
 from dpdata.format import Format
 
 
@@ -20,7 +20,7 @@ class FhiMDFormat(Format):
             data["energies"],
             data["forces"],
             tmp_virial,
-        ) = dpdata.fhi_aims.output.get_frames(
+        ) = dpdata.formats.fhi_aims.output.get_frames(
             file_name,
             md=md,
             begin=begin,
@@ -45,7 +45,7 @@ class FhiSCFFormat(Format):
             data["energies"],
             data["forces"],
             tmp_virial,
-        ) = dpdata.fhi_aims.output.get_frames(file_name, md=False, begin=0, step=1)
+        ) = dpdata.formats.fhi_aims.output.get_frames(file_name, md=False, begin=0, step=1)
         if tmp_virial is not None:
             data["virials"] = tmp_virial
         return data
