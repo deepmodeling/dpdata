@@ -2,14 +2,9 @@ from __future__ import annotations
 
 import os
 
-import lmdb
-import msgpack
-import msgpack_numpy as m
 import numpy as np
 
 from dpdata.format import Format
-
-m.patch()
 
 
 class LMDBError(Exception):
@@ -62,6 +57,10 @@ class LMDBFormat(Format):
     >>> import dpdata
     >>> loaded_multi_systems = dpdata.MultiSystems.from_file("my_multi_system_db.lmdb", fmt="lmdb")
     """
+    def __init__(self, *args, **kwargs) -> None:
+        import msgpack_numpy as m
+
+        m.patch()
 
     def to_multi_systems(
         self, formulas, directory, map_size=1000000000, frame_idx_fmt="012d", **kwargs
@@ -86,6 +85,8 @@ class LMDBFormat(Format):
         tuple
             (self, formula) to be used by to_system
         """
+        import msgpack
+
         self._frame_idx_fmt = frame_idx_fmt
         self._global_frame_idx = 0
         self._system_info = []
@@ -105,6 +106,7 @@ class LMDBFormat(Format):
                 self._txn = None
 
     def _dump_to_txn(self, data, txn, formula, dtypes):
+        import msgpack
         from dpdata.data_type import Axis
 
         nframes = data["coords"].shape[0]
@@ -209,6 +211,8 @@ class LMDBFormat(Format):
         dict
             data dictionary for each system
         """
+        import msgpack
+        import lmdb
         from dpdata.data_type import Axis, DataType
         from dpdata.system import LabeledSystem, System
 
