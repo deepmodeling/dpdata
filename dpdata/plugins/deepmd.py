@@ -92,7 +92,9 @@ class DeePMDCompFormat(Format):
         **kwargs : dict
             other parameters
         """
-        dpdata.formats.deepmd.comp.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.formats.deepmd.comp.dump(
+            file_name, data, set_size=set_size, comp_prec=prec
+        )
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
         register_spin()
@@ -155,7 +157,9 @@ class DeePMDMixedFormat(Format):
         **kwargs : dict
             other parameters
         """
-        dpdata.formats.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.formats.deepmd.mixed.dump(
+            file_name, data, set_size=set_size, comp_prec=prec
+        )
 
     def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
         return dpdata.formats.deepmd.mixed.to_system_data(

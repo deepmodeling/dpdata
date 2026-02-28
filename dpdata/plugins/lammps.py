@@ -103,7 +103,9 @@ class LAMMPSLmpFormat(Format):
         """
         with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
-        data = dpdata.formats.lammps.lmp.to_system_data(lines, type_map, atom_style=atom_style)
+        data = dpdata.formats.lammps.lmp.to_system_data(
+            lines, type_map, atom_style=atom_style
+        )
         register_spin(data)
         register_charge(data)
         return data

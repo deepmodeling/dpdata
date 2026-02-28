@@ -49,7 +49,9 @@ class GromacsGroFormat(Format):
         if frame_idx == -1:
             strs = []
             for idx in range(data["coords"].shape[0]):
-                gro_str = dpdata.formats.gromacs.gro.from_system_data(data, f_idx=idx, **kwargs)
+                gro_str = dpdata.formats.gromacs.gro.from_system_data(
+                    data, f_idx=idx, **kwargs
+                )
                 strs.append(gro_str)
             gro_str = "\n".join(strs)
         else:

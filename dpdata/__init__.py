@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .formats import lammps, md, vasp
 from .bond_order_system import BondOrderSystem
+from .formats import lammps, md, vasp
 from .system import LabeledSystem, MultiSystems, System
 
 try:

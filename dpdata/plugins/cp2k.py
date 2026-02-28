@@ -3,8 +3,8 @@ from __future__ import annotations
 import glob
 
 import dpdata.formats.cp2k.output
-from dpdata.formats.cp2k.output import Cp2kSystems
 from dpdata.format import Format
+from dpdata.formats.cp2k.output import Cp2kSystems
 
 string_warning = """
 Hi, you got an error from dpdata,
