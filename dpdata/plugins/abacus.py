@@ -8,9 +8,9 @@ import numpy as np
 import dpdata.formats.abacus.md
 import dpdata.formats.abacus.relax
 import dpdata.formats.abacus.scf
-from dpdata.formats.abacus.stru import get_frame_from_stru, make_unlabeled_stru
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
+from dpdata.formats.abacus.stru import get_frame_from_stru, make_unlabeled_stru
 from dpdata.utils import open_file
 
 if TYPE_CHECKING:
