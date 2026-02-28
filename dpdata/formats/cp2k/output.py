@@ -455,7 +455,11 @@ def get_frames(fname):
 
             # CP2K 2025 force format: FORCES| prefix lines
             if is_cp2k_2025:
-                if "FORCES|" in ii and "Atom x y z" not in ii and "Atomic forces" not in ii:
+                if (
+                    "FORCES|" in ii
+                    and "Atom x y z" not in ii
+                    and "Atomic forces" not in ii
+                ):
                     parts = ii.split()
                     # FORCES| 1 -5.73440344E-02 2.95274914E-02 -1.50988167E-02 6.62433792E-02
                     if len(parts) >= 5 and parts[1].isdigit():

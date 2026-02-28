@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import unittest
 
-import numpy as np
 from comp_sys import CompLabeledSys
 from context import dpdata
 
@@ -28,9 +27,7 @@ class TestCp2k2025Output(unittest.TestCase, CompLabeledSys):
         # Using dpdata's conversion factor: -200.3898256786414 eV
         expected_energy = -200.3898256786414
         self.assertAlmostEqual(
-            self.system_1.data["energies"][0],
-            expected_energy,
-            places=5
+            self.system_1.data["energies"][0], expected_energy, places=5
         )
 
     def test_forces_extraction(self):
@@ -39,9 +36,7 @@ class TestCp2k2025Output(unittest.TestCase, CompLabeledSys):
         self.assertEqual(self.system_1.data["forces"].shape, (1, 2, 3))
         # Check first atom force x-component
         self.assertAlmostEqual(
-            self.system_1.data["forces"][0][0][0],
-            -2.94874881,
-            places=5
+            self.system_1.data["forces"][0][0][0], -2.94874881, places=5
         )
 
 
