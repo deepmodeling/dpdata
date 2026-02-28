@@ -402,6 +402,9 @@ def get_frames(fname):
         fp.close()
         return [], [], [], [], [], [], [], None
 
+    # Check if this is CP2K 2025 format
+    is_cp2k_2025 = "energy [hartree]" in content
+
     # search duplicated header
     fp.seek(0)
     header_idx = []
@@ -430,16 +433,44 @@ def get_frames(fname):
                     atom_symbol_idx_list.append(ii.split()[1])
 
             if "ENERGY|" in ii:
-                energy = ii.split()[8]
-            if " Atom   Kind " in ii:
-                force_flag = True
-                force_idx = idx
-            if force_flag:
-                if idx > force_idx:
-                    if "SUM OF ATOMIC FORCES" in ii:
-                        force_flag = False
-                    else:
-                        force.append(ii.split()[3:6])
+                # CP2K 2025 format: ENERGY| Total FORCE_EVAL ( QS ) energy [hartree] -7.364190264587725
+                # CP2K 2023 format: ENERGY| Total FORCE_EVAL ( QS ) energy (a.u.):            -1766.225653832774242
+                if is_cp2k_2025:
+                    # Find the energy value after "[hartree]"
+                    parts = ii.split()
+                    try:
+                        hartree_idx = parts.index("[hartree]")
+                        energy = parts[hartree_idx + 1]
+                    except (ValueError, IndexError):
+                        # Fallback: try to find energy value in the line
+                        for part in reversed(parts):
+                            try:
+                                float(part)
+                                energy = part
+                                break
+                            except ValueError:
+                                continue
+                else:
+                    energy = ii.split()[8]
+
+            # CP2K 2025 force format: FORCES| prefix lines
+            if is_cp2k_2025:
+                if "FORCES|" in ii and "Atom x y z" not in ii and "Atomic forces" not in ii:
+                    parts = ii.split()
+                    # FORCES| 1 -5.73440344E-02 2.95274914E-02 -1.50988167E-02 6.62433792E-02
+                    if len(parts) >= 5 and parts[1].isdigit():
+                        force.append(parts[2:5])
+            else:
+                # CP2K 2023 format
+                if " Atom   Kind " in ii:
+                    force_flag = True
+                    force_idx = idx
+                if force_flag:
+                    if idx > force_idx:
+                        if "SUM OF ATOMIC FORCES" in ii:
+                            force_flag = False
+                        else:
+                            force.append(ii.split()[3:6])
             # add reading stress tensor
             if "STRESS TENSOR [GPa" in ii:
                 stress_flag = True
