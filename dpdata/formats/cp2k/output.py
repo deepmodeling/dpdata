@@ -7,7 +7,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from ..unit import (
+from ...unit import (
     EnergyConversion,
     ForceConversion,
     LengthConversion,

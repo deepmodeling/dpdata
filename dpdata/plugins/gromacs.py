@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import dpdata.gromacs.gro
+import dpdata.formats.gromacs.gro
 from dpdata.format import Format
 from dpdata.utils import open_file
 
@@ -25,7 +25,7 @@ class GromacsGroFormat(Format):
         **kwargs : dict
             other parameters
         """
-        return dpdata.gromacs.gro.file_to_system_data(
+        return dpdata.formats.gromacs.gro.file_to_system_data(
             file_name, format_atom_name=format_atom_name, **kwargs
         )
 
@@ -49,11 +49,13 @@ class GromacsGroFormat(Format):
         if frame_idx == -1:
             strs = []
             for idx in range(data["coords"].shape[0]):
-                gro_str = dpdata.gromacs.gro.from_system_data(data, f_idx=idx, **kwargs)
+                gro_str = dpdata.formats.gromacs.gro.from_system_data(
+                    data, f_idx=idx, **kwargs
+                )
                 strs.append(gro_str)
             gro_str = "\n".join(strs)
         else:
-            gro_str = dpdata.gromacs.gro.from_system_data(
+            gro_str = dpdata.formats.gromacs.gro.from_system_data(
                 data, f_idx=frame_idx, **kwargs
             )
 

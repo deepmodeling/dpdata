@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-import dpdata.lammps.dump
-import dpdata.lammps.lmp
+import dpdata.formats.lammps.dump
+import dpdata.formats.lammps.lmp
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file
@@ -103,7 +103,9 @@ class LAMMPSLmpFormat(Format):
         """
         with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
-        data = dpdata.lammps.lmp.to_system_data(lines, type_map, atom_style=atom_style)
+        data = dpdata.formats.lammps.lmp.to_system_data(
+            lines, type_map, atom_style=atom_style
+        )
         register_spin(data)
         register_charge(data)
         return data
@@ -123,7 +125,7 @@ class LAMMPSLmpFormat(Format):
             other parameters
         """
         assert frame_idx < len(data["coords"])
-        w_str = dpdata.lammps.lmp.from_system_data(data, frame_idx)
+        w_str = dpdata.formats.lammps.lmp.from_system_data(data, frame_idx)
         with open_file(file_name, "w") as fp:
             fp.write(w_str)
 
@@ -164,8 +166,8 @@ class LAMMPSDumpFormat(Format):
         dict
             The system data
         """
-        lines = dpdata.lammps.dump.load_file(file_name, begin=begin, step=step)
-        data = dpdata.lammps.dump.system_data(
+        lines = dpdata.formats.lammps.dump.load_file(file_name, begin=begin, step=step)
+        data = dpdata.formats.lammps.dump.system_data(
             lines, type_map, unwrap=unwrap, input_file=input_file
         )
         register_spin(data)
@@ -188,6 +190,6 @@ class LAMMPSDumpFormat(Format):
             other parameters
         """
         assert frame_idx < len(data["coords"])
-        w_str = dpdata.lammps.dump.from_system_data(data, frame_idx, timestep)
+        w_str = dpdata.formats.lammps.dump.from_system_data(data, frame_idx, timestep)
         with open_file(file_name, "w") as fp:
             fp.write(w_str)

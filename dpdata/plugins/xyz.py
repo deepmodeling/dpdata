@@ -10,8 +10,8 @@ from dpdata.utils import open_file
 
 if TYPE_CHECKING:
     from dpdata.utils import FileType
-from dpdata.xyz.quip_gap_xyz import QuipGapxyzSystems, format_single_frame
-from dpdata.xyz.xyz import coord_to_xyz, xyz_to_coord
+from dpdata.formats.xyz.quip_gap_xyz import QuipGapxyzSystems, format_single_frame
+from dpdata.formats.xyz.xyz import coord_to_xyz, xyz_to_coord
 
 
 @Format.register("xyz")

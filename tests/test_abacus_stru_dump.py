@@ -7,7 +7,7 @@ import unittest
 from context import dpdata
 from test_vasp_poscar_dump import myfilecmp
 
-from dpdata.abacus.stru import parse_pos_oneline
+from dpdata.formats.abacus.stru import parse_pos_oneline
 
 
 class TestStruDump(unittest.TestCase):

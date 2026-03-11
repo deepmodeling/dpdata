@@ -18,15 +18,15 @@ from typing import (
 import numpy as np
 
 import dpdata
-import dpdata.md.pbc
+import dpdata.formats.md.pbc
 
 # ensure all plugins are loaded!
 import dpdata.plugins
 import dpdata.plugins.deepmd
-from dpdata.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
+from dpdata.formats.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.plugin import Plugin
 from dpdata.utils import (
     add_atom_names,
@@ -683,7 +683,9 @@ class System:
 
     def apply_pbc(self):
         """Append periodic boundary condition."""
-        ncoord = dpdata.md.pbc.dir_coord(self.data["coords"], self.data["cells"])
+        ncoord = dpdata.formats.md.pbc.dir_coord(
+            self.data["coords"], self.data["cells"]
+        )
         ncoord = ncoord % 1
         self.data["coords"] = np.matmul(ncoord, self.data["cells"])
 

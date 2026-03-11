@@ -8,7 +8,7 @@ import numpy as np
 
 from dpdata.utils import open_file
 
-from ..unit import LengthConversion, PressureConversion
+from ...unit import LengthConversion, PressureConversion
 from .stru import get_frame_from_stru
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()

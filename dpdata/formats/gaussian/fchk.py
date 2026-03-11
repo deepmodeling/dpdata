@@ -9,8 +9,8 @@ from dpdata.utils import open_file
 if TYPE_CHECKING:
     from dpdata.utils import FileType
 
-from ..periodic_table import ELEMENTS
-from ..unit import (
+from ...periodic_table import ELEMENTS
+from ...unit import (
     EnergyConversion,
     ForceConversion,
     HessianConversion,
