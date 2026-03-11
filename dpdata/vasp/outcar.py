@@ -243,9 +243,21 @@ def analyze_block(lines, ntot, nelm, ml=False):
             energy = float(ii.split()[energy_index[ml_index]])
             return coord, cell, energy, force, virial, is_converge
         elif cell_token[ml_index] in ii:
+            # Handle both "VOLUME and BASIS-vectors are now :" and
+            # "VOLUME and BASIS-vectors are now included." patterns
             for dd in range(3):
-                tmp_l = lines[idx + cell_index[ml_index] + dd]
-                cell.append([float(ss) for ss in tmp_l.replace("-", " -").split()[0:3]])
+                if idx + cell_index[ml_index] + dd < len(lines):
+                    tmp_l = lines[idx + cell_index[ml_index] + dd]
+                    # Be more robust to line format variations
+                    parts = tmp_l.replace("-", " -").split()
+                    if len(parts) >= 3:
+                        try:
+                            cell.append(
+                                [float(parts[0]), float(parts[1]), float(parts[2])]
+                            )
+                        except (ValueError, IndexError):
+                            # Skip lines that don't contain valid cell data
+                            pass
         elif virial_token[ml_index] in ii:
             in_kB_index = virial_index[ml_index]
             while idx + in_kB_index < len(lines) and (
@@ -268,8 +280,9 @@ def analyze_block(lines, ntot, nelm, ml=False):
             virial[2][0] = tmp_v[5]
         elif "TOTAL-FORCE" in ii and (("ML" in ii) == ml):
             for jj in range(idx + 2, idx + 2 + ntot):
-                tmp_l = lines[jj]
-                info = [float(ss) for ss in tmp_l.split()]
-                coord.append(info[:3])
-                force.append(info[3:6])
+                if jj < len(lines):
+                    tmp_l = lines[jj]
+                    info = [float(ss) for ss in tmp_l.split()]
+                    coord.append(info[:3])
+                    force.append(info[3:6])
     return coord, cell, energy, force, virial, is_converge
