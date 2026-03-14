@@ -1393,9 +1393,17 @@ class MultiSystems:
             system_list = []
             for dd in fmtobj.from_multi_systems(directory, **kwargs):
                 if labeled:
+                    # For mixed format, auto-detect if data contains labels
+                    # Try loading as labeled first to get all available data
                     data_list = fmtobj.from_labeled_system_mix(dd, **kwargs)
                     for data_item in data_list:
-                        system_list.append(LabeledSystem(data=data_item, **kwargs))
+                        # Check if this data actually contains required label fields
+                        if "energies" in data_item:
+                            # Data has labels, create LabeledSystem
+                            system_list.append(LabeledSystem(data=data_item, **kwargs))
+                        else:
+                            # Data doesn't have labels, create regular System
+                            system_list.append(System(data=data_item, **kwargs))
                 else:
                     data_list = fmtobj.from_system_mix(dd, **kwargs)
                     for data_item in data_list:
