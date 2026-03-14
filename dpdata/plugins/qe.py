@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dpdata.md.pbc
+import dpdata.qe.pwmd
 import dpdata.qe.scf
 import dpdata.qe.traj
 from dpdata.format import Format
@@ -52,4 +53,26 @@ class QECPPWSCFFormat(Format):
         ) = dpdata.qe.scf.get_frame(file_name)
         if tmp_virial is not None:
             data["virials"] = tmp_virial
+        return data
+
+
+@Format.register("qe/pw/md")
+class QECPPWMDFormat(Format):
+    @Format.post("rot_lower_triangular")
+    def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
+        data = {}
+        (
+            data["atom_names"],
+            data["atom_numbs"],
+            data["atom_types"],
+            data["cells"],
+            data["coords"],
+            data["energies"],
+            data["forces"],
+            data["virials"],
+        ) = dpdata.qe.pwmd.to_system_data(file_name, begin=begin, step=step)
+        data["coords"] = dpdata.md.pbc.apply_pbc(
+            data["coords"],
+            data["cells"],
+        )
         return data
