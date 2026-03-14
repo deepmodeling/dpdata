@@ -484,7 +484,7 @@ def rotate_to_lower_triangle(
     return cell, coord
 
 
-def from_system_data(system, f_idx=0):
+def from_system_data(system, f_idx=0, output_spins=False):
     ret = ""
     ret += "\n"
     natoms = sum(system["atom_numbs"])
@@ -529,7 +529,7 @@ def from_system_data(system, f_idx=0):
         + "\n"
     )  # noqa: UP031
 
-    if "spins" in system:
+    if "spins" in system and output_spins:
         coord_fmt = (
             coord_fmt.strip("\n")
             + " "
@@ -544,7 +544,7 @@ def from_system_data(system, f_idx=0):
         )  # noqa: UP031
         spins_norm = np.linalg.norm(system["spins"][f_idx], axis=1)
     for ii in range(natoms):
-        if "spins" in system:
+        if "spins" in system and output_spins:
             if spins_norm[ii] != 0:
                 ret += coord_fmt % (
                     ii + 1,
