@@ -39,7 +39,7 @@ So an external plugin package only needs to ensure that importing the entry-poin
 
 Example layout:
 
-```
+```text
 dpdata_random/
   pyproject.toml
   dpdata_random/
