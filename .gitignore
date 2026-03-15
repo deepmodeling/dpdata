@@ -34,7 +34,3 @@ tests/data_*.h5
 tests/data_*/
 tests/tmp.*
 tests/.coverage
-
-# local dev artifact
-uv.lock
-.venv/
