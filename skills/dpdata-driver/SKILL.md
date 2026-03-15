@@ -66,11 +66,16 @@ assert "energies" in ls.data
 
 This is the easiest *fully runnable* example because it doesn’t require external QM software.
 
-Dependencies (recommended): use `uv`:
+Dependencies (recommended): use `uv`.
+
+Option A (one-off invocation):
 
 ```bash
-uv run --with numpy --with ase python3 your_script.py
+uv run --with dpdata --with numpy --with ase python3 your_script.py
 ```
+
+Option B (recommended for shareable scripts): declare dependencies in the script via inline metadata, then run `uv run script.py`.
+See: https://docs.astral.sh/uv/guides/scripts/#inline-metadata
 
 Script:
 
@@ -87,7 +92,10 @@ ls = sys.predict(driver="ase", calculator=EMT())
 
 print("energies", np.array(ls.data["energies"]))
 print("forces shape", np.array(ls.data["forces"]).shape)
-print("virials shape", np.array(ls.data["virials"]).shape)
+if "virials" in ls.data:
+    print("virials shape", np.array(ls.data["virials"]).shape)
+else:
+    print("virials: <not provided by this driver/calculator>")
 ```
 
 ## Example: pass a Driver object instead of a string

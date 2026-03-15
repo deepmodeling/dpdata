@@ -63,7 +63,7 @@ class RandomFormat(Format):
         return {
             "atom_numbs": [20],
             "atom_names": ["X"],
-            "atom_types": [0] * 20,
+            "atom_types": np.zeros(20, dtype=int),
             "cells": np.repeat(np.eye(3)[None, ...], N, axis=0) * 100.0,
             "coords": np.random.rand(N, 20, 3) * 100.0,
             "orig": np.zeros(3),
