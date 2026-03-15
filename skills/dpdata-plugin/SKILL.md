@@ -7,8 +7,8 @@ description: Create and install dpdata plugins (especially custom Format readers
 
 dpdata loads plugins in two ways:
 
-1) **Built-in plugins** in `dpdata.plugins.*` (imported automatically)
-2) **External plugins** exposed via Python package entry points: `dpdata.plugins`
+1. **Built-in plugins** in `dpdata.plugins.*` (imported automatically)
+1. **External plugins** exposed via Python package entry points: `dpdata.plugins`
 
 This skill focuses on **external plugin packages**, the recommended way to add new formats without modifying dpdata itself.
 
@@ -19,9 +19,9 @@ Most commonly: add a new **Format** (file reader/writer) via:
 ```python
 from dpdata.format import Format
 
+
 @Format.register("myfmt")
-class MyFormat(Format):
-    ...
+class MyFormat(Format): ...
 ```
 
 ## How dpdata discovers plugins
@@ -55,6 +55,7 @@ from __future__ import annotations
 
 import numpy as np
 from dpdata.format import Format
+
 
 @Format.register("random")
 class RandomFormat(Format):

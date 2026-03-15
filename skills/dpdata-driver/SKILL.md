@@ -29,6 +29,7 @@ When unsure what drivers exist in *this* dpdata version/env, query them at runti
 
 ```python
 from dpdata.driver import Driver
+
 print(sorted(Driver.get_drivers().keys()))
 ```
 
@@ -79,9 +80,7 @@ from ase.calculators.emt import EMT
 from dpdata.system import System
 
 # write a tiny molecule
-open("tmp.xyz", "w").write(
-    """2\n\nH 0 0 0\nH 0 0 0.74\n"""
-)
+open("tmp.xyz", "w").write("""2\n\nH 0 0 0\nH 0 0 0.74\n""")
 
 sys = System("tmp.xyz", fmt="xyz")
 ls = sys.predict(driver="ase", calculator=EMT())
