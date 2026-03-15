@@ -20,6 +20,7 @@ System.minimize(*args, minimizer: str|Minimizer, **kwargs) -> LabeledSystem
 
 ```python
 from dpdata.driver import Minimizer
+
 print(sorted(Minimizer.get_minimizers().keys()))
 ```
 
@@ -39,8 +40,8 @@ Example: `ASEMinimizer` takes a dpdata `Driver` in its constructor:
 So you generally do:
 
 1. Construct a driver
-2. Construct a minimizer (or let dpdata do it by passing the right kwargs)
-3. Call `System.minimize(...)`
+1. Construct a minimizer (or let dpdata do it by passing the right kwargs)
+1. Call `System.minimize(...)`
 
 ## Runnable example: ASE minimizer with an ASE calculator
 
