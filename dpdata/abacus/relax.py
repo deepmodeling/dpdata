@@ -45,7 +45,7 @@ def get_relax_stru_files(output_dir):
     return glob.glob(os.path.join(output_dir, "STRU_ION*_D"))
 
 
-def get_coords_from_log(loglines, natoms, stru_files=[]):
+def get_coords_from_log(loglines, natoms, stru_files=None):
     """NOTICE: unit of coords and cells is Angstrom
     order:
         coordinate
@@ -86,7 +86,7 @@ def get_coords_from_log(loglines, natoms, stru_files=[]):
                 coord_direct.append(False)
                 for k in range(2, 2 + natoms):
                     coords[-1].append(
-                        list(map(lambda x: float(x) * a0, loglines[i + k].split()[1:4]))
+                        list(map(lambda x: float(x) * a0 * bohr2ang, loglines[i + k].split()[1:4]))
                     )
             else:
                 assert False, "Unrecongnized coordinate type, %s, line:%d" % (  # noqa: UP031
@@ -105,7 +105,7 @@ def get_coords_from_log(loglines, natoms, stru_files=[]):
             cells.append([])
             for k in range(1, 4):
                 cells[-1].append(
-                    list(map(lambda x: float(x) * a0, loglines[i + k].split()[0:3]))
+                    list(map(lambda x: float(x) * a0 * bohr2ang, loglines[i + k].split()[0:3]))
                 )
 
         elif line[1:14] == "final etot is" or "#TOTAL ENERGY#" in line:
@@ -120,7 +120,7 @@ def get_coords_from_log(loglines, natoms, stru_files=[]):
     # we should read cell and coord from STRU_ION*_D files
     if len(energy) > 1 and len(coords) == 1:
         # the energies of all structrues are collected, but coords have only the first structure
-        if len(stru_files) > 1: # if stru_files are not only STRU_ION_D
+        if stru_files is not None and len(stru_files) > 1: # if stru_files are not only STRU_ION_D
             stru_file_name = [os.path.basename(i) for i in stru_files]
             coords = coords[:1] + [np.nan for i in range(len(energy)-1)]
             coord_direct = coord_direct[:1] + [False for i in range(len(energy)-1)]
@@ -185,10 +185,6 @@ def get_coords_from_log(loglines, natoms, stru_files=[]):
     for i in range(len(coords)):
         if coord_direct[i]:
             coords[i] = coords[i].dot(cells[i])
-
-    # transfer bohrium to angstrom
-    cells *= bohr2ang
-    coords *= bohr2ang
 
     if len(stress) > 0:
         virial = np.zeros([len(cells), 3, 3])
