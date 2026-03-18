@@ -1,0 +1,54 @@
+INPUT_PARAMETERS RUNNING ABACUS-DFT
+
+#Parameters (1.General)
+suffix                  ABACUS  # suffix of OUTPUT DIR
+nspin                   1   #  1/2/4 
+symmetry                0   #  0/1
+esolver_type            ksdft  # ksdft/ofdft/sdft/tddft/lj/dp
+dft_functional          pbe  # lda/pbe/scan/hf/pbe0/hse/libxc
+ks_solver             genelpa  # genelpa/scalapack_avx for lcao, cg/dav for pw
+vdw_method              none  # d3/d3_bj/none
+
+#Parameters (2.Iteration)
+calculation             cell-relax # scf/relax/cell-relax/md
+ecutwfc                 100 # Rydberg, in lcao is for grid density
+scf_thr                 1e-7 # Rydberg
+scf_nmax                100 
+#printe                  300  # default eq scf_nmax
+relax_nmax              30
+relax_method            bfgs_trad  # cg/bfgs/bfgs_trad/sd/"fire"
+force_thr_ev            0.05
+# stress_thr            1 # GPa
+
+#Parameters (3.Basis)
+basis_type              lcao  # lcao or pw
+# kspacing              0.14 0.50 0.14 # replace KPT
+gamma_only            1  # 0/1, replace KPT
+
+#Parameters (4.Smearing)
+smearing_method         mp    # mp/gauss/fixed/mp-n/fd
+smearing_sigma          0.008  # Rydberg
+
+#Parameters (5.Mixing)
+mixing_type             broyden  # pulay/broyden
+mixing_ndim             20
+#mixing_beta             0.4   # use default
+#mixing_gg0              1.0   # use default
+
+#Parameters (6.Calculation)
+cal_force          1
+cal_stress         1
+#init_chg          atomic # atomic/auto/file
+#init_wfc          atomic # atomic/file
+out_stru           1  # print STRU in OUT
+out_chg            -1 # -1 no, 0 binary, 1 cube, more number as cube prec
+out_bandgap        1
+out_mul            1  # print charge and mag of atom in mulliken.txt
+# out_wfc_lcao       0  # 0 no, 1 txt, 2 dat
+
+
+# #Parameters (7. Dipole Correction)
+# efield_flag        1   # open added potential, if 0, all below useless
+# dip_cor_flag       1   # open dipole correction
+# efield_dir         1   # direction of dipole correction, 0,1,2 for x,y,z
+
