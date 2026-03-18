@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import glob
 import os
 
 import numpy as np
@@ -31,7 +32,23 @@ def get_log_file(fname, inlines):
     return logf
 
 
-def get_coords_from_log(loglines, natoms):
+def get_relax_stru_files(output_dir):
+    """Find the STRU files in the output directory.
+
+    Args:
+        output_dir (str): output directory
+
+    Returns
+    -------
+        strus: list of STRU files
+
+    example:
+        ["STRU_ION1_D", "STRU_ION2_D"]
+    """
+    return glob.glob(os.path.join(output_dir, "STRU_ION*_D"))
+
+
+def get_coords_from_log(loglines, natoms, stru_files=None):
     """NOTICE: unit of coords and cells is Angstrom
     order:
         coordinate
@@ -72,7 +89,12 @@ def get_coords_from_log(loglines, natoms):
                 coord_direct.append(False)
                 for k in range(2, 2 + natoms):
                     coords[-1].append(
-                        list(map(lambda x: float(x) * a0, loglines[i + k].split()[1:4]))
+                        list(
+                            map(
+                                lambda x: float(x) * a0 * bohr2ang,
+                                loglines[i + k].split()[1:4],
+                            )
+                        )
                     )
             else:
                 assert False, "Unrecongnized coordinate type, %s, line:%d" % (  # noqa: UP031
@@ -91,7 +113,12 @@ def get_coords_from_log(loglines, natoms):
             cells.append([])
             for k in range(1, 4):
                 cells[-1].append(
-                    list(map(lambda x: float(x) * a0, loglines[i + k].split()[0:3]))
+                    list(
+                        map(
+                            lambda x: float(x) * a0 * bohr2ang,
+                            loglines[i + k].split()[0:3],
+                        )
+                    )
                 )
 
         elif line[1:14] == "final etot is" or "#TOTAL ENERGY#" in line:
@@ -100,6 +127,27 @@ def get_coords_from_log(loglines, natoms):
                 energy.append(np.nan)
             # get the energy of current structure
             energy.append(float(line.split()[-2]))
+
+    # in some relax method (like: bfgs_trad), the coordinate is not outputed in running_relax.log
+    # but if out_stru is true, then STRU_ION*_D will be outputed in OUT.ABACUS
+    # we should read cell and coord from STRU_ION*_D files
+    if len(energy) > 1 and len(coords) == 1:
+        # the energies of all structrues are collected, but coords have only the first structure
+        if (
+            stru_files is not None and len(stru_files) > 1
+        ):  # if stru_files are not only STRU_ION_D
+            stru_file_name = [os.path.basename(i) for i in stru_files]
+            coords = coords[:1] + [np.nan for i in range(len(energy) - 1)]
+            coord_direct = coord_direct[:1] + [False for i in range(len(energy) - 1)]
+            cells = cells[:1] + [np.nan for i in range(len(energy) - 1)]
+            for iframe in range(1, len(energy)):
+                if f"STRU_ION{iframe}_D" in stru_file_name:
+                    # read the structure from STRU_ION*_D
+                    stru_data = get_frame_from_stru(
+                        stru_files[stru_file_name.index(f"STRU_ION{iframe}_D")]
+                    )
+                    coords[iframe] = stru_data["coords"][0]
+                    cells[iframe] = stru_data["cells"][0]
 
     force = collect_force(loglines)
     stress = collect_stress(loglines)
@@ -133,7 +181,11 @@ def get_coords_from_log(loglines, natoms):
 
     # delete structures whose energy is np.nan
     for i in range(minl):
-        if np.isnan(energy[i - minl]):
+        if (
+            np.isnan(energy[i - minl])
+            or np.any(np.isnan(coords[i - minl]))
+            or np.any(np.isnan(cells[i - minl]))
+        ):
             del energy[i - minl]
             del coords[i - minl]
             del cells[i - minl]
@@ -153,10 +205,6 @@ def get_coords_from_log(loglines, natoms):
     for i in range(len(coords)):
         if coord_direct[i]:
             coords[i] = coords[i].dot(cells[i])
-
-    # transfer bohrium to angstrom
-    cells *= bohr2ang
-    coords *= bohr2ang
 
     if len(stress) > 0:
         virial = np.zeros([len(cells), 3, 3])
@@ -191,7 +239,11 @@ def get_frame(fname):
     with open_file(logf) as f1:
         lines = f1.readlines()
 
-    energy, cells, coords, force, stress, virial = get_coords_from_log(lines, natoms)
+    relax_stru_files = get_relax_stru_files(os.path.dirname(logf))
+
+    energy, cells, coords, force, stress, virial = get_coords_from_log(
+        lines, natoms, stru_files=relax_stru_files
+    )
 
     magmom, magforce = get_mag_force(lines)
 
