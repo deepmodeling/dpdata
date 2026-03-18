@@ -94,7 +94,7 @@ def get_coords_from_log(loglines, natoms):
                     list(map(lambda x: float(x) * a0, loglines[i + k].split()[0:3]))
                 )
 
-        elif line[1:14] == "final etot is":
+        elif line[1:14] == "final etot is" or "#TOTAL ENERGY#" in line:
             # add the energy for previous structures whose SCF is not converged
             while len(energy) < len(coords) - 1:
                 energy.append(np.nan)

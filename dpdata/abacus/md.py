@@ -135,7 +135,7 @@ def get_energy(outlines, ndump, dump_freq):
     energy = []
     nenergy = 0
     for line_idx, line in enumerate(outlines):
-        if "final etot is" in line:
+        if "final etot is" in line or "#TOTAL ENERGY#" in line:
             if nenergy % dump_freq == 0:
                 energy.append(float(line.split()[-2]))
             nenergy += 1
