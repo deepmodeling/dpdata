@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import os, glob
+import glob
+import os
 
 import numpy as np
 
@@ -30,15 +31,17 @@ def get_log_file(fname, inlines):
     logf = os.path.join(fname, f"OUT.{suffix}/running_{calculation}.log")
     return logf
 
+
 def get_relax_stru_files(output_dir):
     """Find the STRU files in the output directory.
 
     Args:
         output_dir (str): output directory
-    
-    returns:
+
+    Returns
+    -------
         strus: list of STRU files
-    
+
     example:
         ["STRU_ION1_D", "STRU_ION2_D"]
     """
@@ -120,18 +123,19 @@ def get_coords_from_log(loglines, natoms, stru_files=[]):
     # we should read cell and coord from STRU_ION*_D files
     if len(energy) > 1 and len(coords) == 1:
         # the energies of all structrues are collected, but coords have only the first structure
-        if len(stru_files) > 1: # if stru_files are not only STRU_ION_D
+        if len(stru_files) > 1:  # if stru_files are not only STRU_ION_D
             stru_file_name = [os.path.basename(i) for i in stru_files]
-            coords = coords[:1] + [np.nan for i in range(len(energy)-1)]
-            coord_direct = coord_direct[:1] + [False for i in range(len(energy)-1)]
-            cells = cells[:1] + [np.nan for i in range(len(energy)-1)]
+            coords = coords[:1] + [np.nan for i in range(len(energy) - 1)]
+            coord_direct = coord_direct[:1] + [False for i in range(len(energy) - 1)]
+            cells = cells[:1] + [np.nan for i in range(len(energy) - 1)]
             for iframe in range(1, len(energy)):
                 if f"STRU_ION{iframe}_D" in stru_file_name:
                     # read the structure from STRU_ION*_D
-                    stru_data = get_frame_from_stru(stru_files[stru_file_name.index(f"STRU_ION{iframe}_D")])
+                    stru_data = get_frame_from_stru(
+                        stru_files[stru_file_name.index(f"STRU_ION{iframe}_D")]
+                    )
                     coords[iframe] = stru_data["coords"][0]
                     cells[iframe] = stru_data["cells"][0]
-
 
     force = collect_force(loglines)
     stress = collect_stress(loglines)
@@ -165,7 +169,11 @@ def get_coords_from_log(loglines, natoms, stru_files=[]):
 
     # delete structures whose energy is np.nan
     for i in range(minl):
-        if np.isnan(energy[i - minl]) or np.any(np.isnan(coords[i - minl])) or np.any(np.isnan(cells[i - minl])):
+        if (
+            np.isnan(energy[i - minl])
+            or np.any(np.isnan(coords[i - minl]))
+            or np.any(np.isnan(cells[i - minl]))
+        ):
             del energy[i - minl]
             del coords[i - minl]
             del cells[i - minl]
@@ -225,8 +233,9 @@ def get_frame(fname):
 
     relax_stru_files = get_relax_stru_files(os.path.dirname(logf))
 
-    energy, cells, coords, force, stress, virial = get_coords_from_log(lines, natoms, stru_files=relax_stru_files)
-
+    energy, cells, coords, force, stress, virial = get_coords_from_log(
+        lines, natoms, stru_files=relax_stru_files
+    )
 
     magmom, magforce = get_mag_force(lines)
 

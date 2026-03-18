@@ -187,13 +187,16 @@ class TestABACUSRelaxLabeledOutputV341(unittest.TestCase):
         if os.path.isfile("abacus.relax/STRU"):
             os.remove("abacus.relax/STRU")
 
+
 class TestABACUSRelaxReadFromSTRUIOND(unittest.TestCase):
     # Since ABACUS v3.4.1, the output format of force and stress has been changed.
     def setUp(self):
-        self.system = dpdata.LabeledSystem("abacus.relax.readFromSTRUIOND", fmt="abacus/relax")
+        self.system = dpdata.LabeledSystem(
+            "abacus.relax.readFromSTRUIOND", fmt="abacus/relax"
+        )
 
         # write results
-        #for key in ["energies", "cells", "coords", "forces", "stress", "virials"]:
+        # for key in ["energies", "cells", "coords", "forces", "stress", "virials"]:
         #    np.save(f"abacus.relax.readFromSTRUIOND/{key}.npy", self.system.data[key])
 
     def test_results(self):
@@ -203,8 +206,6 @@ class TestABACUSRelaxReadFromSTRUIOND(unittest.TestCase):
                 np.load(f"abacus.relax.readFromSTRUIOND/{key}.npy"),
                 decimal=8,
             )
-        
-
 
 
 if __name__ == "__main__":
