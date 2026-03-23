@@ -59,19 +59,21 @@ from dpdata.format import Format
 
 @Format.register("random")
 class RandomFormat(Format):
-    def from_system(self, N, **kwargs):
+    def from_system(self, file_name, **kwargs):
+        nframes = int(file_name)
         return {
             "atom_numbs": [20],
             "atom_names": ["X"],
             "atom_types": np.zeros(20, dtype=int),
-            "cells": np.repeat(np.eye(3)[None, ...], N, axis=0) * 100.0,
-            "coords": np.random.rand(N, 20, 3) * 100.0,
+            "cells": np.repeat(np.eye(3)[None, ...], nframes, axis=0) * 100.0,
+            "coords": np.random.rand(nframes, 20, 3) * 100.0,
             "orig": np.zeros(3),
             "nopbc": False,
         }
 ```
 
 Return dicts must match dpdata’s expected schema (cells/coords/atom_names/atom_types/...).
+Here `file_name` is the argument dpdata passes into `from_system`; this example interprets it as an integer frame count.
 
 ### 3) Expose an entry point
 
