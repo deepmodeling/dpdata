@@ -94,7 +94,10 @@ Any importable target works; this pattern points directly at the class.
 In a clean env (recommended via `uv`):
 
 ```bash
-uv run --with dpdata --with numpy python3 - <<'PY'
+uv venv
+. .venv/bin/activate
+uv pip install -e . dpdata numpy
+python - <<'PY'
 import dpdata
 from dpdata.format import Format
 
@@ -110,4 +113,5 @@ If it prints `True`, your plugin was discovered.
 - Did you install the plugin package into the same environment where you run dpdata?
 - Does `pyproject.toml` contain `[project.entry-points.'dpdata.plugins']`?
 - Does importing the entry point module/class execute the `@Format.register(...)` decorator?
+- Before choosing a key like `random`, check `Format.get_formats()` to avoid colliding with an existing built-in or previously loaded plugin key.
 - If using `uv run`, remember each command runs in its own environment unless you’re in a `uv` project (or you rely on `uv run --with ...`).
