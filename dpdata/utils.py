@@ -131,6 +131,7 @@ def utf8len(s: str) -> int:
 
 if TYPE_CHECKING:
     from collections.abc import Generator
+
     FileType = io.IOBase | str | os.PathLike
 
 
