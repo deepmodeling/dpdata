@@ -28,10 +28,13 @@ In dpdata, this is exposed as:
 When unsure what drivers exist in *this* dpdata version/env, query them at runtime:
 
 ```python
+import dpdata
 from dpdata.driver import Driver
 
 print(sorted(Driver.get_drivers().keys()))
 ```
+
+`import dpdata` ensures built-in plugins are loaded before listing registered drivers.
 
 In the current repo state, keys include:
 
@@ -70,7 +73,7 @@ Dependencies (recommended): declare script dependencies with uv inline metadata,
 
 ```python
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.8"
 # dependencies = [
 #   "dpdata",
 #   "numpy",
@@ -82,15 +85,17 @@ Dependencies (recommended): declare script dependencies with uv inline metadata,
 Script:
 
 ```python
+from pathlib import Path
+
 import numpy as np
-from ase.calculators.emt import EMT
+from ase.calculators.lj import LennardJones
 from dpdata.system import System
 
 # write a tiny molecule
-open("tmp.xyz", "w").write("""2\n\nH 0 0 0\nH 0 0 0.74\n""")
+Path("tmp.xyz").write_text("""2\n\nH 0 0 0\nH 0 0 0.74\n""")
 
 sys = System("tmp.xyz", fmt="xyz")
-ls = sys.predict(driver="ase", calculator=EMT())
+ls = sys.predict(driver="ase", calculator=LennardJones())
 
 print("energies", np.array(ls.data["energies"]))
 print("forces shape", np.array(ls.data["forces"]).shape)
@@ -103,12 +108,12 @@ else:
 ## Example: pass a Driver object instead of a string
 
 ```python
-from ase.calculators.emt import EMT
+from ase.calculators.lj import LennardJones
 from dpdata.driver import Driver
 from dpdata.system import System
 
 sys = System("tmp.xyz", fmt="xyz")
-ase_driver = Driver.get_driver("ase")(calculator=EMT())
+ase_driver = Driver.get_driver("ase")(calculator=LennardJones())
 ls = sys.predict(driver=ase_driver)
 ```
 
