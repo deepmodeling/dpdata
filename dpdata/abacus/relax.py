@@ -40,8 +40,7 @@ def get_relax_stru_files(output_dir):
 
     Returns
     -------
-        strus: list of STRU files
-
+    strus: list of STRU files
     example:
         ["STRU_ION1_D", "STRU_ION2_D"]
     """
