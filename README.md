@@ -15,7 +15,7 @@ If you use this software, please cite the following paper:
 
 ## Installation
 
-dpdata only supports Python 3.8 and above. You can [setup a conda/pip environment](https://docs.deepmodeling.com/faq/conda.html), and then use one of the following methods to install dpdata:
+dpdata only supports Python 3.10 and above. You can [setup a conda/pip environment](https://docs.deepmodeling.com/faq/conda.html), and then use one of the following methods to install dpdata:
 
 - Install via pip: `pip install dpdata`
 - Install via conda: `conda install -c conda-forge dpdata`

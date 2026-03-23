@@ -10,7 +10,6 @@ from copy import deepcopy
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterable,
     Literal,
     overload,
 )
@@ -37,6 +36,8 @@ from dpdata.utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     import parmed
 
 
