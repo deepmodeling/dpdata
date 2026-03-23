@@ -6,11 +6,11 @@ import hashlib
 import numbers
 import os
 import warnings
+from collections.abc import Iterable
 from copy import deepcopy
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterable,
     Literal,
     overload,
 )
