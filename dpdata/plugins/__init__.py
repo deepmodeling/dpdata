@@ -1,12 +1,8 @@
 from __future__ import annotations
 
 import importlib
+from importlib import metadata
 from pathlib import Path
-
-try:
-    from importlib import metadata
-except ImportError:  # for Python<3.8
-    import importlib_metadata as metadata
 
 PACKAGE_BASE = "dpdata.plugins"
 NOT_LOADABLE = ("__init__.py",)
