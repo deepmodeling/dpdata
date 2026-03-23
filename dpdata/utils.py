@@ -3,7 +3,7 @@ from __future__ import annotations
 import io
 import os
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Generator, Literal, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 import numpy as np
 
@@ -130,6 +130,8 @@ def utf8len(s: str) -> int:
 
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     FileType = io.IOBase | str | os.PathLike
 
 

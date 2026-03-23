@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -10,6 +10,8 @@ from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     import ase
     from ase.optimize.optimize import Optimizer
 
