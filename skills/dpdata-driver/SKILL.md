@@ -1,6 +1,11 @@
 ---
 name: dpdata-driver
 description: Use dpdata Python Driver plugins to label systems (energies/forces/virials) via System.predict(), list available drivers, and build Driver objects (ase/deepmd/gaussian/sqm/hybrid). Use when working with dpdata Python API (not CLI) and you need driver-based energy/force prediction, plugin registration keys, or examples of using dpdata with ASE calculators or DeePMD models.
+license: LGPL-3.0-or-later
+compatibility: Requires dpdata or uv for running dpdata
+metadata:
+  author: njzjz-bot
+  version: '1.0'
 ---
 
 # dpdata-driver
