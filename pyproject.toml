@@ -24,8 +24,7 @@ dependencies = [
     'scipy',
     'h5py',
     'wcmatch',
-    'lmdb>=0.98,<1; python_version < "3.9"',
-    'lmdb; python_version >= "3.9"',
+    'lmdb',
     'msgpack-numpy',
 ]
 requires-python = ">=3.10"
