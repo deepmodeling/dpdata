@@ -48,8 +48,8 @@ class TestLmp(unittest.TestCase):
     def tearDown(self):
         pass  # if os.path.isfile(self.lmp_coord_name):os.remove(self.lmp_coord_name)
 
-    def test_dump_input(self):
-        self.tmp_system.to("lammps/lmp", self.lmp_coord_name)
+    def test_dump_input(self, output_spins=False):
+        self.tmp_system.to("lammps/lmp", self.lmp_coord_name, output_spins=output_spins)
         self.assertTrue(os.path.isfile(self.lmp_coord_name))
         with open(self.lmp_coord_name) as f:
             c = f.read()
@@ -58,9 +58,9 @@ class TestLmp(unittest.TestCase):
      2      2    1.2621856000    0.7018028000    0.5513885000    0.0000000000    0.8000000000    0.6000000000    5.0000000000"""
         self.assertTrue(coord_ref in c)
 
-    def test_dump_input_zero_spin(self):
+    def test_dump_input_zero_spin(self, output_spins=True):
         self.tmp_system.data["spins"] = [[[0, 0, 0], [0, 0, 0]]]
-        self.tmp_system.to("lammps/lmp", self.lmp_coord_name)
+        self.tmp_system.to("lammps/lmp", self.lmp_coord_name, output_spins=output_spins)
         self.assertTrue(os.path.isfile(self.lmp_coord_name))
         with open(self.lmp_coord_name) as f:
             c = f.read()

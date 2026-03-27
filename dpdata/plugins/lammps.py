@@ -123,7 +123,10 @@ class LAMMPSLmpFormat(Format):
             other parameters
         """
         assert frame_idx < len(data["coords"])
-        w_str = dpdata.lammps.lmp.from_system_data(data, frame_idx)
+        output_spins = bool(kwargs.pop("output_spins", False))
+        w_str = dpdata.lammps.lmp.from_system_data(
+            data, frame_idx, output_spins=output_spins
+        )
         with open_file(file_name, "w") as fp:
             fp.write(w_str)
 
