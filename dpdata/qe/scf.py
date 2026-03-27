@@ -47,6 +47,205 @@ def get_block(lines, keyword, skip=0):
     return ret
 
 
+def _parse_lattice_parameters(lines):
+    """Parse lattice parameters from QE input lines."""
+    params = {}
+    for iline in lines:
+        line = iline.replace("=", " ").replace(",", "").split()
+        if len(line) >= 2:
+            if line[0] == "a":
+                params["a"] = float(line[1])
+            elif line[0] == "b":
+                params["b"] = float(line[1])
+            elif line[0] == "c":
+                params["c"] = float(line[1])
+            elif line[0] == "cosab":
+                params["cosab"] = float(line[1])
+            elif line[0] == "cosac":
+                params["cosac"] = float(line[1])
+            elif line[0] == "cosbc":
+                params["cosbc"] = float(line[1])
+            elif line[0].startswith("celldm("):
+                # Extract celldm index from celldm(1), celldm(2), etc.
+                idx = int(line[0][7:-1])  # Extract number from celldm(n)
+                if "celldm" not in params:
+                    params["celldm"] = {}
+                params["celldm"][idx] = float(line[1])
+    return params
+
+
+def _convert_ibrav_to_cell(ibrav, params):
+    """Convert ibrav and lattice parameters to cell matrix."""
+    # Extract parameters
+    a = params.get("a")
+    b = params.get("b") 
+    c = params.get("c")
+    cosab = params.get("cosab", 0.0)
+    cosac = params.get("cosac", 0.0)
+    cosbc = params.get("cosbc", 0.0)
+    celldm = params.get("celldm", {})
+    
+    # Convert celldm parameters if present (celldm is in atomic units)
+    if 1 in celldm:
+        a = celldm[1] * bohr2ang if a is None else a
+    if 2 in celldm and a is not None:
+        b = celldm[2] * a if b is None else b
+    if 3 in celldm and a is not None:
+        c = celldm[3] * a if c is None else c
+    if 4 in celldm:
+        cosab = celldm[4] if cosab == 0.0 else cosab
+    if 5 in celldm:
+        cosac = celldm[5] if cosac == 0.0 else cosac
+    if 6 in celldm:
+        cosbc = celldm[6] if cosbc == 0.0 else cosbc
+    
+    # Set defaults only for ibrav types that don't require explicit b,c
+    if ibrav in [1, 2, 3, -3]:  # Cubic lattices
+        if b is None:
+            b = a
+        if c is None:
+            c = a
+    elif ibrav in [6, 7]:  # Tetragonal lattices
+        if b is None:
+            b = a
+        # c must be specified explicitly
+    
+    # Validate required parameters
+    if a is None:
+        raise RuntimeError("parameter 'a' or 'celldm(1)' cannot be found.")
+    
+    # Generate cell matrix based on ibrav
+    if ibrav == 1:  # simple cubic
+        return np.array([[a, 0.0, 0.0], [0.0, a, 0.0], [0.0, 0.0, a]])
+    
+    elif ibrav == 2:  # face-centered cubic
+        return a * 0.5 * np.array([[-1, 0, 1], [0, 1, 1], [-1, 1, 0]])
+    
+    elif ibrav == 3:  # body-centered cubic
+        return a * 0.5 * np.array([[1, 1, 1], [-1, 1, 1], [-1, -1, 1]])
+        
+    elif ibrav == -3:  # reverse body-centered cubic
+        return a * 0.5 * np.array([[-1, 1, 1], [1, -1, 1], [1, 1, -1]])
+    
+    elif ibrav == 4:  # hexagonal
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=4")
+        return np.array([[a, 0, 0], 
+                        [-a/2, a*np.sqrt(3)/2, 0], 
+                        [0, 0, c]])
+    
+    elif ibrav == 6:  # simple tetragonal  
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=6")
+        return np.array([[a, 0, 0], [0, a, 0], [0, 0, c]])
+    
+    elif ibrav == 7:  # body-centered tetragonal
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=7")
+        return np.array([[a/2, -a/2, c/2], 
+                        [a/2, a/2, c/2], 
+                        [-a/2, -a/2, c/2]])
+    
+    elif ibrav == 8:  # simple orthorhombic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=8")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=8")
+        return np.array([[a, 0, 0], [0, b, 0], [0, 0, c]])
+    
+    elif ibrav == 9:  # base-centered orthorhombic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=9")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=9")
+        return np.array([[a/2, b/2, 0], 
+                        [-a/2, b/2, 0], 
+                        [0, 0, c]])
+    
+    elif ibrav == -9:  # reverse base-centered orthorhombic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=-9")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=-9")
+        return np.array([[a/2, -b/2, 0], 
+                        [a/2, b/2, 0], 
+                        [0, 0, c]])
+    
+    elif ibrav == 10:  # face-centered orthorhombic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=10")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=10")
+        return np.array([[a/2, 0, c/2], 
+                        [a/2, b/2, 0], 
+                        [0, b/2, c/2]])
+    
+    elif ibrav == 11:  # body-centered orthorhombic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=11")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=11")
+        return np.array([[a/2, b/2, c/2], 
+                        [-a/2, b/2, c/2], 
+                        [-a/2, -b/2, c/2]])
+    
+    elif ibrav == 12:  # simple monoclinic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=12")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=12")
+        sinab = np.sqrt(1 - cosab**2)
+        return np.array([[a, 0, 0], 
+                        [b*cosab, b*sinab, 0], 
+                        [0, 0, c]])
+    
+    elif ibrav == -12:  # reverse monoclinic 
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=-12")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=-12")
+        sinac = np.sqrt(1 - cosac**2)
+        return np.array([[a, 0, 0], 
+                        [0, b, 0], 
+                        [c*cosac, 0, c*sinac]])
+    
+    elif ibrav == 13:  # base-centered monoclinic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=13")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=13")
+        sinab = np.sqrt(1 - cosab**2)
+        return np.array([[a/2, 0, -c/2], 
+                        [b*cosab, b*sinab, 0], 
+                        [a/2, 0, c/2]])
+    
+    elif ibrav == -13:  # reverse base-centered monoclinic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=-13")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=-13")
+        sinac = np.sqrt(1 - cosac**2)
+        return np.array([[a/2, -b/2, 0], 
+                        [a/2, b/2, 0], 
+                        [c*cosac, 0, c*sinac]])
+    
+    elif ibrav == 14:  # triclinic
+        if b is None:
+            raise RuntimeError("parameter 'b' or 'celldm(2)' required for ibrav=14")
+        if c is None:
+            raise RuntimeError("parameter 'c' or 'celldm(3)' required for ibrav=14")
+        sinab = np.sqrt(1 - cosab**2)
+        sinac = np.sqrt(1 - cosac**2)
+        cosbc_prime = (cosbc - cosab*cosac) / (sinab*sinac)
+        sinbc_prime = np.sqrt(1 - cosbc_prime**2)
+        return np.array([[a, 0, 0], 
+                        [b*cosab, b*sinab, 0], 
+                        [c*cosac, c*sinac*cosbc_prime, c*sinac*sinbc_prime]])
+    
+    else:
+        raise RuntimeError(f"ibrav = {ibrav} is not supported yet.")
+
+
 def get_cell(lines):
     ret = []
     for idx, ii in enumerate(lines):
@@ -54,6 +253,7 @@ def get_cell(lines):
             break
     blk = lines[idx : idx + 2]
     ibrav = int(blk[0].replace(",", "").split("=")[-1])
+    
     if ibrav == 0:
         for iline in lines:
             if "CELL_PARAMETERS" in iline and "angstrom" not in iline.lower():
@@ -64,21 +264,11 @@ def get_cell(lines):
         for ii in blk:
             ret.append([float(jj) for jj in ii.split()[0:3]])
         ret = np.array(ret)
-    elif ibrav == 1:
-        a = None
-        for iline in lines:
-            line = iline.replace("=", " ").replace(",", "").split()
-            if len(line) >= 2 and "a" == line[0]:
-                # print("line = ", line)
-                a = float(line[1])
-            if len(line) >= 2 and "celldm(1)" == line[0]:
-                a = float(line[1]) * bohr2ang
-        # print("a = ", a)
-        if not a:
-            raise RuntimeError("parameter 'a' or 'celldm(1)' cannot be found.")
-        ret = np.array([[a, 0.0, 0.0], [0.0, a, 0.0], [0.0, 0.0, a]])
     else:
-        raise RuntimeError("ibrav > 1 not supported yet.")
+        # Parse lattice parameters and convert based on ibrav
+        params = _parse_lattice_parameters(lines)
+        ret = _convert_ibrav_to_cell(ibrav, params)
+    
     return ret
 
 
