@@ -1,0 +1,74 @@
+ DBCSR| Multiplication driver                                               XSMM
+ DBCSR| Multrec recursion limit                                              512
+
+  **** **** ******  **  PROGRAM STARTED AT               2025-01-15 10:30:00.000
+ ***** ** ***  *** **   PROGRAM STARTED ON                          test-machine
+ **    ****   ******    PROGRAM STARTED BY                               test
+ ***** **    ** ** **   PROGRAM PROCESS ID                                 12345
+  **** **  *******  **  PROGRAM STARTED IN /test
+
+ CP2K| version string:                                          CP2K version 2025.1
+ CP2K| source code revision number:                                    git:abc123
+
+ GLOBAL| Force Environment number                                              1
+ GLOBAL| Run type                                                   ENERGY_FORCE
+ GLOBAL| Global print level                                               MEDIUM
+ GLOBAL| Total number of message passing processes                             1
+
+ MEMORY| system memory details [Kb]
+
+ CELL| Vector a [angstrom]:       5.000     0.000     0.000    |a| =       5.000
+ CELL| Vector b [angstrom]:       0.000     5.000     0.000    |b| =       5.000
+ CELL| Vector c [angstrom]:       0.000     0.000     5.000    |c| =       5.000
+
+ ATOMIC KIND INFORMATION
+
+  1. Atomic kind: H                                     Number of atoms:       2
+
+ MOLECULE KIND INFORMATION
+
+ TOTAL NUMBERS AND MAXIMUM NUMBERS
+
+  Total number of            - Atomic kinds:                                   1
+                             - Atoms:                                          2
+
+
+ SCF WAVEFUNCTION OPTIMIZATION
+
+  Step     Update method      Time    Convergence         Total energy    Change
+  ------------------------------------------------------------------------------
+
+     1 OT DIIS     0.80E-01    0.1     0.00000001        -7.3641902645877 -7.36E+00
+
+ *** SCF run converged in     1 steps ***
+
+
+ *******************************************************************************
+ MODULE QUICKSTEP:  ATOMIC COORDINATES IN angstrom
+
+  Atom  Kind  Element       X           Y           Z          Z(eff)       Mass
+
+       1     1 H    1    0.000000    0.000000    0.000000      1.00       1.0079
+       2     1 H    1    0.760000    0.000000    0.000000      1.00       1.0079
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy [hartree] -7.364190264587725
+
+ FORCES| Atomic forces [hartree/bohr]
+
+ FORCES| Atom x y z |f|
+
+ FORCES| 1 -5.73440344E-02 2.95274914E-02 -1.50988167E-02 6.62433792E-02
+ FORCES| 2 7.92269287E-02 3.84670665E-02 -3.41478833E-02 9.44600412E-02
+
+ STRESS TENSOR [GPa]
+
+            X               Y               Z
+  X       0.12345678      0.00000000      0.00000000
+  Y       0.00000000      0.12345678      0.00000000
+  Z       0.00000000      0.00000000      0.12345678
+
+ -------------------------------------------------------------------------------
+ -                                                                             -\n -                                T I M I N G                                  -
+ -------------------------------------------------------------------------------
+
+  **** **** ******  **  PROGRAM ENDED AT                 2025-01-15 10:30:05.000
