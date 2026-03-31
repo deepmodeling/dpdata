@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from dpdata.periodic_table import Element, ELEMENTS
+from dpdata.periodic_table import ELEMENTS, Element
 
 ptr_float_fmt = "%15.10f"
 ptr_int_fmt = "%6d"
