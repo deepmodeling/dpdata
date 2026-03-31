@@ -128,6 +128,15 @@ class TestLmpDumpMasses(unittest.TestCase):
 
         self.assertNotIn("Masses\n", content)
 
+    def test_dump_rejects_mismatched_explicit_masses(self):
+        system = dpdata.System(POSCAR_CONF_LMP, type_map=["O", "H"])
+        system.data["masses"] = np.array([15.9994, 1.00794, 99.0])
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output = os.path.join(tmpdir, "tmp_bad_masses.lmp")
+            with self.assertRaisesRegex(ValueError, r'system\["masses"\]'):
+                system.to_lammps_lmp(output)
+
 
 if __name__ == "__main__":
     unittest.main()

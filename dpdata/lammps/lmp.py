@@ -502,11 +502,24 @@ def _get_lammps_masses(system) -> np.ndarray | None:
     np.ndarray or None
         Per-type masses aligned with ``atom_names``. Returns ``None`` when the
         masses cannot be determined safely.
+
+    Raises
+    ------
+    ValueError
+        If explicit ``system["masses"]`` is present but does not match the
+        length of ``atom_names``.
     """
     atom_names = system["atom_names"]
     masses = system.get("masses")
-    if masses is not None and len(masses) >= len(atom_names):
-        return np.asarray(masses[: len(atom_names)], dtype=float)
+    if masses is not None:
+        masses = np.asarray(masses, dtype=float)
+        if masses.ndim != 1 or len(masses) != len(atom_names):
+            raise ValueError(
+                'Explicit system["masses"] must be a 1D array with the same '
+                'length as system["atom_names"] to write the LAMMPS Masses '
+                "section."
+            )
+        return masses
 
     if not all(name in ELEMENTS for name in atom_names):
         return None
