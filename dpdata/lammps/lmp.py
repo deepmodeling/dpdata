@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from dpdata.periodic_table import ELEMENTS, Element
+
 ptr_float_fmt = "%15.10f"
 ptr_int_fmt = "%6d"
 ptr_key_fmt = "%15s"
@@ -484,6 +486,47 @@ def rotate_to_lower_triangle(
     return cell, coord
 
 
+def _get_lammps_masses(system) -> np.ndarray | None:
+    """Get masses for the LAMMPS ``Masses`` section.
+
+    Prefer explicitly stored masses when available. Otherwise, infer masses from
+    ``atom_names`` when all names are valid chemical element symbols.
+
+    Parameters
+    ----------
+    system : dict
+        System data dictionary
+
+    Returns
+    -------
+    np.ndarray or None
+        Per-type masses aligned with ``atom_names``. Returns ``None`` when the
+        masses cannot be determined safely.
+
+    Raises
+    ------
+    ValueError
+        If explicit ``system["masses"]`` is present but does not match the
+        length of ``atom_names``.
+    """
+    atom_names = system["atom_names"]
+    masses = system.get("masses")
+    if masses is not None:
+        masses = np.asarray(masses, dtype=float)
+        if masses.ndim != 1 or len(masses) != len(atom_names):
+            raise ValueError(
+                'Explicit system["masses"] must be a 1D array with the same '
+                'length as system["atom_names"] to write the LAMMPS Masses '
+                "section."
+            )
+        return masses
+
+    if not all(name in ELEMENTS for name in atom_names):
+        return None
+
+    return np.array([Element(name).mass for name in atom_names], dtype=float)
+
+
 def from_system_data(system, f_idx=0):
     ret = ""
     ret += "\n"
@@ -514,6 +557,16 @@ def from_system_data(system, f_idx=0):
         cell[2][1],
     )  # noqa: UP031
     ret += "\n"
+
+    masses = _get_lammps_masses(system)
+    if masses is not None:
+        ret += "Masses\n"
+        ret += "\n"
+        mass_fmt = ptr_int_fmt + " " + ptr_float_fmt + " # %s\n"  # noqa: UP031
+        for ii, (mass, atom_name) in enumerate(zip(masses, system["atom_names"])):
+            ret += mass_fmt % (ii + 1, mass, atom_name)
+        ret += "\n"
+
     ret += "Atoms # atomic\n"
     ret += "\n"
     coord_fmt = (
