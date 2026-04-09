@@ -6,7 +6,7 @@ This section gives some examples on how dpdata works. Firstly one needs to impor
 import dpdata
 ```
 
-The typicall workflow of `dpdata` is
+The typical workflow of `dpdata` is
 
 1. Load data from vasp or lammps or deepmd-kit data files.
 1. Manipulate data
@@ -108,7 +108,7 @@ dpdata.System("./POSCAR").replicate(
 )
 ```
 
-tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copys in y direction, make 3 copys in z direction.
+tuple(1,2,3) means don't copy atom configuration in x direction, make 2 copies in y direction, make 3 copies in z direction.
 
 ### perturb
 
@@ -126,7 +126,7 @@ print(perturbed_system.data)
 
 ### replace
 
-By the following example, Random 8 Hf atoms in the system will be replaced by Zr atoms with the atom postion unchanged.
+By the following example, Random 8 Hf atoms in the system will be replaced by Zr atoms with the atom position unchanged.
 
 ```python
 s = dpdata.System("tests/poscars/POSCAR.P42nmc", fmt="vasp/poscar")
