@@ -1,6 +1,6 @@
 # `MultiSystems`
 
-The Class {class}`dpdata.MultiSystems` can read data from a dir which may contains many files of different systems, or from single xyz file which contains different systems.
+The Class {class}`dpdata.MultiSystems` can read data from a dir which may contains many files of different systems, or from a single xyz file that contains different systems.
 
 Use {meth}`dpdata.MultiSystems.from_dir` to read from a directory, {class}`dpdata.MultiSystems` will walk in the directory
 Recursively and find all file with specific file_name. Supports all the file formats that {class}`dpdata.LabeledSystem` supports.
@@ -26,11 +26,11 @@ vasp_multi_systems = dpdata.MultiSystems.from_dir(
     dir_name="./mgal_outcar", file_name="*OUTCAR", fmt="vasp/outcar"
 )
 
-# print the multi_system infomation
+# print the multi_system information
 print(xyz_multi_systems)
 print(xyz_multi_systems.systems)  # return a dictionaries
 
-# print the system infomation
+# print the system information
 print(xyz_multi_systems.systems["B1C9"].data)
 
 # dump a system's data to ./my_work_dir/B1C9_raw folder
@@ -40,7 +40,7 @@ xyz_multi_systems.systems["B1C9"].to_deepmd_raw("./my_work_dir/B1C9_raw")
 xyz_multi_systems.to_deepmd_raw("./my_deepmd_data/")
 ```
 
-You may also use the following code to parse muti-system:
+You may also use the following code to parse multi-system:
 
 ```python
 from dpdata import LabeledSystem, MultiSystems
@@ -49,7 +49,7 @@ from glob import glob
 """
 process multi systems
 """
-fs = glob("./*/OUTCAR")  # remeber to change here !!!
+fs = glob("./*/OUTCAR")  # remember to change here !!!
 ms = MultiSystems()
 for f in fs:
     try:
