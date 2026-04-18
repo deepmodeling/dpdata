@@ -1,15 +1,23 @@
 from __future__ import annotations
 
 import importlib.util
+import os
+import sys
 import unittest
-from pathlib import Path
 from unittest.mock import patch
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "dpdata" / "rdkit" / "sanitize.py"
-SPEC = importlib.util.spec_from_file_location("dpdata_rdkit_sanitize", MODULE_PATH)
-sanitize = importlib.util.module_from_spec(SPEC)
-assert SPEC.loader is not None
-SPEC.loader.exec_module(sanitize)
+
+_SKIP_REASON = None
+if importlib.util.find_spec("rdkit") is None:
+    _SKIP_REASON = "requires rdkit"
+    sanitize = None
+else:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    try:
+        from dpdata.rdkit import sanitize
+    except ModuleNotFoundError as exc:
+        _SKIP_REASON = f"missing test dependency: {exc.name}"
+        sanitize = None
 
 
 class _Bond:
@@ -65,21 +73,37 @@ class _ChemNewAPI:
         EXPLICIT = object()
 
 
+class _ChemOldAPI:
+    pass
+
+
+class _RdkitModule:
+    def __init__(self, chem):
+        self.Chem = chem
+
+
+@unittest.skipIf(_SKIP_REASON is not None, _SKIP_REASON or "skip")
 class TestGetExplicitValence(unittest.TestCase):
     def test_prefers_new_rdkit_valence_api(self):
         atom = _AtomNewAPI(explicit_valence=4)
+        fake_rdkit = _RdkitModule(_ChemNewAPI)
         with patch.dict(
-            "sys.modules", {"rdkit": type("_Rdkit", (), {"Chem": _ChemNewAPI})}
+            "sys.modules", {"rdkit": fake_rdkit, "rdkit.Chem": _ChemNewAPI}
         ):
             self.assertEqual(sanitize.get_explicit_valence(atom), 4)
             self.assertIs(atom.valence_type, _ChemNewAPI.ValenceType.EXPLICIT)
 
     def test_falls_back_to_legacy_api_when_new_api_missing(self):
         atom = _AtomOldAPI(explicit_valence=4)
-        with patch.dict(
-            "sys.modules", {"rdkit": type("_Rdkit", (), {"Chem": object()})}
-        ):
-            self.assertEqual(sanitize.get_explicit_valence(atom), 4)
+        fake_rdkit = _RdkitModule(_ChemOldAPI)
+        with patch.object(
+            atom, "GetExplicitValence", wraps=atom.GetExplicitValence
+        ) as mock_get_explicit_valence:
+            with patch.dict(
+                "sys.modules", {"rdkit": fake_rdkit, "rdkit.Chem": _ChemOldAPI}
+            ):
+                self.assertEqual(sanitize.get_explicit_valence(atom), 4)
+            mock_get_explicit_valence.assert_called_once_with()
 
 
 if __name__ == "__main__":
