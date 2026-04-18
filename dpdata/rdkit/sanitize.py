@@ -10,11 +10,18 @@ def get_explicit_valence(atom, verbose=False):
         sum([bond.GetBondTypeAsDouble() for bond in atom.GetBonds()])
     )
     try:
-        exp_val = atom.GetExplicitValence()
+        try:
+            from rdkit import Chem
+
+            exp_val = atom.GetValence(Chem.ValenceType.EXPLICIT)
+            valence_method = "GetValence(Chem.ValenceType.EXPLICIT)"
+        except (ImportError, AttributeError, TypeError):
+            exp_val = atom.GetExplicitValence()
+            valence_method = "GetExplicitValence()"
         if exp_val != exp_val_calculated_from_bonds:
             if verbose:
                 print(
-                    f"Explicit valence given by GetExplicitValence() and sum of bond order are inconsistent on {atom.GetSymbol()}{atom.GetIdx() + 1}, using sum of bond order."
+                    f"Explicit valence given by {valence_method} and sum of bond order are inconsistent on {atom.GetSymbol()}{atom.GetIdx() + 1}, using sum of bond order."
                 )
         return exp_val_calculated_from_bonds
     except Exception:
