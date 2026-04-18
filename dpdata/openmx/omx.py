@@ -69,20 +69,15 @@ def load_cells(lines):
         if "Cell_Vectors=" in line:
             part = line.split("Cell_Vectors=")[1]
             parts = part.split()
-            if len(parts) < 9:
-                raise RuntimeError("Cell_Vectors does not contain enough elements.")
             values = list(map(float, parts[:9]))
             cell = [values[0:3], values[3:6], values[6:9]]
             cells.append(cell)
             # Checking SCF converged or not
             for token in line.split():
                 if token.startswith("scf_conv="):
-                    try:
-                        scf_conv = int(token.split("=")[1])
-                        if scf_conv == 0:
-                            warnings.warn("SCF not converged!", stacklevel=2)
-                    except (IndexError, ValueError):
-                        pass
+                    scf_conv = int(token.split("=")[1])
+                    if scf_conv == 0:
+                        warnings.warn("SCF not converged!", stacklevel=2)
     cells = np.array(cells)
     return cells
 
