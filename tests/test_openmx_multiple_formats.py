@@ -28,7 +28,8 @@ class TestOPENMXTRAJProps:
             for ii in range(3):
                 for jj in range(3):
                     self.assertAlmostEqual(
-                        self.system["cells"][ff][ii][jj], cells[ii][jj]
+                        self.system["cells"][ff][ii][jj],
+                        cells[ff][ii][jj]
                     )
 
     def test_coord(self):
