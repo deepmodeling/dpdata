@@ -6,7 +6,6 @@ import sys
 import unittest
 from unittest.mock import patch
 
-
 _SKIP_REASON = None
 if importlib.util.find_spec("rdkit") is None:
     _SKIP_REASON = "requires rdkit"
