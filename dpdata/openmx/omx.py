@@ -80,7 +80,7 @@ def load_cells(lines):
                     try:
                         scf_conv = int(token.split("=")[1])
                         if scf_conv == 0:
-                            warnings.warn(f"SCF not converged!")
+                            warnings.warn("SCF not converged!", stacklevel=2)
                     except (IndexError, ValueError):
                         pass
     cells = np.array(cells)
