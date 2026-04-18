@@ -183,18 +183,18 @@ def to_system_label(fname, mdname):
     return energy, force
 
 
-if __name__ == "__main__":
-    file_name = "Au111Surface"
-    fname = f"{file_name}.dat"
-    mdname = f"{file_name}.md"
-    atom_names, atom_numbs, atom_types, cells = load_param_file(fname, mdname)
-    coords, steps = load_data(mdname, atom_names, np.sum(atom_numbs))
-    data, steps = to_system_data(fname, mdname)
-    energy, force = to_system_label(fname, mdname)
-    print(atom_names)
-    print(atom_numbs)
-    print(atom_types)
-    # print(cells.shape)
-    # print(coords.shape)
-    # print(len(energy))
-    # print(force.shape)
+# if __name__ == "__main__":
+#     file_name = "Au111Surface"
+#     fname = f"{file_name}.dat"
+#     mdname = f"{file_name}.md"
+#     atom_names, atom_numbs, atom_types, cells = load_param_file(fname, mdname)
+#     coords, steps = load_data(mdname, atom_names, np.sum(atom_numbs))
+#     data, steps = to_system_data(fname, mdname)
+#     energy, force = to_system_label(fname, mdname)
+#     print(atom_names)
+#     print(atom_numbs)
+#     print(atom_types)
+# print(cells.shape)
+# print(coords.shape)
+# print(len(energy))
+# print(force.shape)
