@@ -5,7 +5,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-
 MODULE_PATH = Path(__file__).resolve().parents[1] / "dpdata" / "rdkit" / "sanitize.py"
 SPEC = importlib.util.spec_from_file_location("dpdata_rdkit_sanitize", MODULE_PATH)
 sanitize = importlib.util.module_from_spec(SPEC)
@@ -69,13 +68,17 @@ class _ChemNewAPI:
 class TestGetExplicitValence(unittest.TestCase):
     def test_prefers_new_rdkit_valence_api(self):
         atom = _AtomNewAPI(explicit_valence=4)
-        with patch.dict("sys.modules", {"rdkit": type("_Rdkit", (), {"Chem": _ChemNewAPI})}):
+        with patch.dict(
+            "sys.modules", {"rdkit": type("_Rdkit", (), {"Chem": _ChemNewAPI})}
+        ):
             self.assertEqual(sanitize.get_explicit_valence(atom), 4)
             self.assertIs(atom.valence_type, _ChemNewAPI.ValenceType.EXPLICIT)
 
     def test_falls_back_to_legacy_api_when_new_api_missing(self):
         atom = _AtomOldAPI(explicit_valence=4)
-        with patch.dict("sys.modules", {"rdkit": type("_Rdkit", (), {"Chem": object()})}):
+        with patch.dict(
+            "sys.modules", {"rdkit": type("_Rdkit", (), {"Chem": object()})}
+        ):
             self.assertEqual(sanitize.get_explicit_valence(atom), 4)
 
 
