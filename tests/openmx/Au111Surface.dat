@@ -1,0 +1,192 @@
+#
+# File Name
+#
+
+System.CurrrentDirectory         ./    # default=./
+System.Name               Au111Surface
+level.of.stdout                   1    # default=1 (1-3)
+level.of.fileout                  0    # default=1 (1-3)
+
+#
+# Definition of Atomic Species
+#
+
+Species.Number       2
+<Definition.of.Atomic.Species
+   Au   Au7.0-s3p2d2   Au_CA19
+   H    H6.0-s2p1      H_CA19
+Definition.of.Atomic.Species>
+
+#
+# Atoms
+#
+
+Atoms.Number        4
+Atoms.SpeciesAndCoordinates.Unit   FRAC  # Ang|AU
+<Atoms.SpeciesAndCoordinates
+   1   Au    0.10000000000000    0.33333333333333    0.66666666666667     8.5     8.5     0.0     0.0     0.0     0.0     0     off
+   2   Au    0.11111111111111    0.66666666666667    0.33333333333333     8.5     8.5     0.0     0.0     0.0     0.0     0     off
+   3   Au    0.12222222222222    0.00000000000000    0.00000000000000     8.5     8.5     0.0     0.0     0.0     0.0     0     off
+   4   H    0.13333333333333    0.33333333333333    0.66666666666667     0.5     0.5     0.0     0.0     0.0     0.0     0     off
+Atoms.SpeciesAndCoordinates>
+   #5   H    0.14444444444444    0.66666666666667    0.33333333333333     0.5     0.5     0.0     0.0     0.0     0.0     0     off
+   #6   H    0.15555555555555    0.00000000000000    0.00000000000000     0.5     0.5     0.0     0.0     0.0     0.0     0     off
+
+Atoms.UnitVectors.Unit             Ang # Ang|AU
+<Atoms.UnitVectors
+  211.862723    0.000000    0.000000
+    0.000000    2.883086    0.000000
+    0.000000   -1.441543    2.496826
+Atoms.UnitVectors>
+
+#
+# SCF or Electronic System
+#
+
+scf.XcType                 LSDA-CA     # LDA|LSDA-CA|LSDA-PW
+scf.SpinPolarization        NC         # On|Off|NC
+scf.partialCoreCorrection   on         # On|Off
+scf.Hubbard.U		    off	       # On|Off , default=off 
+scf.Hubbard.Occupation     dual	       # onsite|full|dual , default=dual
+scf.SpinOrbit.Coupling      on         # On|Off , default=off
+scf.Constraint.NC.Spin      off        # On|Off , default=off
+scf.Constraint.NC.Spin.v    1.0        # default=0.0(ev)
+scf.ElectronicTemperature  100.0       # default=300 (K)
+scf.energycutoff           200.0       # default=150 (Ry)
+scf.maxIter                500         # default=40
+scf.EigenvalueSolver       Band        # Recursion|Cluster|Band
+scf.Kgrid                  1 12 12     # means n1 x n2 x n3
+scf.ProExpn.VNA             on         # on|off, default=on
+scf.Mixing.Type           Rmm-Diisk    # Simple|Rmm-Diis|Gr-Pulay
+scf.Init.Mixing.Weight     0.01        # default=0.30
+scf.Min.Mixing.Weight      0.001       # default=0.001
+scf.Max.Mixing.Weight      0.01        # default=0.40
+scf.Mixing.History          30         # default=5
+scf.Mixing.StartPulay       20         # default=6
+scf.criterion             1.0e-8       # default=1.0e-6 (Hartree)
+ESM.switch                 off         # off, on1=v|v|v, on2=m|v|m, on3=v|v|m, on4=on2+EF
+ESM.buffer.range           4.5         # default=10.0 (ang)
+ESM.wall.switch            on
+ESM.wall.position          6.7         # default=10.0 (ang)
+ESM.wall.height           100.0        # default=100.0 (eV)
+
+#
+# 1D FFT
+#
+
+1DFFT.NumGridK             900         # default=900
+1DFFT.NumGridR             900         # default=900
+1DFFT.EnergyCutoff        3600.0       # default=3DFFT.EnergyCutoff*3.0 (Ry)
+
+#
+# Orbital Optimization
+#
+
+orbitalOpt.Method           off        # Off|Unrestricted|Restricted
+orbitalOpt.InitCoes     Symmetrical    # Symmetrical|Free
+orbitalOpt.initPrefactor   0.1         # default=0.1
+orbitalOpt.scf.maxIter      15         # default=12
+orbitalOpt.MD.maxIter        5         # default=5
+orbitalOpt.per.MDIter       20         # default=1000000
+orbitalOpt.criterion      1.0e-4       # default=1.0e-4 (Hartree/borh)^2
+
+#
+# output of contracted orbitals
+#
+
+CntOrb.fileout               off       # on|off, default=off
+Num.CntOrb.Atoms              3        # default=1
+<Atoms.Cont.Orbitals
+ 1
+ 5
+ 9
+Atoms.Cont.Orbitals>
+
+#
+# SCF Order-N
+#
+
+orderN.HoppingRanges        9.2        # default=5.0 (Ang) 
+orderN.NumHoppings           3         # default=2
+orderN.KrylovH.order        600        # default=400
+orderN.recalc.EM            off
+
+#
+# restart using *.rst
+#
+
+scf.restart    off
+
+
+#
+# MD or Geometry Optimization
+#
+
+MD.Type                       Nomd     # Nomd|Constant_Energy_MD|Opt
+MD.maxIter                    1000     # default=1
+MD.Opt.DIIS.History           3        # default=3
+MD.Opt.StartDIIS              5        # default=5
+MD.TimeStep                   1        # default=0.5 (fs)
+MD.Opt.criterion            1.0e-4     # default=1.0e-4 (Hartree/bohr)
+
+#
+# Band dispersion
+#
+
+Band.dispersion              off       # on|off, default=off
+#Band.Nkpath                3
+#<Band.kpath
+#  135  0.0  0.500000  0.000000    0.0   0.000000  0.000000     M  G
+#  135  0.0  0.000000  0.000000    0.0   0.333333  0.333333     G  K
+#  135  0.0  0.333333  0.333333    0.0   0.500000  0.000000     K  M
+#Band.kpath>
+
+
+#
+# MO output
+#
+
+MO.fileout                       off   # on|off
+num.HOMOs                         3    # default=2
+num.LUMOs                         3    # default=2
+
+MO.Nkpoint                        1    # default=1
+<MO.kpoint
+  0.0  0.0  0.0
+MO.kpoint>
+
+#
+# DOS and PDOS
+#
+
+DosGauss.fileout	      off      # on|off , default=off
+DosGauss.Num.Mesh	     500       # default=200
+DosGauss.Width		     0.1       # default=0.2(eV)	
+
+Dos.fileout                   off      # on|off, default=off
+Dos.Erange              -10.0  10.0    # default = -20 20 
+Dos.Kgrid                12 12 12      # default = Kgrid1 Kgrid2 Kgrid3
+
+
+HS.fileout                    on       # on|off, default=off
+
+
+#
+# Spin textures; Mulliken population
+#
+
+Filename.scfout    Au111Surface.scfout # default: default
+Filename.outdata   Au111Surface_BD     # default: default
+Calc.Type          BandDispersion      # default: MulPOnly
+Energy.Range        -1.0  1.0          # eV; default: 0.0  0.0
+Band.Nkpath                2
+<Band.kpath
+  135  0.0  0.500000  0.000000    0.0   0.000000  0.000000     M  G
+  135  0.0  0.000000  0.000000    0.0  -0.500000  0.000000     G -M
+Band.kpath>
+Filename.atomMulP Au111Surface_BD.AMulPBand # default: default
+Filename.xyzdata   Au111Surface_BD_MC       # default: default
+Num.of.Extract.Atom        3                # default: 1
+Extract.Atom               1 2 3            # default: 1 2 ... (Num.of.Extract.Atom)
+MulP.Vec.Scale       0.1  0.1  0.1          # default: 1.0  1.0  1.0
+Data.Reduction             1                # default: 1
