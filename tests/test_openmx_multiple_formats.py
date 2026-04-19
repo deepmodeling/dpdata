@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import unittest
+import warnings
 
 import numpy as np
 from context import dpdata
-import warnings
 
 
 class TestOPENMXTRAJProps:
