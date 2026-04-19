@@ -4,6 +4,7 @@ import unittest
 
 import numpy as np
 from context import dpdata
+import warnings
 
 
 class TestOPENMXTRAJProps:
@@ -49,12 +50,16 @@ class TestOPENMXTRAJProps:
 
 class TestOPENMXTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
-        self.system = dpdata.System("openmx/Au111Surface", fmt="openmx/md")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            self.system = dpdata.System("openmx/Au111Surface", fmt="openmx/md")
 
 
 class TestOPENMXLabeledTraj(unittest.TestCase, TestOPENMXTRAJProps):
     def setUp(self):
-        self.system = dpdata.LabeledSystem("openmx/Au111Surface", fmt="openmx/md")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            self.system = dpdata.LabeledSystem("openmx/Au111Surface", fmt="openmx/md")
 
 
 if __name__ == "__main__":
