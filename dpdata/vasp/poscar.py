@@ -4,6 +4,35 @@ from __future__ import annotations
 import numpy as np
 
 
+def _safe_float(value: str, context: str = "") -> float:
+    """Safely convert string to float with informative error message.
+    
+    Parameters
+    ----------
+    value : str
+        String value to convert to float
+    context : str, optional
+        Context information for error message
+        
+    Returns
+    -------
+    float
+        Converted float value
+        
+    Raises
+    ------
+    ValueError
+        If conversion fails, with informative error message
+    """
+    try:
+        return float(value)
+    except ValueError as e:
+        if context:
+            raise ValueError(f"Failed to parse {context}: {e}") from e
+        else:
+            raise ValueError(f"Failed to convert to float: {e}") from e
+
+
 def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
     def move_flag_mapper(flag):
         if flag == "T":
@@ -17,11 +46,15 @@ def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
     system = {}
     system["atom_names"] = [str(ii) for ii in lines[5].split()]
     system["atom_numbs"] = [int(ii) for ii in lines[6].split()]
-    scale = float(lines[1])
+    scale = _safe_float(lines[1].strip(), "scale factor from POSCAR line 2")
     cell = []
     move_flags = []
     for ii in range(2, 5):
-        boxv = [float(jj) for jj in lines[ii].split()]
+        line_content = lines[ii].split()
+        try:
+            boxv = [_safe_float(jj, f"cell vector component on line {ii+1}") for jj in line_content]
+        except ValueError as e:
+            raise ValueError(f"Failed to parse cell vectors in POSCAR: {e}") from e
         boxv = np.array(boxv) * scale
         cell.append(boxv)
     system["cells"] = [np.array(cell)]
@@ -29,7 +62,10 @@ def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
     coord = []
     for ii in range(8, 8 + natoms):
         tmp = lines[ii].split()
-        tmpv = [float(jj) for jj in tmp[:3]]
+        try:
+            tmpv = [_safe_float(jj, f"coordinate component on line {ii+1}") for jj in tmp[:3]]
+        except ValueError as e:
+            raise ValueError(f"Failed to parse coordinates in POSCAR: {e}") from e
         if cartesian:
             tmpv = np.array(tmpv) * scale
         else:
