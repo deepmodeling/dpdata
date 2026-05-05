@@ -86,30 +86,28 @@ def sort_atom_names(data, type_map=None):
             raise ValueError(f"Active atom types {missing} not in provided type_map.")
 
         # for the condition that type_map is a proper superset of atom_names,
-        # we allow new elements with atom_numb = 0
+        # we allow new elements with atom_numb = 0.
+        # Precompute name -> new index once to avoid repeated O(n_types)
+        # type_map.index(...) calls (which would make the loop O(n_types^2)).
+        name_to_new_idx = {name: i for i, name in enumerate(type_map)}
+
+        # Build new_numbs and the old->new lookup array in a single pass.
+        # Old names absent from type_map have atom_numb == 0 (validated above)
+        # and never appear in atom_types, so -1 is a harmless sentinel for
+        # their slots in the lookup table.
         new_names = list(type_map)
-        new_numbs = []
-        name_to_old_idx = {name: i for i, name in enumerate(orig_names)}
-
-        for name in new_names:
-            if name in name_to_old_idx:
-                new_numbs.append(orig_numbs[name_to_old_idx[name]])
-            else:
-                new_numbs.append(0)
-
-        # build mapping from old atom type index to new one
-        # old_types[i] = j  -->  new_types[i] = type_map.index(atom_names[j])
-        old_to_new_index = {}
+        new_numbs = [0] * len(type_map)
+        lookup = np.full(len(orig_names), -1, dtype=np.int64)
         for old_idx, name in enumerate(orig_names):
-            if name in type_map_set:
-                new_idx = type_map.index(name)
-                old_to_new_index[old_idx] = new_idx
+            new_idx = name_to_new_idx.get(name)
+            if new_idx is not None:
+                lookup[old_idx] = new_idx
+                new_numbs[new_idx] = orig_numbs[old_idx]
 
-        # remap atom_types using the index mapping
-        old_types = np.array(data["atom_types"])
-        new_types = np.empty_like(old_types)
-        for old_idx, new_idx in old_to_new_index.items():
-            new_types[old_types == old_idx] = new_idx
+        # Remap atom_types with a single vectorized fancy-index operation
+        # (O(n_atoms + n_types) instead of O(n_types * n_atoms)).
+        old_types = np.asarray(data["atom_types"])
+        new_types = lookup[old_types]
 
         # update data in-place
         data["atom_names"] = new_names
