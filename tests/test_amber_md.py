@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import os
 import shutil
+import tempfile
 import unittest
 
+import numpy as np
 from comp_sys import CompLabeledSys, IsPBC
 from context import dpdata
+
+from dpdata.amber.md import cell_lengths_angles_to_cell
 
 try:
     import parmed  # noqa: F401
@@ -28,6 +32,82 @@ class TestAmberMD(unittest.TestCase, CompLabeledSys, IsPBC):
     def tearDown(self):
         if os.path.exists("tmp.deepmd.npy"):
             shutil.rmtree("tmp.deepmd.npy")
+
+
+class TestAmberMDNonOrthogonal(unittest.TestCase):
+    def test_cell_lengths_angles_to_cell(self):
+        cell_lengths = np.array([[10.0, 10.0, 15.0], [8.0, 10.0, 12.0]])
+        cell_angles = np.array([[90.0, 90.0, 120.0], [70.0, 80.0, 110.0]])
+
+        cells = cell_lengths_angles_to_cell(cell_lengths, cell_angles)
+
+        self.assertEqual(cells.shape, (2, 3, 3))
+        np.testing.assert_allclose(
+            cells[0],
+            np.array(
+                [
+                    [10.0, 0.0, 0.0],
+                    [-5.0, 5.0 * np.sqrt(3.0), 0.0],
+                    [0.0, 0.0, 15.0],
+                ]
+            ),
+            atol=1e-12,
+        )
+        for frame, lengths, angles in zip(cells, cell_lengths, cell_angles):
+            np.testing.assert_allclose(np.linalg.norm(frame, axis=1), lengths)
+            alpha = np.rad2deg(
+                np.arccos(
+                    np.dot(frame[1], frame[2])
+                    / (np.linalg.norm(frame[1]) * np.linalg.norm(frame[2]))
+                )
+            )
+            beta = np.rad2deg(
+                np.arccos(
+                    np.dot(frame[0], frame[2])
+                    / (np.linalg.norm(frame[0]) * np.linalg.norm(frame[2]))
+                )
+            )
+            gamma = np.rad2deg(
+                np.arccos(
+                    np.dot(frame[0], frame[1])
+                    / (np.linalg.norm(frame[0]) * np.linalg.norm(frame[1]))
+                )
+            )
+            np.testing.assert_allclose([alpha, beta, gamma], angles)
+
+    def test_invalid_cell_angles(self):
+        cell_lengths = np.array([[5.0, 8.0, 12.0], [5.0, 8.0, 12.0]])
+        cell_angles = np.array([[60.0, 70.0, 130.0], [90.0, 90.0, 0.0]])
+
+        with self.assertRaisesRegex(RuntimeError, "Invalid AMBER cell angles"):
+            cell_lengths_angles_to_cell(cell_lengths, cell_angles)
+
+    def test_read_amber_traj_with_nonorthogonal_cells(self):
+        from scipy.io import netcdf_file
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            nc_file = os.path.join(tmpdir, "nonorthogonal.nc")
+            shutil.copy("amber/02_Heat.nc", nc_file)
+            with netcdf_file(nc_file, "a", mmap=False) as f:
+                f.variables["cell_angles"].data[:] = np.array([90.0, 90.0, 120.0])
+
+            system = dpdata.LabeledSystem(
+                "amber/02_Heat",
+                nc_file=nc_file,
+                fmt="amber/md",
+            )
+
+        cell_lengths = np.array([31.397856, 34.100045, 29.272966])
+        expected_cell = np.array(
+            [
+                [cell_lengths[0], 0.0, 0.0],
+                [-0.5 * cell_lengths[1], np.sqrt(3.0) / 2.0 * cell_lengths[1], 0.0],
+                [0.0, 0.0, cell_lengths[2]],
+            ]
+        )
+        np.testing.assert_allclose(system.data["cells"][0], expected_cell, atol=1e-12)
+        np.testing.assert_allclose(system.data["cells"][-1], expected_cell, atol=1e-12)
+        self.assertEqual(system.get_nframes(), 10)
 
 
 @unittest.skipIf(
