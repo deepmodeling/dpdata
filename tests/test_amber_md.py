@@ -75,9 +75,30 @@ class TestAmberMDNonOrthogonal(unittest.TestCase):
             )
             np.testing.assert_allclose([alpha, beta, gamma], angles)
 
+    def test_invalid_cell_lengths(self):
+        cell_lengths = np.array([[0.0, 8.0, 12.0], [5.0, -8.0, 12.0]])
+        cell_angles = np.array([[90.0, 90.0, 90.0], [90.0, 90.0, 90.0]])
+
+        with self.assertRaisesRegex(RuntimeError, "Invalid AMBER cell lengths"):
+            cell_lengths_angles_to_cell(cell_lengths, cell_angles)
+
     def test_invalid_cell_angles(self):
-        cell_lengths = np.array([[5.0, 8.0, 12.0], [5.0, 8.0, 12.0]])
-        cell_angles = np.array([[60.0, 70.0, 130.0], [90.0, 90.0, 0.0]])
+        cell_lengths = np.array(
+            [
+                [5.0, 8.0, 12.0],
+                [5.0, 8.0, 12.0],
+                [5.0, 8.0, 12.0],
+                [5.0, 8.0, 12.0],
+            ]
+        )
+        cell_angles = np.array(
+            [
+                [60.0, 70.0, 130.0],
+                [90.0, 90.0, 0.0],
+                [90.0, 90.0, 180.0],
+                [90.0, 90.0, 180.1],
+            ]
+        )
 
         with self.assertRaisesRegex(RuntimeError, "Invalid AMBER cell angles"):
             cell_lengths_angles_to_cell(cell_lengths, cell_angles)
@@ -85,11 +106,13 @@ class TestAmberMDNonOrthogonal(unittest.TestCase):
     def test_read_amber_traj_with_nonorthogonal_cells(self):
         from scipy.io import netcdf_file
 
+        cell_angles = np.array([90.0, 90.0, 120.0])
         with tempfile.TemporaryDirectory() as tmpdir:
             nc_file = os.path.join(tmpdir, "nonorthogonal.nc")
             shutil.copy("amber/02_Heat.nc", nc_file)
             with netcdf_file(nc_file, "a", mmap=False) as f:
-                f.variables["cell_angles"].data[:] = np.array([90.0, 90.0, 120.0])
+                cell_lengths = np.array(f.variables["cell_lengths"][:])
+                f.variables["cell_angles"].data[:] = cell_angles
 
             system = dpdata.LabeledSystem(
                 "amber/02_Heat",
@@ -97,17 +120,31 @@ class TestAmberMDNonOrthogonal(unittest.TestCase):
                 fmt="amber/md",
             )
 
-        cell_lengths = np.array([31.397856, 34.100045, 29.272966])
-        expected_cell = np.array(
-            [
-                [cell_lengths[0], 0.0, 0.0],
-                [-0.5 * cell_lengths[1], np.sqrt(3.0) / 2.0 * cell_lengths[1], 0.0],
-                [0.0, 0.0, cell_lengths[2]],
-            ]
+        cells = system.data["cells"]
+        self.assertEqual(system.get_nframes(), cell_lengths.shape[0])
+        np.testing.assert_allclose(
+            np.linalg.norm(cells, axis=2), cell_lengths, rtol=1e-7, atol=1e-7
         )
-        np.testing.assert_allclose(system.data["cells"][0], expected_cell, atol=1e-12)
-        np.testing.assert_allclose(system.data["cells"][-1], expected_cell, atol=1e-12)
-        self.assertEqual(system.get_nframes(), 10)
+        dot_products = np.stack(
+            [
+                np.sum(cells[:, 1] * cells[:, 2], axis=1),
+                np.sum(cells[:, 0] * cells[:, 2], axis=1),
+                np.sum(cells[:, 0] * cells[:, 1], axis=1),
+            ],
+            axis=1,
+        )
+        computed_angles = np.rad2deg(
+            np.arccos(
+                dot_products / cell_lengths[:, [1, 0, 0]] / cell_lengths[:, [2, 2, 1]]
+            )
+        )
+        np.testing.assert_allclose(
+            computed_angles,
+            np.broadcast_to(cell_angles, computed_angles.shape),
+            rtol=1e-7,
+            atol=1e-7,
+        )
+        self.assertTrue(np.any(np.abs(cells[:, 1, 0]) > 1e-7))
 
 
 @unittest.skipIf(

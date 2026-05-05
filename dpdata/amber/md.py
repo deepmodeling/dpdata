@@ -45,11 +45,17 @@ def cell_lengths_angles_to_cell(
     b = cell_lengths[..., 1]
     c = cell_lengths[..., 2]
 
+    if np.any(cell_lengths <= 0.0):
+        raise RuntimeError("Invalid AMBER cell lengths")
+    if np.any((cell_angles <= 0.0) | (cell_angles >= 180.0)):
+        raise RuntimeError("Invalid AMBER cell angles")
+
     cos_alpha = np.cos(alpha)
     cos_beta = np.cos(beta)
     cos_gamma = np.cos(gamma)
     sin_gamma = np.sin(gamma)
-    if np.any(np.isclose(sin_gamma, 0.0)):
+    ly = b * sin_gamma
+    if np.any(ly <= 1e-8):
         raise RuntimeError("Invalid AMBER cell angles")
 
     z_factor = (
@@ -59,12 +65,13 @@ def cell_lengths_angles_to_cell(
         - cos_gamma**2
         + 2 * cos_alpha * cos_beta * cos_gamma
     )
-    if np.any(z_factor <= 0.0):
+    lz2 = c**2 * z_factor / sin_gamma**2
+    if np.any(lz2 <= 1e-8):
         raise RuntimeError("Invalid AMBER cell angles")
 
     z = np.sqrt(z_factor) / sin_gamma
 
-    shape = cell_lengths.shape[:-1] + (3, 3)
+    shape = (*cell_lengths.shape[:-1], 3, 3)
     cells = np.zeros(shape)
     cells[..., 0, 0] = a
     cells[..., 1, 0] = b * cos_gamma
