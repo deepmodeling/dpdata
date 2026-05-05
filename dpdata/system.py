@@ -17,7 +17,7 @@ from typing import (
 import numpy as np
 
 import dpdata
-import dpdata.formats.md.pbc
+import dpdata.md.pbc
 
 # ensure all plugins are loaded!
 import dpdata.plugins
@@ -684,9 +684,7 @@ class System:
 
     def apply_pbc(self):
         """Append periodic boundary condition."""
-        ncoord = dpdata.formats.md.pbc.dir_coord(
-            self.data["coords"], self.data["cells"]
-        )
+        ncoord = dpdata.md.pbc.dir_coord(self.data["coords"], self.data["cells"])
         ncoord = ncoord % 1
         self.data["coords"] = np.matmul(ncoord, self.data["cells"])
 

@@ -5,6 +5,8 @@ import unittest
 import numpy as np
 from context import dpdata
 
+from dpdata.formats.qe.traj import convert_celldm
+
 bohr2ang = dpdata.unit.LengthConversion("bohr", "angstrom").value()
 
 
@@ -61,7 +63,7 @@ class TestCPTRAJLabeledTraj(unittest.TestCase, TestCPTRAJProps):
 
 class TestConverCellDim(unittest.TestCase):
     def test_case_null(self):
-        cell = dpdata.qe.traj.convert_celldm(8, [1, 1, 1])
+        cell = convert_celldm(8, [1, 1, 1])
         ref = np.eye(3)
         for ii in range(3):
             for jj in range(3):

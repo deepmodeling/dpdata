@@ -9,6 +9,8 @@ import numpy as np
 from comp_sys import CompSys, IsNoPBC
 from context import dpdata
 
+from dpdata.formats.gaussian.gjf import detect_multiplicity
+
 
 @unittest.skipIf(shutil.which("g16") is None, "g16 is not installed")
 @unittest.skipIf(
@@ -83,9 +85,7 @@ class TestMakeGaussian(unittest.TestCase):
         self._check_multiplicity(["C", "H"], 2)
 
     def _check_multiplicity(self, symbols, multiplicity):
-        self.assertEqual(
-            dpdata.gaussian.gjf.detect_multiplicity(np.array(symbols)), multiplicity
-        )
+        self.assertEqual(detect_multiplicity(np.array(symbols)), multiplicity)
 
     def tearDown(self):
         if os.path.exists("gaussian/tmp.gjf"):

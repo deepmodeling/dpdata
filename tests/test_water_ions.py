@@ -5,6 +5,13 @@ import unittest
 
 from context import dpdata
 
+from dpdata.md.water import (
+    compute_bonds,
+    compute_bonds_ase,
+    compute_bonds_naive,
+    find_ions,
+)
+
 try:
     import ase  # noqa: F401
     import ase.neighborlist  # noqa: F401
@@ -20,16 +27,14 @@ class TestIons(unittest.TestCase):
         self.system.from_lammps_lmp(
             os.path.join("poscars", "conf.waterion.lmp"), type_map=["O", "H"]
         )
-        self.bonds = dpdata.md.water.compute_bonds(
+        self.bonds = compute_bonds(
             self.system.data["cells"][0],
             self.system.data["coords"][0],
             self.system.data["atom_types"],
         )
 
     def test_ions_count(self):
-        no, noh, noh2, noh3, nh = dpdata.md.water.find_ions(
-            self.system.data["atom_types"], self.bonds
-        )
+        no, noh, noh2, noh3, nh = find_ions(self.system.data["atom_types"], self.bonds)
         self.assertEqual(len(no), 0)
         self.assertEqual(len(noh), 1)
         self.assertEqual(len(noh2), 125)
@@ -46,12 +51,12 @@ class TestAseComputeBond(unittest.TestCase):
         self.system.from_lammps_lmp(
             os.path.join("poscars", "conf.waterion.lmp"), type_map=["O", "H"]
         )
-        self.bonds = dpdata.md.water.compute_bonds_naive(
+        self.bonds = compute_bonds_naive(
             self.system.data["cells"][0],
             self.system.data["coords"][0],
             self.system.data["atom_types"],
         )
-        self.bonds_ase = dpdata.md.water.compute_bonds_ase(
+        self.bonds_ase = compute_bonds_ase(
             self.system.data["cells"][0],
             self.system.data["coords"][0],
             self.system.data["atom_types"],

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import dpdata.formats.md.pbc
 import dpdata.formats.qe.scf
 import dpdata.formats.qe.traj
+import dpdata.md.pbc
 from dpdata.format import Format
 
 
@@ -13,7 +13,7 @@ class QECPTrajFormat(Format):
         data, _ = dpdata.formats.qe.traj.to_system_data(
             file_name + ".in", file_name, begin=begin, step=step
         )
-        data["coords"] = dpdata.formats.md.pbc.apply_pbc(
+        data["coords"] = dpdata.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
         )
@@ -24,7 +24,7 @@ class QECPTrajFormat(Format):
         data, cs = dpdata.formats.qe.traj.to_system_data(
             file_name + ".in", file_name, begin=begin, step=step
         )
-        data["coords"] = dpdata.formats.md.pbc.apply_pbc(
+        data["coords"] = dpdata.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
         )
