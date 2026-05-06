@@ -18,6 +18,70 @@ energy_convert = kcalmol2eV
 force_convert = energy_convert
 
 
+def cell_lengths_angles_to_cell(
+    cell_lengths: np.ndarray, cell_angles: np.ndarray
+) -> np.ndarray:
+    """Convert cell lengths and angles to cell vectors.
+
+    Parameters
+    ----------
+    cell_lengths
+        Cell lengths with shape ``(..., 3)`` where the last dimension is
+        ``a, b, c``.
+    cell_angles
+        Cell angles in degrees with shape ``(..., 3)`` where the last dimension
+        is ``alpha, beta, gamma``.
+
+    Returns
+    -------
+    np.ndarray
+        Cell vectors with shape ``(..., 3, 3)``.
+    """
+    alpha = np.deg2rad(cell_angles[..., 0])
+    beta = np.deg2rad(cell_angles[..., 1])
+    gamma = np.deg2rad(cell_angles[..., 2])
+
+    a = cell_lengths[..., 0]
+    b = cell_lengths[..., 1]
+    c = cell_lengths[..., 2]
+
+    if np.any(cell_lengths <= 0.0):
+        raise RuntimeError("Invalid AMBER cell lengths")
+    if np.any((cell_angles <= 0.0) | (cell_angles >= 180.0)):
+        raise RuntimeError("Invalid AMBER cell angles")
+
+    cos_alpha = np.cos(alpha)
+    cos_beta = np.cos(beta)
+    cos_gamma = np.cos(gamma)
+    sin_gamma = np.sin(gamma)
+    ly = b * sin_gamma
+    if np.any(ly <= 1e-8):
+        raise RuntimeError("Invalid AMBER cell angles")
+
+    z_factor = (
+        1
+        - cos_alpha**2
+        - cos_beta**2
+        - cos_gamma**2
+        + 2 * cos_alpha * cos_beta * cos_gamma
+    )
+    lz2 = c**2 * z_factor / sin_gamma**2
+    if np.any(lz2 <= 1e-8):
+        raise RuntimeError("Invalid AMBER cell angles")
+
+    z = np.sqrt(z_factor) / sin_gamma
+
+    shape = (*cell_lengths.shape[:-1], 3, 3)
+    cells = np.zeros(shape)
+    cells[..., 0, 0] = a
+    cells[..., 1, 0] = b * cos_gamma
+    cells[..., 1, 1] = b * sin_gamma
+    cells[..., 2, 0] = c * cos_beta
+    cells[..., 2, 1] = c * (cos_alpha - cos_beta * cos_gamma) / sin_gamma
+    cells[..., 2, 2] = c * z
+    return cells
+
+
 def read_amber_traj(
     parm7_file,
     nc_file,
@@ -85,15 +149,7 @@ def read_amber_traj(
         coords = np.array(f.variables["coordinates"][:])
         cell_lengths = np.array(f.variables["cell_lengths"][:])
         cell_angles = np.array(f.variables["cell_angles"][:])
-        if np.all(cell_angles > 89.99) and np.all(cell_angles < 90.01):
-            # only support 90
-            # TODO: support other angles
-            shape = cell_lengths.shape
-            cells = np.zeros((shape[0], 3, 3))
-            for ii in range(3):
-                cells[:, ii, ii] = cell_lengths[:, ii]
-        else:
-            raise RuntimeError("Unsupported cells")
+        cells = cell_lengths_angles_to_cell(cell_lengths, cell_angles)
 
     if labeled:
         with netcdf_file(mdfrc_file, "r") as f:
