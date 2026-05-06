@@ -27,23 +27,6 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 import warnings
 from collections import OrderedDict
 
-### iterout.c from OpenMX soure code: column numbers and physical quantities ###
-# /* 1: */
-# /* 2,3,4: */
-# /* 5,6,7: force *
-# /* 8: x-component of velocity */
-# /* 9: y-component of velocity */
-# /* 10: z-component of velocity */
-# /* 11: Net charge, electron charge is defined to be negative. */
-# /* 12: magnetic moment (muB) */
-# /* 13,14: angles of spin */
-
-# 15: scf_convergence_flag (optional)
-#
-# 1. Move the declaration of `scf_convergence_flag` in `DFT.c` to `openmx_common.h`.
-# 2. Add `scf_convergence_flag` output to the end of `iterout.c` where `*.md` is written.
-# 3. Recompile OpenMX.
-
 
 def load_atom(lines):
     atom_names = []
@@ -56,9 +39,8 @@ def load_atom(lines):
         elif atom_names_mode:
             parts = line.split()
             atom_names.append(parts[1])
-    natoms = len(atom_names)
     atom_names_original = atom_names
-    atom_names = list(OrderedDict.fromkeys(set(atom_names)))  # Python>=3.7
+    atom_names = list(OrderedDict.fromkeys(set(atom_names)))
     atom_names = sorted(
         atom_names, key=atom_names_original.index
     )  # Unique ordering of atomic species
@@ -82,24 +64,20 @@ def load_atom(lines):
 
 
 def load_cells(lines):
-    cell, cells = [], []
-    for index, line in enumerate(lines):
+    cells = []
+    for line in lines:
         if "Cell_Vectors=" in line:
-            parts = line.split()
-            if len(parts) == 21:  # MD.Type is NVT_NH
-                cell.append([float(parts[12]), float(parts[13]), float(parts[14])])
-                cell.append([float(parts[15]), float(parts[16]), float(parts[17])])
-                cell.append([float(parts[18]), float(parts[19]), float(parts[20])])
-            elif len(parts) == 16:  # MD.Type is Opt
-                cell.append([float(parts[7]), float(parts[8]), float(parts[9])])
-                cell.append([float(parts[10]), float(parts[11]), float(parts[12])])
-                cell.append([float(parts[13]), float(parts[14]), float(parts[15])])
-            else:
-                raise RuntimeError(
-                    "Does the file System.Name.md contain unsupported calculation results?"
-                )
+            part = line.split("Cell_Vectors=")[1]
+            parts = part.split()
+            values = list(map(float, parts[:9]))
+            cell = [values[0:3], values[3:6], values[6:9]]
             cells.append(cell)
-            cell = []
+            # Checking SCF converged or not
+            for token in line.split():
+                if token.startswith("scf_conv="):
+                    scf_conv = int(token.split("=")[1])
+                    if scf_conv == 0:
+                        warnings.warn("SCF not converged!", stacklevel=2)
     cells = np.array(cells)
     return cells
 
@@ -119,7 +97,7 @@ def load_param_file(fname: FileType, mdname: FileType):
 def load_coords(lines, atom_names, natoms):
     cnt = 0
     coord, coords = [], []
-    for index, line in enumerate(lines):
+    for line in lines:
         if "time=" in line:
             continue
         for atom_name in atom_names:
@@ -129,9 +107,6 @@ def load_coords(lines, atom_names, natoms):
                 parts = line.split()
                 for_line = [float(parts[1]), float(parts[2]), float(parts[3])]
                 coord.append(for_line)
-                # It may be necessary to recompile OpenMX to make scf convergence determination.
-                if len(parts) == 15 and parts[14] == "0":
-                    warnings.warn("SCF in System.Name.md has not converged!")
         if cnt == natoms:
             coords.append(coord)
             cnt = 0
@@ -180,7 +155,7 @@ def load_energy(lines):
 def load_force(lines, atom_names, atom_numbs):
     cnt = 0
     field, fields = [], []
-    for index, line in enumerate(lines):
+    for line in lines:
         if "time=" in line:
             continue
         for atom_name in atom_names:
@@ -209,7 +184,7 @@ def to_system_label(fname, mdname):
 
 
 if __name__ == "__main__":
-    file_name = "Cdia"
+    file_name = "Au111Surface"
     fname = f"{file_name}.dat"
     mdname = f"{file_name}.md"
     atom_names, atom_numbs, atom_types, cells = load_param_file(fname, mdname)
@@ -219,7 +194,7 @@ if __name__ == "__main__":
     print(atom_names)
     print(atom_numbs)
     print(atom_types)
-    # print(cells.shape)
-    # print(coords.shape)
-    # print(len(energy))
-    # print(force.shape)
+# print(cells.shape)
+# print(coords.shape)
+# print(len(energy))
+# print(force.shape)
