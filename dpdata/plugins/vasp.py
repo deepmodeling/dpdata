@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-import dpdata.vasp.outcar
-import dpdata.vasp.poscar
-import dpdata.vasp.xml
+import dpdata.formats.vasp.outcar
+import dpdata.formats.vasp.poscar
+import dpdata.formats.vasp.xml
 from dpdata.data_type import Axis, DataType
 from dpdata.format import Format
 from dpdata.utils import open_file, uniq_atom_names
@@ -36,7 +36,7 @@ class VASPPoscarFormat(Format):
     def from_system(self, file_name: FileType, **kwargs):
         with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
-        data = dpdata.vasp.poscar.to_system_data(lines)
+        data = dpdata.formats.vasp.poscar.to_system_data(lines)
         data = uniq_atom_names(data)
         register_move_data(data)
         return data
@@ -75,7 +75,7 @@ class VASPStringFormat(Format):
             other parameters
         """
         assert frame_idx < len(data["coords"])
-        return dpdata.vasp.poscar.from_system_data(data, frame_idx)
+        return dpdata.formats.vasp.poscar.from_system_data(data, frame_idx)
 
 
 # rotate the system to lammps convention
@@ -97,7 +97,7 @@ class VASPOutcarFormat(Format):
             data["energies"],
             tmp_force,
             tmp_virial,
-        ) = dpdata.vasp.outcar.get_frames(
+        ) = dpdata.formats.vasp.outcar.get_frames(
             file_name,
             begin=begin,
             step=step,
@@ -136,7 +136,7 @@ class VASPXMLFormat(Format):
             data["energies"],
             data["forces"],
             tmp_virial,
-        ) = dpdata.vasp.xml.analyze(
+        ) = dpdata.formats.vasp.xml.analyze(
             file_name,
             type_idx_zero=True,
             begin=begin,

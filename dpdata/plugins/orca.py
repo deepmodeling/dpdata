@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from dpdata.format import Format
-from dpdata.orca.output import read_orca_sp_output
+from dpdata.formats.orca.output import read_orca_sp_output
 from dpdata.unit import EnergyConversion, ForceConversion
 
 if TYPE_CHECKING:

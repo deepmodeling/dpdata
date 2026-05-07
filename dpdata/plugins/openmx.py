@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import dpdata.formats.openmx.omx
 import dpdata.md.pbc
-import dpdata.openmx.omx
 from dpdata.format import Format
 
 
@@ -35,7 +35,7 @@ class OPENMXFormat(Format):
         fname = f"{file_name}.dat"
         mdname = f"{file_name}.md"
 
-        data, _ = dpdata.openmx.omx.to_system_data(fname, mdname)
+        data, _ = dpdata.formats.openmx.omx.to_system_data(fname, mdname)
         data["coords"] = dpdata.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
@@ -61,12 +61,12 @@ class OPENMXFormat(Format):
         fname = f"{file_name}.dat"
         mdname = f"{file_name}.md"
 
-        data, cs = dpdata.openmx.omx.to_system_data(fname, mdname)
+        data, cs = dpdata.formats.openmx.omx.to_system_data(fname, mdname)
         data["coords"] = dpdata.md.pbc.apply_pbc(
             data["coords"],
             data["cells"],
         )
-        data["energies"], data["forces"] = dpdata.openmx.omx.to_system_label(
+        data["energies"], data["forces"] = dpdata.formats.openmx.omx.to_system_label(
             fname, mdname
         )
         return data

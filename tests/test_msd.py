@@ -5,6 +5,8 @@ import unittest
 import numpy as np
 from context import dpdata
 
+from dpdata.md.msd import msd as calc_msd
+
 
 class TestMSD(unittest.TestCase):
     def setUp(self):
@@ -22,9 +24,9 @@ class TestMSD(unittest.TestCase):
 
     def test_msd(self):
         # print(self.system['atom_types'] == 0)
-        msd = dpdata.md.msd.msd(self.system)
-        msd0 = dpdata.md.msd.msd(self.system, self.system["atom_types"] == 0)
-        msd1 = dpdata.md.msd.msd(self.system, self.system["atom_types"] == 1)
+        msd = calc_msd(self.system)
+        msd0 = calc_msd(self.system, self.system["atom_types"] == 0)
+        msd1 = calc_msd(self.system, self.system["atom_types"] == 1)
         # print(msd)
         ncomp = msd.shape[0]
         for ii in range(ncomp):

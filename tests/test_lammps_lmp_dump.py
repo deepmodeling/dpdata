@@ -8,7 +8,7 @@ import numpy as np
 from context import dpdata
 from poscars.poscar_ref_oh import TestPOSCARoh
 
-from dpdata.lammps.lmp import rotate_to_lower_triangle
+from dpdata.formats.lammps.lmp import rotate_to_lower_triangle
 
 TEST_DIR = os.path.dirname(__file__)
 POSCAR_CONF_LMP = os.path.join(TEST_DIR, "poscars", "conf.lmp")

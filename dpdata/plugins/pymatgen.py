@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
-import dpdata.pymatgen.molecule
-import dpdata.pymatgen.structure
+import dpdata.formats.pymatgen.molecule
+import dpdata.formats.pymatgen.structure
 from dpdata.format import Format
 
 
@@ -24,7 +24,7 @@ class PyMatgenStructureFormat(Format):
         dict
             data dict
         """
-        return dpdata.pymatgen.structure.from_system_data(structure)
+        return dpdata.formats.pymatgen.structure.from_system_data(structure)
 
     def to_system(self, data, **kwargs):
         """Convert System to Pymatgen Structure obj."""
@@ -56,7 +56,7 @@ class PyMatgenMoleculeFormat(Format):
         except ModuleNotFoundError as e:
             raise ImportError("No module pymatgen.Molecule") from e
 
-        return dpdata.pymatgen.molecule.to_system_data(file_name)
+        return dpdata.formats.pymatgen.molecule.to_system_data(file_name)
 
     def to_system(self, data, **kwargs):
         """Convert System to Pymatgen Molecule obj."""

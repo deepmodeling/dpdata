@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 from context import dpdata
 
-from dpdata.lammps.dump import get_spin
+from dpdata.formats.lammps.dump import get_spin
 
 TRAJ_NO_ID = """ITEM: TIMESTEP
 0

@@ -6,7 +6,7 @@ import warnings
 
 import numpy as np
 
-from ..unit import LengthConversion
+from ...unit import LengthConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
 

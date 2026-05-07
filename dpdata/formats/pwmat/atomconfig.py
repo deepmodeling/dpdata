@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ..periodic_table import ELEMENTS
+from ...periodic_table import ELEMENTS
 
 
 def _to_system_data_lower(lines):

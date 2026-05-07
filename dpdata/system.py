@@ -22,10 +22,10 @@ import dpdata.md.pbc
 # ensure all plugins are loaded!
 import dpdata.plugins
 import dpdata.plugins.deepmd
-from dpdata.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
+from dpdata.formats.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.plugin import Plugin
 from dpdata.utils import (
     add_atom_names,
