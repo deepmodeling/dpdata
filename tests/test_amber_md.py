@@ -9,7 +9,7 @@ import numpy as np
 from comp_sys import CompLabeledSys, IsPBC
 from context import dpdata
 
-from dpdata.amber.md import cell_lengths_angles_to_cell
+from dpdata.formats.amber.md import cell_lengths_angles_to_cell
 
 try:
     import parmed  # noqa: F401
