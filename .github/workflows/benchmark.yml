@@ -21,7 +21,7 @@ jobs:
           **/requirements*.txt
           **/pyproject.toml
     - name: Install dependencies
-      run: uv pip install --system .[test,amber,ase,pymatgen,benchmark] rdkit openbabel-wheel
+      run: uv pip install --system .[test,amber,ase,pymatgen,benchmark] rdkit 'openbabel>=3.2.0'
     - name: Run benchmarks
       uses: CodSpeedHQ/action@v4
       with:
