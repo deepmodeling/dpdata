@@ -111,7 +111,7 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
             f.write("\n")
 
             # Energy line - use provided or default
-            if energy_line:
+            if energy_line is not None:
                 f.write(energy_line + "\n")
             else:
                 f.write(
@@ -124,7 +124,7 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
             f.write(" FORCES| Atom x y z |f|\n")
 
             # Forces lines - use provided or default
-            if forces_lines:
+            if forces_lines is not None:
                 for line in forces_lines:
                     f.write(line + "\n")
             else:
@@ -168,6 +168,9 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
         try:
             system = dpdata.LabeledSystem(fname, fmt="cp2k/output")
             self.assertIsNotNone(system.data["energies"])
+            self.assertAlmostEqual(
+                system.data["energies"][0], -200.3898256786414, places=5
+            )
             self.assertEqual(system.data["forces"].shape[1], 2)
         finally:
             os.unlink(fname)
@@ -184,6 +187,9 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
         try:
             system = dpdata.LabeledSystem(fname, fmt="cp2k/output")
             self.assertEqual(system.data["forces"].shape[1], 2)
+            self.assertAlmostEqual(
+                system.data["forces"][0][0][0], -2.94874881, places=5
+            )
         finally:
             os.unlink(fname)
 
@@ -199,6 +205,9 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
         try:
             system = dpdata.LabeledSystem(fname, fmt="cp2k/output")
             self.assertEqual(system.data["forces"].shape[1], 2)
+            self.assertAlmostEqual(
+                system.data["forces"][0][0][0], -2.94874881, places=5
+            )
         finally:
             os.unlink(fname)
 

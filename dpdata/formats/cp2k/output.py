@@ -438,18 +438,24 @@ def get_frames(fname):
                 if is_cp2k_2025:
                     # Find the energy value after "[hartree]"
                     parts = ii.split()
+                    energy_2025 = None
                     try:
                         hartree_idx = parts.index("[hartree]")
-                        energy = parts[hartree_idx + 1]
+                        energy_2025 = parts[hartree_idx + 1]
                     except (ValueError, IndexError):
                         # Fallback: try to find energy value in the line
                         for part in reversed(parts):
                             try:
                                 float(part)
-                                energy = part
+                                energy_2025 = part
                                 break
                             except ValueError:
                                 continue
+                    if energy_2025 is None:
+                        raise RuntimeError(
+                            f"Cannot parse energy from CP2K 2025 output line: {ii.strip()}"
+                        )
+                    energy = energy_2025
                 else:
                     energy = ii.split()[8]
 
