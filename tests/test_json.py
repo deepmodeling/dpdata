@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import tempfile
 import unittest
 
 from comp_sys import CompLabeledSys, IsPBC
@@ -24,6 +26,22 @@ class TestAsDict(unittest.TestCase, CompLabeledSys, IsPBC):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 4
+
+
+class TestJsonDumpLoad(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.filename = os.path.join(self.tmpdir.name, "h2o.md.json")
+        self.system_1.dump(self.filename)
+        self.system_2 = dpdata.LabeledSystem.load(self.filename)
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+    def tearDown(self):
+        self.tmpdir.cleanup()
 
 
 if __name__ == "__main__":

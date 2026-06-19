@@ -6,7 +6,6 @@ dependencies:
   - xeus-python
   - numpy
   - scipy
-  - monty
   - wcmatch
   - pip:
     - ..

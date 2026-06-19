@@ -20,7 +20,6 @@ classifiers = [
 ]
 dependencies = [
     'numpy>=1.14.3',
-    'monty',
     'scipy',
     'h5py',
     'wcmatch',
@@ -121,7 +120,6 @@ banned-module-level-imports = [
     "deepmd",
     "h5py",
     "wcmatch",
-    "monty",
     "scipy",
 ]
 

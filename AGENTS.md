@@ -9,7 +9,7 @@ Always reference these instructions first and fallback to search or bash command
 - **Bootstrap and install the repository:**
 
   - `cd /home/runner/work/dpdata/dpdata` (or wherever the repo is cloned)
-  - `uv pip install -e .` -- installs dpdata in development mode with core dependencies (numpy, scipy, h5py, monty, wcmatch)
+  - `uv pip install -e .` -- installs dpdata in development mode with core dependencies (numpy, scipy, h5py, wcmatch)
   - Test installation: `dpdata --version` -- should show version like "dpdata v0.1.dev2+..."
 
 - **Run tests:**
@@ -93,7 +93,7 @@ The following are outputs from frequently run commands. Reference them instead o
 
 ### Key dependencies
 
-- Core: numpy>=1.14.3, scipy, h5py, monty, wcmatch
+- Core: numpy>=1.14.3, scipy, h5py, wcmatch
 - Optional: ase (ASE integration), parmed (AMBER), pymatgen (Materials Project), rdkit (molecular analysis)
 - Testing: unittest (built-in), coverage
 - Linting: ruff
@@ -132,7 +132,7 @@ The following are outputs from frequently run commands. Reference them instead o
 
 - **Installation timeouts:** Network timeouts during `uv pip install` are common. If this occurs, try:
 
-  - Individual package installation: `uv pip install numpy scipy h5py monty wcmatch`
+  - Individual package installation: `uv pip install numpy scipy h5py wcmatch`
   - Use `--timeout` option: `uv pip install --timeout 300 -e .`
   - Verify existing installation works: `dpdata --version` should work even if reinstall fails
 
