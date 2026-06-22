@@ -152,6 +152,12 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
                 f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/npy format."
             )
             continue
+        if nframes > 0 and np.asarray(data[dtype.name]).size == 0:
+            # an optional frame property (e.g. forces/virials when
+            # cal_force/cal_stress is disabled) may be empty while the
+            # system still has frames. Skip it instead of writing a
+            # meaningless (nframes, 0) array that cannot be reshaped on load.
+            continue
         ddata = np.reshape(data[dtype.name], [nframes, -1])
         if np.issubdtype(ddata.dtype, np.floating):
             ddata = ddata.astype(comp_prec)
