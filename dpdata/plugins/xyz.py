@@ -56,11 +56,19 @@ class XYZFormat(Format):
 @Format.register("mace/xyz")
 class QuipGapXYZFormat(Format):
     def from_labeled_system(self, data, **kwargs):
-        return data
+        # When called via from_multi_systems iteration, data is already
+        # a parsed info_dict — return as-is.
+        if isinstance(data, dict):
+            return data
+        # When called directly with a filename, read the first frame.
+        file_name = data
+        for frame in QuipGapxyzSystems(file_name, **kwargs):
+            return frame
+        raise RuntimeError(f"No frames found in {file_name}")
 
     def from_multi_systems(self, file_name, **kwargs):
         # here directory is the file_name
-        return QuipGapxyzSystems(file_name)
+        return QuipGapxyzSystems(file_name, **kwargs)
 
     def to_labeled_system(self, data, file_name: FileType, **kwargs):
         """Write LabeledSystem data to QUIP/GAP XYZ format file.
