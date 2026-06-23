@@ -21,14 +21,14 @@ def _parse_stress_to_virials(stress_str, cell, stress_sign=-1):
     Parameters
     ----------
     stress_str : str
-        Space-separated stress values.  Accepts either 9 values (3×3 matrix,
+        Space-separated stress values.  Accepts either 9 values (3x3 matrix,
         row-major) or 6 values (Voigt notation: xx yy zz yz xz xy).
     cell : np.ndarray
-        3×3 cell matrix (Å).
+        3x3 cell matrix (angstrom).
     stress_sign : int
         Sign convention for ``virial = stress_sign * volume * stress``.
         Default ``-1`` follows the ASE convention where
-        ``virial = -V * stress`` (stress in eV/Å³).
+        ``virial = -V * stress`` (stress in eV/angstrom^3).
 
     Returns
     -------
@@ -45,7 +45,7 @@ def _parse_stress_to_virials(stress_str, cell, stress_sign=-1):
         stress = np.array([[xx, xy, xz], [xy, yy, yz], [xz, yz, zz]])
     else:
         raise ValueError(
-            f"stress field must have 6 (Voigt) or 9 (3×3) values, got {len(vals)}"
+            f"stress field must have 6 (Voigt) or 9 (3x3) values, got {len(vals)}"
         )
     volume = abs(np.linalg.det(cell))
     virials = stress_sign * volume * stress
