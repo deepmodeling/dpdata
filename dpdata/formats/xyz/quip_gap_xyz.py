@@ -17,6 +17,12 @@ _ENERGY_KEYS = ("energy", "Energy", "free_energy", "REF_energy", "energies")
 # Accepted per-atom property names for forces.
 _FORCE_KEYS = ("force", "forces")
 
+# Accepted header keys for virial tensor.
+_VIRIAL_KEYS = ("virial", "virials")
+
+# Accepted header keys for stress tensor.
+_STRESS_KEYS = ("stress", "stresses")
+
 
 def _parse_stress_to_virials(stress_str, cell, stress_sign=-1):
     """Convert a stress field string to virial tensor.
@@ -232,17 +238,24 @@ class QuipGapxyzSystems:
 
         # --- virial / stress ---
         virials = None
-        if field_dict.get("virial"):
+        virial_raw = None
+        for vkey in _VIRIAL_KEYS:
+            if field_dict.get(vkey):
+                virial_raw = field_dict[vkey]
+                break
+        stress_raw = None
+        for skey in _STRESS_KEYS:
+            if field_dict.get(skey):
+                stress_raw = field_dict[skey]
+                break
+
+        if virial_raw is not None:
             virials = np.array(
-                [
-                    np.array(
-                        list(filter(bool, field_dict["virial"].split(" ")))
-                    ).reshape(3, 3)
-                ]
+                [np.array(list(filter(bool, virial_raw.split(" ")))).reshape(3, 3)]
             ).astype(np.float64)
-        elif field_dict.get("stress"):
+        elif stress_raw is not None:
             virials = _parse_stress_to_virials(
-                field_dict["stress"], cells, stress_sign=stress_sign
+                stress_raw, cells, stress_sign=stress_sign
             )
 
         # --- energy (try several common keys) ---

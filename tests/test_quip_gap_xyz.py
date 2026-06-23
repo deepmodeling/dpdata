@@ -179,6 +179,37 @@ class TestStressSignPositive(unittest.TestCase):
         np.testing.assert_allclose(self.system.data["virials"], expected, atol=1e-10)
 
 
+class TestVirialsKey(unittest.TestCase):
+    """Read extxyz with 'virials' (plural) instead of 'virial'."""
+
+    def setUp(self):
+        self.ms = dpdata.MultiSystems.from_file("xyz/virials_key.xyz", fmt="extxyz")
+        self.system = list(self.ms.systems.values())[0]
+
+    def test_has_virials(self):
+        self.assertIn("virials", self.system.data)
+
+    def test_virial_values(self):
+        expected = np.array([[[0.27, 0, 0], [0, 0.54, 0], [0, 0, 0.81]]])
+        np.testing.assert_allclose(self.system.data["virials"], expected, atol=1e-10)
+
+
+class TestStressesKey(unittest.TestCase):
+    """Read extxyz with 'stresses' (plural) instead of 'stress'."""
+
+    def setUp(self):
+        self.ms = dpdata.MultiSystems.from_file("xyz/stresses_key.xyz", fmt="extxyz")
+        self.system = list(self.ms.systems.values())[0]
+
+    def test_has_virials(self):
+        self.assertIn("virials", self.system.data)
+
+    def test_virial_values(self):
+        """Same as stress_only: virial = -27 * diag(0.01,0.02,0.03)."""
+        expected = np.array([[[-0.27, 0, 0], [0, -0.54, 0], [0, 0, -0.81]]])
+        np.testing.assert_allclose(self.system.data["virials"], expected, atol=1e-10)
+
+
 # ---------- robustness ----------
 
 
