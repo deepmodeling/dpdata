@@ -14,6 +14,9 @@ from dpdata.periodic_table import Element
 # checked in order of priority.
 _ENERGY_KEYS = ("energy", "Energy", "free_energy", "REF_energy", "energies")
 
+# Accepted per-atom property names for forces.
+_FORCE_KEYS = ("force", "forces")
+
 
 def _parse_stress_to_virials(stress_str, cell, stress_sign=-1):
     """Convert a stress field string to virial tensor.
@@ -167,7 +170,7 @@ class QuipGapxyzSystems:
                     :, used_colomn : used_colomn + field_length
                 ].flatten()
                 used_colomn += field_length
-            elif key in ("force", "forces"):
+            elif key in _FORCE_KEYS:
                 if kv_dict["datatype"] != "R":
                     raise RuntimeError(
                         f"datatype for {key} must be 'R' instead of {kv_dict['datatype']}"
