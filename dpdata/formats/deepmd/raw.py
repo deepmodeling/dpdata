@@ -136,5 +136,11 @@ def dump(folder, data):
                 f"Shape of {dtype.name} is not (nframes, ...), but {dtype.shape}. This type of data will not converted to deepmd/raw format."
             )
             continue
+        if nframes > 0 and np.asarray(data[dtype.name]).size == 0:
+            # an optional frame property (e.g. forces/virials when
+            # cal_force/cal_stress is disabled) may be empty while the
+            # system still has frames. Skip it instead of writing a
+            # meaningless (nframes, 0) array that cannot be reshaped on load.
+            continue
         ddata = np.reshape(data[dtype.name], [nframes, -1])
         np.savetxt(os.path.join(folder, f"{dtype.deepmd_name}.raw"), ddata)
