@@ -32,6 +32,13 @@ class DataError(Exception):
     """Data is not correct."""
 
 
+def _dtype_name(dtype) -> str:
+    """Return a readable name for a dtype that may be a type or a tuple of types."""
+    if isinstance(dtype, tuple):
+        return ", ".join(t.__name__ for t in dtype)
+    return dtype.__name__
+
+
 class DataType:
     """DataType represents a type of data, like coordinates, energies, etc.
 
@@ -96,7 +103,7 @@ class DataType:
             string representation
         """
         return (
-            f"DataType(name='{self.name}', dtype={self.dtype.__name__}, "
+            f"DataType(name='{self.name}', dtype={_dtype_name(self.dtype)}, "
             f"shape={self.shape}, required={self.required}, "
             f"deepmd_name='{self.deepmd_name}')"
         )
@@ -145,7 +152,7 @@ class DataType:
                 pass
             elif not isinstance(data, self.dtype):
                 raise DataError(
-                    f"Type of {self.name} is {type(data).__name__}, but expected {self.dtype.__name__}"
+                    f"Type of {self.name} is {type(data).__name__}, but expected {_dtype_name(self.dtype)}"
                 )
             # check shape
             if self.shape is not None:
