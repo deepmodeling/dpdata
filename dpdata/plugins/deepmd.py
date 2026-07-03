@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 import dpdata
-import dpdata.deepmd.comp
-import dpdata.deepmd.hdf5
-import dpdata.deepmd.mixed
-import dpdata.deepmd.raw
+import dpdata.formats.deepmd.comp
+import dpdata.formats.deepmd.hdf5
+import dpdata.formats.deepmd.mixed
+import dpdata.formats.deepmd.raw
+from dpdata.data_type import Axis, DataType
 from dpdata.driver import Driver
 from dpdata.format import Format
 
@@ -17,20 +18,44 @@ if TYPE_CHECKING:
     import h5py
 
 
+def register_spin():
+    dt = DataType(
+        "spins",
+        np.ndarray,
+        (Axis.NFRAMES, Axis.NATOMS, 3),
+        required=False,
+        deepmd_name="spin",
+    )
+    dpdata.System.register_data_type(dt)
+    dpdata.LabeledSystem.register_data_type(dt)
+
+    dt = DataType(
+        "force_mags",
+        np.ndarray,
+        (Axis.NFRAMES, Axis.NATOMS, 3),
+        required=False,
+        deepmd_name="force_mag",
+    )
+    dpdata.System.register_data_type(dt)
+    dpdata.LabeledSystem.register_data_type(dt)
+
+
 @Format.register("deepmd")
 @Format.register("deepmd/raw")
 class DeePMDRawFormat(Format):
     def from_system(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.raw.to_system_data(
+        register_spin()
+        return dpdata.formats.deepmd.raw.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
     def to_system(self, data, file_name, **kwargs):
         """Dump the system in deepmd raw format to directory `file_name`."""
-        dpdata.deepmd.raw.dump(file_name, data)
+        dpdata.formats.deepmd.raw.dump(file_name, data)
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.raw.to_system_data(
+        register_spin()
+        return dpdata.formats.deepmd.raw.to_system_data(
             file_name, type_map=type_map, labels=True
         )
 
@@ -41,7 +66,8 @@ class DeePMDRawFormat(Format):
 @Format.register("deepmd/comp")
 class DeePMDCompFormat(Format):
     def from_system(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.comp.to_system_data(
+        register_spin()
+        return dpdata.formats.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
@@ -66,10 +92,13 @@ class DeePMDCompFormat(Format):
         **kwargs : dict
             other parameters
         """
-        dpdata.deepmd.comp.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.formats.deepmd.comp.dump(
+            file_name, data, set_size=set_size, comp_prec=prec
+        )
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.comp.to_system_data(
+        register_spin()
+        return dpdata.formats.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=True
         )
 
@@ -90,6 +119,12 @@ class DeePMDMixedFormat(Format):
     >>> import dpdata
     >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir")
 
+    Dump with ``atom_numb_pad`` to reduce the number of subdirectories.
+    Systems are padded with virtual atoms (type -1) so that atom counts are
+    rounded up to the nearest multiple of the given number:
+
+    >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir", atom_numb_pad=8)
+
     Load a mixed type data into a MultiSystems:
 
     >>> import dpdata
@@ -97,7 +132,7 @@ class DeePMDMixedFormat(Format):
     """
 
     def from_system_mix(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.mixed.to_system_data(
+        return dpdata.formats.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
@@ -122,14 +157,16 @@ class DeePMDMixedFormat(Format):
         **kwargs : dict
             other parameters
         """
-        dpdata.deepmd.mixed.dump(file_name, data, set_size=set_size, comp_prec=prec)
+        dpdata.formats.deepmd.mixed.dump(
+            file_name, data, set_size=set_size, comp_prec=prec
+        )
 
     def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
-        return dpdata.deepmd.mixed.to_system_data(
+        return dpdata.formats.deepmd.mixed.to_system_data(
             file_name, type_map=type_map, labels=True
         )
 
-    def mix_system(self, *system, type_map, **kwargs):
+    def mix_system(self, *system, type_map, atom_numb_pad=None, **kwargs):
         """Mix the systems into mixed_type ones according to the unified given type_map.
 
         Parameters
@@ -138,6 +175,13 @@ class DeePMDMixedFormat(Format):
             The systems to mix
         type_map : list of str
             Maps atom type to name
+        atom_numb_pad : int, optional
+            If provided, pad atom counts to the next multiple of this number
+            using virtual atoms (type -1 in real_atom_types). This reduces the
+            number of subdirectories when systems have many different atom counts.
+            For example, ``atom_numb_pad=8`` groups systems into multiples of 8:
+            a 5-atom system is padded to 8, a 9-atom system is padded to 16, etc.
+            Virtual atoms are transparently removed when loading the data back.
         **kwargs : dict
             other parameters
 
@@ -145,10 +189,20 @@ class DeePMDMixedFormat(Format):
         -------
         mixed_systems: dict
             dict of mixed system with key 'atom_numbs'
+
+        Examples
+        --------
+        Dump with padding so that atom counts are rounded up to multiples of 8:
+
+        >>> import dpdata
+        >>> dpdata.MultiSystems(*systems).to_deepmd_npy_mixed("mixed_dir", atom_numb_pad=8)
         """
-        return dpdata.deepmd.mixed.mix_system(*system, type_map=type_map, **kwargs)
+        return dpdata.formats.deepmd.mixed.mix_system(
+            *system, type_map=type_map, atom_numb_pad=atom_numb_pad, **kwargs
+        )
 
     def from_multi_systems(self, directory, **kwargs):
+        register_spin()
         sys_dir = []
         for root, dirs, files in os.walk(directory):
             if (
@@ -204,15 +258,17 @@ class DeePMDHDF5Format(Format):
         """
         import h5py
 
+        register_spin()
+
         if isinstance(file_name, (h5py.Group, h5py.File)):
-            return dpdata.deepmd.hdf5.to_system_data(
+            return dpdata.formats.deepmd.hdf5.to_system_data(
                 file_name, "", type_map=type_map, labels=labels
             )
         elif isinstance(file_name, str):
             s = file_name.split("#")
             name = s[1] if len(s) > 1 else ""
             with h5py.File(s[0], "r") as f:
-                return dpdata.deepmd.hdf5.to_system_data(
+                return dpdata.formats.deepmd.hdf5.to_system_data(
                     f, name, type_map=type_map, labels=labels
                 )
         else:
@@ -305,14 +361,14 @@ class DeePMDHDF5Format(Format):
         import h5py
 
         if isinstance(file_name, (h5py.Group, h5py.File)):
-            dpdata.deepmd.hdf5.dump(
+            dpdata.formats.deepmd.hdf5.dump(
                 file_name, "", data, set_size=set_size, comp_prec=comp_prec
             )
         elif isinstance(file_name, str):
             s = file_name.split("#")
             name = s[1] if len(s) > 1 else ""
             with h5py.File(s[0], "w") as f:
-                dpdata.deepmd.hdf5.dump(
+                dpdata.formats.deepmd.hdf5.dump(
                     f, name, data, set_size=set_size, comp_prec=comp_prec
                 )
         else:
@@ -364,6 +420,391 @@ class DeePMDHDF5Format(Format):
         with h5py.File(directory, "w") as f:
             for ff in formulas:
                 yield f.create_group(ff)
+
+
+@Format.register("deepmd/hdf5/mixed")
+class DeePMDHDF5MixedFormat(DeePMDMixedFormat):
+    """Mixed type HDF5 format for DeePMD-kit.
+
+    Mixed type data stores frames with the same atom count in one dataset even
+    when their formulas differ. The placeholder ``type.raw`` contains only the
+    mixed token type, while ``set.*/real_atom_types.npy`` stores the real atom
+    type layout for each frame. Loading reconstructs regular Systems by
+    splitting frames with different ``real_atom_types`` rows.
+
+    The HDF5 layout mirrors ``deepmd/npy/mixed`` inside HDF5 groups. For
+    :class:`dpdata.MultiSystems`, each top-level mixed group is keyed by the
+    number of atoms after optional padding, such as ``"4"`` or ``"8"``. A
+    string path may include ``"#group/path"`` to read or write mixed data under
+    a nested HDF5 group.
+
+    Examples
+    --------
+    Dump a :class:`dpdata.MultiSystems` object to a mixed HDF5 file:
+
+    >>> systems.to_deepmd_hdf5_mixed("mixed.hdf5")
+
+    Dump with atom-count padding:
+
+    >>> systems.to_deepmd_hdf5_mixed("mixed.hdf5", atom_numb_pad=8)
+
+    Load a mixed HDF5 file into :class:`dpdata.MultiSystems`:
+
+    >>> dpdata.MultiSystems().from_deepmd_hdf5_mixed("mixed.hdf5")
+    """
+
+    @staticmethod
+    def _load_hdf5_mixed_data(group, type_map=None, labels=True):
+        """Load one mixed HDF5 group as a backend data dict.
+
+        Parameters
+        ----------
+        group : h5py.Group or h5py.File
+            HDF5 object containing one mixed DeePMD system group. The group must
+            contain ``type.raw``, ``type_map.raw`` and ``set.*`` children.
+        type_map : list[str], optional
+            Type map used by the generic HDF5 loader.
+        labels : bool, default=True
+            Whether labeled data such as energies and forces should be loaded.
+
+        Returns
+        -------
+        dict
+            Mixed-type data dict consumed by
+            :func:`dpdata.formats.deepmd.mixed.to_system_data`.
+        """
+        return dpdata.formats.deepmd.hdf5.to_system_data(
+            group, "", type_map=type_map, labels=labels
+        )
+
+    @staticmethod
+    def _dump_hdf5_mixed_data(group, data, set_size, comp_prec, remove_sets=True):
+        """Dump one mixed data dict to an HDF5 group.
+
+        Parameters
+        ----------
+        group : h5py.Group or h5py.File
+            Destination HDF5 object.
+        data : dict
+            Mixed-type data dict prepared by
+            :func:`dpdata.formats.deepmd.mixed.dump`.
+        set_size : int
+            Maximum number of frames per ``set.*`` group.
+        comp_prec : numpy.dtype
+            Floating point precision for dumped frame data.
+        remove_sets : bool, default=True
+            Accepted for backend compatibility. HDF5 groups are recreated by the
+            caller, so this argument is not used.
+        """
+        dpdata.formats.deepmd.hdf5.dump(
+            group, "", data, set_size=set_size, comp_prec=comp_prec
+        )
+
+    @staticmethod
+    def _iter_mixed_groups(group):
+        """Yield mixed DeePMD HDF5 groups under ``group``.
+
+        A group is considered a mixed system group when it contains
+        ``type.raw``, ``type_map.raw`` and at least one ``set.*`` group with a
+        ``real_atom_types.npy`` dataset. If the current group is not a system
+        group, nested HDF5 groups are searched recursively. This supports files
+        written either as a single mixed system at the file root or as
+        MultiSystems groups such as ``/4`` and ``/8``.
+
+        Parameters
+        ----------
+        group : h5py.Group or h5py.File
+            HDF5 group or file to scan.
+
+        Yields
+        ------
+        h5py.Group or h5py.File
+            Mixed system groups to pass to ``from_system_mix``.
+        """
+        import h5py
+
+        set_groups = [
+            item
+            for key, item in group.items()
+            if key.startswith("set.") and isinstance(item, h5py.Group)
+        ]
+        is_mixed_group = (
+            "type.raw" in group
+            and "type_map.raw" in group
+            and any("real_atom_types.npy" in set_group for set_group in set_groups)
+        )
+        if is_mixed_group:
+            yield group
+            return
+        for item in group.values():
+            if isinstance(item, h5py.Group):
+                yield from DeePMDHDF5MixedFormat._iter_mixed_groups(item)
+
+    @staticmethod
+    def _get_group(file, name):
+        """Return ``file`` or a named child group.
+
+        Parameters
+        ----------
+        file : h5py.File or h5py.Group
+            Root HDF5 object.
+        name : str
+            Child group path. An empty string selects ``file`` itself.
+
+        Returns
+        -------
+        h5py.File or h5py.Group
+            Selected HDF5 object.
+        """
+        if not name:
+            return file
+        return file[name]
+
+    @staticmethod
+    def _create_group(file, name):
+        """Create a named child group.
+
+        Parameters
+        ----------
+        file : h5py.File or h5py.Group
+            Root HDF5 object.
+        name : str
+            Child group path. An empty string selects ``file`` itself.
+
+        Returns
+        -------
+        h5py.File or h5py.Group
+            Created group, or ``file`` when ``name`` is empty.
+        """
+        if not name:
+            return file
+        return file.create_group(name)
+
+    def from_system_mix(self, file_name, type_map=None, **kwargs):
+        """Load unlabeled mixed HDF5 data and split it into Systems.
+
+        Parameters
+        ----------
+        file_name : str or h5py.Group or h5py.File
+            HDF5 file, HDF5 group, or string in ``"file.hdf5#group"`` form.
+        type_map : list[str], optional
+            Type map used to remap real atom types while loading.
+        **kwargs : dict
+            Additional keyword arguments accepted for format API compatibility.
+
+        Returns
+        -------
+        list[dict]
+            Unlabeled System data dicts reconstructed from the mixed data.
+        """
+        return self._from_system_mix(file_name, type_map=type_map, labels=False)
+
+    def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
+        """Load labeled mixed HDF5 data and split it into LabeledSystems.
+
+        Parameters
+        ----------
+        file_name : str or h5py.Group or h5py.File
+            HDF5 file, HDF5 group, or string in ``"file.hdf5#group"`` form.
+        type_map : list[str], optional
+            Type map used to remap real atom types while loading.
+        **kwargs : dict
+            Additional keyword arguments accepted for format API compatibility.
+
+        Returns
+        -------
+        list[dict]
+            LabeledSystem data dicts reconstructed from the mixed data.
+        """
+        return self._from_system_mix(file_name, type_map=type_map, labels=True)
+
+    def _from_system_mix(self, file_name, type_map=None, labels=True):
+        """Load mixed HDF5 data through the shared mixed backend.
+
+        Parameters
+        ----------
+        file_name : str or h5py.Group or h5py.File
+            HDF5 file, HDF5 group, or string in ``"file.hdf5#group"`` form.
+            When a file object is given, the object itself is interpreted as the
+            mixed system group.
+        type_map : list[str], optional
+            Type map used to remap real atom types while loading.
+        labels : bool, default=True
+            Whether labeled data such as energies and forces should be loaded.
+
+        Returns
+        -------
+        list[dict]
+            System or LabeledSystem data dicts split out of the mixed HDF5 data.
+
+        Raises
+        ------
+        TypeError
+            If ``file_name`` is not a string, HDF5 group, or HDF5 file.
+        """
+        import h5py
+
+        register_spin()
+
+        if isinstance(file_name, (h5py.Group, h5py.File)):
+            return dpdata.formats.deepmd.mixed.to_system_data(
+                file_name,
+                type_map=type_map,
+                labels=labels,
+                load_func=self._load_hdf5_mixed_data,
+            )
+        elif isinstance(file_name, str):
+            s = file_name.split("#")
+            name = s[1] if len(s) > 1 else ""
+            with h5py.File(s[0], "r") as f:
+                return dpdata.formats.deepmd.mixed.to_system_data(
+                    self._get_group(f, name),
+                    type_map=type_map,
+                    labels=labels,
+                    load_func=self._load_hdf5_mixed_data,
+                )
+        else:
+            raise TypeError("Unsupported file_name")
+
+    def to_system(
+        self,
+        data,
+        file_name,
+        set_size: int = 2000,
+        prec=np.float64,
+        comp_prec=None,
+        **kwargs,
+    ):
+        """Dump a System data dict in mixed HDF5 format.
+
+        Parameters
+        ----------
+        data : dict
+            System or LabeledSystem data dict. If it is not already in mixed
+            type form, it is copied and converted before dumping.
+        file_name : str or h5py.Group or h5py.File
+            HDF5 file, HDF5 group, or string in ``"file.hdf5#group"`` form.
+            Strings open the target file in write mode. HDF5 objects are written
+            in place.
+        set_size : int, default=2000
+            Maximum number of frames per ``set.*`` group.
+        prec : numpy.dtype, default=numpy.float64
+            Floating point precision for dumped frame data. Kept for
+            consistency with ``deepmd/npy/mixed``.
+        comp_prec : numpy.dtype, optional
+            Explicit floating point precision. When provided, this overrides
+            ``prec``.
+        **kwargs : dict
+            Additional keyword arguments accepted for format API compatibility.
+
+        Raises
+        ------
+        TypeError
+            If ``file_name`` is not a string, HDF5 group, or HDF5 file.
+        """
+        import h5py
+
+        if comp_prec is None:
+            comp_prec = prec
+
+        if isinstance(file_name, (h5py.Group, h5py.File)):
+            dpdata.formats.deepmd.mixed.dump(
+                file_name,
+                data,
+                set_size=set_size,
+                comp_prec=comp_prec,
+                dump_func=self._dump_hdf5_mixed_data,
+            )
+        elif isinstance(file_name, str):
+            s = file_name.split("#")
+            name = s[1] if len(s) > 1 else ""
+            with h5py.File(s[0], "w") as f:
+                dpdata.formats.deepmd.mixed.dump(
+                    self._create_group(f, name),
+                    data,
+                    set_size=set_size,
+                    comp_prec=comp_prec,
+                    dump_func=self._dump_hdf5_mixed_data,
+                )
+        else:
+            raise TypeError("Unsupported file_name")
+
+    def from_multi_systems(self, directory, **kwargs):
+        """Generate mixed HDF5 groups for MultiSystems loading.
+
+        Parameters
+        ----------
+        directory : str or h5py.Group or h5py.File
+            HDF5 file, HDF5 group, or string in ``"file.hdf5#group"`` form. The
+            selected object may be either one mixed system group or a container
+            of mixed groups.
+        **kwargs : dict
+            Additional keyword arguments accepted for format API compatibility.
+
+        Yields
+        ------
+        h5py.Group or h5py.File
+            Mixed HDF5 groups that will be passed to ``from_system_mix``.
+
+        Raises
+        ------
+        TypeError
+            If ``directory`` is not a string, HDF5 group, or HDF5 file.
+        """
+        import h5py
+
+        register_spin()
+
+        if isinstance(directory, (h5py.Group, h5py.File)):
+            yield from self._iter_mixed_groups(directory)
+        elif isinstance(directory, str):
+            s = directory.split("#")
+            name = s[1] if len(s) > 1 else ""
+            with h5py.File(s[0], "r") as f:
+                yield from self._iter_mixed_groups(self._get_group(f, name))
+        else:
+            raise TypeError("Unsupported directory")
+
+    def to_multi_systems(self, formulas, directory, **kwargs):
+        """Generate HDF5 groups for MultiSystems mixed dumping.
+
+        Parameters
+        ----------
+        formulas : list[str]
+            Mixed group names produced by ``mix_system``. For mixed HDF5 these
+            names are atom counts after optional padding.
+        directory : str or h5py.Group or h5py.File
+            HDF5 file, HDF5 group, or string in ``"file.hdf5#group"`` form.
+            Strings open the target file in write mode.
+        **kwargs : dict
+            Additional keyword arguments accepted for format API compatibility.
+
+        Yields
+        ------
+        h5py.Group
+            Destination groups that will be passed to ``to_system``.
+
+        Raises
+        ------
+        TypeError
+            If ``directory`` is not a string, HDF5 group, or HDF5 file.
+        """
+        import h5py
+
+        if isinstance(directory, (h5py.Group, h5py.File)):
+            for ff in formulas:
+                if ff in directory:
+                    del directory[ff]
+                yield directory.create_group(ff)
+        elif isinstance(directory, str):
+            s = directory.split("#")
+            name = s[1] if len(s) > 1 else ""
+            with h5py.File(s[0], "w") as f:
+                root = self._create_group(f, name)
+                for ff in formulas:
+                    yield root.create_group(ff)
+        else:
+            raise TypeError("Unsupported directory")
 
 
 @Driver.register("dp")

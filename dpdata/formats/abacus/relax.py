@@ -1,0 +1,265 @@
+from __future__ import annotations
+
+import glob
+import os
+
+import numpy as np
+
+from dpdata.utils import open_file
+
+from .scf import (
+    bohr2ang,
+    collect_force,
+    collect_stress,
+    get_geometry_in,
+    get_mag_force,
+    kbar2evperang3,
+)
+from .stru import get_frame_from_stru
+
+# Read in geometries from an ABACUS RELAX(CELL-RELAX) trajectory in OUT.XXXX/runnning_relax/cell-relax.log.
+
+
+def get_log_file(fname, inlines):
+    suffix = "ABACUS"
+    calculation = "scf"
+    for line in inlines:
+        if "suffix" in line and "suffix" == line.split()[0]:
+            suffix = line.split()[1]
+        elif "calculation" in line and "calculation" == line.split()[0]:
+            calculation = line.split()[1]
+    logf = os.path.join(fname, f"OUT.{suffix}/running_{calculation}.log")
+    return logf
+
+
+def get_relax_stru_files(output_dir):
+    """Find the STRU files in the output directory.
+
+    Args:
+        output_dir (str): output directory
+
+    Returns
+    -------
+    strus: list of STRU files
+    example:
+        ["STRU_ION1_D", "STRU_ION2_D"]
+    """
+    return glob.glob(os.path.join(output_dir, "STRU_ION*_D"))
+
+
+def get_coords_from_log(loglines, natoms, stru_files=None):
+    """NOTICE: unit of coords and cells is Angstrom
+    order:
+        coordinate
+        cell (no output if cell is not changed)
+        energy (no output, if SCF is not converged)
+        force (no output, if cal_force is not setted or abnormal ending)
+        stress (no output, if set cal_stress is not setted or abnormal ending).
+    """
+    natoms_log = 0
+    for line in loglines:
+        if line[13:41] == "number of atom for this type":
+            natoms_log += int(line.split()[-1])
+
+    assert natoms_log > 0 and natoms_log == natoms, (
+        f"ERROR: detected atom number in log file is {natoms_log}, while the atom number in STRU file is {natoms}"
+    )
+
+    energy = []
+    cells = []
+    coords = []
+    coord_direct = []  # if the coordinate is direct type or not
+
+    for i in range(len(loglines)):
+        line = loglines[i]
+        if line[18:41] == "lattice constant (Bohr)":
+            a0 = float(line.split()[-1])
+        elif len(loglines[i].split()) >= 2 and loglines[i].split()[1] == "COORDINATES":
+            # read coordinate information
+            coords.append([])
+            direct_coord = False
+            if loglines[i].split()[0] == "DIRECT":
+                coord_direct.append(True)
+                for k in range(2, 2 + natoms):
+                    coords[-1].append(
+                        list(map(lambda x: float(x), loglines[i + k].split()[1:4]))
+                    )
+            elif loglines[i].split()[0] == "CARTESIAN":
+                coord_direct.append(False)
+                for k in range(2, 2 + natoms):
+                    coords[-1].append(
+                        list(
+                            map(
+                                lambda x: float(x) * a0 * bohr2ang,
+                                loglines[i + k].split()[1:4],
+                            )
+                        )
+                    )
+            else:
+                assert False, "Unrecongnized coordinate type, %s, line:%d" % (  # noqa: UP031
+                    loglines[i].split()[0],
+                    i,
+                )
+
+        elif (
+            loglines[i][1:56]
+            == "Lattice vectors: (Cartesian coordinate: in unit of a_0)"
+        ):
+            # add the cell information for previous structures
+            while len(cells) < len(coords) - 1:
+                cells.append(cells[-1])
+            # get current cell information
+            cells.append([])
+            for k in range(1, 4):
+                cells[-1].append(
+                    list(
+                        map(
+                            lambda x: float(x) * a0 * bohr2ang,
+                            loglines[i + k].split()[0:3],
+                        )
+                    )
+                )
+
+        elif line[1:14] == "final etot is" or "#TOTAL ENERGY#" in line:
+            # add the energy for previous structures whose SCF is not converged
+            while len(energy) < len(coords) - 1:
+                energy.append(np.nan)
+            # get the energy of current structure
+            energy.append(float(line.split()[-2]))
+
+    # in some relax method (like: bfgs_trad), the coordinate is not outputed in running_relax.log
+    # but if out_stru is true, then STRU_ION*_D will be outputed in OUT.ABACUS
+    # we should read cell and coord from STRU_ION*_D files
+    if len(energy) > 1 and len(coords) == 1:
+        # the energies of all structrues are collected, but coords have only the first structure
+        if (
+            stru_files is not None and len(stru_files) > 1
+        ):  # if stru_files are not only STRU_ION_D
+            stru_file_name = [os.path.basename(i) for i in stru_files]
+            coords = coords[:1] + [np.nan for i in range(len(energy) - 1)]
+            coord_direct = coord_direct[:1] + [False for i in range(len(energy) - 1)]
+            cells = cells[:1] + [np.nan for i in range(len(energy) - 1)]
+            for iframe in range(1, len(energy)):
+                if f"STRU_ION{iframe}_D" in stru_file_name:
+                    # read the structure from STRU_ION*_D
+                    stru_data = get_frame_from_stru(
+                        stru_files[stru_file_name.index(f"STRU_ION{iframe}_D")]
+                    )
+                    coords[iframe] = stru_data["coords"][0]
+                    cells[iframe] = stru_data["cells"][0]
+
+    force = collect_force(loglines)
+    stress = collect_stress(loglines)
+
+    # delete last structures which has no energy
+    while len(energy) < len(coords):
+        del coords[-1]
+        del coord_direct[-1]
+
+    # add cells for last structures whose cell is not changed
+    while len(cells) < len(coords):
+        cells.append(cells[-1])
+
+    # only keep structures that have all of coord, force and stress
+    if len(stress) == 0 and len(force) == 0:
+        minl = len(coords)
+    elif len(stress) == 0:
+        minl = min(len(coords), len(force))
+        force = force[:minl]
+    elif len(force) == 0:
+        minl = min(len(coords), len(stress))
+        stress = stress[:minl]
+    else:
+        minl = min(len(coords), len(force), len(stress))
+        force = force[:minl]
+        stress = stress[:minl]
+
+    coords = coords[:minl]
+    energy = energy[:minl]
+    cells = cells[:minl]
+
+    # delete structures whose energy is np.nan
+    for i in range(minl):
+        if (
+            np.isnan(energy[i - minl])
+            or np.any(np.isnan(coords[i - minl]))
+            or np.any(np.isnan(cells[i - minl]))
+        ):
+            del energy[i - minl]
+            del coords[i - minl]
+            del cells[i - minl]
+            del coord_direct[i - minl]
+            if len(force) > 0:
+                del force[i - minl]
+            if len(stress) > 0:
+                del stress[i - minl]
+
+    energy = np.array(energy)
+    cells = np.array(cells)
+    coords = np.array(coords)
+    stress = np.array(stress)
+    force = np.array(force)
+
+    # transfer direct coordinate to cartessian type
+    for i in range(len(coords)):
+        if coord_direct[i]:
+            coords[i] = coords[i].dot(cells[i])
+
+    if len(stress) > 0:
+        virial = np.zeros([len(cells), 3, 3])
+        for i in range(len(cells)):
+            volume = np.linalg.det(cells[i, :, :].reshape([3, 3]))
+            virial[i] = stress[i] * kbar2evperang3 * volume
+    else:
+        virial = None
+
+    return energy, cells, coords, force, stress, virial
+
+
+def get_frame(fname):
+    if isinstance(fname, str):
+        # if the input parameter is only one string, it is assumed that it is the
+        # base directory containing INPUT file;
+        path_in = os.path.join(fname, "INPUT")
+    else:
+        raise RuntimeError("invalid input")
+    with open_file(path_in) as fp:
+        inlines = fp.read().split("\n")
+    geometry_path_in = get_geometry_in(fname, inlines)  # base dir of STRU
+
+    data = get_frame_from_stru(geometry_path_in)
+    natoms = sum(data["atom_numbs"])
+    # should remove spins from STRU file
+    if "spins" in data:
+        data.pop("spins")
+
+    logf = get_log_file(fname, inlines)
+    assert os.path.isfile(logf), f"Error: can not find {logf}"
+    with open_file(logf) as f1:
+        lines = f1.readlines()
+
+    relax_stru_files = get_relax_stru_files(os.path.dirname(logf))
+
+    energy, cells, coords, force, stress, virial = get_coords_from_log(
+        lines, natoms, stru_files=relax_stru_files
+    )
+
+    magmom, magforce = get_mag_force(lines)
+
+    data["cells"] = cells
+    data["coords"] = coords
+    data["energies"] = energy
+    data["forces"] = force
+    if isinstance(virial, np.ndarray):
+        data["virials"] = virial
+    data["stress"] = stress
+    data["orig"] = np.zeros(3)
+
+    if len(magmom) > 0:
+        data["spins"] = magmom
+    if len(magforce) > 0:
+        data["force_mags"] = magforce
+    if "move" in data:
+        data["move"] = [data["move"][0] for i in range(len(data["energies"]))]
+
+    return data

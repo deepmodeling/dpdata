@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import tempfile
 import unittest
 
 import numpy as np
@@ -158,10 +159,38 @@ class TestABACUSLabeledOutputNoFS(unittest.TestCase):
         # check below will not throw error
         system_ch4 = dpdata.LabeledSystem("abacus.scf", fmt="abacus/scf")
         # check the returned force is empty
-        self.assertFalse(system_ch4.data["forces"])
+        self.assertFalse(system_ch4.data["forces"].size)
         self.assertTrue("virials" not in system_ch4.data)
         # test append self
         system_ch4.append(system_ch4)
+
+    def test_noforcestress_deepmd_roundtrip(self):
+        # a converged scf without force/stress should survive a
+        # round-trip through deepmd/npy without raising a reshape error
+        system_ch4 = dpdata.LabeledSystem("abacus.scf", fmt="abacus/scf")
+        tmp_dir = tempfile.mkdtemp()
+        try:
+            system_ch4.to("deepmd/npy", tmp_dir)
+            reloaded = dpdata.LabeledSystem(tmp_dir, fmt="deepmd/npy")
+            self.assertEqual(reloaded.get_nframes(), system_ch4.get_nframes())
+            # empty force/virial should not be written as bogus data
+            self.assertFalse(reloaded.data.get("forces", np.empty(0)).size)
+            self.assertTrue("virials" not in reloaded.data)
+        finally:
+            shutil.rmtree(tmp_dir)
+
+    def test_noforcestress_deepmd_raw_roundtrip(self):
+        # same as above but for the deepmd/raw format
+        system_ch4 = dpdata.LabeledSystem("abacus.scf", fmt="abacus/scf")
+        tmp_dir = tempfile.mkdtemp()
+        try:
+            system_ch4.to("deepmd/raw", tmp_dir)
+            reloaded = dpdata.LabeledSystem(tmp_dir, fmt="deepmd/raw")
+            self.assertEqual(reloaded.get_nframes(), system_ch4.get_nframes())
+            self.assertFalse(reloaded.data.get("forces", np.empty(0)).size)
+            self.assertTrue("virials" not in reloaded.data)
+        finally:
+            shutil.rmtree(tmp_dir)
 
 
 if __name__ == "__main__":

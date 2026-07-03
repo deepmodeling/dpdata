@@ -6,11 +6,11 @@ from copy import deepcopy
 
 import numpy as np
 
-import dpdata.rdkit.utils
-from dpdata.rdkit.sanitize import Sanitizer
+import dpdata.formats.rdkit.utils
+from dpdata.formats.rdkit.sanitize import Sanitizer
 from dpdata.system import Axis, DataType, System
 
-# import dpdata.rdkit.mol2
+# import dpdata.formats.rdkit.mol2
 
 
 class BondOrderSystem(System):
@@ -79,7 +79,7 @@ class BondOrderSystem(System):
         self.sanitizer = Sanitizer(sanitize_level, raise_errors, verbose)
 
         if data:
-            mol = dpdata.rdkit.utils.system_data_to_mol(data)
+            mol = dpdata.formats.rdkit.utils.system_data_to_mol(data)
             self.from_rdkit_mol(mol)
         if file_name:
             self.from_fmt(
@@ -161,7 +161,7 @@ class BondOrderSystem(System):
     #         magic method "+" operation
     #     '''
     #     if isinstance(other, BondOrderSystem):
-    #         if dpdata.rdkit.utils.check_same_molecule(self.rdkit_mol, other.rdkit_mol):
+    #         if dpdata.formats.rdkit.utils.check_same_molecule(self.rdkit_mol, other.rdkit_mol):
     #             self.__class__(self, data=other.data)
     #         else:
     #             raise RuntimeError("The two systems are not of the same topology.")
@@ -171,7 +171,7 @@ class BondOrderSystem(System):
     def from_rdkit_mol(self, rdkit_mol):
         """Initialize from a rdkit.Chem.rdchem.Mol object."""
         rdkit_mol = self.sanitizer.sanitize(rdkit_mol)
-        self.data = dpdata.rdkit.utils.mol_to_system_data(rdkit_mol)
+        self.data = dpdata.formats.rdkit.utils.mol_to_system_data(rdkit_mol)
         self.data["bond_dict"] = dict(
             [(f"{int(bond[0])}-{int(bond[1])}", bond[2]) for bond in self.data["bonds"]]
         )

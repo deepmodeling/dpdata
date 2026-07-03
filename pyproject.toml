@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61", "setuptools_scm[toml]>=7"]
+requires = ["setuptools>=77.0.3", "setuptools_scm[toml]>=7"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,14 +10,13 @@ authors = [
   {name = "DeepModeling"},
   {name = "Han Wang", email = "wang_han@iapcm.ac.cn"},
 ]
-license = {file = "LICENSE"}
+license = "LGPL-3.0-or-later"
+license-files = ["LICENSE"]
 classifiers = [
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     'numpy>=1.14.3',
@@ -25,10 +24,10 @@ dependencies = [
     'scipy',
     'h5py',
     'wcmatch',
-    'importlib_metadata>=1.4; python_version < "3.8"',
-    'typing_extensions; python_version < "3.8"',
+    'lmdb',
+    'msgpack-numpy',
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 readme = "README.md"
 keywords = ["lammps", "vasp", "deepmd-kit"]
 
@@ -37,29 +36,25 @@ Homepage = "https://github.com/deepmodeling/dpdata"
 documentation = "https://docs.deepmodeling.com/projects/dpdata"
 repository = "https://github.com/deepmodeling/dpdata"
 
-[project.entry-points.console_scripts]
+[project.scripts]
 dpdata = "dpdata.cli:dpdata_cli"
 
 [project.optional-dependencies]
 test = [
-    # https://github.com/materialsproject/pymatgen/issues/3882
-    # https://github.com/kuelumbus/rdkit-pypi/issues/102
-    "numpy<2",
 ]
 ase = ['ase']
 amber = [
-    'parmed; python_version >= "3.8"',
-    'parmed<4; python_version < "3.8"',
+    'parmed',
 ]
 pymatgen = ['pymatgen']
 docs = [
     'sphinx',
     'recommonmark',
-    'sphinx_rtd_theme>=1.0.0rc1',
+    'sphinx-book-theme',
     'numpydoc',
-    'm2r2',
-    'deepmodeling-sphinx>=0.1.1',
-    'sphinx-argparse',
+    'myst-parser',
+    'deepmodeling-sphinx>=0.3.0',
+    'sphinx-argparse<0.5.0',
     'rdkit',
     'jupyterlite-sphinx',
     'jupyterlite-xeus',

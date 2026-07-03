@@ -5,20 +5,14 @@ import glob
 import hashlib
 import numbers
 import os
-import sys
 import warnings
 from copy import deepcopy
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterable,
+    Literal,
     overload,
 )
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 import numpy as np
 
@@ -28,10 +22,10 @@ import dpdata.md.pbc
 # ensure all plugins are loaded!
 import dpdata.plugins
 import dpdata.plugins.deepmd
-from dpdata.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.data_type import Axis, DataError, DataType, get_data_types
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
+from dpdata.formats.amber.mask import load_param_file, pick_by_amber_mask
 from dpdata.plugin import Plugin
 from dpdata.utils import (
     add_atom_names,
@@ -42,6 +36,8 @@ from dpdata.utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     import parmed
 
 
@@ -91,8 +87,10 @@ class System:
         DataType("atom_names", list, (Axis.NTYPES,)),
         DataType("atom_types", np.ndarray, (Axis.NATOMS,)),
         DataType("orig", np.ndarray, (3,)),
-        DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3)),
-        DataType("coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
+        DataType("cells", np.ndarray, (Axis.NFRAMES, 3, 3), deepmd_name="box"),
+        DataType(
+            "coords", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3), deepmd_name="coord"
+        ),
         DataType(
             "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
         ),
@@ -125,6 +123,7 @@ class System:
                 - ``lammps/dump``: Lammps dump
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
+                - ``deepmd/npy/mixed``: deepmd-kit mixed type compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
                 - ``vasp/contcar``: vasp contcar
                 - ``vasp/string``: vasp string
@@ -166,6 +165,7 @@ class System:
                 - ``gaussian/gjf``: gaussian gjf
                 - ``deepmd/comp``: deepmd comp
                 - ``deepmd/hdf5``: deepmd hdf5
+                - ``deepmd/hdf5/mixed``: deepmd mixed type hdf5
                 - ``gromacs/gro``: gromacs gro
                 - ``cp2k/aimd_output``: cp2k aimd_output
                 - ``cp2k/output``: cp2k output
@@ -224,7 +224,7 @@ class System:
             dd.check(self)
         if sum(self.get_atom_numbs()) != self.get_natoms():
             raise DataError(
-                "Sum of atom_numbs (%d) is not equal to natoms (%d)."
+                "Sum of atom_numbs (%d) is not equal to natoms (%d)."  # noqa: UP031
                 % (sum(self.get_atom_numbs()), self.get_natoms())
             )
 
@@ -279,8 +279,8 @@ class System:
         ret = "Data Summary"
         ret += "\nUnlabeled System"
         ret += "\n-------------------"
-        ret += "\nFrame Numbers     : %d" % self.get_nframes()
-        ret += "\nAtom Numbers      : %d" % self.get_natoms()
+        ret += "\nFrame Numbers     : %d" % self.get_nframes()  # noqa: UP031
+        ret += "\nAtom Numbers      : %d" % self.get_natoms()  # noqa: UP031
         ret += "\nElement List      :"
         ret += "\n-------------------"
         ret += "\n" + "  ".join(map(str, self.get_atom_names()))
@@ -713,9 +713,7 @@ class System:
 
     @post_funcs.register("shift_orig_zero")
     def _shift_orig_zero(self):
-        for ff in self.data["coords"]:
-            for ii in ff:
-                ii = ii - self.data["orig"]
+        self.data["coords"] = self.data["coords"] - self.data["orig"]
         self.data["orig"] = self.data["orig"] - self.data["orig"]
         assert (np.zeros([3]) == self.data["orig"]).all()
 
@@ -849,6 +847,7 @@ class System:
         cell_pert_fraction: float,
         atom_pert_distance: float,
         atom_pert_style: str = "normal",
+        atom_pert_prob: float = 1.0,
     ):
         """Perturb each frame in the system randomly.
         The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
@@ -877,6 +876,8 @@ class System:
                     These points are treated as vector used by atoms to move.
                     Obviously, the max length of the distance atoms move is `atom_pert_distance`.
                 - `'const'`: The distance atoms move will be a constant `atom_pert_distance`.
+        atom_pert_prob : float
+            Determine the proportion of the total number of atoms in a frame that are perturbed.
 
         Returns
         -------
@@ -900,7 +901,15 @@ class System:
                 tmp_system.data["coords"][0] = np.matmul(
                     tmp_system.data["coords"][0], cell_perturb_matrix
                 )
-                for kk in range(len(tmp_system.data["coords"][0])):
+                pert_natoms = int(atom_pert_prob * len(tmp_system.data["coords"][0]))
+                pert_atom_id = sorted(
+                    np.random.choice(
+                        range(len(tmp_system.data["coords"][0])),
+                        pert_natoms,
+                        replace=False,
+                    ).tolist()
+                )
+                for kk in pert_atom_id:
                     atom_perturb_vector = get_atom_perturb_vector(
                         atom_pert_distance, atom_pert_style
                     )
@@ -1036,6 +1045,7 @@ class System:
             atom_idx = self.data["atom_types"] == idx
             removed_atom_idx.append(atom_idx)
         picked_atom_idx = ~np.any(removed_atom_idx, axis=0)
+        assert not isinstance(picked_atom_idx, np.bool_)
         new_sys = self.pick_atom_idx(picked_atom_idx)
         # let's remove atom_names
         # firstly, rearrange atom_names and put these atom_names in the end
@@ -1095,9 +1105,9 @@ class System:
         all_dtypes = cls.DTYPES + tuple(data_type)
         dtypes_dict = {}
         for dt in all_dtypes:
-            if dt.name in dtypes_dict:
+            if dt.name in dtypes_dict and dt != dtypes_dict[dt.name]:
                 warnings.warn(
-                    f"Data type {dt.name} is registered twice; only the newly registered one will be used.",
+                    f"Data type {dt.name} is registered twice with different definitions; only the newly registered one will be used.",
                     UserWarning,
                 )
             dtypes_dict[dt.name] = dt
@@ -1172,6 +1182,9 @@ class LabeledSystem(System):
                 - ``vasp/outcar``: vasp OUTCAR
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
+                - ``deepmd/npy/mixed``: deepmd-kit mixed type compressed format (numpy binary)
+                - ``deepmd/hdf5``: deepmd hdf5
+                - ``deepmd/hdf5/mixed``: deepmd mixed type hdf5
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``siesta/output``: siesta SCF output file
@@ -1193,9 +1206,21 @@ class LabeledSystem(System):
     """
 
     DTYPES: tuple[DataType, ...] = System.DTYPES + (
-        DataType("energies", np.ndarray, (Axis.NFRAMES,)),
-        DataType("forces", np.ndarray, (Axis.NFRAMES, Axis.NATOMS, 3)),
-        DataType("virials", np.ndarray, (Axis.NFRAMES, 3, 3), required=False),
+        DataType("energies", np.ndarray, (Axis.NFRAMES,), deepmd_name="energy"),
+        DataType(
+            "forces",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="force",
+        ),
+        DataType(
+            "virials",
+            np.ndarray,
+            (Axis.NFRAMES, 3, 3),
+            required=False,
+            deepmd_name="virial",
+        ),
         DataType("atom_pref", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False),
     )
 
@@ -1222,8 +1247,8 @@ class LabeledSystem(System):
         ret = "Data Summary"
         ret += "\nLabeled System"
         ret += "\n-------------------"
-        ret += "\nFrame Numbers      : %d" % self.get_nframes()
-        ret += "\nAtom Numbers       : %d" % self.get_natoms()
+        ret += "\nFrame Numbers      : %d" % self.get_nframes()  # noqa: UP031
+        ret += "\nAtom Numbers       : %d" % self.get_natoms()  # noqa: UP031
         status = "Yes" if self.has_virial() else "No"
         ret += f"\nIncluding Virials  : {status}"
         ret += "\nElement List       :"
@@ -1247,13 +1272,17 @@ class LabeledSystem(System):
             raise RuntimeError("Unspported data structure")
         return self.__class__.from_dict({"data": self_copy.data})
 
+    def has_forces(self) -> bool:
+        return "forces" in self.data
+
     def has_virial(self) -> bool:
         # return ('virials' in self.data) and (len(self.data['virials']) > 0)
         return "virials" in self.data
 
     def affine_map_fv(self, trans, f_idx: int | numbers.Integral):
         assert np.linalg.det(trans) != 0
-        self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
+        if self.has_forces():
+            self.data["forces"][f_idx] = np.matmul(self.data["forces"][f_idx], trans)
         if self.has_virial():
             self.data["virials"][f_idx] = np.matmul(
                 trans.T, np.matmul(self.data["virials"][f_idx], trans)
@@ -1286,7 +1315,8 @@ class LabeledSystem(System):
             raise RuntimeError("high_sys should be LabeledSystem")
         corrected_sys = self.copy()
         corrected_sys.data["energies"] = hl_sys.data["energies"] - self.data["energies"]
-        corrected_sys.data["forces"] = hl_sys.data["forces"] - self.data["forces"]
+        if "forces" in self.data and "forces" in hl_sys.data:
+            corrected_sys.data["forces"] = hl_sys.data["forces"] - self.data["forces"]
         if "virials" in self.data and "virials" in hl_sys.data:
             corrected_sys.data["virials"] = (
                 hl_sys.data["virials"] - self.data["virials"]
@@ -1345,6 +1375,8 @@ class MultiSystems:
             Maps atom type to name
         """
         self.systems: dict[str, System] = {}
+        # short name to name
+        self._short_name_map: dict[str, str] = {}
         if type_map is not None:
             self.atom_names: list[str] = type_map
         else:
@@ -1390,10 +1422,14 @@ class MultiSystems:
             mixed_systems = fmtobj.mix_system(
                 *list(self.systems.values()), type_map=self.atom_names, **kwargs
             )
-            for fn in mixed_systems:
-                mixed_systems[fn].to_fmt_obj(
-                    fmtobj, os.path.join(directory, fn), *args, **kwargs
-                )
+            for fn, ss in zip(
+                fmtobj.to_multi_systems(
+                    list(mixed_systems.keys()), directory, **kwargs
+                ),
+                mixed_systems.values(),
+                strict=True,
+            ):
+                ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
         return self
 
     def to(self, fmt: str, *args: Any, **kwargs: Any) -> MultiSystems:
@@ -1419,6 +1455,8 @@ class MultiSystems:
         """Returns proerty stored in System by key or by idx."""
         if isinstance(key, int):
             return list(self.systems.values())[key]
+        if key in self._short_name_map:
+            return self.systems[self._short_name_map[key]]
         return self.systems[key]
 
     def __len__(self):
@@ -1500,6 +1538,7 @@ class MultiSystems:
             self.systems[formula].append(system)
         else:
             self.systems[formula] = system.copy()
+        self._short_name_map[system.short_name] = formula
 
     def check_atom_names(self, system: System):
         """Make atom_names in all systems equal, prevent inconsistent atom_types."""
@@ -1512,11 +1551,14 @@ class MultiSystems:
             self.atom_names.extend(new_in_system)
             # Add this atom_name to each system, and change their names
             new_systems = {}
+            new_short_name_map = {}
             for each_system in self.systems.values():
                 each_system.add_atom_names(new_in_system)
                 each_system.sort_atom_names(type_map=self.atom_names)
                 new_systems[each_system.formula] = each_system
+                new_short_name_map[each_system.short_name] = each_system.formula
             self.systems = new_systems
+            self._short_name_map = new_short_name_map
         if len(new_in_self):
             # Previous atom_name not in this system
             system.add_atom_names(new_in_self)

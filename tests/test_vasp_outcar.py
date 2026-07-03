@@ -115,5 +115,34 @@ class TestVaspOUTCARML(unittest.TestCase):
         self.assertEqual(len(system2["energies"]), 4)
 
 
+class TestVaspOUTCARNWRITE0(unittest.TestCase):
+    def test(self):
+        # only the first and last frames that have forces are read
+        ss = dpdata.LabeledSystem("poscars/Ti-aimd-nwrite0/OUTCAR")
+        self.assertEqual(ss.get_nframes(), 2)
+
+
+class TestVaspAtomNamesV6(unittest.TestCase):
+    def test(self):
+        # in vasp v6, the key TITEL is removed. check if the atom names
+        # are correctly parsed.
+        ss = dpdata.LabeledSystem("poscars/Ti-O-Ti-v6/OUTCAR")
+        self.assertEqual(ss.get_atom_names(), ["Ti", "O"])
+        self.assertEqual(ss.get_atom_numbs(), [6, 2])
+        np.testing.assert_equal(ss.get_atom_types(), [0, 0, 0, 1, 1, 0, 0, 0])
+
+
+class TestVaspOUTCARLongIonTypes(unittest.TestCase):
+    def test(self):
+        # vasp<=6.3 only print ions per type for the first 10 types of atoms
+        # raise exception when the bug is triggered.
+        with self.assertRaises(RuntimeError) as c:
+            ss = dpdata.LabeledSystem("poscars/outcar.longit/OUTCAR")
+        self.assertTrue(
+            "The number of the atom numbers per each type" in str(c.exception)
+        )
+        self.assertTrue("does not match that of the atom types" in str(c.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

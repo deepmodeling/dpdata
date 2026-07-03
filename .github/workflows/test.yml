@@ -1,32 +1,40 @@
 name: Python package
 
 on:
-  - push
-  - pull_request
+- push
+- pull_request
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.12"]
+        python-version: ["3.10", "3.13"]
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     # set up conda
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    - uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true
+        cache-dependency-glob: |
+          **/requirements*.txt
+          **/pyproject.toml
+        cache-suffix: "py${{ matrix.python-version }}"
     - name: Install dependencies
-      run: uv pip install --system .[test,amber,ase,pymatgen] coverage ./tests/plugin rdkit openbabel-wheel
+      run: uv pip install --system .[test,amber,ase,pymatgen] coverage ./tests/plugin rdkit 'openbabel>=3.2.0'
     - name: Test
       run: cd tests && coverage run --source=../dpdata -m unittest && cd .. && coverage combine tests/.coverage && coverage report
     - name: Run codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v7
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      with:
+        use_oidc: true
   pass:
     needs: [build]
     runs-on: ubuntu-latest
@@ -36,3 +44,5 @@ jobs:
       uses: re-actors/alls-green@release/v1
       with:
         jobs: ${{ toJSON(needs) }}
+permissions:
+  id-token: write

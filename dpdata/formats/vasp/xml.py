@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import xml.etree.ElementTree as ET
+from typing import Any
+
+import numpy as np
+
+
+def check_name(item, name):
+    assert item.attrib["name"] == name, (
+        "item attrib '{}' dose not math required '{}'".format(item.attrib["name"], name)
+    )
+
+
+def get_varray(varray):
+    array = []
+    for vv in varray.findall("v"):
+        array.append([float(ii) for ii in vv.text.split()])
+    return np.array(array)
+
+
+def analyze_atominfo(atominfo_xml):
+    check_name(atominfo_xml.find("array"), "atoms")
+    eles = []
+    types = []
+    visited = set()
+    for ii in atominfo_xml.find("array").find("set"):
+        atom_type = int(ii.findall("c")[1].text)
+        if atom_type not in visited:
+            eles.append(ii.findall("c")[0].text.strip())
+            visited.add(atom_type)
+        types.append(atom_type)
+    return eles, types
+
+
+def analyze_calculation(
+    cc: Any,
+    nelm: int | None,
+) -> tuple[np.ndarray, np.ndarray, float, np.ndarray, np.ndarray | None, bool | None]:
+    """Analyze a calculation block.
+
+    Parameters
+    ----------
+    cc : xml.etree.ElementTree.Element
+        The xml element for a ion step calculation
+    nelm : Optional[int]
+        The number nelm, if it is not None, convergence check is performed.
+
+    Returns
+    -------
+    posi : np.ndarray
+        The positions
+    cell : np.ndarray
+        The cell
+    ener : float
+        The energy
+    force : np.ndarray
+        The forces
+    str : Optional[np.ndarray]
+        The stress
+    is_converged: Optional[bool]
+        If the scf calculation is converged. Only return boolean when
+        nelm is not None. Otherwise return None.
+
+    """
+    structure_xml = cc.find("structure")
+    check_name(structure_xml.find("crystal").find("varray"), "basis")
+    check_name(structure_xml.find("varray"), "positions")
+    cell = get_varray(structure_xml.find("crystal").find("varray"))
+    posi = get_varray(structure_xml.find("varray"))
+    strs = None
+    is_converged = None
+    if nelm is not None:
+        niter = len(cc.findall(".//scstep"))
+        is_converged = niter < nelm
+    for vv in cc.findall("varray"):
+        if vv.attrib["name"] == "forces":
+            forc = get_varray(vv)
+        elif vv.attrib["name"] == "stress":
+            strs = get_varray(vv)
+    for ii in cc.find("energy").findall("i"):
+        if ii.attrib["name"] == "e_fr_energy":
+            ener = float(ii.text)
+    return posi, cell, ener, forc, strs, is_converged
+
+
+def formulate_config(eles, types, posi, cell, ener, forc, strs_):
+    strs = strs_ / 1602
+    natoms = len(types)
+    ntypes = len(eles)
+    ret = ""
+    ret += "#N %d %d\n" % (natoms, ntypes - 1)  # noqa: UP031
+    ret += "#C "
+    for ii in eles:
+        ret += " " + ii
+    ret += "\n"
+    ret += "##\n"
+    ret += f"#X {cell[0][0]:13.8f} {cell[0][1]:13.8f} {cell[0][2]:13.8f}\n"
+    ret += f"#Y {cell[1][0]:13.8f} {cell[1][1]:13.8f} {cell[1][2]:13.8f}\n"
+    ret += f"#Z {cell[2][0]:13.8f} {cell[2][1]:13.8f} {cell[2][2]:13.8f}\n"
+    ret += "#W 1.0\n"
+    ret += "#E %.10f\n" % (ener / natoms)
+    ret += f"#S {strs[0][0]:.9e} {strs[1][1]:.9e} {strs[2][2]:.9e} {strs[0][1]:.9e} {strs[1][2]:.9e} {strs[0][2]:.9e}\n"
+    ret += "#F\n"
+    for ii in range(natoms):
+        sp = np.matmul(cell.T, posi[ii])
+        ret += "%d" % (types[ii] - 1)  # noqa: UP031
+        ret += f" {sp[0]:12.6f} {sp[1]:12.6f} {sp[2]:12.6f}"
+        ret += f" {forc[ii][0]:12.6f} {forc[ii][1]:12.6f} {forc[ii][2]:12.6f}"
+        ret += "\n"
+    return ret
+
+
+def analyze(fname, type_idx_zero=False, begin=0, step=1, convergence_check=True):
+    """Deal with broken xml file."""
+    all_posi = []
+    all_cell = []
+    all_ener = []
+    all_forc = []
+    all_strs = []
+    cc = 0
+    if convergence_check:
+        tree = ET.parse(fname)
+        root = tree.getroot()
+        parameters = root.find(".//parameters")
+        nelm = parameters.find(".//i[@name='NELM']")
+        # will check convergence
+        nelm = int(nelm.text)
+    else:
+        # not checking convergence
+        nelm = None
+    try:
+        for event, elem in ET.iterparse(fname):
+            if elem.tag == "atominfo":
+                eles, types = analyze_atominfo(elem)
+                types = np.array(types, dtype=int)
+                if type_idx_zero:
+                    types = types - 1
+            if elem.tag == "calculation":
+                posi, cell, ener, forc, strs, is_converged = analyze_calculation(
+                    elem, nelm
+                )
+                # record when not checking convergence or is_converged
+                # and the step criteria is satisfied
+                if (
+                    (nelm is None or is_converged)
+                    and cc >= begin
+                    and (cc - begin) % step == 0
+                ):
+                    all_posi.append(posi)
+                    all_cell.append(cell)
+                    all_ener.append(ener)
+                    all_forc.append(forc)
+                    if strs is not None:
+                        all_strs.append(strs)
+                cc += 1
+    except ET.ParseError:
+        return (
+            eles,
+            types,
+            np.array(all_cell),
+            np.array(all_posi),
+            np.array(all_ener),
+            np.array(all_forc),
+            np.array(all_strs),
+        )
+    return (
+        eles,
+        types,
+        np.array(all_cell),
+        np.array(all_posi),
+        np.array(all_ener),
+        np.array(all_forc),
+        np.array(all_strs),
+    )

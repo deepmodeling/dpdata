@@ -3,25 +3,61 @@ from __future__ import annotations
 import os
 import subprocess as sp
 import tempfile
+from typing import TYPE_CHECKING
 
-import dpdata.gaussian.gjf
-import dpdata.gaussian.log
+import numpy as np
+
+import dpdata.formats.gaussian.fchk
+import dpdata.formats.gaussian.gjf
+import dpdata.formats.gaussian.log
+from dpdata.data_type import Axis, DataType
 from dpdata.driver import Driver
 from dpdata.format import Format
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
+
+
+def register_hessian_data(data):
+    if "hessian" in data:
+        dt = DataType(
+            "hessian",
+            np.ndarray,
+            (Axis.NFRAMES, Axis.NATOMS, 3, Axis.NATOMS, 3),
+            required=False,
+            deepmd_name="hessian",
+        )
+        dpdata.LabeledSystem.register_data_type(dt)
 
 
 @Format.register("gaussian/log")
 class GaussianLogFormat(Format):
-    def from_labeled_system(self, file_name, md=False, **kwargs):
+    def from_labeled_system(self, file_name: FileType, md=False, **kwargs):
         try:
-            return dpdata.gaussian.log.to_system_data(file_name, md=md)
+            return dpdata.formats.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
             return {"energies": [], "forces": [], "nopbc": True}
 
 
+@Format.register("gaussian/fchk")
+class GaussianFChkFormat(Format):
+    def from_labeled_system(
+        self, file_name: FileType, has_forces=True, has_hessian=True, **kwargs
+    ):
+        try:
+            data = dpdata.formats.gaussian.fchk.to_system_data(
+                file_name, has_forces=has_forces, has_hessian=has_hessian
+            )
+            register_hessian_data(data)
+            return data
+        except AssertionError:
+            return {"energies": [], "forces": [], "hessian": [], "nopbc": True}
+
+
 @Format.register("gaussian/md")
 class GaussianMDFormat(Format):
-    def from_labeled_system(self, file_name, **kwargs):
+    def from_labeled_system(self, file_name: FileType, **kwargs):
         return GaussianLogFormat().from_labeled_system(file_name, md=True)
 
 
@@ -29,7 +65,7 @@ class GaussianMDFormat(Format):
 class GaussiaGJFFormat(Format):
     """Gaussian input file."""
 
-    def from_system(self, file_name: str, **kwargs):
+    def from_system(self, file_name: FileType, **kwargs):
         """Read Gaussian input file.
 
         Parameters
@@ -39,11 +75,11 @@ class GaussiaGJFFormat(Format):
         **kwargs : dict
             keyword arguments
         """
-        with open(file_name) as fp:
+        with open_file(file_name) as fp:
             text = fp.read()
-        return dpdata.gaussian.gjf.read_gaussian_input(text)
+        return dpdata.formats.gaussian.gjf.read_gaussian_input(text)
 
-    def to_system(self, data: dict, file_name: str, **kwargs):
+    def to_system(self, data: dict, file_name: FileType, **kwargs):
         """Generate Gaussian input file.
 
         Parameters
@@ -53,10 +89,10 @@ class GaussiaGJFFormat(Format):
         file_name : str
             file name
         **kwargs : dict
-            Other parameters to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
+            Other parameters to make input files. See :meth:`dpdata.formats.gaussian.gjf.make_gaussian_input`
         """
-        text = dpdata.gaussian.gjf.make_gaussian_input(data, **kwargs)
-        with open(file_name, "w") as fp:
+        text = dpdata.formats.gaussian.gjf.make_gaussian_input(data, **kwargs)
+        with open_file(file_name, "w") as fp:
             fp.write(text)
 
 
@@ -72,7 +108,7 @@ class GaussianDriver(Driver):
     gaussian_exec : str, default=g16
         path to gaussian program
     **kwargs : dict
-        other arguments to make input files. See :meth:`dpdata.gaussian.gjf.make_gaussian_input`
+        other arguments to make input files. See :meth:`dpdata.formats.gaussian.gjf.make_gaussian_input`
 
     Examples
     --------
@@ -104,13 +140,13 @@ class GaussianDriver(Driver):
         labeled_system = dpdata.LabeledSystem()
         with tempfile.TemporaryDirectory() as d:
             for ii, ss in enumerate(ori_system):
-                inp_fn = os.path.join(d, "%d.gjf" % ii)
-                out_fn = os.path.join(d, "%d.log" % ii)
+                inp_fn = os.path.join(d, "%d.gjf" % ii)  # noqa: UP031
+                out_fn = os.path.join(d, "%d.log" % ii)  # noqa: UP031
                 ss.to("gaussian/gjf", inp_fn, **self.kwargs)
                 try:
                     sp.check_output([*self.gaussian_exec.split(), inp_fn])
                 except sp.CalledProcessError as e:
-                    with open(out_fn) as f:
+                    with open_file(out_fn) as f:
                         out = f.read()
                     raise RuntimeError("Run gaussian failed! Output:\n" + out) from e
                 labeled_system.append(dpdata.LabeledSystem(out_fn, fmt="gaussian/log"))

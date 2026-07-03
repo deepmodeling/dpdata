@@ -62,7 +62,8 @@ class DPDataCalculator(Calculator):
         self.results["energy"] = data["energies"][0]
         # see https://gitlab.com/ase/ase/-/merge_requests/2485
         self.results["free_energy"] = data["energies"][0]
-        self.results["forces"] = data["forces"][0]
+        if "forces" in data:
+            self.results["forces"] = data["forces"][0]
         if "virials" in data:
             self.results["virial"] = data["virials"][0].reshape(3, 3)
 

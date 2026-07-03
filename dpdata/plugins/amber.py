@@ -4,10 +4,11 @@ import os
 import subprocess as sp
 import tempfile
 
-import dpdata.amber.md
-import dpdata.amber.sqm
+import dpdata.formats.amber.md
+import dpdata.formats.amber.sqm
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
+from dpdata.utils import open_file
 
 
 @Format.register("amber/md")
@@ -25,7 +26,7 @@ class AmberMDFormat(Format):
             parm7_file = file_name + ".parm7"
         if nc_file is None:
             nc_file = file_name + ".nc"
-        return dpdata.amber.md.read_amber_traj(
+        return dpdata.formats.amber.md.read_amber_traj(
             parm7_file=parm7_file,
             nc_file=nc_file,
             use_element_symbols=use_element_symbols,
@@ -54,7 +55,7 @@ class AmberMDFormat(Format):
             mden_file = file_name + ".mden"
         if mdout_file is None:
             mdout_file = file_name + ".mdout"
-        return dpdata.amber.md.read_amber_traj(
+        return dpdata.formats.amber.md.read_amber_traj(
             parm7_file, nc_file, mdfrc_file, mden_file, mdout_file, use_element_symbols
         )
 
@@ -63,11 +64,11 @@ class AmberMDFormat(Format):
 class SQMOutFormat(Format):
     def from_system(self, fname, **kwargs):
         """Read from ambertools sqm.out."""
-        return dpdata.amber.sqm.parse_sqm_out(fname)
+        return dpdata.formats.amber.sqm.parse_sqm_out(fname)
 
     def from_labeled_system(self, fname, **kwargs):
         """Read from ambertools sqm.out."""
-        data = dpdata.amber.sqm.parse_sqm_out(fname)
+        data = dpdata.formats.amber.sqm.parse_sqm_out(fname)
         assert "forces" in list(data.keys()), f"No forces in {fname}"
         return data
 
@@ -103,7 +104,7 @@ class SQMINFormat(Format):
                 mult : int, default=1
                     multiplicity. Only 1 is allowed.
         """
-        return dpdata.amber.sqm.make_sqm_in(data, fname, frame_idx, **kwargs)
+        return dpdata.formats.amber.sqm.make_sqm_in(data, fname, frame_idx, **kwargs)
 
 
 @Driver.register("sqm")
@@ -135,15 +136,15 @@ class SQMDriver(Driver):
         labeled_system = dpdata.LabeledSystem()
         with tempfile.TemporaryDirectory() as d:
             for ii, ss in enumerate(ori_system):
-                inp_fn = os.path.join(d, "%d.in" % ii)
-                out_fn = os.path.join(d, "%d.out" % ii)
+                inp_fn = os.path.join(d, "%d.in" % ii)  # noqa: UP031
+                out_fn = os.path.join(d, "%d.out" % ii)  # noqa: UP031
                 ss.to("sqm/in", inp_fn, **self.kwargs)
                 try:
                     sp.check_output(
                         [*self.sqm_exec.split(), "-O", "-i", inp_fn, "-o", out_fn]
                     )
                 except sp.CalledProcessError as e:
-                    with open(out_fn) as f:
+                    with open_file(out_fn) as f:
                         raise RuntimeError(
                             "Run sqm failed! Output:\n" + f.read()
                         ) from e

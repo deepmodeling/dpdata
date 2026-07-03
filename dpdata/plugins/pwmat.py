@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
-import dpdata.pwmat.atomconfig
-import dpdata.pwmat.movement
+import dpdata.formats.pwmat.atomconfig
+import dpdata.formats.pwmat.movement
 from dpdata.format import Format
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("movement")
@@ -25,11 +31,13 @@ class PwmatOutputFormat(Format):
             data["cells"],
             data["coords"],
             data["energies"],
-            data["forces"],
+            tmp_force,
             tmp_virial,
-        ) = dpdata.pwmat.movement.get_frames(
+        ) = dpdata.formats.pwmat.movement.get_frames(
             file_name, begin=begin, step=step, convergence_check=convergence_check
         )
+        if tmp_force is not None:
+            data["forces"] = tmp_force
         if tmp_virial is not None:
             data["virials"] = tmp_virial
         # scale virial to the unit of eV
@@ -47,12 +55,12 @@ class PwmatOutputFormat(Format):
 @Format.register("pwmat/final.config")
 class PwmatAtomconfigFormat(Format):
     @Format.post("rot_lower_triangular")
-    def from_system(self, file_name, **kwargs):
-        with open(file_name) as fp:
+    def from_system(self, file_name: FileType, **kwargs):
+        with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
-        return dpdata.pwmat.atomconfig.to_system_data(lines)
+        return dpdata.formats.pwmat.atomconfig.to_system_data(lines)
 
-    def to_system(self, data, file_name, frame_idx=0, *args, **kwargs):
+    def to_system(self, data, file_name: FileType, frame_idx=0, *args, **kwargs):
         """Dump the system in pwmat atom.config format.
 
         Parameters
@@ -69,6 +77,6 @@ class PwmatAtomconfigFormat(Format):
             other parameters
         """
         assert frame_idx < len(data["coords"])
-        w_str = dpdata.pwmat.atomconfig.from_system_data(data, frame_idx)
-        with open(file_name, "w") as fp:
+        w_str = dpdata.formats.pwmat.atomconfig.from_system_data(data, frame_idx)
+        with open_file(file_name, "w") as fp:
             fp.write(w_str)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from . import lammps, md, vasp
+from . import md
 from .bond_order_system import BondOrderSystem
 from .system import LabeledSystem, MultiSystems, System
 
@@ -9,11 +9,10 @@ try:
 except ImportError:
     from .__about__ import __version__
 
+
 __all__ = [
     "__version__",
-    "lammps",
     "md",
-    "vasp",
     "System",
     "LabeledSystem",
     "MultiSystems",

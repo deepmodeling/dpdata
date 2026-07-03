@@ -6,18 +6,25 @@ on:
 
 jobs:
   benchmark:
+    if: ${{ github.repository_owner == 'deepmodeling' }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: 3.12
-    - run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    - uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true
+        cache-dependency-glob: |
+          **/requirements*.txt
+          **/pyproject.toml
     - name: Install dependencies
-      run: uv pip install --system .[test,amber,ase,pymatgen,benchmark] rdkit openbabel-wheel
+      run: uv pip install --system .[test,amber,ase,pymatgen,benchmark] rdkit 'openbabel>=3.2.0'
     - name: Run benchmarks
-      uses: CodSpeedHQ/action@v2
+      uses: CodSpeedHQ/action@v4
       with:
         token: ${{ secrets.CODSPEED_TOKEN }}
+        mode: walltime
         run: pytest benchmark/ --codspeed

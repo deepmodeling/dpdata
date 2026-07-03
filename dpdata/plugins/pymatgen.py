@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
-import dpdata.pymatgen.molecule
-import dpdata.pymatgen.structure
+import dpdata.formats.pymatgen.molecule
+import dpdata.formats.pymatgen.structure
 from dpdata.format import Format
 
 
@@ -24,22 +24,21 @@ class PyMatgenStructureFormat(Format):
         dict
             data dict
         """
-        return dpdata.pymatgen.structure.from_system_data(structure)
+        return dpdata.formats.pymatgen.structure.from_system_data(structure)
 
     def to_system(self, data, **kwargs):
         """Convert System to Pymatgen Structure obj."""
         structures = []
         try:
-            from pymatgen.core import Structure
+            from pymatgen.core import Lattice, Structure
         except ModuleNotFoundError as e:
             raise ImportError("No module pymatgen.Structure") from e
 
-        species = []
-        for name, numb in zip(data["atom_names"], data["atom_numbs"]):
-            species.extend([name] * numb)
+        species = [data["atom_names"][tt] for tt in data["atom_types"]]
+        pbc = not (data.get("nopbc", False))
         for ii in range(data["coords"].shape[0]):
             structure = Structure(
-                data["cells"][ii],
+                Lattice(data["cells"][ii], pbc=[pbc] * 3),
                 species,
                 data["coords"][ii],
                 coords_are_cartesian=True,
@@ -57,7 +56,7 @@ class PyMatgenMoleculeFormat(Format):
         except ModuleNotFoundError as e:
             raise ImportError("No module pymatgen.Molecule") from e
 
-        return dpdata.pymatgen.molecule.to_system_data(file_name)
+        return dpdata.formats.pymatgen.molecule.to_system_data(file_name)
 
     def to_system(self, data, **kwargs):
         """Convert System to Pymatgen Molecule obj."""

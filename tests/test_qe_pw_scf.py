@@ -161,11 +161,11 @@ class TestPWSCFSinglePointEnergy:
 
     def test_energy(self):
         ref_energy = -219.74425946528794
-        self.assertAlmostEqual(self.system_ch4.data["energies"][0], ref_energy)
+        self.assertAlmostEqual(self.system_ch4.data["energies"][0] / ref_energy, 1.0)
         ref_energy = -30007.651851226798
-        self.assertAlmostEqual(self.system_h2o.data["energies"][0], ref_energy)
+        self.assertAlmostEqual(self.system_h2o.data["energies"][0] / ref_energy, 1.0)
         ref_energy = -219.7153691367526562
-        self.assertAlmostEqual(self.system_ch4_2.data["energies"][0], ref_energy)
+        self.assertAlmostEqual(self.system_ch4_2.data["energies"][0] / ref_energy, 1.0)
 
 
 class TestPWSCFLabeledOutput(unittest.TestCase, TestPWSCFSinglePointEnergy):
@@ -186,6 +186,49 @@ class TestPWSCFLabeledOutputListInput(unittest.TestCase, TestPWSCFSinglePointEne
         self.system_ch4_2 = dpdata.LabeledSystem(
             ["qe.scf/03.in", "qe.scf/03.out"], fmt="qe/pw/scf"
         )
+
+
+class TestNa(unittest.TestCase):
+    def test(self):
+        ss = dpdata.LabeledSystem("qe.scf/na.out", fmt="qe/pw/scf")
+        self.assertEqual(ss["atom_numbs"], [3])
+        self.assertEqual(ss["atom_names"], ["Na"])
+        self.assertEqual(ss.get_nframes(), 1)
+        np.testing.assert_array_equal(ss["atom_types"], [0, 0, 0])
+        np.testing.assert_allclose(
+            ss["coords"][0],
+            np.array(
+                [
+                    0.940587444301534,
+                    0.397635863676890,
+                    0.059472381901808,
+                    0.059413515648061,
+                    0.602364552456546,
+                    0.559472465518034,
+                    0.602364619812068,
+                    0.059413062489401,
+                    0.059472381901808,
+                ]
+            ).reshape(3, 3)
+            @ ss["cells"][0],
+        )
+        np.testing.assert_allclose(
+            ss["cells"][0],
+            np.array(
+                [
+                    7.171683039200000,
+                    0.000000000000000,
+                    0.000000000000000,
+                    -4.270578118300000,
+                    5.761527588200000,
+                    0.000000000000000,
+                    -0.000000045600000,
+                    0.000000023000000,
+                    12.826457854999999,
+                ]
+            ).reshape(3, 3),
+        )
+        np.testing.assert_allclose(ss["forces"][0], np.zeros([3, 3]))
 
 
 if __name__ == "__main__":

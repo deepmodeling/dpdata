@@ -1,7 +1,13 @@
 from __future__ import annotations
 
-import dpdata.gromacs.gro
+from typing import TYPE_CHECKING
+
+import dpdata.formats.gromacs.gro
 from dpdata.format import Format
+from dpdata.utils import open_file
+
+if TYPE_CHECKING:
+    from dpdata.utils import FileType
 
 
 @Format.register("gro")
@@ -19,11 +25,13 @@ class GromacsGroFormat(Format):
         **kwargs : dict
             other parameters
         """
-        return dpdata.gromacs.gro.file_to_system_data(
+        return dpdata.formats.gromacs.gro.file_to_system_data(
             file_name, format_atom_name=format_atom_name, **kwargs
         )
 
-    def to_system(self, data, file_name=None, frame_idx=-1, **kwargs):
+    def to_system(
+        self, data, file_name: FileType | None = None, frame_idx=-1, **kwargs
+    ):
         """Dump the system in gromacs .gro format.
 
         Parameters
@@ -41,16 +49,18 @@ class GromacsGroFormat(Format):
         if frame_idx == -1:
             strs = []
             for idx in range(data["coords"].shape[0]):
-                gro_str = dpdata.gromacs.gro.from_system_data(data, f_idx=idx, **kwargs)
+                gro_str = dpdata.formats.gromacs.gro.from_system_data(
+                    data, f_idx=idx, **kwargs
+                )
                 strs.append(gro_str)
             gro_str = "\n".join(strs)
         else:
-            gro_str = dpdata.gromacs.gro.from_system_data(
+            gro_str = dpdata.formats.gromacs.gro.from_system_data(
                 data, f_idx=frame_idx, **kwargs
             )
 
         if file_name is None:
             return gro_str
         else:
-            with open(file_name, "w+") as fp:
+            with open_file(file_name, "w+") as fp:
                 fp.write(gro_str)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import dpdata.rdkit.utils
+import dpdata.formats.rdkit.utils
 from dpdata.format import Format
 
 
@@ -31,7 +31,7 @@ class SdfFormat(Format):
             for m in rdkit.Chem.SDMolSupplier(file_name, sanitize=False, removeHs=False)
         ]
         if len(mols) > 1:
-            mol = dpdata.rdkit.utils.combine_molecules(mols)
+            mol = dpdata.formats.rdkit.utils.combine_molecules(mols)
         else:
             mol = mols[0]
         return mol
