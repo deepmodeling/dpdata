@@ -249,6 +249,19 @@ class TestABACUSMD(unittest.TestCase):
                     iline += 1
                 self.assertEqual(iline, 30)
 
+    def test_no_force_columns(self):
+        """Test that MD dumps without FORCE columns do not fabricate zero forces."""
+        system_noforce = dpdata.LabeledSystem(
+            "abacus.md.noforce", fmt="abacus/md"
+        )
+        # When FORCE is absent from the dump, forces should not be in data
+        self.assertNotIn("forces", system_noforce.data)
+        # Other data should still be present
+        self.assertIn("coords", system_noforce.data)
+        self.assertIn("energies", system_noforce.data)
+        self.assertIn("cells", system_noforce.data)
+        self.assertEqual(len(system_noforce.data["coords"]), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
