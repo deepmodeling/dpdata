@@ -36,6 +36,27 @@ class TestPOSCARCart(unittest.TestCase):
         max_dist_1 = np.max(np.linalg.norm(dist, axis=1))
         self.assertAlmostEqual(max_dist_0, max_dist_1)
 
+    def test_ungrouped_atom_types_species_match_coords(self):
+        # Regression for gh-994: species must follow atom_types order, not the
+        # grouped atom_names/atom_numbs order, otherwise sites are assigned the
+        # wrong element when atoms are not grouped by type.
+        system = dpdata.System(
+            data={
+                "atom_names": ["H", "O"],
+                "atom_numbs": [2, 1],
+                "atom_types": np.array([0, 1, 0]),
+                "orig": np.zeros(3),
+                "cells": np.eye(3).reshape(1, 3, 3) * 20,
+                "coords": np.array(
+                    [[[0.0, 0.0, 0.0], [9.0, 0.0, 0.0], [1.0, 0.0, 0.0]]]
+                ),
+            }
+        )
+        mol = system.to("pymatgen/molecule")[0]
+        self.assertEqual([str(site.specie) for site in mol], ["H", "O", "H"])
+        for site, coord in zip(mol, system["coords"][0]):
+            np.testing.assert_allclose(site.coords, coord)
+
 
 if __name__ == "__main__":
     unittest.main()
