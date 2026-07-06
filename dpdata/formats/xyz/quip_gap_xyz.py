@@ -2,6 +2,7 @@
 # %%
 from __future__ import annotations
 
+import logging
 import re
 import warnings
 from collections import OrderedDict
@@ -264,6 +265,25 @@ class QuipGapxyzSystems:
         e_factor = _get_unit_factor(e_unit_str, "energy")
         f_factor = _get_unit_factor(f_unit_str, "force")
         s_factor = _get_unit_factor(s_unit_str, "stress")
+
+        if e_factor != 1.0:
+            logging.info(
+                "extxyz: converting energy from '%s' to eV (factor=%.10g)",
+                e_unit_str,
+                e_factor,
+            )
+        if f_factor != 1.0:
+            logging.info(
+                "extxyz: converting forces from '%s' to eV/angstrom (factor=%.10g)",
+                f_unit_str,
+                f_factor,
+            )
+        if s_factor != 1.0:
+            logging.info(
+                "extxyz: converting stress from '%s' to eV/angstrom^3 (factor=%.10g)",
+                s_unit_str,
+                s_factor,
+            )
 
         if virial_raw is not None:
             virials = (
