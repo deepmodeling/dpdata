@@ -266,11 +266,12 @@ class QuipGapxyzSystems:
         s_factor = _get_unit_factor(s_unit_str, "stress")
 
         if virial_raw is not None:
-            virials = np.array(
-                [np.array(list(filter(bool, virial_raw.split(" ")))).reshape(3, 3)]
-            ).astype(np.float64)
-            # Note: virial values are assumed in eV (no unit header for virial itself;
-            # if stress-unit is given it only applies to stress fields).
+            virials = (
+                np.array(
+                    [np.array(list(filter(bool, virial_raw.split(" ")))).reshape(3, 3)]
+                ).astype(np.float64)
+                * e_factor  # virial has energy dimensions; convert if energy-unit is set
+            )
         elif stress_raw is not None:
             virials = _parse_stress_to_virials(
                 stress_raw, cells, stress_sign=stress_sign, stress_factor=s_factor

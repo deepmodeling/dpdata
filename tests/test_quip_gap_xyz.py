@@ -571,5 +571,43 @@ class TestUnsupportedUnitRaises(unittest.TestCase):
             dpdata.LabeledSystem("xyz/unsupported_unit.xyz", fmt="extxyz")
 
 
+class TestVirialUnitConversion(unittest.TestCase):
+    """Virial has energy dimensions; must be converted when energy-unit is set."""
+
+    def test_virial_hartree(self):
+        from dpdata.unit import EnergyConversion
+
+        system = dpdata.LabeledSystem("xyz/virial_hartree.xyz", fmt="extxyz")
+        e_factor = EnergyConversion("hartree", "eV").value()
+
+        # virial in file is identity matrix in hartree → should be identity * e_factor in eV
+        expected_diag = 1.0 * e_factor
+        np.testing.assert_allclose(
+            np.diag(system.data["virials"][0]),
+            [expected_diag] * 3,
+            rtol=1e-10,
+        )
+
+
+class TestAtomicUnitAliases(unittest.TestCase):
+    """energy-unit=au and force-unit=a.u. should map to hartree and hartree/bohr."""
+
+    def test_au_alias(self):
+        from dpdata.unit import EnergyConversion, ForceConversion
+
+        system = dpdata.LabeledSystem("xyz/energy_au.xyz", fmt="extxyz")
+        e_factor = EnergyConversion("hartree", "eV").value()
+        f_factor = ForceConversion("hartree/bohr", "eV/angstrom").value()
+
+        np.testing.assert_allclose(
+            system.data["energies"], [-0.5 * e_factor], rtol=1e-10
+        )
+        np.testing.assert_allclose(
+            system.data["forces"][0, 0],
+            np.array([0.01, 0.02, 0.03]) * f_factor,
+            rtol=1e-10,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

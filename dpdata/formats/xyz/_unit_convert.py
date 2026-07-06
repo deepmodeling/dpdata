@@ -22,6 +22,8 @@ _ENERGY_UNIT_MAP: dict[str, str] = {
     "ev": "eV",
     "hartree": "hartree",
     "ha": "hartree",
+    "au": "hartree",
+    "a.u.": "hartree",
     "ry": "rydberg",
     "rydberg": "rydberg",
     "kcal/mol": "kcal_mol",
@@ -68,6 +70,11 @@ def _parse_force_unit(raw: str) -> tuple[str, str]:
     >>> _parse_force_unit("ev/ang")
     ('ev', 'ang')
     """
+    # Handle atomic-unit shorthand: "au" or "a.u." means hartree/bohr for force
+    _FORCE_UNIT_ALIASES = {"au": ("hartree", "bohr"), "a.u.": ("hartree", "bohr")}
+    if raw in _FORCE_UNIT_ALIASES:
+        return _FORCE_UNIT_ALIASES[raw]
+
     # Try matching known energy prefixes (longest first) to handle
     # composite names like "kcal/mol" that themselves contain "/".
     for e_key in sorted(_ENERGY_UNIT_MAP.keys(), key=len, reverse=True):
