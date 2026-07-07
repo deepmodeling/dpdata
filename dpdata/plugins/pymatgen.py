@@ -66,9 +66,7 @@ class PyMatgenMoleculeFormat(Format):
         except ModuleNotFoundError as e:
             raise ImportError("No module pymatgen.Molecule") from e
 
-        species = []
-        for name, numb in zip(data["atom_names"], data["atom_numbs"]):
-            species.extend([name] * numb)
+        species = [data["atom_names"][tt] for tt in data["atom_types"]]
         data = dpdata.system.remove_pbc(data)
         for ii in range(np.array(data["coords"]).shape[0]):
             molecule = Molecule(species, data["coords"][ii])
