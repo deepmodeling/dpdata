@@ -201,6 +201,13 @@ def dump(
     for dt, prop in data_types.items():
         if dt in data:
             if prop["dump"]:
+                if nframes > 0 and np.asarray(data[dt]).size == 0:
+                    # An optional frame property (e.g. forces/virials when
+                    # cal_force/cal_stress is disabled) may be empty while the
+                    # system still has frames. Skip it instead of writing a
+                    # (nframes, 0) dataset that cannot be reshaped on load. This
+                    # matches the behaviour of the deepmd/raw and deepmd/npy writers.
+                    continue
                 ddata = np.reshape(data[dt], prop["shape"])
                 if np.issubdtype(ddata.dtype, np.floating):
                     ddata = ddata.astype(comp_prec)
