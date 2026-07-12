@@ -300,3 +300,50 @@ class TestHDF5MixedIOVariants(unittest.TestCase):
         )
 
         self.assertEqual(len(systems), 0)
+
+
+class TestHDF5EmptyOptionalArray(unittest.TestCase):
+    """Regression test for #996.
+
+    An empty optional frame array (e.g. forces when they are not computed) must not
+    break the deepmd/hdf5 write/read round-trip. Previously the writer stored a
+    ``(nframes, 0)`` dataset that could not be reshaped on load.
+    """
+
+    def tearDown(self):
+        if os.path.isfile("tmp.deepmd.empty.hdf5"):
+            os.remove("tmp.deepmd.empty.hdf5")
+
+    @staticmethod
+    def _make(forces):
+        return dpdata.LabeledSystem(
+            data={
+                "atom_names": ["H"],
+                "atom_numbs": [1],
+                "atom_types": np.array([0]),
+                "cells": np.eye(3).reshape(1, 3, 3),
+                "coords": np.zeros((1, 1, 3)),
+                "energies": np.zeros(1),
+                "orig": np.zeros(3),
+                "forces": forces,
+            }
+        )
+
+    def test_empty_forces_round_trip(self):
+        system = self._make(np.zeros((1, 0, 3)))
+        system.to("deepmd/hdf5", "tmp.deepmd.empty.hdf5")
+        reloaded = dpdata.LabeledSystem("tmp.deepmd.empty.hdf5", fmt="deepmd/hdf5")
+        # The empty optional array is skipped rather than written as (nframes, 0).
+        self.assertNotIn("forces", reloaded.data)
+        np.testing.assert_allclose(reloaded["coords"], system["coords"])
+
+    def test_real_forces_preserved(self):
+        forces = np.arange(3, dtype=float).reshape(1, 1, 3)
+        system = self._make(forces)
+        system.to("deepmd/hdf5", "tmp.deepmd.empty.hdf5")
+        reloaded = dpdata.LabeledSystem("tmp.deepmd.empty.hdf5", fmt="deepmd/hdf5")
+        np.testing.assert_allclose(reloaded["forces"], forces)
+
+
+if __name__ == "__main__":
+    unittest.main()
