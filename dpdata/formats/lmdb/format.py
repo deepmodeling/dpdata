@@ -61,6 +61,7 @@ DEFAULT_FRAME_FMT = "012d"
 DEFAULT_MAX_FRAMES = 100_000
 DEFAULT_WRITE_BATCH_SIZE = 1_000
 METADATA_KEY = b"__metadata__"
+_IS_WINDOWS = os.name == "nt"
 
 _RESERVED_KEYS = frozenset(
     {
@@ -730,6 +731,11 @@ class _LMDBWriter:
                 f"LMDB destination '{directory}' already exists; pass "
                 "overwrite=True to replace it."
             )
+        if self.directory.exists() and overwrite and _IS_WINDOWS:
+            raise NotImplementedError(
+                "overwrite=True is not supported on Windows because LMDB uses "
+                "memory-mapped files that cannot be replaced safely while open."
+            )
         self.directory.parent.mkdir(parents=True, exist_ok=True)
         self.temp_directory = Path(
             tempfile.mkdtemp(
@@ -1149,7 +1155,8 @@ class LMDBFormat(Format):
             Number of frames committed per LMDB write transaction.
         overwrite : bool, optional
             Whether to replace an existing destination after the new database
-            has been written and validated. The default is ``False``.
+            has been written and validated. This option is supported on POSIX
+            systems only. The default is ``False``.
         **kwargs : dict
             other parameters
 
@@ -1219,7 +1226,8 @@ class LMDBFormat(Format):
             Number of frames committed per LMDB write transaction.
         overwrite : bool, optional
             Whether to replace an existing destination after the new database
-            has been written and validated. The default is ``False``.
+            has been written and validated. This option is supported on POSIX
+            systems only. The default is ``False``.
         """
         if hasattr(systems, "systems"):
             raise TypeError(
@@ -2043,7 +2051,8 @@ def dump_systems(
         Number of frames committed per LMDB write transaction.
     overwrite : bool, optional
         Whether to replace an existing destination after the new database has
-        been written and validated. The default is ``False``.
+        been written and validated. This option is supported on POSIX systems
+        only. The default is ``False``.
 
     Examples
     --------

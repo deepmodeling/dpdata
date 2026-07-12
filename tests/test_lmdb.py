@@ -679,8 +679,10 @@ class TestLMDBReadRobustness(unittest.TestCase):
             ["H"],
             metadata_extra={"dp_data_names": {"foo": "spins"}},
         )
-        with self.assertRaisesRegex(LMDBMetadataError, "protocol key is 'spin'"):
+        with self.assertRaises(LMDBMetadataError) as context:
             dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+        self.assertIn("foo", str(context.exception))
+        self.assertIn("spins", str(context.exception))
 
     def test_custom_deepmd_core_key_rejected_on_read(self):
         frames = [
@@ -1010,6 +1012,24 @@ class TestLMDBDumpSystems(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             dump_systems([self.B], self.lmdb_path)
 
+    def test_windows_overwrite_rejected_explicitly(self):
+        from dpdata.formats.lmdb import dump_systems
+
+        dump_systems([self.A], self.lmdb_path)
+        with (
+            mock.patch(
+                "dpdata.formats.lmdb.format._IS_WINDOWS",
+                True,
+            ),
+            self.assertRaisesRegex(NotImplementedError, "not supported on Windows"),
+        ):
+            dump_systems(
+                [self.B],
+                self.lmdb_path,
+                overwrite=True,
+            )
+
+    @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_failed_overwrite_preserves_old_database(self):
         from dpdata.formats.lmdb import dump_systems
 
@@ -1036,6 +1056,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         )
         self.assertEqual(temporary, [])
 
+    @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_successful_overwrite_replaces_database(self):
         from dpdata.formats.lmdb import dump_systems
 
@@ -1090,6 +1111,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             self.assertGreater(env.info()["map_size"], 4096)
 
+    @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_active_dpdata_reader_blocks_overwrite_for_path_alias(self):
         from dpdata.formats.lmdb import dump_systems
 
@@ -1107,6 +1129,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
         self.assertEqual(loaded.get_nframes(), self.A.get_nframes())
 
+    @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_external_lmdb_reader_blocks_overwrite(self):
         from dpdata.formats.lmdb import dump_systems
 
@@ -1132,6 +1155,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
         self.assertEqual(loaded.get_nframes(), self.A.get_nframes())
 
+    @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_publish_guard_closes_external_reader_race(self):
         from dpdata.formats.lmdb import dump_systems
 
@@ -1183,6 +1207,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
         self.assertEqual(loaded[0].get_natoms(), self.B.get_natoms())
 
+    @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_staged_validation_failure_preserves_old_database(self):
         from dpdata.formats.lmdb import dump_systems
         from dpdata.formats.lmdb.format import _LMDBWriter
