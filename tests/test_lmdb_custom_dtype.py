@@ -202,12 +202,8 @@ class TestLMDBFieldProtocol(unittest.TestCase):
 
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             with env.begin() as txn:
-                metadata = msgpack.unpackb(
-                    txn.get(b"__metadata__"), raw=False
-                )
-                frame = msgpack.unpackb(
-                    txn.get(b"000000000000"), raw=False
-                )
+                metadata = msgpack.unpackb(txn.get(b"__metadata__"), raw=False)
+                frame = msgpack.unpackb(txn.get(b"000000000000"), raw=False)
         self.assertIn("spin", frame)
         self.assertNotIn("spins", frame)
         self.assertEqual(metadata["dp_data_names"], {"spin": "spins"})
@@ -282,9 +278,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
                 3,
             )
         )
-        with self.assertRaisesRegex(
-            LMDBError, "belongs to 'spins'"
-        ):
+        with self.assertRaisesRegex(LMDBError, "belongs to 'spins'"):
             self.system.to("lmdb", self.lmdb_path)
 
     def test_atom_types_key_collision_rejected(self):
@@ -303,9 +297,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             self.system.to("lmdb", self.lmdb_path)
 
     def test_static_field_roundtrip(self):
-        static = DataType(
-            "static_data", np.ndarray, shape=(2,), required=False
-        )
+        static = DataType("static_data", np.ndarray, shape=(2,), required=False)
         self._register(static)
         self.system.data["static_data"] = np.array([1.0, 2.0])
         self.system.to("lmdb", self.lmdb_path)
@@ -313,9 +305,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
         np.testing.assert_array_equal(loaded["static_data"], [1.0, 2.0])
 
     def test_inconsistent_static_field_raises(self):
-        static = DataType(
-            "static_data", np.ndarray, shape=(2,), required=False
-        )
+        static = DataType("static_data", np.ndarray, shape=(2,), required=False)
         self._register(static)
         self.system.data["static_data"] = np.array([1.0, 2.0])
         self.system.to("lmdb", self.lmdb_path)
@@ -347,9 +337,9 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             required=False,
         )
         self._register(transposed)
-        values = np.arange(
-            2 * self.system.get_nframes(), dtype=float
-        ).reshape(2, self.system.get_nframes())
+        values = np.arange(2 * self.system.get_nframes(), dtype=float).reshape(
+            2, self.system.get_nframes()
+        )
         self.system.data["transposed_frames"] = values
         self.system.to("lmdb", self.lmdb_path)
         loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
@@ -413,9 +403,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
         dump_systems([data], self.lmdb_path)
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             with env.begin() as txn:
-                frame = msgpack.unpackb(
-                    txn.get(b"000000000000"), raw=False
-                )
+                frame = msgpack.unpackb(txn.get(b"000000000000"), raw=False)
         self.assertEqual(frame["hessian"]["shape"], [2, 3, 2, 3])
 
 

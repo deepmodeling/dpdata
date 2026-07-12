@@ -126,11 +126,7 @@ class _FieldSpec:
     @property
     def frame_axis(self) -> int | None:
         """Return the frame axis in the in-memory array."""
-        return (
-            self.shape.index(Axis.NFRAMES)
-            if Axis.NFRAMES in self.shape
-            else None
-        )
+        return self.shape.index(Axis.NFRAMES) if Axis.NFRAMES in self.shape else None
 
     @property
     def atom_axes(self) -> tuple[int, ...]:
@@ -227,9 +223,7 @@ _PROTOCOL_FIELD_NAMES = frozenset(
         *(dtype.name for dtype in _PROTOCOL_DTYPES),
     }
 )
-_PROTOCOL_DISK_NAMES = {
-    dtype.deepmd_name: dtype.name for dtype in _PROTOCOL_DTYPES
-}
+_PROTOCOL_DISK_NAMES = {dtype.deepmd_name: dtype.name for dtype in _PROTOCOL_DTYPES}
 
 _READ_ENV_CACHE: dict[str, tuple[lmdb.Environment, int]] = {}
 _READ_ENV_LOCK = threading.Lock()
@@ -280,9 +274,7 @@ def _encode_array(arr: np.ndarray) -> dict[str, Any]:
     """
     a = np.asarray(arr)
     if a.dtype.hasobject or a.dtype.fields is not None:
-        raise LMDBError(
-            f"LMDB array dtype {a.dtype} is not a portable raw-byte dtype."
-        )
+        raise LMDBError(f"LMDB array dtype {a.dtype} is not a portable raw-byte dtype.")
     try:
         restored_dtype = np.dtype(str(a.dtype))
     except TypeError as exc:
@@ -355,9 +347,7 @@ def _decode_frame(raw: bytes) -> dict[str, Any]:
         try:
             out[name] = _decode_array(val) if _is_encoded_array(val) else val
         except (TypeError, ValueError) as exc:
-            raise LMDBFrameError(
-                f"Cannot decode array field '{name}': {exc}"
-            ) from exc
+            raise LMDBFrameError(f"Cannot decode array field '{name}': {exc}") from exc
     return out
 
 
@@ -397,13 +387,9 @@ def _packb(value: Any) -> bytes:
     return packed
 
 
-def _require_integer(
-    value: Any, label: str, *, minimum: int
-) -> int:
+def _require_integer(value: Any, label: str, *, minimum: int) -> int:
     """Return a strictly validated integer metadata value."""
-    if isinstance(value, (bool, np.bool_)) or not isinstance(
-        value, numbers.Integral
-    ):
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral):
         raise LMDBMetadataError(f"{label} must be an integer.")
     result = int(value)
     if result < minimum:
@@ -444,14 +430,11 @@ def _validate_field_namespace(dp_name: str, disk_name: str) -> None:
         )
     if disk_name in _FORBIDDEN_CUSTOM_DISK_NAMES or disk_name.startswith("find_"):
         raise LMDBError(
-            f"Custom field '{dp_name}' cannot use reserved LMDB key "
-            f"'{disk_name}'."
+            f"Custom field '{dp_name}' cannot use reserved LMDB key '{disk_name}'."
         )
 
 
-def _field_spec(
-    dtype: DataType, *, validate_namespace: bool = True
-) -> _FieldSpec:
+def _field_spec(dtype: DataType, *, validate_namespace: bool = True) -> _FieldSpec:
     """Build a field specification from a registered data type."""
     if dtype.shape is None:
         raise LMDBError(
@@ -471,9 +454,7 @@ def _field_spec(
 
 def _field_registries(
     *, prefer_protocol: bool = False
-) -> tuple[
-    dict[str, _FieldSpec], dict[str, _FieldSpec]
-]:
+) -> tuple[dict[str, _FieldSpec], dict[str, _FieldSpec]]:
     """Return field specifications indexed by dpdata and disk names."""
     data_types = _all_data_types()
     if prefer_protocol:
@@ -519,9 +500,8 @@ def _validate_integer_types(
 ) -> np.ndarray:
     """Validate an atom-type array without silently truncating values."""
     array = np.asarray(values)
-    if (
-        np.issubdtype(array.dtype, np.bool_)
-        or not np.issubdtype(array.dtype, np.integer)
+    if np.issubdtype(array.dtype, np.bool_) or not np.issubdtype(
+        array.dtype, np.integer
     ):
         raise LMDBError(f"{name} must use an integer dtype, got {array.dtype}.")
     lower_bound = -1 if allow_virtual else 0
@@ -650,9 +630,7 @@ def _open_read_env(path: str) -> tuple[str, lmdb.Environment]:
     resolved = _normalized_path(path)
     with _READ_ENV_LOCK:
         if resolved in _PUBLISHING_PATHS:
-            raise LMDBError(
-                f"LMDB '{path}' is being replaced and cannot be opened."
-            )
+            raise LMDBError(f"LMDB '{path}' is being replaced and cannot be opened.")
         cached = _READ_ENV_CACHE.get(resolved)
         if cached is not None:
             env, count = cached
@@ -910,9 +888,7 @@ class _LMDBWriter:
                 return
             except lmdb.MapFullError:
                 current_size = int(self.env.info()["map_size"])
-                self.env.set_mapsize(
-                    max(current_size * 2, current_size + (1 << 20))
-                )
+                self.env.set_mapsize(max(current_size * 2, current_size + (1 << 20)))
 
     def write_system(self, data: dict[str, Any]) -> None:
         """Append one validated source system."""
@@ -941,8 +917,8 @@ class _LMDBWriter:
             [name_to_global.get(name, -1) for name in atom_source.names],
             dtype=np.int64,
         )
-        has_virtual_atoms = (
-            atom_source.masks is not None and not np.all(atom_source.masks)
+        has_virtual_atoms = atom_source.masks is not None and not np.all(
+            atom_source.masks
         )
         specs = self._build_specs(
             data,
@@ -975,30 +951,24 @@ class _LMDBWriter:
                         f"{list(type_map)}."
                     )
                 global_types = global_types.astype(np.int32)
-                frame: dict[str, Any] = {
-                    "atom_types": _encode_array(global_types)
-                }
+                frame: dict[str, Any] = {"atom_types": _encode_array(global_types)}
                 for spec, array in fields:
                     if spec.dp_name == "cells" and nopbc:
                         continue
-                    payload = self._frame_payload(
-                        array, spec, frame_i, atom_mask
-                    )
+                    payload = self._frame_payload(array, spec, frame_i, atom_mask)
                     frame[spec.disk_name] = _encode_array(payload)
-                counts = np.bincount(
-                    global_types, minlength=len(type_map)
-                )[: len(type_map)]
+                counts = np.bincount(global_types, minlength=len(type_map))[
+                    : len(type_map)
+                ]
                 frame["atom_numbs"] = [int(count) for count in counts]
-                key = format(
-                    self.frame_index + offset, self.frame_idx_fmt
-                ).encode("ascii")
+                key = format(self.frame_index + offset, self.frame_idx_fmt).encode(
+                    "ascii"
+                )
                 records.append((key, _packb(frame)))
                 batch_nlocs.append(int(global_types.size))
             self._put_records(records)
             self.frame_nlocs.extend(batch_nlocs)
-            self.frame_system_ids.extend(
-                [self.system_index] * len(records)
-            )
+            self.frame_system_ids.extend([self.system_index] * len(records))
             self.frame_index += len(records)
         self.system_index += 1
 
@@ -1051,11 +1021,11 @@ class _LMDBWriter:
                     )
                 metadata = _read_metadata(txn)
                 if _meta_get(metadata, "nframes") != self.frame_index:
-                    raise LMDBError("Staged LMDB nframes does not match written frames.")
-                if len(_meta_get(metadata, "frame_nlocs") or []) != self.frame_index:
                     raise LMDBError(
-                        "Staged LMDB frame_nlocs length is inconsistent."
+                        "Staged LMDB nframes does not match written frames."
                     )
+                if len(_meta_get(metadata, "frame_nlocs") or []) != self.frame_index:
+                    raise LMDBError("Staged LMDB frame_nlocs length is inconsistent.")
                 if (
                     len(_meta_get(metadata, "frame_system_ids") or [])
                     != self.frame_index
@@ -1066,9 +1036,7 @@ class _LMDBWriter:
                 for index in range(self.frame_index):
                     key = format(index, self.frame_idx_fmt).encode("ascii")
                     if txn.get(key) is None:
-                        raise LMDBError(
-                            f"Staged LMDB is missing frame key {key!r}."
-                        )
+                        raise LMDBError(f"Staged LMDB is missing frame key {key!r}.")
         finally:
             env.close()
 
@@ -1373,10 +1341,7 @@ class LMDBFormat(Format):
         if file_type_map:
             names = list(
                 _validate_names(
-                    [
-                        n.decode() if isinstance(n, bytes) else n
-                        for n in file_type_map
-                    ],
+                    [n.decode() if isinstance(n, bytes) else n for n in file_type_map],
                     "file type_map",
                 )
             )
@@ -1570,7 +1535,9 @@ class LMDBFormat(Format):
         for frame in frames:
             raw = np.asarray(frame["atom_types"])
             if not np.issubdtype(raw.dtype, np.integer) or raw.ndim != 1:
-                raise LMDBFrameError("atom_types must be a one-dimensional integer array.")
+                raise LMDBFrameError(
+                    "atom_types must be a one-dimensional integer array."
+                )
             if raw.size and int(raw.min()) < 0:
                 raise LMDBFrameError("atom_types must not contain negative indices.")
             if raw.size:
@@ -1615,16 +1582,13 @@ class LMDBFormat(Format):
             frame["atom_numbs"] = expected
 
     @staticmethod
-    def _metadata_mapping(
-        metadata: dict[str | bytes, Any], key: str
-    ) -> dict[str, Any]:
+    def _metadata_mapping(metadata: dict[str | bytes, Any], key: str) -> dict[str, Any]:
         """Return a metadata mapping with decoded string keys."""
         raw = _meta_get(metadata, key) or {}
         if not isinstance(raw, dict):
             raise LMDBMetadataError(f"{key} must be a mapping.")
         return {
-            k.decode() if isinstance(k, bytes) else str(k): v
-            for k, v in raw.items()
+            k.decode() if isinstance(k, bytes) else str(k): v for k, v in raw.items()
         }
 
     def _resolve_read_specs(
@@ -1649,19 +1613,22 @@ class LMDBFormat(Format):
             if isinstance(hinted_name, bytes):
                 hinted_name = hinted_name.decode()
             known = by_disk.get(disk_name)
-            dp_name = str(hinted_name) if hinted_name is not None else (
-                known.dp_name if known is not None else disk_name
+            dp_name = (
+                str(hinted_name)
+                if hinted_name is not None
+                else (known.dp_name if known is not None else disk_name)
             )
-            if known is not None and hinted_name is not None and dp_name != known.dp_name:
+            if (
+                known is not None
+                and hinted_name is not None
+                and dp_name != known.dp_name
+            ):
                 raise LMDBMetadataError(
                     f"dp_data_names maps '{disk_name}' to '{dp_name}', but the "
                     f"registered protocol maps it to '{known.dp_name}'."
                 )
             expected_spec = by_dp.get(dp_name)
-            if (
-                expected_spec is not None
-                and disk_name != expected_spec.disk_name
-            ):
+            if expected_spec is not None and disk_name != expected_spec.disk_name:
                 raise LMDBMetadataError(
                     f"LMDB key '{disk_name}' cannot map to registered field "
                     f"'{dp_name}', whose protocol key is "
@@ -1681,18 +1648,14 @@ class LMDBFormat(Format):
 
             if disk_name in shape_hints:
                 shape = _tokens_to_shape(shape_hints[disk_name])
-                if (
-                    known is not None
-                    and not self._shape_hint_compatible(known.shape, shape)
+                if known is not None and not self._shape_hint_compatible(
+                    known.shape, shape
                 ):
                     raise LMDBMetadataError(
                         f"dp_data_shapes for known field '{disk_name}' changes "
                         f"its protocol shape from {known.shape} to {shape}."
                     )
-            elif (
-                known is not None
-                and known.dp_name in _PROTOCOL_FIELD_NAMES
-            ):
+            elif known is not None and known.dp_name in _PROTOCOL_FIELD_NAMES:
                 shape = known.shape
             else:
                 shape = self._infer_field_shape(disk_name, frames)
@@ -1752,8 +1715,7 @@ class LMDBFormat(Format):
         for axis in range(rank):
             dimensions = [shape[axis] for shape, _ in observed]
             follows_natoms = all(
-                dim == natoms
-                for dim, (_, natoms) in zip(dimensions, observed)
+                dim == natoms for dim, (_, natoms) in zip(dimensions, observed)
             )
             if follows_natoms:
                 if len({natoms for _, natoms in observed}) == 1:
@@ -1794,9 +1756,7 @@ class LMDBFormat(Format):
                         f"'{spec.dp_name}'."
                     )
                 value = np.asarray(frame[disk_name])
-                LMDBFormat._validate_payload_shape(
-                    spec, value, natoms, frame_index
-                )
+                LMDBFormat._validate_payload_shape(spec, value, natoms, frame_index)
                 renamed[spec.dp_name] = value
             renamed_frames.append(renamed)
         return renamed_frames
@@ -1844,9 +1804,7 @@ class LMDBFormat(Format):
             canonical = self._canonicalize_frame(frame, specs)
             canonical_frames.append(canonical)
             composition = tuple(
-                np.bincount(
-                    canonical["atom_types"], minlength=len(names)
-                ).tolist()
+                np.bincount(canonical["atom_types"], minlength=len(names)).tolist()
             )
             groups.setdefault(composition, []).append(index)
 
@@ -1929,9 +1887,7 @@ class LMDBFormat(Format):
             data["cells"] = np.zeros((len(indices), 3, 3))
 
     @staticmethod
-    def _aggregate_values(
-        values: list[np.ndarray], spec: _FieldSpec
-    ) -> np.ndarray:
+    def _aggregate_values(values: list[np.ndarray], spec: _FieldSpec) -> np.ndarray:
         """Aggregate values while preserving byte order and static semantics."""
         first = values[0]
         for value in values[1:]:
@@ -1942,7 +1898,9 @@ class LMDBFormat(Format):
                 )
         frame_axis = spec.frame_axis
         if frame_axis is None:
-            if any(not np.array_equal(first, value, equal_nan=True) for value in values[1:]):
+            if any(
+                not np.array_equal(first, value, equal_nan=True) for value in values[1:]
+            ):
                 raise LMDBFrameError(
                     f"Static field '{spec.disk_name}' differs between frames."
                 )
@@ -1965,12 +1923,7 @@ class LMDBFormat(Format):
 
         existing = {dt.name: dt for dt in (*System.DTYPES, *LabeledSystem.DTYPES)}
         protocol_dtypes = {dtype.name: dtype for dtype in _PROTOCOL_DTYPES}
-        used_names = {
-            name
-            for data in datasets
-            for name in data
-            if name in specs
-        }
+        used_names = {name for data in datasets for name in data if name in specs}
         pending: list[DataType] = []
         for name in sorted(used_names):
             if name not in specs:
@@ -1978,9 +1931,7 @@ class LMDBFormat(Format):
             spec = specs[name]
             current = existing.get(name)
             if current is not None:
-                merged_shape = LMDBFormat._merge_shapes(
-                    current.shape, spec.shape
-                )
+                merged_shape = LMDBFormat._merge_shapes(current.shape, spec.shape)
                 protocol_dtype = protocol_dtypes.get(name)
                 if (
                     merged_shape is None
@@ -1988,15 +1939,10 @@ class LMDBFormat(Format):
                     and LMDBFormat._shapes_compatible(
                         current.shape, protocol_dtype.shape
                     )
-                    and LMDBFormat._shapes_compatible(
-                        spec.shape, protocol_dtype.shape
-                    )
+                    and LMDBFormat._shapes_compatible(spec.shape, protocol_dtype.shape)
                 ):
                     merged_shape = protocol_dtype.shape
-                if (
-                    merged_shape is None
-                    or current.deepmd_name != spec.deepmd_name
-                ):
+                if merged_shape is None or current.deepmd_name != spec.deepmd_name:
                     raise LMDBError(
                         f"Data type '{name}' conflicts with the process-global "
                         f"definition: existing shape/name "
@@ -2039,9 +1985,7 @@ class LMDBFormat(Format):
         if first is None or second is None or len(first) != len(second):
             return first == second
         return all(
-            left == right
-            or left == -1
-            or right == -1
+            left == right or left == -1 or right == -1
             for left, right in zip(first, second)
         )
 

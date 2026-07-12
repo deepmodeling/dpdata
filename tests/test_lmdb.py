@@ -288,9 +288,7 @@ class TestLMDBReferenceFormatInterop(unittest.TestCase):
                 ntypes = len(self.type_map)
                 counts = np.bincount(fr["atom_types"], minlength=ntypes)[:ntypes]
                 out["atom_numbs"] = [int(c) for c in counts]
-                txn.put(
-                    format(i, "012d").encode(), _reference_packb(out)
-                )
+                txn.put(format(i, "012d").encode(), _reference_packb(out))
                 frame_nlocs.append(len(fr["atom_types"]))
             meta: dict[str, object] = {
                 "nframes": len(self.frames),
@@ -337,9 +335,7 @@ def _make_labeled_system(
 ) -> dpdata.LabeledSystem:
     atype = np.array(atom_types, dtype=int)
     natoms = len(atype)
-    numbs = [
-        int(np.count_nonzero(atype == i)) for i in range(len(atom_names))
-    ]
+    numbs = [int(np.count_nonzero(atype == i)) for i in range(len(atom_names))]
     data = {
         "atom_numbs": numbs,
         "atom_names": list(atom_names),
@@ -452,9 +448,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["O", "H"])
-        with self.assertRaisesRegex(
-            LMDBFrameError, "must contain identical fields"
-        ):
+        with self.assertRaisesRegex(LMDBFrameError, "must contain identical fields"):
             dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
 
     def test_single_system_multi_composition_warns(self):
@@ -529,9 +523,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["O", "H"])
-        with self.assertRaisesRegex(
-            LMDBFrameError, "must contain identical fields"
-        ):
+        with self.assertRaisesRegex(LMDBFrameError, "must contain identical fields"):
             dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
 
     def test_max_frames_guard(self):
@@ -547,9 +539,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         with self.assertRaisesRegex(LMDBError, "exceeding max_frames"):
-            dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", max_frames=1
-            )
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", max_frames=1)
         loaded = dpdata.MultiSystems.from_file(
             self.lmdb_path, fmt="lmdb", max_frames=None, labeled=False
         )
@@ -590,12 +580,8 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
-        dpdata.MultiSystems.from_file(
-            self.lmdb_path, fmt="lmdb", labeled=False
-        )
-        dtype = next(
-            dt for dt in dpdata.System.DTYPES if dt.name == "fparam"
-        )
+        dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+        dtype = next(dt for dt in dpdata.System.DTYPES if dt.name == "fparam")
         shape = dtype.shape
         self.assertIsNotNone(shape)
         assert shape is not None
@@ -618,17 +604,13 @@ class TestLMDBReadRobustness(unittest.TestCase):
             ),
             (
                 np.array([10.0, 11.0, 20.0, 21.0, 30.0, 31.0]),
-                np.array(
-                    [[[20.0, 21.0], [10.0, 11.0], [30.0, 31.0]]]
-                ),
+                np.array([[[20.0, 21.0], [10.0, 11.0], [30.0, 31.0]]]),
             ),
         ):
             with self.subTest(size=raw.size):
                 frames = [
                     {
-                        "atom_types": np.array(
-                            [1, 0, 1], dtype=np.int32
-                        ),
+                        "atom_types": np.array([1, 0, 1], dtype=np.int32),
                         "coords": np.zeros((3, 3)),
                         "aparam": raw,
                     }
@@ -680,12 +662,8 @@ class TestLMDBReadRobustness(unittest.TestCase):
                 }
             },
         )
-        with self.assertRaisesRegex(
-            LMDBMetadataError, "changes its protocol shape"
-        ):
-            dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", labeled=False
-            )
+        with self.assertRaisesRegex(LMDBMetadataError, "changes its protocol shape"):
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
 
     def test_data_name_hint_must_match_registered_protocol(self):
         frames = [
@@ -701,12 +679,8 @@ class TestLMDBReadRobustness(unittest.TestCase):
             ["H"],
             metadata_extra={"dp_data_names": {"foo": "spins"}},
         )
-        with self.assertRaisesRegex(
-            LMDBMetadataError, "protocol key is 'spin'"
-        ):
-            dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", labeled=False
-            )
+        with self.assertRaisesRegex(LMDBMetadataError, "protocol key is 'spin'"):
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
 
     def test_custom_deepmd_core_key_rejected_on_read(self):
         frames = [
@@ -717,12 +691,8 @@ class TestLMDBReadRobustness(unittest.TestCase):
             }
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
-        with self.assertRaisesRegex(
-            LMDBFrameError, "reserved LMDB key 'coord'"
-        ):
-            dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", labeled=False
-            )
+        with self.assertRaisesRegex(LMDBFrameError, "reserved LMDB key 'coord'"):
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
 
     def test_unknown_atomic_axis_inferred_across_atom_counts(self):
         frames = [
@@ -742,9 +712,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
             self.lmdb_path, fmt="lmdb", labeled=False
         )
         self.assertEqual(systems.get_nframes(), 2)
-        dtype = next(
-            dt for dt in dpdata.System.DTYPES if dt.name == "mystery"
-        )
+        dtype = next(dt for dt in dpdata.System.DTYPES if dt.name == "mystery")
         self.assertEqual(
             dtype.shape,
             (
@@ -763,12 +731,8 @@ class TestLMDBReadRobustness(unittest.TestCase):
             }
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H", "O"])
-        with self.assertRaisesRegex(
-            LMDBFrameError, "ambiguous without dp_data_shapes"
-        ):
-            dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", labeled=False
-            )
+        with self.assertRaisesRegex(LMDBFrameError, "ambiguous without dp_data_shapes"):
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
 
     def test_process_global_schema_conflict_raises(self):
         second_path = "tmp_robust_second.lmdb"
@@ -789,15 +753,9 @@ class TestLMDBReadRobustness(unittest.TestCase):
             ]
             _write_raw_lmdb(self.lmdb_path, first_frames, ["H"])
             _write_raw_lmdb(second_path, second_frames, ["H"])
-            dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", labeled=False
-            )
-            with self.assertRaisesRegex(
-                LMDBError, "process-global definition"
-            ):
-                dpdata.MultiSystems.from_file(
-                    second_path, fmt="lmdb", labeled=False
-                )
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+            with self.assertRaisesRegex(LMDBError, "process-global definition"):
+                dpdata.MultiSystems.from_file(second_path, fmt="lmdb", labeled=False)
         finally:
             if os.path.exists(second_path):
                 shutil.rmtree(second_path)
@@ -820,15 +778,9 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
-        with self.assertRaisesRegex(
-            LMDBFrameError, "must contain identical fields"
-        ):
-            dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", labeled=False
-            )
-        self.assertNotIn(
-            "new_scalar", [dt.name for dt in dpdata.System.DTYPES]
-        )
+        with self.assertRaisesRegex(LMDBFrameError, "must contain identical fields"):
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+        self.assertNotIn("new_scalar", [dt.name for dt in dpdata.System.DTYPES])
 
     def test_caller_construction_failure_rolls_back_registration(self):
         frames = [
@@ -859,9 +811,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
             }
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
-        with self.assertRaisesRegex(
-            LMDBFrameError, "required by LabeledSystem"
-        ):
+        with self.assertRaisesRegex(LMDBFrameError, "required by LabeledSystem"):
             dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
         self.assertNotIn(
             "unlabeled_custom",
@@ -980,9 +930,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             "atom_names": ["MIXED_TOKEN"],
             "atom_types": np.array([0]),
             "real_atom_names": ["H"],
-            "real_atom_types": np.array(
-                [[np.iinfo(np.uint64).max]], dtype=np.uint64
-            ),
+            "real_atom_types": np.array([[np.iinfo(np.uint64).max]], dtype=np.uint64),
             "orig": np.zeros(3),
             "cells": np.eye(3)[None],
             "coords": np.zeros((1, 1, 3)),
@@ -1007,12 +955,8 @@ class TestLMDBDumpSystems(unittest.TestCase):
         ):
             with self.subTest(dtype=dtype):
                 data = self.A.data.copy()
-                data["coords"] = np.zeros(
-                    self.A["coords"].shape, dtype=dtype
-                )
-                with self.assertRaisesRegex(
-                    LMDBError, "not a portable raw-byte dtype"
-                ):
+                data["coords"] = np.zeros(self.A["coords"].shape, dtype=dtype)
+                with self.assertRaisesRegex(LMDBError, "not a portable raw-byte dtype"):
                     dump_systems([data], self.lmdb_path)
                 self.assertFalse(os.path.exists(self.lmdb_path))
 
@@ -1035,9 +979,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             with env.begin() as txn:
                 meta = msgpack.unpackb(txn.get(b"__metadata__"), raw=False)
-                frame = msgpack.unpackb(
-                    txn.get(b"000000000000"), raw=False
-                )
+                frame = msgpack.unpackb(txn.get(b"000000000000"), raw=False)
         self.assertEqual(meta["type_map"], ["H", "O"])
         self.assertEqual(meta["frame_nlocs"], [2])
         self.assertEqual(frame["atom_types"]["shape"], [2])
@@ -1058,9 +1000,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             "coords": np.zeros((1, 3, 3)),
             "mystery": np.zeros((1, 3, 2)),
         }
-        with self.assertRaisesRegex(
-            LMDBError, "shape is ambiguous"
-        ):
+        with self.assertRaisesRegex(LMDBError, "shape is ambiguous"):
             dump_systems([data], self.lmdb_path)
 
     def test_existing_destination_requires_overwrite(self):
@@ -1092,9 +1032,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
         np.testing.assert_array_equal(loaded["energies"], [10.0])
         temporary = list(
-            Path(self.lmdb_path).parent.glob(
-                f".{Path(self.lmdb_path).name}.tmp-*"
-            )
+            Path(self.lmdb_path).parent.glob(f".{Path(self.lmdb_path).name}.tmp-*")
         )
         self.assertEqual(temporary, [])
 
@@ -1158,9 +1096,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         dump_systems([self.A], self.lmdb_path)
         resolved, _ = _open_read_env(str(Path(self.lmdb_path).resolve()))
         try:
-            with self.assertRaisesRegex(
-                LMDBError, "reader is active"
-            ):
+            with self.assertRaisesRegex(LMDBError, "reader is active"):
                 dump_systems(
                     [self.B],
                     self.lmdb_path,
@@ -1328,9 +1264,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
             with env.begin(write=True) as txn:
                 txn.put(b"__metadata__", _reference_packb(["not", "a", "mapping"]))
             env.close()
-            with self.assertRaisesRegex(
-                LMDBMetadataError, "must contain a mapping"
-            ):
+            with self.assertRaisesRegex(LMDBMetadataError, "must contain a mapping"):
                 dpdata.MultiSystems.from_file(path, fmt="lmdb")
         finally:
             if os.path.exists(path):
@@ -1429,9 +1363,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
                     ),
                 )
             env.close()
-            with self.assertRaisesRegex(
-                LMDBFrameError, "Cannot decode array"
-            ):
+            with self.assertRaisesRegex(LMDBFrameError, "Cannot decode array"):
                 dpdata.MultiSystems.from_file(path, fmt="lmdb")
         finally:
             if os.path.exists(path):
@@ -1444,18 +1376,14 @@ class TestLMDBErrorHandling(unittest.TestCase):
             system.to("lmdb", path)
             env = lmdb.open(path, map_size=1 << 30)
             with env.begin(write=True) as txn:
-                metadata = msgpack.unpackb(
-                    txn.get(b"__metadata__"), raw=False
-                )
+                metadata = msgpack.unpackb(txn.get(b"__metadata__"), raw=False)
                 metadata["frame_system_ids"] = []
                 txn.put(
                     b"__metadata__",
                     _reference_packb(metadata),
                 )
             env.close()
-            with self.assertRaisesRegex(
-                LMDBMetadataError, "frame_system_ids length"
-            ):
+            with self.assertRaisesRegex(LMDBMetadataError, "frame_system_ids length"):
                 dpdata.MultiSystems.from_file(path, fmt="lmdb")
         finally:
             if os.path.exists(path):

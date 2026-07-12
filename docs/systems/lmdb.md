@@ -10,15 +10,15 @@ A database contains one metadata record together with one record per frame.
 
 The metadata record is stored under the key `__metadata__` and holds the following entries.
 
-| key | description |
-| ------------------ | ---------------------------------------------------- |
-| `nframes` | total number of frames |
-| `frame_idx_fmt` | format string of the integer frame key (default `012d`) |
-| `type_map` | the global element table |
-| `frame_nlocs` | the number of atoms of each frame |
-| `frame_system_ids` | the index of the source system of each frame |
-| `dp_data_shapes` | optional symbolic shapes of additional dpdata fields |
-| `dp_data_names` | optional mapping from DeePMD-kit field names to dpdata field names |
+| key                | description                                                        |
+| ------------------ | ------------------------------------------------------------------ |
+| `nframes`          | total number of frames                                             |
+| `frame_idx_fmt`    | format string of the integer frame key (default `012d`)            |
+| `type_map`         | the global element table                                           |
+| `frame_nlocs`      | the number of atoms of each frame                                  |
+| `frame_system_ids` | the index of the source system of each frame                       |
+| `dp_data_shapes`   | optional symbolic shapes of additional dpdata fields               |
+| `dp_data_names`    | optional mapping from DeePMD-kit field names to dpdata field names |
 
 Each frame is stored under its zero-padded global index (`000000000000`, `000000000001`, ...). The per-frame arrays `coords`, `cells`, `energies`, `forces`, `virials`, and `atom_types` are stored together with their data type and shape; `atom_types` records global indices into `type_map`, and `atom_numbs` is a list of per-element counts over `type_map`. The numerical dtype of each source array is retained, except that `atom_types` is stored as `int32`.
 
@@ -68,6 +68,7 @@ If `type_map` is supplied, the systems may be provided as a generator, so that t
 def load():
     for d in directories:
         yield dpdata.LabeledSystem(d, fmt="deepmd/npy")
+
 
 dump_systems(load(), "data.lmdb", type_map=["H", "C", "N", "O"])
 ```
