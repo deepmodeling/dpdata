@@ -43,6 +43,8 @@ _LENGTH_UNIT_MAP: dict[str, str] = {
 
 _PRESSURE_UNIT_MAP: dict[str, str] = {
     "gpa": "GPa",
+    "kpa": "kPa",
+    "pa": "Pa",
     "kbar": "kbar",
     "bar": "bar",
     "ev/angstrom^3": "eV/angstrom^3",
@@ -50,6 +52,8 @@ _PRESSURE_UNIT_MAP: dict[str, str] = {
     "ev/a^3": "eV/angstrom^3",
     "ha/bohr^3": "hartree/bohr^3",
     "hartree/bohr^3": "hartree/bohr^3",
+    "au/bohr^3": "hartree/bohr^3",
+    "a.u./bohr^3": "hartree/bohr^3",
 }
 
 # dpdata internal unit strings

@@ -609,5 +609,24 @@ class TestAtomicUnitAliases(unittest.TestCase):
         )
 
 
+class TestStressUnitAtomicUnitAlias(unittest.TestCase):
+    """stress-unit=au/bohr^3 should map to hartree/bohr^3."""
+
+    def test_stress_au_bohr3(self):
+        from dpdata.unit import PressureConversion
+
+        system = dpdata.LabeledSystem("xyz/stress_au_bohr3.xyz", fmt="extxyz")
+        s_factor = PressureConversion("hartree/bohr^3", "eV/angstrom^3").value()
+        volume = 5.0**3
+
+        # stress is identity * 0.001 au/bohr^3 → virial = -V * stress_internal
+        expected_virial_diag = -1.0 * volume * 0.001 * s_factor
+        np.testing.assert_allclose(
+            np.diag(system.data["virials"][0]),
+            [expected_virial_diag] * 3,
+            rtol=1e-10,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
