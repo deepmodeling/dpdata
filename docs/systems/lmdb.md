@@ -1,6 +1,6 @@
 # LMDB Format
 
-The format `lmdb` stores the frames of one or more systems in a single [LMDB](http://www.lmdb.tech/doc/) database, and can be loaded or dumped through {class}`dpdata.System`, {class}`dpdata.LabeledSystem`, and {class}`dpdata.MultiSystems`. The on-disk layout coincides with the LMDB datasets read by the DeePMD-kit data loader. Core fields and registered additional fields are therefore available to DeePMD-kit under their `deepmd_name`.
+The format `lmdb` stores the frames of one or more systems in a single [LMDB](http://www.lmdb.tech/doc/) database, and can be loaded or dumped through {class}`dpdata.System`, {class}`dpdata.LabeledSystem`, and {class}`dpdata.MultiSystems`. The on-disk layout coincides with the LMDB datasets read by the DeePMD-kit data loader. Core fields use the plural on-disk names `coords`, `cells`, `energies`, `forces`, and `virials`, which the DeePMD-kit reader maps to its internal names. Registered additional fields use their `deepmd_name`.
 
 In contrast to the directory-based `deepmd/npy` format, every frame is stored as an independent record indexed by a global frame number. Frames within one database may therefore differ in the number of atoms and in chemical composition, which is suited to data sets in which the number of frames per system is small.
 
