@@ -237,6 +237,49 @@ Atoms
         """Test automatic detection of charge style without style comment."""
         self._test_style_parsing("charge_no_comment")
 
+    def test_neutral_charge_style_no_comment_detection(self) -> None:
+        """Integral-looking ``0.0`` charges must not be mistaken for bonds."""
+        path = "/tmp/test_neutral_charge_style.lmp"
+        self.test_files["neutral_charge"] = path
+        with open(path, "w") as fp:
+            fp.write(
+                """2 atoms
+1 atom types
+0.0 2.0 xlo xhi
+0.0 2.0 ylo yhi
+0.0 2.0 zlo zhi
+
+Atoms
+
+1 1 0.0 0.0 0.0 0.0
+2 1 0.0 1.0 1.0 1.0
+"""
+            )
+        system = self._load_system("neutral_charge")
+        self.assertIn("charges", system.data)
+        np.testing.assert_allclose(system["charges"][0], [0.0, 0.0])
+
+    def test_dipole_style_does_not_create_spins(self) -> None:
+        """Dipole moments are not magnetic spin vectors."""
+        path = "/tmp/test_dipole_style.lmp"
+        self.test_files["dipole"] = path
+        with open(path, "w") as fp:
+            fp.write(
+                """1 atoms
+1 atom types
+0.0 10.0 xlo xhi
+0.0 10.0 ylo yhi
+0.0 10.0 zlo zhi
+
+Atoms # dipole
+
+1 1 0.0 1.0 2.0 3.0 0.1 0.2 0.3
+"""
+            )
+        system = self._load_system("dipole")
+        self.assertIn("charges", system.data)
+        self.assertNotIn("spins", system.data)
+
     def test_bond_style_no_comment_detection(self) -> None:
         """Test automatic detection of bond style without style comment."""
         self._test_style_parsing("bond_no_comment")
