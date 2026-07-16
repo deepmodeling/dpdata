@@ -130,5 +130,5 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.pyright]
 include = [
-    "dpdata/*.py",
+    "dpdata/**/*.py",
 ]
