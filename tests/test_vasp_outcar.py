@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+import shutil
+import tempfile
 import unittest
 
 import numpy as np
@@ -120,6 +123,31 @@ class TestVaspOUTCARNWRITE0(unittest.TestCase):
         # only the first and last frames that have forces are read
         ss = dpdata.LabeledSystem("poscars/Ti-aimd-nwrite0/OUTCAR")
         self.assertEqual(ss.get_nframes(), 2)
+
+
+class TestVaspOUTCARMultiSystems(unittest.TestCase):
+    def test_loads_outcars_recursively_from_nested_directories(self):
+        """The CLI ``-m`` path must discover OUTCAR files, not parse directories."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            calculation_dirs = [
+                os.path.join(tmpdir, "Bond_calc", "calculation-000"),
+                os.path.join(tmpdir, "heating", "temperature-300", "calculation-000"),
+            ]
+            source_outcars = [
+                os.path.join("poscars", "OUTCAR.Ge.vdw"),
+                os.path.join("poscars", "Ti-O-Ti-v6", "OUTCAR"),
+            ]
+            for calculation_dir, source_outcar in zip(
+                calculation_dirs, source_outcars, strict=True
+            ):
+                os.makedirs(calculation_dir)
+                shutil.copy(source_outcar, os.path.join(calculation_dir, "OUTCAR"))
+
+            systems = dpdata.MultiSystems.from_file(tmpdir, fmt="vasp/outcar")
+
+        self.assertEqual(len(systems), 2)
+        self.assertEqual(systems.get_nframes(), 2)
+        self.assertEqual({system.get_nframes() for system in systems}, {1})
 
 
 class TestVaspAtomNamesV6(unittest.TestCase):
