@@ -82,7 +82,9 @@ def from_system_data(system, f_idx=0, skip_zeros=True):
         atomic_numbers.append(ELEMENTS.index(ii) + 1)
     posi_list = []
     for jj, ii in zip(atomic_numbers, posis):
-        ii = np.matmul(ii, np.linalg.inv(system["cells"][0]))
+        # Fractional coordinates must be computed in the same frame's cell;
+        # frame zero is only valid for a fixed-cell trajectory.
+        ii = np.matmul(ii, np.linalg.inv(system["cells"][f_idx]))
         posi_list.append("%d %15.10f %15.10f %15.10f 1 1 1" % (jj, ii[0], ii[1], ii[2]))  # noqa: UP031
     for kk in range(len(posi_list)):
         min = kk
