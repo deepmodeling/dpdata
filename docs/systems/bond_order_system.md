@@ -29,7 +29,7 @@ system = dpdata.BondOrderSystem(rdkit_mol=mol)
 
 ### Bond Order Assignment
 
-The {class}`BondOrderSystem <dpdata.BondOrderSystem>` implements a more robust sanitize procedure for rdkit Mol, as defined in {class}`dpdata.rdkit.santizie.Sanitizer`. This class defines 3 level of sanitization process by: low, medium and high. (default is medium).
+The {class}`BondOrderSystem <dpdata.BondOrderSystem>` implements a more robust sanitize procedure for rdkit Mol, as defined in {class}`dpdata.formats.rdkit.sanitize.Sanitizer`. This class defines 3 level of sanitization process by: low, medium and high. (default is medium).
 
 - low: use `rdkit.Chem.SanitizeMol()` function to sanitize molecule.
 - medium: before using rdkit, the program will first assign formal charge of each atom to avoid inappropriate valence exceptions. However, this mode requires the rightness of the bond order information in the given molecule.
