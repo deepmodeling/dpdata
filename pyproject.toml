@@ -22,6 +22,7 @@ dependencies = [
     'numpy>=1.14.3',
     'scipy',
     'h5py',
+    'PyYAML',
     'wcmatch',
     'lmdb',
     'msgpack-numpy',

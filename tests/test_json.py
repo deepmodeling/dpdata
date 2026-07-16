@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import datetime
 import os
 import tempfile
 import unittest
 
 from comp_sys import CompLabeledSys, IsPBC
 from context import dpdata
+
+from dpdata.serialization import dumpfn, loadfn, process_decoded, to_serializable
 
 
 class TestJsonLoad(unittest.TestCase, CompLabeledSys, IsPBC):
@@ -42,6 +45,39 @@ class TestJsonDumpLoad(unittest.TestCase, CompLabeledSys, IsPBC):
 
     def tearDown(self):
         self.tmpdir.cleanup()
+
+
+class TestSerialization(unittest.TestCase):
+    def test_timezone_aware_datetime_round_trip(self):
+        for value in (
+            datetime.datetime(
+                2026,
+                6,
+                19,
+                12,
+                0,
+                0,
+                123456,
+                tzinfo=datetime.timezone(datetime.timedelta(hours=8)),
+            ),
+            datetime.datetime(
+                2026,
+                6,
+                19,
+                12,
+                0,
+                0,
+                tzinfo=datetime.timezone(datetime.timedelta(hours=-5)),
+            ),
+        ):
+            self.assertEqual(process_decoded(to_serializable(value)), value)
+
+    def test_yaml_dump_load(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            filename = os.path.join(tmpdir, "data.yaml")
+            value = {"numbers": [1, 2, 3]}
+            dumpfn(value, filename)
+            self.assertEqual(loadfn(filename), value)
 
 
 if __name__ == "__main__":

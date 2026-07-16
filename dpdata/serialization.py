@@ -147,11 +147,14 @@ def process_decoded(obj: Any) -> Any:
             if module_name == "numpy" and class_name == "array":
                 return _decode_ndarray(obj)
             if module_name == "datetime" and class_name == "datetime":
-                value = obj["string"].split("+")[0]
                 try:
-                    return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
+                    return datetime.datetime.fromisoformat(obj["string"])
                 except ValueError:
-                    return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+                    value = obj["string"].split("+")[0]
+                    try:
+                        return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
+                    except ValueError:
+                        return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
             if module_name == "uuid" and class_name == "UUID":
                 return UUID(obj["string"])
             if module_name == "pathlib" and class_name == "Path":
