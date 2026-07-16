@@ -126,6 +126,10 @@ def get_outcar_block(fp, ml=False):
     return blk
 
 
+class _IncompleteForceTableError(ValueError):
+    """Indicate that a ``TOTAL-FORCE`` table ended before all atom rows."""
+
+
 def check_outputs(coord, cell, force):
     if len(force) == 0:
         raise ValueError("cannot find forces in OUTCAR block")
@@ -167,9 +171,21 @@ def _get_frames_lower(fp, fname, begin=0, step=1, ml=False, convergence_check=Tr
     rec_failed = []
     while len(blk) > 0:
         if cc >= begin and (cc - begin) % step == 0:
-            coord, cell, energy, force, virial, is_converge = analyze_block(
-                blk, ntot, nelm, ml
-            )
+            try:
+                coord, cell, energy, force, virial, is_converge = analyze_block(
+                    blk, ntot, nelm, ml
+                )
+            except _IncompleteForceTableError as exc:
+                # An interrupted VASP process can leave one damaged ionic
+                # step between otherwise usable frames.  Its atom arrays are
+                # incomplete, so skip precisely that step instead of aborting
+                # the complete trajectory.
+                warnings.warn(
+                    f"incomplete labels in frame {cc + 1}; it is ignored: {exc}"
+                )
+                blk = get_outcar_block(fp, ml)
+                cc += 1
+                continue
             if energy is None:
                 break
             if nwrite == 0:
@@ -267,9 +283,32 @@ def analyze_block(lines, ntot, nelm, ml=False):
             virial[0][2] = tmp_v[5]
             virial[2][0] = tmp_v[5]
         elif "TOTAL-FORCE" in ii and (("ML" in ii) == ml):
+            block_coord = []
+            block_force = []
             for jj in range(idx + 2, idx + 2 + ntot):
-                tmp_l = lines[jj]
-                info = [float(ss) for ss in tmp_l.split()]
-                coord.append(info[:3])
-                force.append(info[3:6])
+                if jj >= len(lines):
+                    # VASP output can end while a force table is being
+                    # written.  Do not index beyond the block or retain the
+                    # preceding subset of atoms as a complete frame.
+                    raise _IncompleteForceTableError(
+                        f"expected {ntot} atom rows, found {len(block_force)}"
+                    )
+                fields = lines[jj].split()
+                if len(fields) < 6:
+                    raise _IncompleteForceTableError(
+                        f"expected 6 numeric columns, got {len(fields)} in {lines[jj]!r}"
+                    )
+                try:
+                    info = [float(ss) for ss in fields[:6]]
+                except ValueError as exc:
+                    # A separator here means the table ended before ``ntot``
+                    # atom rows.  Parse into temporary lists so that none of
+                    # the incomplete table leaks into the returned frame.
+                    raise _IncompleteForceTableError(
+                        f"non-numeric atom row {lines[jj]!r}"
+                    ) from exc
+                block_coord.append(info[:3])
+                block_force.append(info[3:6])
+            coord = block_coord
+            force = block_force
     return coord, cell, energy, force, virial, is_converge
