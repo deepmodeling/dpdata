@@ -8,6 +8,8 @@ from comp_sys import CompSys, IsPBC
 from context import dpdata
 from poscars.poscar_ref_oh import TestPOSCARoh
 
+from dpdata.formats.vasp.poscar import to_system_data
+
 
 class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):
     def setUp(self):
@@ -87,6 +89,23 @@ class TestVaspPOSCARTypeMap(unittest.TestCase, CompSys, IsPBC):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 6
+
+
+class TestVaspNegativeScale(unittest.TestCase):
+    def test_negative_scale_is_target_volume(self):
+        lines = """test
+-8
+1 0 0
+0 1 0
+0 0 1
+H
+1
+Direct
+0.5 0.0 0.0
+""".splitlines()
+        data = to_system_data(lines)
+        np.testing.assert_allclose(np.linalg.det(data["cells"][0]), 8.0)
+        np.testing.assert_allclose(data["coords"][0, 0], [1.0, 0.0, 0.0])
 
 
 if __name__ == "__main__":
