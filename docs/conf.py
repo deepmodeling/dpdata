@@ -22,7 +22,6 @@ sys.path.insert(0, os.path.abspath(".."))
 
 from dpdata import __version__ as dpdata_version
 
-
 # -- Project information -----------------------------------------------------
 
 project = "dpdata"
