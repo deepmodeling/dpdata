@@ -61,6 +61,23 @@ class TestCPTRAJLabeledTraj(unittest.TestCase, TestCPTRAJProps):
         self.system = dpdata.LabeledSystem("qe.traj/oh-md", fmt="qe/cp/traj")
 
 
+class TestCPTRAJInputCellUnits(unittest.TestCase):
+    def test_angstrom_cell_without_cel_trajectory(self):
+        # Earlier tests did not expose this regression: the only missing-.cel
+        # fixture used ibrav/celldm, whose cell is correctly expressed in Bohr.
+        # Exercise the distinct fallback path where CELL_PARAMETERS already
+        # stores angstrom values and therefore must not be converted again.
+        system = dpdata.System(
+            "qe.traj/angstrom_no_cel/cp",
+            fmt="qe/cp/traj",
+        )
+
+        np.testing.assert_allclose(
+            system["cells"][0],
+            np.eye(3) * 19.7299995422,
+        )
+
+
 class TestConverCellDim(unittest.TestCase):
     def test_case_null(self):
         cell = convert_celldm(8, [1, 1, 1])
