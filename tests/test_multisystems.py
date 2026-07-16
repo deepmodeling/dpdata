@@ -51,6 +51,19 @@ class TestMultiSystems(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC)
         )
 
 
+class TestMultiSystemsFromDir(unittest.TestCase):
+    def test_absolute_directory_matches_relative_directory(self):
+        relative = dpdata.MultiSystems.from_dir(
+            "poscars", "OUTCAR.h2o.md", fmt="vasp/outcar"
+        )
+        absolute = dpdata.MultiSystems.from_dir(
+            os.path.abspath("poscars"), "OUTCAR.h2o.md", fmt="vasp/outcar"
+        )
+        self.assertEqual(len(relative), 1)
+        self.assertEqual(len(absolute), len(relative))
+        self.assertEqual(absolute.get_nframes(), relative.get_nframes())
+
+
 class TestMultiSystemsAdd(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):
     def setUp(self):
         self.places = 6
