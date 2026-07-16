@@ -79,8 +79,11 @@ def parse_sqm_out(fname: FileType):
     data["coords"] = np.array([coords])
 
     energies = np.array(energies)
-    forces = -np.array([forces], dtype=np.float64) * kcal2ev
     if len(forces) > 0:
+        # Check the raw list before wrapping it in an outer frame dimension:
+        # ``np.array([[]])`` has length one and would otherwise fabricate a
+        # malformed (1, 0) force label for no-force SQM output.
+        forces = -np.array([forces], dtype=np.float64) * kcal2ev
         data["energies"] = energies
         data["forces"] = forces
 
