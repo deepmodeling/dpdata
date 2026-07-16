@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import unittest
+from io import StringIO
 
 import numpy as np
 from comp_sys import CompLabeledSys, IsNoPBC
 from context import dpdata
+
+from dpdata.formats.dftbplus.output import read_dftb_plus
 
 
 class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
@@ -54,6 +57,33 @@ class TestDeepmdLoadAmmonia(unittest.TestCase, CompLabeledSys, IsNoPBC):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 6
+
+    def test_parser_reads_more_than_four_atoms(self):
+        input_text = """Geometry = GenFormat {
+5 C
+C H
+1 1 0.0 0.0 0.0
+2 2 1.0 0.0 0.0
+3 2 0.0 1.0 0.0
+4 2 0.0 0.0 1.0
+5 1 1.0 1.0 1.0
+}
+"""
+        output_text = """Total energy: -1.0 H
+Total Forces
+1 0.1 0.2 0.3
+2 0.4 0.5 0.6
+3 0.7 0.8 0.9
+4 1.0 1.1 1.2
+5 1.3 1.4 1.5
+"""
+        symbols, coords, energy, forces = read_dftb_plus(
+            StringIO(input_text), StringIO(output_text)
+        )
+        self.assertEqual(len(symbols), 5)
+        self.assertEqual(coords.shape, (5, 3))
+        self.assertEqual(forces.shape, (5, 3))
+        self.assertEqual(energy, -1.0)
 
 
 if __name__ == "__main__":
