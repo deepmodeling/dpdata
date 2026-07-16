@@ -82,6 +82,13 @@ class TestHybridDriver(unittest.TestCase, CompLabeledSys):
         self.f_places = 6
         self.v_places = 6
 
+    def test_config_is_not_consumed(self):
+        config = [{"type": "one"}]
+        dpdata.driver.HybridDriver(config)
+        self.assertEqual(config, [{"type": "one"}])
+        # Reusing the same config used to fail with KeyError after ``del``.
+        dpdata.driver.HybridDriver(config)
+
 
 @unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
 class TestASEDriver(unittest.TestCase, CompLabeledSys, IsPBC):
