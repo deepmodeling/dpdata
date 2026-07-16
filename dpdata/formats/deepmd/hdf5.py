@@ -45,10 +45,6 @@ def to_system_data(
     data["atom_types"] = g["type.raw"][:]
     ntypes = np.max(data["atom_types"]) + 1
     natoms = data["atom_types"].size
-    data["atom_numbs"] = []
-    for ii in range(ntypes):
-        data["atom_numbs"].append(np.count_nonzero(data["atom_types"] == ii))
-    data["atom_names"] = []
     # if find type_map.raw, use it
     if "type_map.raw" in g.keys():
         my_type_map = list(np.char.decode(g["type_map.raw"][:]))
@@ -60,9 +56,11 @@ def to_system_data(
         my_type_map = []
         for ii in range(ntypes):
             my_type_map.append("Type_%d" % ii)  # noqa: UP031
-    assert len(my_type_map) >= len(data["atom_numbs"])
-    for ii in range(len(data["atom_numbs"])):
-        data["atom_names"].append(my_type_map[ii])
+    assert len(my_type_map) >= ntypes
+    data["atom_names"] = my_type_map
+    data["atom_numbs"] = []
+    for ii, _ in enumerate(data["atom_names"]):
+        data["atom_numbs"].append(np.count_nonzero(data["atom_types"] == ii))
 
     data["orig"] = np.zeros([3])
     if "nopbc" in g.keys():
@@ -81,7 +79,6 @@ def to_system_data(
             "atom_names",
             "atom_types",
             "orig",
-            "real_atom_types",
             "real_atom_names",
             "nopbc",
         ):
@@ -184,7 +181,6 @@ def dump(
             "atom_names",
             "atom_types",
             "orig",
-            "real_atom_types",
             "real_atom_names",
             "nopbc",
         ):
@@ -205,6 +201,13 @@ def dump(
     for dt, prop in data_types.items():
         if dt in data:
             if prop["dump"]:
+                if nframes > 0 and np.asarray(data[dt]).size == 0:
+                    # An optional frame property (e.g. forces/virials when
+                    # cal_force/cal_stress is disabled) may be empty while the
+                    # system still has frames. Skip it instead of writing a
+                    # (nframes, 0) dataset that cannot be reshaped on load. This
+                    # matches the behaviour of the deepmd/raw and deepmd/npy writers.
+                    continue
                 ddata = np.reshape(data[dt], prop["shape"])
                 if np.issubdtype(ddata.dtype, np.floating):
                     ddata = ddata.astype(comp_prec)

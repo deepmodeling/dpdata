@@ -95,3 +95,12 @@ class TestPsi4Input(unittest.TestCase):
             """
             ),
         )
+
+    def test_psi4_input_uses_requested_method(self):
+        system = dpdata.LabeledSystem("psi4/psi4.out", fmt="psi4/out")
+        with tempfile.NamedTemporaryFile("r") as f:
+            system.to_psi4_inp(f.name, method="hf", basis="sto-3g")
+            content = f.read()
+
+        self.assertIn('G, wfn = gradient("hf", return_wfn=True)', content)
+        self.assertNotIn('G, wfn = gradient("WB97M-D3BJ", return_wfn=True)', content)

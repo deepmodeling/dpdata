@@ -123,6 +123,7 @@ class System:
                 - ``lammps/dump``: Lammps dump
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
+                - ``deepmd/npy/mixed``: deepmd-kit mixed type compressed format (numpy binary)
                 - ``vasp/poscar``: vasp POSCAR
                 - ``vasp/contcar``: vasp contcar
                 - ``vasp/string``: vasp string
@@ -164,6 +165,7 @@ class System:
                 - ``gaussian/gjf``: gaussian gjf
                 - ``deepmd/comp``: deepmd comp
                 - ``deepmd/hdf5``: deepmd hdf5
+                - ``deepmd/hdf5/mixed``: deepmd mixed type hdf5
                 - ``gromacs/gro``: gromacs gro
                 - ``cp2k/aimd_output``: cp2k aimd_output
                 - ``cp2k/output``: cp2k output
@@ -368,10 +370,10 @@ class System:
         _set2 = set(list(type_map.keys()))
         assert _set1.issubset(_set2)
 
-        atom_types_list = []
-        for name, numb in zip(self.get_atom_names(), self.get_atom_numbs()):
-            atom_types_list.extend([name] * numb)
-        new_atom_types = np.array([type_map[ii] for ii in atom_types_list], dtype=int)
+        atom_names = self.get_atom_names()
+        new_atom_types = np.array(
+            [type_map[atom_names[ii]] for ii in self.data["atom_types"]], dtype=int
+        )
 
         return new_atom_types
 
@@ -1178,6 +1180,9 @@ class LabeledSystem(System):
                 - ``vasp/outcar``: vasp OUTCAR
                 - ``deepmd/raw``: deepmd-kit raw
                 - ``deepmd/npy``: deepmd-kit compressed format (numpy binary)
+                - ``deepmd/npy/mixed``: deepmd-kit mixed type compressed format (numpy binary)
+                - ``deepmd/hdf5``: deepmd hdf5
+                - ``deepmd/hdf5/mixed``: deepmd mixed type hdf5
                 - ``qe/cp/traj``: Quantum Espresso CP trajectory files. should have: file_name+'.in', file_name+'.pos', file_name+'.evp' and file_name+'.for'
                 - ``qe/pw/scf``: Quantum Espresso PW single point calculations. Both input and output files are required. If file_name is a string, it denotes the output file name. Input file name is obtained by replacing 'out' by 'in' from file_name. Or file_name is a list, with the first element being the input file name and the second element being the output filename.
                 - ``siesta/output``: siesta SCF output file
@@ -1415,10 +1420,14 @@ class MultiSystems:
             mixed_systems = fmtobj.mix_system(
                 *list(self.systems.values()), type_map=self.atom_names, **kwargs
             )
-            for fn in mixed_systems:
-                mixed_systems[fn].to_fmt_obj(
-                    fmtobj, os.path.join(directory, fn), *args, **kwargs
-                )
+            for fn, ss in zip(
+                fmtobj.to_multi_systems(
+                    list(mixed_systems.keys()), directory, **kwargs
+                ),
+                mixed_systems.values(),
+                strict=True,
+            ):
+                ss.to_fmt_obj(fmtobj, fn, *args, **kwargs)
         return self
 
     def to(self, fmt: str, *args: Any, **kwargs: Any) -> MultiSystems:

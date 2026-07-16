@@ -12,7 +12,7 @@ template = """molecule {{
 }}
 set basis {basis:s}
 set gradient_write on
-G, wfn = gradient("WB97M-D3BJ", return_wfn=True)
+G, wfn = gradient("{method:s}", return_wfn=True)
 wfn.energy()
 wfn.gradient().print_out()
 """

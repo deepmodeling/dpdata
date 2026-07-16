@@ -802,7 +802,9 @@ def make_unlabeled_stru(
                         ["1" if ii else "0" for ii in sc[iatomtype]]
                     )
                 elif isinstance(ndarray2list(sc[iatomtype]), (int, float, bool)):
-                    iout += " sc " + "1" if sc[iatomtype] else "0"
+                    # Parenthesize the conditional expression so both True
+                    # and False values retain the ``sc`` field separator.
+                    iout += " sc " + ("1" if sc[iatomtype] else "0")
 
             if lambda_ is not None:
                 if isinstance(ndarray2list(lambda_[iatomtype]), (list, tuple)) and len(

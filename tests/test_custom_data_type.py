@@ -7,7 +7,7 @@ import h5py  # noqa: TID253
 import numpy as np
 
 import dpdata
-from dpdata.data_type import Axis, DataType
+from dpdata.data_type import Axis, DataError, DataType
 
 
 class TestDataType(unittest.TestCase):
@@ -40,6 +40,31 @@ class TestDataType(unittest.TestCase):
             "deepmd_name='test')"
         )
         self.assertEqual(repr(dt), expected)
+
+    def test_repr_tuple_dtype(self):
+        """Regression test for #989: repr must handle a tuple dtype.
+
+        ``check`` accepts ``dtype`` as a ``type`` or a ``tuple[type]``, so repr
+        (and the type-mismatch error) must not assume ``dtype`` has ``__name__``.
+        """
+        dt = DataType("test", (list, np.ndarray), shape=(Axis.NFRAMES, 3))
+        expected = (
+            "DataType(name='test', dtype=list, ndarray, "
+            "shape=(<Axis.NFRAMES: 'nframes'>, 3), required=True, "
+            "deepmd_name='test')"
+        )
+        self.assertEqual(repr(dt), expected)
+
+    def test_check_tuple_dtype_error_message(self):
+        """Regression test for #989: a type mismatch against a tuple dtype must
+        raise a readable DataError, not AttributeError on ``tuple.__name__``.
+        """
+        dt = DataType("test", (list, np.ndarray), shape=(Axis.NFRAMES,))
+        system = dpdata.System()
+        system.data["test"] = "not a list or ndarray"
+        with self.assertRaises(DataError) as cm:
+            dt.check(system)
+        self.assertIn("expected list, ndarray", str(cm.exception))
 
     def test_register_same_data_type_no_warning(self):
         """Test registering identical DataType instances should not warn."""

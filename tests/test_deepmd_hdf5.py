@@ -3,8 +3,17 @@ from __future__ import annotations
 import os
 import unittest
 
+import h5py  # noqa: TID253
 import numpy as np
-from comp_sys import CompLabeledSys, CompSys, IsNoPBC, IsPBC, MultiSystems
+from comp_sys import (
+    CompLabeledMultiSys,
+    CompLabeledSys,
+    CompSys,
+    IsNoPBC,
+    IsPBC,
+    MSAllIsNoPBC,
+    MultiSystems,
+)
 from context import dpdata
 
 
@@ -72,3 +81,269 @@ class TestHDF5Multi(unittest.TestCase, CompLabeledSys, MultiSystems, IsNoPBC):
     def tearDown(self):
         if os.path.exists("tmp.deepmd.hdf5"):
             os.remove("tmp.deepmd.hdf5")
+
+
+class TestHDF5MixedMulti(
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
+):
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        tmp_data = system_1.data.copy()
+        tmp_data["atom_numbs"] = [1, 1, 1, 2]
+        tmp_data["atom_names"] = ["C", "H", "A", "B"]
+        tmp_data["atom_types"] = np.array([0, 1, 2, 3, 3])
+        system_3 = dpdata.LabeledSystem(data=tmp_data)
+
+        self.ms = dpdata.MultiSystems(system_1, system_2, system_3)
+        self.ms.to_deepmd_hdf5_mixed("tmp.deepmd.mixed.hdf5")
+        self.systems = dpdata.MultiSystems().from_deepmd_hdf5_mixed(
+            "tmp.deepmd.mixed.hdf5"
+        )
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
+
+        self.system_names = ["C1H4A0B0", "C1H3A0B0", "C1H1A1B2"]
+        self.system_sizes = {"C1H4A0B0": 1, "C1H3A0B0": 1, "C1H1A1B2": 1}
+        self.atom_names = ["C", "H", "A", "B"]
+
+    def tearDown(self):
+        if os.path.exists("tmp.deepmd.mixed.hdf5"):
+            os.remove("tmp.deepmd.mixed.hdf5")
+
+    def test_hdf5_group_layout(self):
+        with h5py.File("tmp.deepmd.mixed.hdf5", "r") as f:
+            self.assertEqual(set(f.keys()), {"4", "5"})
+            for group in f.values():
+                self.assertIn("type_map.raw", group)
+                self.assertIn("set.000/real_atom_types.npy", group)
+
+
+class TestHDF5MixedPadding(
+    unittest.TestCase, CompLabeledMultiSys, MultiSystems, MSAllIsNoPBC
+):
+    def setUp(self):
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 6
+
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        self.ms = dpdata.MultiSystems(system_1, system_2)
+        self.ms.to_deepmd_hdf5_mixed("tmp.deepmd.mixed.pad.hdf5", atom_numb_pad=8)
+        self.systems = dpdata.MultiSystems().from_deepmd_hdf5_mixed(
+            "tmp.deepmd.mixed.pad.hdf5"
+        )
+        self.ms_1 = self.ms
+        self.ms_2 = self.systems
+
+        self.system_names = ["C1H4", "C1H3"]
+        self.system_sizes = {"C1H4": 1, "C1H3": 1}
+        self.atom_names = ["C", "H"]
+
+    def tearDown(self):
+        if os.path.exists("tmp.deepmd.mixed.pad.hdf5"):
+            os.remove("tmp.deepmd.mixed.pad.hdf5")
+
+    def test_single_padded_group(self):
+        with h5py.File("tmp.deepmd.mixed.pad.hdf5", "r") as f:
+            self.assertEqual(list(f.keys()), ["8"])
+            real_atom_types = f["8/set.000/real_atom_types.npy"][:]
+            self.assertEqual(real_atom_types.shape[1], 8)
+            self.assertTrue(np.any(real_atom_types == -1))
+
+
+class TestHDF5MixedIOVariants(unittest.TestCase):
+    def tearDown(self):
+        for file_name in (
+            "tmp.deepmd.mixed.single.hdf5",
+            "tmp.deepmd.mixed.group.hdf5",
+            "tmp.deepmd.mixed.object.hdf5",
+            "tmp.deepmd.mixed.unlabeled.hdf5",
+            "tmp.deepmd.mixed.typemap.hdf5",
+            "tmp.deepmd.regular.hdf5",
+        ):
+            if os.path.exists(file_name):
+                os.remove(file_name)
+
+    def test_single_system_string_round_trip(self):
+        system = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        system.to("deepmd/hdf5/mixed", "tmp.deepmd.mixed.single.hdf5")
+
+        systems = dpdata.MultiSystems().from_deepmd_hdf5_mixed(
+            "tmp.deepmd.mixed.single.hdf5"
+        )
+
+        self.assertEqual(len(systems), 1)
+        self.assertIn("C1H4", systems.systems)
+        np.testing.assert_allclose(
+            systems["C1H4"].data["coords"], system.data["coords"]
+        )
+
+    def test_hash_group_round_trip(self):
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        dpdata.MultiSystems(system_1, system_2).to_deepmd_hdf5_mixed(
+            "tmp.deepmd.mixed.group.hdf5#mixed"
+        )
+        systems = dpdata.MultiSystems().from_deepmd_hdf5_mixed(
+            "tmp.deepmd.mixed.group.hdf5#mixed"
+        )
+
+        self.assertEqual(set(systems.systems), {"C1H4", "C1H3"})
+        with h5py.File("tmp.deepmd.mixed.group.hdf5", "r") as f:
+            self.assertEqual(set(f["mixed"].keys()), {"4", "5"})
+
+    def test_hdf5_object_round_trip(self):
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+
+        with h5py.File("tmp.deepmd.mixed.object.hdf5", "w") as f:
+            f.create_group("5")
+            dpdata.MultiSystems(system_1, system_2).to_deepmd_hdf5_mixed(f)
+
+        with h5py.File("tmp.deepmd.mixed.object.hdf5", "r") as f:
+            systems = dpdata.MultiSystems().from_deepmd_hdf5_mixed(f)
+
+        self.assertEqual(set(systems.systems), {"C1H4", "C1H3"})
+        np.testing.assert_allclose(
+            systems["C1H4"].data["forces"], system_1.data["forces"]
+        )
+
+    def test_unlabeled_round_trip(self):
+        system = dpdata.System("poscars/POSCAR.h2o.md", fmt="vasp/poscar")
+        system.to("deepmd/hdf5/mixed", "tmp.deepmd.mixed.unlabeled.hdf5")
+
+        systems = dpdata.MultiSystems().load_systems_from_file(
+            "tmp.deepmd.mixed.unlabeled.hdf5",
+            fmt="deepmd/hdf5/mixed",
+            labeled=False,
+        )
+
+        self.assertEqual(len(systems), 1)
+        self.assertNotIn("energies", list(systems.systems.values())[0].data)
+        np.testing.assert_allclose(
+            list(systems.systems.values())[0].data["coords"], system.data["coords"]
+        )
+
+    def test_type_map_round_trip(self):
+        system = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        dpdata.MultiSystems(system).to_deepmd_hdf5_mixed(
+            "tmp.deepmd.mixed.typemap.hdf5"
+        )
+
+        systems = dpdata.MultiSystems().from_deepmd_hdf5_mixed(
+            "tmp.deepmd.mixed.typemap.hdf5", type_map=["H", "C"]
+        )
+        system_ref = system.copy()
+        system_ref.apply_type_map(["H", "C"])
+
+        self.assertEqual(set(systems.systems), {system_ref.formula})
+        np.testing.assert_allclose(
+            systems[system_ref.formula].data["forces"], system_ref.data["forces"]
+        )
+
+    def test_unsupported_inputs(self):
+        fmt = dpdata.plugins.deepmd.DeePMDHDF5MixedFormat()
+
+        with self.assertRaises(TypeError):
+            fmt.from_system_mix(object())
+        with self.assertRaises(TypeError):
+            fmt.to_system({}, object())
+        with self.assertRaises(TypeError):
+            list(fmt.from_multi_systems(object()))
+        with self.assertRaises(TypeError):
+            list(fmt.to_multi_systems(["1"], object()))
+
+    def test_regular_hdf5_groups_are_not_mixed(self):
+        system_1 = dpdata.LabeledSystem(
+            "gaussian/methane.gaussianlog", fmt="gaussian/log"
+        )
+        system_2 = dpdata.LabeledSystem(
+            "gaussian/methane_sub.gaussianlog", fmt="gaussian/log"
+        )
+        dpdata.MultiSystems(system_1, system_2).to_deepmd_hdf5(
+            "tmp.deepmd.regular.hdf5"
+        )
+
+        systems = dpdata.MultiSystems().from_deepmd_hdf5_mixed(
+            "tmp.deepmd.regular.hdf5"
+        )
+
+        self.assertEqual(len(systems), 0)
+
+
+class TestHDF5EmptyOptionalArray(unittest.TestCase):
+    """Regression test for #996.
+
+    An empty optional frame array (e.g. forces when they are not computed) must not
+    break the deepmd/hdf5 write/read round-trip. Previously the writer stored a
+    ``(nframes, 0)`` dataset that could not be reshaped on load.
+    """
+
+    def tearDown(self):
+        if os.path.isfile("tmp.deepmd.empty.hdf5"):
+            os.remove("tmp.deepmd.empty.hdf5")
+
+    @staticmethod
+    def _make(forces):
+        return dpdata.LabeledSystem(
+            data={
+                "atom_names": ["H"],
+                "atom_numbs": [1],
+                "atom_types": np.array([0]),
+                "cells": np.eye(3).reshape(1, 3, 3),
+                "coords": np.zeros((1, 1, 3)),
+                "energies": np.zeros(1),
+                "orig": np.zeros(3),
+                "forces": forces,
+            }
+        )
+
+    def test_empty_forces_round_trip(self):
+        system = self._make(np.zeros((1, 0, 3)))
+        system.to("deepmd/hdf5", "tmp.deepmd.empty.hdf5")
+        reloaded = dpdata.LabeledSystem("tmp.deepmd.empty.hdf5", fmt="deepmd/hdf5")
+        # The empty optional array is skipped rather than written as (nframes, 0).
+        self.assertNotIn("forces", reloaded.data)
+        np.testing.assert_allclose(reloaded["coords"], system["coords"])
+
+    def test_real_forces_preserved(self):
+        forces = np.arange(3, dtype=float).reshape(1, 1, 3)
+        system = self._make(forces)
+        system.to("deepmd/hdf5", "tmp.deepmd.empty.hdf5")
+        reloaded = dpdata.LabeledSystem("tmp.deepmd.empty.hdf5", fmt="deepmd/hdf5")
+        np.testing.assert_allclose(reloaded["forces"], forces)
+
+
+if __name__ == "__main__":
+    unittest.main()
