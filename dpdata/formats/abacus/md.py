@@ -72,7 +72,10 @@ def get_coords_from_dump(dumplines, natoms):
     )
     cells = np.zeros([nframes_dump, 3, 3])
     stresses = np.zeros([nframes_dump, 3, 3])
-    forces = np.zeros([nframes_dump, total_natoms, 3])
+    # A missing FORCE column means labels are unavailable, not that every
+    # force is exactly zero.  Keep this distinction so callers never train on
+    # fabricated labels that merely look well-shaped.
+    forces = np.zeros([nframes_dump, total_natoms, 3]) if calc_force else None
     coords = np.zeros([nframes_dump, total_natoms, 3])
     iframe = 0
     for iline in range(nlines):
@@ -116,6 +119,7 @@ def get_coords_from_dump(dumplines, natoms):
                     coords[iframe, iat] *= celldm
 
                 if calc_force:
+                    assert forces is not None
                     forces[iframe, iat] = np.array(
                         [
                             float(i)
@@ -187,7 +191,8 @@ def get_frame(fname):
         if np.isnan(iene):
             coords = np.delete(coords, i - ndump, axis=0)
             cells = np.delete(cells, i - ndump, axis=0)
-            force = np.delete(force, i - ndump, axis=0)
+            if force is not None:
+                force = np.delete(force, i - ndump, axis=0)
             stress = np.delete(stress, i - ndump, axis=0)
             energy = np.delete(energy, i - ndump, axis=0)
             unconv_stru += "%d " % i  # noqa: UP031
@@ -207,7 +212,8 @@ def get_frame(fname):
     #    data['cells'][:, :, :] = cell
     data["coords"] = coords
     data["energies"] = energy
-    data["forces"] = force
+    if force is not None:
+        data["forces"] = force
     data["virials"] = stress
     if not isinstance(data["virials"], np.ndarray):
         del data["virials"]
