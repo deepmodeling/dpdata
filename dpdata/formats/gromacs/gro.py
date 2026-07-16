@@ -77,7 +77,12 @@ def file_to_system_data(fname: FileType, format_atom_name=True, **kwargs):
                 posis = np.array(posis)
                 if frame == 1:
                     system["orig"] = np.zeros(3)
-                    system["atom_names"] = list(set(names))
+                    # A .gro file does not carry a separate atom-type table.  When
+                    # callers do not provide ``type_map``, infer that table from
+                    # the first occurrence of each atom name.  ``dict`` preserves
+                    # insertion order, unlike ``set`` whose hash-dependent order
+                    # could silently change the type IDs used by later exporters.
+                    system["atom_names"] = list(dict.fromkeys(names))
                     system["atom_numbs"] = [
                         names.count(ii) for ii in system["atom_names"]
                     ]
