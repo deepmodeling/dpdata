@@ -384,5 +384,249 @@ class TestFromLabeledSystemDirect(unittest.TestCase):
         self.assertIn("virials", system.data)
 
 
+# ============================================================================
+# Unit conversion tests (Phase 5 of PR #678 redesign)
+# ============================================================================
+
+
+class TestUnitConvertModule(unittest.TestCase):
+    """Direct tests for dpdata.formats.xyz._unit_convert helpers."""
+
+    def test_get_unit_factor_none_returns_1(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+
+        self.assertEqual(_get_unit_factor(None, "energy"), 1.0)
+        self.assertEqual(_get_unit_factor(None, "force"), 1.0)
+        self.assertEqual(_get_unit_factor(None, "stress"), 1.0)
+
+    def test_get_unit_factor_energy_ev(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+
+        self.assertAlmostEqual(_get_unit_factor("eV", "energy"), 1.0)
+
+    def test_get_unit_factor_energy_hartree(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+        from dpdata.unit import EnergyConversion
+
+        expected = EnergyConversion("hartree", "eV").value()
+        self.assertAlmostEqual(_get_unit_factor("hartree", "energy"), expected)
+        self.assertAlmostEqual(_get_unit_factor("Ha", "energy"), expected)
+
+    def test_get_unit_factor_energy_kcal_mol(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+        from dpdata.unit import EnergyConversion
+
+        expected = EnergyConversion("kcal_mol", "eV").value()
+        self.assertAlmostEqual(_get_unit_factor("kcal/mol", "energy"), expected)
+
+    def test_get_unit_factor_force_hartree_bohr(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+        from dpdata.unit import ForceConversion
+
+        expected = ForceConversion("hartree/bohr", "eV/angstrom").value()
+        self.assertAlmostEqual(_get_unit_factor("hartree/bohr", "force"), expected)
+
+    def test_get_unit_factor_force_kcal_mol_ang(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+        from dpdata.unit import ForceConversion
+
+        expected = ForceConversion("kcal_mol/angstrom", "eV/angstrom").value()
+        self.assertAlmostEqual(_get_unit_factor("kcal/mol/angstrom", "force"), expected)
+
+    def test_get_unit_factor_stress_gpa(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+        from dpdata.unit import PressureConversion
+
+        expected = PressureConversion("GPa", "eV/angstrom^3").value()
+        self.assertAlmostEqual(_get_unit_factor("GPa", "stress"), expected)
+
+    def test_get_unit_factor_stress_kbar(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+        from dpdata.unit import PressureConversion
+
+        expected = PressureConversion("kbar", "eV/angstrom^3").value()
+        self.assertAlmostEqual(_get_unit_factor("kbar", "stress"), expected)
+
+    def test_unsupported_unit_raises(self):
+        from dpdata.formats.xyz._unit_convert import _get_unit_factor
+
+        with self.assertRaises(ValueError):
+            _get_unit_factor("nonsense", "energy")
+        with self.assertRaises(ValueError):
+            _get_unit_factor("bad/unit", "force")
+        with self.assertRaises(ValueError):
+            _get_unit_factor("megapascal", "stress")
+
+    def test_parse_force_unit(self):
+        from dpdata.formats.xyz._unit_convert import _parse_force_unit
+
+        self.assertEqual(
+            _parse_force_unit("kcal/mol/angstrom"), ("kcal/mol", "angstrom")
+        )
+        self.assertEqual(_parse_force_unit("hartree/bohr"), ("hartree", "bohr"))
+        self.assertEqual(_parse_force_unit("ev/ang"), ("ev", "ang"))
+
+    def test_parse_force_unit_invalid(self):
+        from dpdata.formats.xyz._unit_convert import _parse_force_unit
+
+        with self.assertRaises(ValueError):
+            _parse_force_unit("noslash")
+
+
+class TestEnergyUnitHartree(unittest.TestCase):
+    """Test reading extxyz with energy-unit=hartree and force-unit=hartree/bohr."""
+
+    def test_conversion(self):
+        from dpdata.unit import EnergyConversion, ForceConversion
+
+        system = dpdata.LabeledSystem("xyz/energy_hartree.xyz", fmt="extxyz")
+        e_factor = EnergyConversion("hartree", "eV").value()
+        f_factor = ForceConversion("hartree/bohr", "eV/angstrom").value()
+
+        # energy: -0.5 hartree → eV
+        np.testing.assert_allclose(
+            system.data["energies"], [-0.5 * e_factor], rtol=1e-10
+        )
+        # forces: first atom [0.01, 0.02, 0.03] hartree/bohr → eV/angstrom
+        np.testing.assert_allclose(
+            system.data["forces"][0, 0],
+            np.array([0.01, 0.02, 0.03]) * f_factor,
+            rtol=1e-10,
+        )
+
+
+class TestEnergyUnitKcalMol(unittest.TestCase):
+    """Test reading extxyz with energy-unit=kcal/mol and force-unit=kcal/mol/angstrom."""
+
+    def test_conversion(self):
+        from dpdata.unit import EnergyConversion, ForceConversion
+
+        system = dpdata.LabeledSystem("xyz/energy_kcal_mol.xyz", fmt="extxyz")
+        e_factor = EnergyConversion("kcal_mol", "eV").value()
+        f_factor = ForceConversion("kcal_mol/angstrom", "eV/angstrom").value()
+
+        np.testing.assert_allclose(
+            system.data["energies"], [-10.0 * e_factor], rtol=1e-10
+        )
+        np.testing.assert_allclose(
+            system.data["forces"][0, 0],
+            np.array([1.0, 2.0, 3.0]) * f_factor,
+            rtol=1e-10,
+        )
+
+
+class TestStressUnitGPa(unittest.TestCase):
+    """Test reading extxyz with stress-unit=GPa."""
+
+    def test_conversion(self):
+        from dpdata.unit import PressureConversion
+
+        system = dpdata.LabeledSystem("xyz/stress_gpa.xyz", fmt="extxyz")
+        s_factor = PressureConversion("GPa", "eV/angstrom^3").value()
+        volume = 5.0**3  # cubic cell 5x5x5
+
+        # stress is identity * 1.0 GPa → virial = -V * stress_internal
+        expected_virial_diag = -1.0 * volume * 1.0 * s_factor
+        np.testing.assert_allclose(
+            np.diag(system.data["virials"][0]),
+            [expected_virial_diag] * 3,
+            rtol=1e-10,
+        )
+
+
+class TestStressUnitKbar(unittest.TestCase):
+    """Test reading extxyz with stress-unit=kbar."""
+
+    def test_conversion(self):
+        from dpdata.unit import PressureConversion
+
+        system = dpdata.LabeledSystem("xyz/stress_kbar.xyz", fmt="extxyz")
+        s_factor = PressureConversion("kbar", "eV/angstrom^3").value()
+        volume = 5.0**3
+
+        # stress is identity * 10.0 kbar → virial = -V * stress_internal
+        expected_virial_diag = -1.0 * volume * 10.0 * s_factor
+        np.testing.assert_allclose(
+            np.diag(system.data["virials"][0]),
+            [expected_virial_diag] * 3,
+            rtol=1e-10,
+        )
+
+
+class TestNoUnitHeaderDefaults(unittest.TestCase):
+    """Without unit headers, values should be unchanged (factor=1.0)."""
+
+    def test_default_no_conversion(self):
+        # stress_only.xyz has no unit headers
+        system = dpdata.LabeledSystem("xyz/stress_only.xyz", fmt="extxyz")
+        # Energy should be exactly as in file
+        np.testing.assert_allclose(system.data["energies"], [-1.5])
+
+
+class TestUnsupportedUnitRaises(unittest.TestCase):
+    """Unsupported unit string should raise ValueError, not silently pass."""
+
+    def test_raises_on_bad_energy_unit(self):
+        with self.assertRaises(ValueError):
+            dpdata.LabeledSystem("xyz/unsupported_unit.xyz", fmt="extxyz")
+
+
+class TestVirialUnitConversion(unittest.TestCase):
+    """Virial has energy dimensions; must be converted when energy-unit is set."""
+
+    def test_virial_hartree(self):
+        from dpdata.unit import EnergyConversion
+
+        system = dpdata.LabeledSystem("xyz/virial_hartree.xyz", fmt="extxyz")
+        e_factor = EnergyConversion("hartree", "eV").value()
+
+        # virial in file is identity matrix in hartree → should be identity * e_factor in eV
+        expected_diag = 1.0 * e_factor
+        np.testing.assert_allclose(
+            np.diag(system.data["virials"][0]),
+            [expected_diag] * 3,
+            rtol=1e-10,
+        )
+
+
+class TestAtomicUnitAliases(unittest.TestCase):
+    """energy-unit=au and force-unit=a.u. should map to hartree and hartree/bohr."""
+
+    def test_au_alias(self):
+        from dpdata.unit import EnergyConversion, ForceConversion
+
+        system = dpdata.LabeledSystem("xyz/energy_au.xyz", fmt="extxyz")
+        e_factor = EnergyConversion("hartree", "eV").value()
+        f_factor = ForceConversion("hartree/bohr", "eV/angstrom").value()
+
+        np.testing.assert_allclose(
+            system.data["energies"], [-0.5 * e_factor], rtol=1e-10
+        )
+        np.testing.assert_allclose(
+            system.data["forces"][0, 0],
+            np.array([0.01, 0.02, 0.03]) * f_factor,
+            rtol=1e-10,
+        )
+
+
+class TestStressUnitAtomicUnitAlias(unittest.TestCase):
+    """stress-unit=au/bohr^3 should map to hartree/bohr^3."""
+
+    def test_stress_au_bohr3(self):
+        from dpdata.unit import PressureConversion
+
+        system = dpdata.LabeledSystem("xyz/stress_au_bohr3.xyz", fmt="extxyz")
+        s_factor = PressureConversion("hartree/bohr^3", "eV/angstrom^3").value()
+        volume = 5.0**3
+
+        # stress is identity * 0.001 au/bohr^3 → virial = -V * stress_internal
+        expected_virial_diag = -1.0 * volume * 0.001 * s_factor
+        np.testing.assert_allclose(
+            np.diag(system.data["virials"][0]),
+            [expected_virial_diag] * 3,
+            rtol=1e-10,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

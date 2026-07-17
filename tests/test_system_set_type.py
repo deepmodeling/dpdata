@@ -6,6 +6,24 @@ import numpy as np
 from context import dpdata
 
 
+class TestMapAtomTypes(unittest.TestCase):
+    def test_map_atom_types_preserves_current_atom_order(self):
+        data = {
+            "atom_names": ["O", "H"],
+            "atom_numbs": [1, 2],
+            "atom_types": np.array([1, 0, 1]),
+            "orig": np.zeros(3),
+            "cells": np.eye(3).reshape(1, 3, 3),
+            "coords": np.zeros((1, 3, 3)),
+        }
+
+        system = dpdata.System(data=data)
+
+        np.testing.assert_array_equal(
+            system.map_atom_types({"H": 0, "O": 1}), np.array([0, 1, 0])
+        )
+
+
 class TestSetAtomTypes(unittest.TestCase):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem("poscars/vasprun.h2o.md.10.xml")

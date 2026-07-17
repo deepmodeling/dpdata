@@ -370,10 +370,10 @@ class System:
         _set2 = set(list(type_map.keys()))
         assert _set1.issubset(_set2)
 
-        atom_types_list = []
-        for name, numb in zip(self.get_atom_names(), self.get_atom_numbs()):
-            atom_types_list.extend([name] * numb)
-        new_atom_types = np.array([type_map[ii] for ii in atom_types_list], dtype=int)
+        atom_names = self.get_atom_names()
+        new_atom_types = np.array(
+            [type_map[atom_names[ii]] for ii in self.data["atom_types"]], dtype=int
+        )
 
         return new_atom_types
 

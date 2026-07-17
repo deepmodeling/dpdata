@@ -1,0 +1,4 @@
+2
+Lattice="5.0 0.0 0.0 0.0 5.0 0.0 0.0 0.0 5.0" Properties=species:S:1:pos:R:3:force:R:3 energy=-3.0 stress="1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0" stress-unit=GPa pbc="T T T"
+Si 0.0 0.0 0.0 0.1 0.2 0.3
+Si 1.0 1.0 1.0 -0.1 -0.2 -0.3

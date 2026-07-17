@@ -822,5 +822,125 @@
         "atomic_mass": 262.0,
         "radius": null,
         "calculated_radius": null
+    },
+    "Rf": {
+        "name": "Rutherfordium",
+        "atomic_no": 104,
+        "X": 1.3,
+        "atomic_mass": 267.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Db": {
+        "name": "Dubnium",
+        "atomic_no": 105,
+        "X": 1.3,
+        "atomic_mass": 268.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Sg": {
+        "name": "Seaborgium",
+        "atomic_no": 106,
+        "X": 1.3,
+        "atomic_mass": 269.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Bh": {
+        "name": "Bohrium",
+        "atomic_no": 107,
+        "X": 1.3,
+        "atomic_mass": 270.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Hs": {
+        "name": "Hassium",
+        "atomic_no": 108,
+        "X": 1.3,
+        "atomic_mass": 269.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Mt": {
+        "name": "Meitnerium",
+        "atomic_no": 109,
+        "X": 1.3,
+        "atomic_mass": 278.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Ds": {
+        "name": "Darmstadtium",
+        "atomic_no": 110,
+        "X": 1.3,
+        "atomic_mass": 281.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Rg": {
+        "name": "Roentgenium",
+        "atomic_no": 111,
+        "X": 1.3,
+        "atomic_mass": 282.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Cn": {
+        "name": "Copernicium",
+        "atomic_no": 112,
+        "X": 1.3,
+        "atomic_mass": 285.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Nh": {
+        "name": "Nihonium",
+        "atomic_no": 113,
+        "X": 1.3,
+        "atomic_mass": 286.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Fl": {
+        "name": "Flerovium",
+        "atomic_no": 114,
+        "X": 1.3,
+        "atomic_mass": 289.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Mc": {
+        "name": "Moscovium",
+        "atomic_no": 115,
+        "X": 1.3,
+        "atomic_mass": 290.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Lv": {
+        "name": "Livermorium",
+        "atomic_no": 116,
+        "X": 1.3,
+        "atomic_mass": 293.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Ts": {
+        "name": "Tennessine",
+        "atomic_no": 117,
+        "X": 1.3,
+        "atomic_mass": 294.0,
+        "radius": null,
+        "calculated_radius": null
+    },
+    "Og": {
+        "name": "Oganesson",
+        "atomic_no": 118,
+        "X": 1.3,
+        "atomic_mass": 294.0,
+        "radius": null,
+        "calculated_radius": null
     }
 }
