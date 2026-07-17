@@ -204,8 +204,8 @@ uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy -t H C N O
 ### Tips for extxyz
 
 1. **Use `-i extxyz` explicitly** when working with `.xyz` files that contain extended XYZ data. Using `-i xyz` reads only coordinates without labels.
-2. **Use `--multi`** for files containing frames with different compositions (different atom counts or species). dpdata groups frames by chemical formula internally.
-3. **All alias names behave identically** — `-i mace/xyz`, `-i quip/gap/xyz`, `-i nequip/xyz`, and `-i extxyz` produce the same result.
+1. **Use `--multi`** for files containing frames with different compositions (different atom counts or species). dpdata groups frames by chemical formula internally.
+1. **All alias names behave identically** — `-i mace/xyz`, `-i quip/gap/xyz`, `-i nequip/xyz`, and `-i extxyz` produce the same result.
 
 ## Tips
 
