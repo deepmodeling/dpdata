@@ -1,6 +1,6 @@
 ---
 name: dpdata-cli
-description: Convert and manipulate atomic simulation data formats using dpdata CLI. Use when converting between DFT/MD output formats (VASP, LAMMPS, QE, CP2K, Gaussian, ABACUS, etc.), preparing training data for DeePMD-kit, or working with DeePMD formats. Supports 50+ formats including deepmd/raw, deepmd/comp, deepmd/npy, deepmd/hdf5.
+description: Convert and manipulate atomic simulation data formats using dpdata CLI. Use when converting between DFT/MD output formats (VASP, LAMMPS, QE, CP2K, Gaussian, ABACUS, etc.), preparing training data for DeePMD-kit, or working with DeePMD formats. Supports 50+ formats including deepmd/raw, deepmd/comp, deepmd/npy, deepmd/hdf5, extxyz (also known as quip/gap/xyz, mace/xyz, nequip/xyz, gpumd/xyz).
 compatibility: Requires uvx (uv) for running dpdata
 metadata:
   author: njzjz-bot
@@ -172,6 +172,40 @@ Formats may be updated. For the complete and latest list, see:
 | `sqm/in`                                                            | SQM input             |
 | `list`                                                              | List format           |
 | `3dmol`                                                             | 3Dmol visualization   |
+
+## Extended XYZ (extxyz) Format Details
+
+The following format names are **all equivalent** and invoke the same reader/writer:
+
+- `extxyz` — general-purpose extended XYZ
+- `quip/gap/xyz` / `quip/gap/xyz_file` — QUIP/GAP framework datasets
+- `mace/xyz` — MACE model training data
+- `nequip/xyz` — NequIP model training data
+- `gpumd/xyz` — GPUMD simulation data
+
+> **Important:** Plain `xyz` is a **different**, simpler format that only stores coordinates without labels (energies/forces), cell information, or periodic boundary conditions. Do not confuse `xyz` with `extxyz`.
+
+### CLI Examples for extxyz
+
+```bash
+# Read extxyz, convert to deepmd/npy
+uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy
+
+# Heterogeneous extxyz (mixed compositions) → deepmd/npy/mixed
+uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy/mixed --multi
+
+# Convert extxyz to VASP POSCAR (first frame)
+uvx dpdata data.xyz -i extxyz -O POSCAR -o vasp/poscar
+
+# Convert with explicit type map
+uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy -t H C N O
+```
+
+### Tips for extxyz
+
+1. **Use `-i extxyz` explicitly** when working with `.xyz` files that contain extended XYZ data. Using `-i xyz` reads only coordinates without labels.
+2. **Use `--multi`** for files containing frames with different compositions (different atom counts or species). dpdata groups frames by chemical formula internally.
+3. **All alias names behave identically** — `-i mace/xyz`, `-i quip/gap/xyz`, `-i nequip/xyz`, and `-i extxyz` produce the same result.
 
 ## Tips
 
