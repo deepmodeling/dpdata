@@ -173,7 +173,7 @@ Formats may be updated. For the complete and latest list, see:
 | `list`                                                              | List format           |
 | `3dmol`                                                             | 3Dmol visualization   |
 
-## Extended XYZ (extxyz) Format Details
+### Extended XYZ (extxyz) Format Details
 
 The following format names are **all equivalent** and invoke the same reader/writer:
 
@@ -185,7 +185,7 @@ The following format names are **all equivalent** and invoke the same reader/wri
 
 > **Important:** Plain `xyz` is a **different**, simpler format that only stores coordinates without labels (energies/forces), cell information, or periodic boundary conditions. Do not confuse `xyz` with `extxyz`.
 
-### CLI Examples for extxyz
+#### CLI Examples for extxyz
 
 ```bash
 # Read extxyz, convert to deepmd/npy
@@ -201,7 +201,7 @@ uvx dpdata data.xyz -i extxyz -O POSCAR -o vasp/poscar
 uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy -t H C N O
 ```
 
-### Tips for extxyz
+#### Tips for extxyz
 
 1. **Use `-i extxyz` explicitly** when working with `.xyz` files that contain extended XYZ data. Using `-i xyz` reads only coordinates without labels.
 1. **Use `--multi`** for files containing frames with different compositions (different atom counts or species). dpdata groups frames by chemical formula internally.
