@@ -1,6 +1,6 @@
 ---
 name: dpdata-cli
-description: Convert and manipulate atomic simulation data formats using dpdata CLI. Use when converting between DFT/MD output formats (VASP, LAMMPS, QE, CP2K, Gaussian, ABACUS, etc.), preparing training data for DeePMD-kit, or working with DeePMD formats. Supports 50+ formats including deepmd/raw, deepmd/comp, deepmd/npy, deepmd/hdf5, extxyz (also known as quip/gap/xyz, mace/xyz, nequip/xyz, gpumd/xyz).
+description: Convert and manipulate atomic simulation data formats using dpdata CLI. Use when converting between DFT/MD output formats (VASP, LAMMPS, QE, CP2K, Gaussian, ABACUS, etc.), preparing training data for DeePMD-kit, or working with DeePMD formats. Supports 50+ formats including deepmd/raw, deepmd/comp, deepmd/npy, deepmd/hdf5, extxyz (quip/gap/xyz).
 compatibility: Requires uvx (uv) for running dpdata
 metadata:
   author: njzjz-bot
