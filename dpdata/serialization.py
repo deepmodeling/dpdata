@@ -16,10 +16,13 @@ import numpy as np
 def _detect_format(filename: str | Path, fmt: str | None = None) -> str:
     if fmt is not None:
         return fmt
-    basename = Path(filename).name.lower()
-    if ".mpk" in basename:
+    suffixes = [suffix.lower() for suffix in Path(filename).suffixes]
+    if suffixes and suffixes[-1] in {".gz", ".z", ".bz2"}:
+        suffixes.pop()
+    suffix = suffixes[-1] if suffixes else ""
+    if suffix == ".mpk":
         return "mpk"
-    if ".yaml" in basename or ".yml" in basename:
+    if suffix in {".yaml", ".yml"}:
         return "yaml"
     return "json"
 
@@ -165,11 +168,17 @@ def process_decoded(obj: Any) -> Any:
             except (AttributeError, ImportError, ModuleNotFoundError):
                 cls = None
             if cls is not None:
-                data = {k: v for k, v in obj.items() if not k.startswith("@")}
+                # Decode fields before construction so custom objects receive the
+                # same nested Python values as top-level serialized objects.
+                data = {
+                    k: process_decoded(v)
+                    for k, v in obj.items()
+                    if not k.startswith("@")
+                }
                 if hasattr(cls, "from_dict"):
                     return cls.from_dict(data)
                 if isinstance(cls, type) and issubclass(cls, Enum):
-                    return cls(process_decoded(data["value"]))
+                    return cls(data["value"])
         return {process_decoded(k): process_decoded(v) for k, v in obj.items()}
     if isinstance(obj, list):
         return [process_decoded(v) for v in obj]
