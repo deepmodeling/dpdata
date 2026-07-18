@@ -18,12 +18,17 @@ else:
 class TestAmberSqmOut(unittest.TestCase, CompSys, IsNoPBC):
     def setUp(self):
         self.system_1 = dpdata.System("amber/sqm_no_forces.out", fmt="sqm/out")
+        self.assertNotIn("forces", self.system_1.data)
         self.system_1.to("deepmd/npy", "tmp.sqm.noforces")
         self.system_2 = dpdata.System("tmp.sqm.noforces", fmt="deepmd/npy")
         self.places = 5
         self.e_places = 4
         self.f_places = 6
         self.v_places = 6
+
+    def test_no_force_output_is_rejected_as_labeled(self):
+        with self.assertRaisesRegex(AssertionError, "No forces"):
+            dpdata.LabeledSystem("amber/sqm_no_forces.out", fmt="sqm/out")
 
     def tearDown(self):
         if os.path.exists("tmp.sqm.noforces"):
