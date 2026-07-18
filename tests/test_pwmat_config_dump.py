@@ -3,9 +3,11 @@ from __future__ import annotations
 import os
 import unittest
 
+import numpy as np
 from pwmat.config_ref_oh import Testconfigoh
 
 import dpdata
+from dpdata.formats.pwmat.atomconfig import from_system_data
 
 
 def myfilecmp(test, f0, f1):
@@ -56,6 +58,19 @@ class TestatomconfigSkipZeroAtomNumb(unittest.TestCase):
         )
         system1.to_pwmat_atomconfig("atom.config.tmp.2")
         myfilecmp(self, "atom.config.tmp.1", "atom.config.tmp.2")
+
+
+class TestAtomconfigFrameCell(unittest.TestCase):
+    def test_fractional_coordinates_use_selected_frame_cell(self):
+        system = {
+            "atom_names": ["H"],
+            "atom_numbs": [1],
+            "atom_types": np.array([0]),
+            "cells": np.array([np.eye(3), np.eye(3) * 2.0]),
+            "coords": np.array([[[1.0, 0.0, 0.0]], [[1.0, 0.0, 0.0]]]),
+        }
+        output = from_system_data(system, f_idx=1)
+        self.assertIn("0.5000000000    0.0000000000    0.0000000000", output)
 
 
 if __name__ == "__main__":
