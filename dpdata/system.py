@@ -480,7 +480,10 @@ class System:
             return False
         elif not len(self.data["atom_numbs"]):
             # this system is non-converged but the system to append is converged
-            self.data = system.data.copy()
+            # A shallow dict copy would still alias all arrays and lists in
+            # ``system.data``.  The first append must have the same ownership
+            # semantics as subsequent append operations.
+            self.data = deepcopy(system.data)
             return False
         if system.uniq_formula != self.uniq_formula:
             raise RuntimeError(
@@ -1515,8 +1518,10 @@ class MultiSystems:
         type_map: list[str] | None = None,
     ):
         multi_systems = cls()
+        # Do not prepend ``./``: doing so turns an absolute directory into a
+        # relative pattern and silently yields no matches.
         target_file_list = sorted(
-            glob.glob(f"./{dir_name}/**/{file_name}", recursive=True)
+            glob.glob(os.path.join(dir_name, "**", file_name), recursive=True)
         )
         for target_file in target_file_list:
             multi_systems.append(

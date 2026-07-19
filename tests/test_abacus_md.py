@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import os
+import shutil
+import tempfile
 import unittest
 
 import numpy as np
 from context import dpdata
 
+from dpdata.formats.abacus.md import get_coords_from_dump
 from dpdata.unit import LengthConversion
 
 bohr2ang = LengthConversion("bohr", "angstrom").value()
@@ -29,6 +32,47 @@ class TestABACUSMD(unittest.TestCase):
     def tearDown(self):
         if os.path.isfile("abacus.md/water_stru"):
             os.remove("abacus.md/water_stru")
+
+    def test_missing_force_column_does_not_create_zero_labels(self):
+        dump = """MDSTEP: 0
+LATTICE_CONSTANT: 1.0 Angstrom
+LATTICE_VECTORS
+  1.0 0.0 0.0
+  0.0 1.0 0.0
+  0.0 0.0 1.0
+POSITION
+  0 H 0.0 0.0 0.0
+
+
+""".splitlines()
+        _, _, forces, _ = get_coords_from_dump(dump, [1])
+        self.assertIsNone(forces)
+
+    def test_no_force_trajectory_omits_force_key(self):
+        """Exercise the complete format path, not just the dump helper."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copy("abacus.md.nostress/INPUT", tmpdir)
+            shutil.copy("abacus.md.nostress/STRU", tmpdir)
+            source_out = "abacus.md.nostress/OUT.autotest"
+            target_out = os.path.join(tmpdir, "OUT.autotest")
+            os.mkdir(target_out)
+            shutil.copy(os.path.join(source_out, "running_md.log"), target_out)
+
+            # Preserve the real trajectory framing while removing only the
+            # optional force columns from the header and atom records.
+            with open(os.path.join(source_out, "MD_dump")) as fp:
+                lines = fp.readlines()
+            with open(os.path.join(target_out, "MD_dump"), "w") as fp:
+                for line in lines:
+                    if "FORCE" in line and "POSITION" in line:
+                        fp.write("INDEX LABEL POSITION (Angstrom)\n")
+                    elif len(line.split()) >= 8 and line.split()[0].isdigit():
+                        fp.write("  " + "  ".join(line.split()[:5]) + "\n")
+                    else:
+                        fp.write(line)
+
+            system = dpdata.LabeledSystem(tmpdir, fmt="abacus/md")
+            self.assertNotIn("forces", system.data)
 
     def test_atom_names(self):
         self.assertEqual(self.system_water.data["atom_names"], ["H", "O"])
