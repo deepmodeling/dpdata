@@ -56,11 +56,11 @@ class TestVaspOUTCARIncompleteForceTable(unittest.TestCase):
         )
         return "\n".join(lines) + "\n"
 
-    def test_separator_before_all_atoms_skips_only_incomplete_frame(self):
-        # The first frame is valid, but the second table reaches VASP's
-        # separator after only one of the two expected atoms.  Older tests
-        # exclusively used complete tables, so the unconditional float
-        # conversion of the separator was never exercised.
+    def test_non_numeric_record_before_all_atoms_skips_incomplete_frame(self):
+        # The first frame is valid, but the second table reaches its energy
+        # record after only one of the two expected atoms. Older tests used
+        # complete tables, so converting that non-numeric record was never
+        # exercised.
         valid_rows = ["0 0 0 1 2 3", "1 1 1 4 5 6"]
         incomplete_rows = ["2 2 2 7 8 9"]
         contents = self._block(valid_rows, include_header=True) + self._block(

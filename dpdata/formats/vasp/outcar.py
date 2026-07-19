@@ -301,9 +301,10 @@ def analyze_block(lines, ntot, nelm, ml=False):
                 try:
                     info = [float(ss) for ss in fields[:6]]
                 except ValueError as exc:
-                    # A separator here means the table ended before ``ntot``
-                    # atom rows.  Parse into temporary lists so that none of
-                    # the incomplete table leaks into the returned frame.
+                    # A non-numeric record with at least six fields, such as
+                    # the following energy record, means the table ended
+                    # before ``ntot`` atom rows.  Parse into temporary lists
+                    # so none of the incomplete table leaks into the frame.
                     raise _IncompleteForceTableError(
                         f"non-numeric atom row {lines[jj]!r}"
                     ) from exc
