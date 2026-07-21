@@ -1544,7 +1544,16 @@ class MultiSystems:
         """
         assert fmt is not None
         fmt = fmt.lower()
-        return self.from_fmt_obj(load_format(fmt), file_name, labeled=labeled, **kwargs)
+        try:
+            return self.from_fmt_obj(
+                load_format(fmt), file_name, labeled=labeled, **kwargs
+            )
+        except DataError as exc:
+            if labeled and fmt in {"deepmd/npy/mixed", "deepmd/hdf5/mixed"}:
+                raise DataError(
+                    f"{exc} For coordinate-only mixed datasets, pass labeled=False."
+                ) from exc
+            raise
 
     def get_nframes(self) -> int:
         """Returns number of frames in all systems."""
