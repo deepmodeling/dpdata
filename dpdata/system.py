@@ -486,7 +486,9 @@ class System:
             return False
         elif not len(self.data["atom_numbs"]):
             # this system is non-converged but the system to append is converged
-            self.data = system.data.copy()
+            # Take ownership of every nested array/list just as sub_system
+            # does; a shallow dictionary copy would still alias the source.
+            self.data = deepcopy(system.data)
             return False
         if system.uniq_formula != self.uniq_formula:
             raise RuntimeError(
