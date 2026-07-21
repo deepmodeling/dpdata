@@ -128,6 +128,17 @@ class TestVaspOUTCARNWRITE0(unittest.TestCase):
 class TestVaspOUTCARMultiSystems(unittest.TestCase):
     def test_loads_outcars_recursively_from_nested_directories(self):
         """The CLI ``-m`` path must discover OUTCAR files, not parse directories."""
+
+        def nonzero_composition(system):
+            """Normalize away MultiSystems' shared zero-count type entries."""
+            return frozenset(
+                (name, count)
+                for name, count in zip(
+                    system["atom_names"], system["atom_numbs"], strict=True
+                )
+                if count
+            )
+
         with tempfile.TemporaryDirectory() as tmpdir:
             calculation_dirs = [
                 os.path.join(tmpdir, "Bond_calc", "calculation-000"),
@@ -137,6 +148,10 @@ class TestVaspOUTCARMultiSystems(unittest.TestCase):
                 os.path.join("poscars", "OUTCAR.Ge.vdw"),
                 os.path.join("poscars", "Ti-O-Ti-v6", "OUTCAR"),
             ]
+            expected_compositions = {
+                nonzero_composition(dpdata.LabeledSystem(source, fmt="vasp/outcar"))
+                for source in source_outcars
+            }
             for calculation_dir, source_outcar in zip(
                 calculation_dirs, source_outcars, strict=True
             ):
@@ -148,6 +163,12 @@ class TestVaspOUTCARMultiSystems(unittest.TestCase):
         self.assertEqual(len(systems), 2)
         self.assertEqual(systems.get_nframes(), 2)
         self.assertEqual({system.get_nframes() for system in systems}, {1})
+        # MultiSystems aligns type maps and element order across systems, so
+        # compare the non-zero compositions rather than display formulas.
+        self.assertEqual(
+            {nonzero_composition(system) for system in systems},
+            expected_compositions,
+        )
 
 
 class TestVaspAtomNamesV6(unittest.TestCase):
