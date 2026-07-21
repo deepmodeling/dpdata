@@ -58,6 +58,7 @@ class TestJsonDumpLoad(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
         self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
         self.filename = os.path.join(self.tmpdir.name, "h2o.md.json")
         self.system_1.dump(self.filename)
         self.system_2 = dpdata.LabeledSystem.load(self.filename)
@@ -65,9 +66,6 @@ class TestJsonDumpLoad(unittest.TestCase, CompLabeledSys, IsPBC):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 4
-
-    def tearDown(self):
-        self.tmpdir.cleanup()
 
 
 class TestSerialization(unittest.TestCase):
@@ -112,7 +110,9 @@ class TestSerialization(unittest.TestCase):
                 tzinfo=datetime.timezone(datetime.timedelta(hours=-5)),
             ),
         ):
-            self.assertEqual(process_decoded(to_serializable(value)), value)
+            serialized = to_serializable(value)
+            self.assertEqual(serialized["string"], value.isoformat())
+            self.assertEqual(process_decoded(serialized), value)
 
     def test_yaml_dump_load(self):
         with tempfile.TemporaryDirectory() as tmpdir:

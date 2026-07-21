@@ -332,7 +332,7 @@ class System:
         return self.__class__.from_dict({"data": self_copy.data})
 
     def dump(self, filename: str, indent: int = 4):
-        """Dump .json or .yaml file."""
+        """Dump a JSON, YAML, or MessagePack file."""
         from dpdata.serialization import dumpfn
 
         dumpfn(self.as_dict(), filename, indent=indent)
@@ -379,7 +379,7 @@ class System:
 
     @staticmethod
     def load(filename: str):
-        """Rebuild System obj. from .json or .yaml file."""
+        """Rebuild a System object from a JSON, YAML, or MessagePack file."""
         from dpdata.serialization import loadfn
 
         return loadfn(filename)

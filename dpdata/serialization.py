@@ -111,7 +111,7 @@ def to_serializable(obj: Any) -> Any:
         return {
             "@module": "datetime",
             "@class": "datetime",
-            "string": str(obj),
+            "string": obj.isoformat(),
         }
     if isinstance(obj, UUID):
         return {"@module": "uuid", "@class": "UUID", "string": str(obj)}
