@@ -1,0 +1,20 @@
+&CONTROL
+  calculation = 'cp',
+  prefix = 'cp',
+/
+&SYSTEM
+  ibrav = 0,
+  nat = 1,
+  ntyp = 1,
+/
+
+CELL_PARAMETERS { bohr }
+  2.0  0.0  0.0
+  0.0  2.0  0.0
+  0.0  0.0  2.0
+
+ATOMIC_SPECIES
+H  1.00794  H.UPF
+
+ATOMIC_POSITIONS { bohr }
+H  0.0  0.0  0.0
