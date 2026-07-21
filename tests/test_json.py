@@ -24,6 +24,10 @@ class NestedSerializable:
     def __init__(self, value):
         self.value = value
 
+    def as_dict(self):
+        """Expose nested values through the same serialization hook as dpdata objects."""
+        return {"value": self.value}
+
     @classmethod
     def from_dict(cls, data):
         """Construct the helper from decoded serialized data."""
