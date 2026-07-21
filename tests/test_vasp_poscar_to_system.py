@@ -107,6 +107,38 @@ Direct
         np.testing.assert_allclose(np.linalg.det(data["cells"][0]), 8.0)
         np.testing.assert_allclose(data["coords"][0, 0], [1.0, 0.0, 0.0])
 
+    def test_negative_scale_rescales_cartesian_coordinates(self):
+        lines = """test
+-8
+1 0 0
+0 1 0
+0 0 1
+H
+1
+Cartesian
+0.25 0.5 0.75
+""".splitlines()
+
+        data = to_system_data(lines)
+
+        np.testing.assert_allclose(np.linalg.det(data["cells"][0]), 8.0)
+        np.testing.assert_allclose(data["coords"][0, 0], [0.5, 1.0, 1.5])
+
+    def test_negative_scale_rejects_zero_volume_cell(self):
+        lines = """test
+-8
+1 0 0
+0 0 0
+0 0 1
+H
+1
+Direct
+0.5 0.0 0.0
+""".splitlines()
+
+        with self.assertRaisesRegex(ValueError, "non-zero cell volume"):
+            to_system_data(lines)
+
 
 if __name__ == "__main__":
     unittest.main()
