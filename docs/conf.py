@@ -20,6 +20,7 @@ from datetime import date
 
 sys.path.insert(0, os.path.abspath(".."))
 
+from dpdata import __version__ as dpdata_version
 
 # -- Project information -----------------------------------------------------
 
@@ -27,10 +28,10 @@ project = "dpdata"
 copyright = "2019-%d, DeepModeling " % date.today().year  # noqa: UP031
 author = "Han Wang"
 
-# The short X.Y version
-version = "0.0"
-# The full version, including alpha/beta/rc tags
-release = "0.0.0-rc"
+# Derive both values from setuptools_scm instead of displaying stale template
+# metadata in generated documentation.
+release = dpdata_version
+version = ".".join(release.split(".")[:2])
 
 
 # -- General configuration ---------------------------------------------------
