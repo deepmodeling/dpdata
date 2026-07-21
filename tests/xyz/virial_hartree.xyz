@@ -1,0 +1,4 @@
+2
+Lattice="5.0 0.0 0.0 0.0 5.0 0.0 0.0 0.0 5.0" Properties=species:S:1:pos:R:3:force:R:3 energy=-1.0 virial="1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0" energy-unit=hartree force-unit=hartree/bohr pbc="T T T"
+Si 0.0 0.0 0.0 0.01 0.02 0.03
+Si 1.0 1.0 1.0 -0.01 -0.02 -0.03

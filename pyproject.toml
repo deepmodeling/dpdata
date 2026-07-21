@@ -24,8 +24,8 @@ dependencies = [
     'scipy',
     'h5py',
     'wcmatch',
-    'lmdb',
-    'msgpack-numpy',
+    'lmdb>=2.0.0',
+    'msgpack',
 ]
 requires-python = ">=3.10"
 readme = "README.md"

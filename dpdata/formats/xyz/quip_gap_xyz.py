@@ -2,12 +2,14 @@
 # %%
 from __future__ import annotations
 
+import logging
 import re
 import warnings
 from collections import OrderedDict
 
 import numpy as np
 
+from dpdata.formats.xyz._unit_convert import _get_unit_factor
 from dpdata.periodic_table import Element
 
 # Possible keys for the energy field in the extxyz comment line,
@@ -24,7 +26,7 @@ _VIRIAL_KEYS = ("virial", "virials")
 _STRESS_KEYS = ("stress", "stresses")
 
 
-def _parse_stress_to_virials(stress_str, cell, stress_sign=-1):
+def _parse_stress_to_virials(stress_str, cell, stress_sign=-1, stress_factor=1.0):
     """Convert a stress field string to virial tensor.
 
     Parameters
@@ -38,6 +40,10 @@ def _parse_stress_to_virials(stress_str, cell, stress_sign=-1):
         Sign convention for ``virial = stress_sign * volume * stress``.
         Default ``-1`` follows the ASE convention where
         ``virial = -V * stress`` (stress in eV/angstrom^3).
+    stress_factor : float
+        Multiplicative factor to convert stress from file units to
+        eV/angstrom^3 before computing the virial.  Default 1.0
+        (assumes stress is already in eV/angstrom^3).
 
     Returns
     -------
@@ -57,7 +63,7 @@ def _parse_stress_to_virials(stress_str, cell, stress_sign=-1):
             f"stress field must have 6 (Voigt) or 9 (3x3) values, got {len(vals)}"
         )
     volume = abs(np.linalg.det(cell))
-    virials = stress_sign * volume * stress
+    virials = stress_sign * volume * stress * stress_factor
     return np.array([virials])
 
 
@@ -249,13 +255,46 @@ class QuipGapxyzSystems:
                 stress_raw = field_dict[skey]
                 break
 
+        # --- unit conversion factors ---
+        # Read optional unit metadata from extxyz header.
+        # When absent, factor is 1.0 (assumes dpdata internal units).
+        e_unit_str = field_dict.get("energy-unit") or field_dict.get("energy_unit")
+        f_unit_str = field_dict.get("force-unit") or field_dict.get("force_unit")
+        s_unit_str = field_dict.get("stress-unit") or field_dict.get("stress_unit")
+
+        e_factor = _get_unit_factor(e_unit_str, "energy")
+        f_factor = _get_unit_factor(f_unit_str, "force")
+        s_factor = _get_unit_factor(s_unit_str, "stress")
+
+        if e_factor != 1.0:
+            logging.info(
+                "extxyz: converting energy from '%s' to eV (factor=%.10g)",
+                e_unit_str,
+                e_factor,
+            )
+        if f_factor != 1.0:
+            logging.info(
+                "extxyz: converting forces from '%s' to eV/angstrom (factor=%.10g)",
+                f_unit_str,
+                f_factor,
+            )
+        if s_factor != 1.0:
+            logging.info(
+                "extxyz: converting stress from '%s' to eV/angstrom^3 (factor=%.10g)",
+                s_unit_str,
+                s_factor,
+            )
+
         if virial_raw is not None:
-            virials = np.array(
-                [np.array(list(filter(bool, virial_raw.split(" ")))).reshape(3, 3)]
-            ).astype(np.float64)
+            virials = (
+                np.array(
+                    [np.array(list(filter(bool, virial_raw.split(" ")))).reshape(3, 3)]
+                ).astype(np.float64)
+                * e_factor  # virial has energy dimensions; convert if energy-unit is set
+            )
         elif stress_raw is not None:
             virials = _parse_stress_to_virials(
-                stress_raw, cells, stress_sign=stress_sign
+                stress_raw, cells, stress_sign=stress_sign, stress_factor=s_factor
             )
 
         # --- energy (try several common keys) ---
@@ -275,8 +314,8 @@ class QuipGapxyzSystems:
         info_dict["atom_numbs"] = list(type_num_array[:, 1].astype(int))
         info_dict["atom_types"] = np.array(atom_type_list).astype(int)
         info_dict["coords"] = np.array([coords_array]).astype(np.float64)
-        info_dict["energies"] = np.array([energy_value]).astype(np.float64)
-        info_dict["forces"] = np.array([force_array]).astype(np.float64)
+        info_dict["energies"] = np.array([energy_value], dtype=np.float64) * e_factor
+        info_dict["forces"] = np.array([force_array], dtype=np.float64) * f_factor
         if virials is not None:
             info_dict["virials"] = virials
         info_dict["orig"] = np.zeros(3)

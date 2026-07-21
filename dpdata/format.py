@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import collections.abc  # noqa: TC003 - required by typing.get_type_hints
 import os
+import typing
 from abc import ABC
 
 from .plugin import Plugin
@@ -291,7 +293,9 @@ class Format(ABC):
 
     MultiMode = MultiModes.NotImplemented
 
-    def from_multi_systems(self, directory, **kwargs):
+    def from_multi_systems(
+        self, directory, **kwargs
+    ) -> collections.abc.Iterable[typing.Any]:
         """Implement MultiSystems.from that converts from this format to MultiSystems.
 
         By default, this method follows MultiMode to implement the conversion.
@@ -318,7 +322,9 @@ class Format(ABC):
             f"{self.__class__.__name__} doesn't support MultiSystems.from"
         )
 
-    def to_multi_systems(self, formulas, directory, **kwargs):
+    def to_multi_systems(
+        self, formulas, directory, **kwargs
+    ) -> collections.abc.Iterable[typing.Any]:
         """Implement MultiSystems.to that converts from MultiSystems to this format.
 
         By default, this method follows MultiMode to implement the conversion.

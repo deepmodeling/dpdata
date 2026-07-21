@@ -14,7 +14,6 @@ else:
 
 
 @unittest.skipIf(skip_ase, "skip ase related test. install ase to fix")
-@unittest.skip("This test is broken")
 class TestASEtraj1(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         self.multi_systems = dpdata.MultiSystems.from_file(
