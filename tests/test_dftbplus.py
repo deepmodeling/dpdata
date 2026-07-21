@@ -85,6 +85,41 @@ Total Forces
         self.assertEqual(forces.shape, (5, 3))
         self.assertEqual(energy, -1.0)
 
+    def test_parser_converts_fractional_genformat_coordinates(self):
+        input_text = """Geometry = GenFormat {
+2 F
+H O
+1 1 0.5 0.0 0.0
+2 2 0.0 0.5 0.0
+0.1 0.2 0.3
+2.0 0.0 0.0
+0.0 4.0 0.0
+0.0 0.0 6.0
+}
+"""
+        output_text = """Total energy: -1.0 H
+Total Forces
+1 0.1 0.2 0.3
+2 0.4 0.5 0.6
+"""
+
+        symbols, coords, _, _ = read_dftb_plus(
+            StringIO(input_text), StringIO(output_text)
+        )
+
+        np.testing.assert_array_equal(symbols, ["H", "O"])
+        np.testing.assert_allclose(
+            coords,
+            [[1.1, 0.2, 0.3], [0.1, 2.2, 0.3]],
+        )
+
+    def test_parser_rejects_input_without_genformat_geometry(self):
+        with self.assertRaisesRegex(ValueError, "Geometry block not found"):
+            read_dftb_plus(
+                StringIO("Hamiltonian = DFTB {}\n"),
+                StringIO("Total energy: -1.0 H\n"),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
