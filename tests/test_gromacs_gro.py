@@ -7,6 +7,32 @@ from context import dpdata
 
 
 class TestGromacsGro(unittest.TestCase):
+    def test_infer_atom_types_in_first_seen_order(self):
+        # Without an explicit type_map, atom names define type IDs in first-seen
+        # order. The fixture uses many distinct names so the former set-based
+        # implementation cannot routinely pass by coincidental hash ordering.
+        system = dpdata.System("gromacs/type_order.gro")
+
+        expected_names = [
+            "Li",
+            "Cl",
+            "P",
+            "S",
+            "O",
+            "N",
+            "C",
+            "H",
+            "F",
+            "Br",
+            "I",
+            "Na",
+        ]
+        self.assertEqual(system["atom_names"], expected_names)
+        self.assertEqual(system["atom_numbs"], [1] * len(expected_names))
+        self.assertEqual(
+            system["atom_types"].tolist(), list(range(len(expected_names)))
+        )
+
     def test_read_file(self):
         system = dpdata.System("gromacs/1h.gro", type_map=["H", "O"])
         self.assertTrue("H" in system["atom_names"])
