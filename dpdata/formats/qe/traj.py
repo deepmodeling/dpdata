@@ -66,11 +66,30 @@ def convert_celldm(ibrav, celldm):
 
 
 def load_cell_parameters(lines):
-    blk = load_block(lines, "CELL_PARAMETERS", 3)
-    ret = []
-    for ii in blk:
-        ret.append([float(jj) for jj in ii.split()[0:3]])
-    return np.array(ret)
+    """Load ``CELL_PARAMETERS`` and convert its vectors to angstrom.
+
+    CP trajectory ``.cel`` files always use atomic units, but the fallback
+    cell in the QE input file follows the unit declared on the
+    ``CELL_PARAMETERS`` card.  Keeping that distinction here prevents an
+    angstrom input cell from being converted a second time when no ``.cel``
+    file is available.
+    """
+    for idx, line in enumerate(lines):
+        # Ignore commented examples such as ``!CELL_PARAMETERS {bohr}``, which
+        # are common in QE inputs and must not shadow the active card below.
+        card = line.split("!", 1)[0].strip()
+        if card.upper().startswith("CELL_PARAMETERS"):
+            blk = lines[idx + 1 : idx + 4]
+            break
+    else:
+        raise ValueError("CELL_PARAMETERS is required when ibrav is 0")
+
+    cell = np.array([[float(value) for value in row.split()[:3]] for row in blk])
+    # Preserve the historical Bohr conversion for the default/Bohr spelling.
+    # An explicit angstrom card, however, is already in dpdata's length unit.
+    if "angstrom" not in card.lower():
+        cell *= length_convert
+    return cell
 
 
 def load_atom_names(lines, ntypes):
@@ -111,8 +130,8 @@ def load_param_file(fname: FileType):
     if ibrav == 0:
         cell = load_cell_parameters(lines)
     else:
-        cell = convert_celldm(ibrav, celldm)
-    cell = cell * length_convert
+        # celldm and cells reconstructed from it are expressed in Bohr.
+        cell = convert_celldm(ibrav, celldm) * length_convert
     # print(atom_names)
     # print(atom_numbs)
     # print(atom_types)
