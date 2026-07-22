@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import numbers
 import os
 import sys
 from typing import TYPE_CHECKING
@@ -175,26 +176,127 @@ def box2dumpbox(orig, box):
     return bounds, tilt
 
 
-def load_file(fname: FileType, begin=0, step=1):
+def _iter_frames(fp):
+    """Yield one LAMMPS dump frame at a time without retaining skipped frames."""
+    frame = []
+    for raw_line in fp:
+        line = raw_line.rstrip("\n")
+        if "ITEM: TIMESTEP" in line:
+            if frame:
+                yield frame
+            frame = [line]
+        elif frame:
+            # Ignore any preamble before the first TIMESTEP marker, matching the
+            # historical loader behavior.
+            frame.append(line)
+    if frame:
+        yield frame
+
+
+def _normalize_frame_indices(f_idx):
+    """Validate frame indices while preserving their order and duplicates."""
+    if isinstance(f_idx, numbers.Integral) and not isinstance(f_idx, bool):
+        indices = [int(f_idx)]
+    else:
+        try:
+            indices = list(f_idx)
+        except TypeError as exc:
+            raise TypeError(
+                "f_idx must be an integer or an iterable of integers"
+            ) from exc
+
+    if not indices:
+        raise ValueError("f_idx must not be empty")
+
+    normalized = []
+    for index in indices:
+        if not isinstance(index, numbers.Integral) or isinstance(index, bool):
+            raise TypeError("f_idx must contain only integers")
+        if index < 0:
+            raise ValueError("f_idx must contain only non-negative frame indices")
+        normalized.append(int(index))
+    return normalized
+
+
+def load_file(
+    fname: FileType,
+    begin=0,
+    step=1,
+    f_idx: int | list[int] | np.ndarray | None = None,
+):
+    """Load selected frames from a LAMMPS dump file.
+
+    Parameters
+    ----------
+    fname : FileType
+        Dump file path or an open text file object.
+    begin : int, optional
+        First frame to load when ``f_idx`` is not provided.
+    step : int, optional
+        Interval between loaded frames when ``f_idx`` is not provided.
+    f_idx : int or array-like of int, optional
+        Specific non-negative frame indices to load. The requested order and
+        duplicate indices are preserved. This option cannot be combined with
+        non-default ``begin`` or ``step`` values.
+
+    Returns
+    -------
+    list[str]
+        Lines belonging to the selected frames.
+
+    Raises
+    ------
+    IndexError
+        If any requested frame index is outside the trajectory.
+    TypeError
+        If ``f_idx`` contains a non-integer value.
+    ValueError
+        If ``f_idx`` is empty, contains a negative value, or is combined with
+        non-default ``begin`` or ``step`` values.
+    """
+    if f_idx is not None:
+        if begin != 0 or step != 1:
+            raise ValueError("f_idx cannot be combined with begin or step")
+
+        frame_indices = _normalize_frame_indices(f_idx)
+        requested = set(frame_indices)
+        last_requested = max(requested)
+        selected = {}
+        nframes = 0
+
+        with open_file(fname) as fp:
+            for frame_index, frame in enumerate(_iter_frames(fp)):
+                nframes = frame_index + 1
+                if frame_index in requested:
+                    selected[frame_index] = frame
+                if frame_index == last_requested:
+                    # The generator retains only the current frame, so stopping
+                    # here avoids reading and parsing the remainder of the file.
+                    break
+
+        missing = sorted(requested.difference(selected))
+        if missing:
+            raise IndexError(
+                f"Requested frame indices {missing} are out of range for "
+                f"a trajectory containing {nframes} frames"
+            )
+
+        lines = []
+        for frame_index in frame_indices:
+            lines.extend(selected[frame_index])
+        return lines
+
+    if begin < 0:
+        raise ValueError("begin must be non-negative")
+    if step <= 0:
+        raise ValueError("step must be positive")
+
     lines = []
-    buff = []
-    cc = -1
     with open_file(fname) as fp:
-        while True:
-            line = fp.readline().rstrip("\n")
-            if not line:
-                if cc >= begin and (cc - begin) % step == 0:
-                    lines += buff
-                    buff = []
-                cc += 1
-                return lines
-            if "ITEM: TIMESTEP" in line:
-                if cc >= begin and (cc - begin) % step == 0:
-                    lines += buff
-                    buff = []
-                cc += 1
-            if cc >= begin and (cc - begin) % step == 0:
-                buff.append(line)
+        for frame_index, frame in enumerate(_iter_frames(fp)):
+            if frame_index >= begin and (frame_index - begin) % step == 0:
+                lines.extend(frame)
+    return lines
 
 
 def get_spin_keys(inputfile):
@@ -342,17 +444,8 @@ def split_traj(dump_lines):
             marks.append(idx)
     if len(marks) == 0:
         return None
-    elif len(marks) == 1:
-        return [dump_lines]
-    else:
-        block_size = marks[1] - marks[0]
-        ret = []
-        for ii in marks:
-            ret.append(dump_lines[ii : ii + block_size])
-        # for ii in range(len(marks)-1):
-        #     assert(marks[ii+1] - marks[ii] == block_size)
-        return ret
-    return None
+    frame_ends = marks[1:] + [len(dump_lines)]
+    return [dump_lines[start:end] for start, end in zip(marks, frame_ends)]
 
 
 def from_system_data(system, f_idx=0, timestep=0):
