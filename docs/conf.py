@@ -203,7 +203,6 @@ intersphinx_mapping = {
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "python": ("https://docs.python.org/", None),
     "ase": ("https://wiki.fysik.dtu.dk/ase/", None),
-    "monty": ("https://guide.materialsvirtuallab.org/monty/", None),
     "h5py": ("https://docs.h5py.org/en/stable/", None),
 }
 

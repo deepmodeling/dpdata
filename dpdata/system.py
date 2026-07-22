@@ -332,8 +332,8 @@ class System:
         return self.__class__.from_dict({"data": self_copy.data})
 
     def dump(self, filename: str, indent: int = 4):
-        """Dump .json or .yaml file."""
-        from monty.serialization import dumpfn
+        """Dump a JSON, YAML, or MessagePack file."""
+        from dpdata.serialization import dumpfn
 
         dumpfn(self.as_dict(), filename, indent=indent)
 
@@ -379,20 +379,18 @@ class System:
 
     @staticmethod
     def load(filename: str):
-        """Rebuild System obj. from .json or .yaml file."""
-        from monty.serialization import loadfn
+        """Rebuild a System object from a JSON, YAML, or MessagePack file."""
+        from dpdata.serialization import loadfn
 
         return loadfn(filename)
 
     @classmethod
     def from_dict(cls, data: dict):
         """Construct a System instance from a data dict."""
-        from monty.serialization import MontyDecoder  # type: ignore
+        from dpdata.serialization import process_decoded
 
         decoded = {
-            k: MontyDecoder().process_decoded(v)
-            for k, v in data.items()
-            if not k.startswith("@")
+            k: process_decoded(v) for k, v in data.items() if not k.startswith("@")
         }
         return cls(**decoded)
 
