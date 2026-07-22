@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import io
 import os
 import shutil
 import tempfile
-import io
 import unittest
 import warnings
 
