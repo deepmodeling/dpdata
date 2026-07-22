@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import os
 import shutil
+import tempfile
 import unittest
 from glob import glob
+from inspect import Parameter, signature
 
 import numpy as np
 from comp_sys import (
@@ -17,8 +19,49 @@ from context import dpdata
 
 from dpdata.data_type import (
     Axis,
+    DataError,
     DataType,
 )
+
+
+class TestMixedMultiSystemsUnlabeled(unittest.TestCase):
+    """Regression coverage for loading coordinate-only mixed datasets."""
+
+    def test_from_file_unlabeled_round_trip(self):
+        labeled_parameter = signature(dpdata.MultiSystems.from_file).parameters[
+            "labeled"
+        ]
+        self.assertIs(labeled_parameter.kind, Parameter.KEYWORD_ONLY)
+        self.assertIs(labeled_parameter.default, True)
+
+        system = dpdata.System("poscars/POSCAR.h2o.md", fmt="vasp/poscar")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            mixed_dir = os.path.join(tmpdir, "mixed")
+            dpdata.MultiSystems(system).to("deepmd/npy/mixed", mixed_dir)
+
+            # The default remains labeled for backward compatibility, but the
+            # error now points coordinate-only users to the public flag.
+            with self.assertRaisesRegex(DataError, "pass labeled=False"):
+                dpdata.MultiSystems.from_file(
+                    mixed_dir,
+                    fmt="deepmd/npy/mixed",
+                )
+
+            # The explicit, discoverable flag selects ordinary System objects.
+            systems = dpdata.MultiSystems.from_file(
+                mixed_dir, fmt="deepmd/npy/mixed", labeled=False
+            )
+
+        self.assertEqual(len(systems), 1)
+        loaded = next(iter(systems.systems.values()))
+        self.assertIs(type(loaded), dpdata.System)
+        self.assertNotIn("energies", loaded.data)
+        np.testing.assert_array_equal(
+            loaded.data["atom_types"], system.data["atom_types"]
+        )
+        np.testing.assert_allclose(loaded.data["cells"], system.data["cells"])
+        np.testing.assert_allclose(loaded.data["coords"], system.data["coords"])
 
 
 class TestMixedMultiSystemsDumpLoad(

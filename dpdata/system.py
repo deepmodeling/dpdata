@@ -1481,9 +1481,32 @@ class MultiSystems:
         raise RuntimeError("Unspported data structure")
 
     @classmethod
-    def from_file(cls, file_name, fmt: str, **kwargs: Any):
+    def from_file(
+        cls, file_name, fmt: str, *, labeled: bool = True, **kwargs: Any
+    ) -> MultiSystems:
+        """Load multiple systems from a file or directory.
+
+        Parameters
+        ----------
+        file_name
+            Source accepted by the selected format backend.
+        fmt : str
+            Format identifier, such as ``"deepmd/npy/mixed"``.
+        labeled : bool, default=True
+            Load :class:`LabeledSystem` objects when true. Set this to false for
+            coordinate-only data that does not contain energies or forces.
+        **kwargs
+            Additional arguments forwarded to the format backend.
+
+        Returns
+        -------
+        MultiSystems
+            Systems reconstructed from the source.
+        """
         multi_systems = cls()
-        multi_systems.load_systems_from_file(file_name=file_name, fmt=fmt, **kwargs)
+        multi_systems.load_systems_from_file(
+            file_name=file_name, fmt=fmt, labeled=labeled, **kwargs
+        )
         return multi_systems
 
     @classmethod
@@ -1506,10 +1529,31 @@ class MultiSystems:
             )
         return multi_systems
 
-    def load_systems_from_file(self, file_name=None, fmt: str | None = None, **kwargs):
+    def load_systems_from_file(
+        self,
+        file_name=None,
+        fmt: str | None = None,
+        *,
+        labeled: bool = True,
+        **kwargs,
+    ):
+        """Load systems into this collection.
+
+        ``labeled=False`` selects regular :class:`System` objects, which is
+        required for DeepMD datasets that omit label arrays.
+        """
         assert fmt is not None
         fmt = fmt.lower()
-        return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
+        try:
+            return self.from_fmt_obj(
+                load_format(fmt), file_name, labeled=labeled, **kwargs
+            )
+        except DataError as exc:
+            if labeled and fmt in {"deepmd/npy/mixed", "deepmd/hdf5/mixed"}:
+                raise DataError(
+                    f"{exc} For coordinate-only mixed datasets, pass labeled=False."
+                ) from exc
+            raise
 
     def get_nframes(self) -> int:
         """Returns number of frames in all systems."""
