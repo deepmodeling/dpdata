@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -82,6 +83,36 @@ class VASPStringFormat(Format):
 @Format.register("outcar")
 @Format.register("vasp/outcar")
 class VASPOutcarFormat(Format):
+    def from_multi_systems(self, directory, **kwargs):
+        """Find conventionally named OUTCAR files below ``directory``.
+
+        VASP calculations are commonly stored one calculation per directory,
+        so the objects consumed by :meth:`from_labeled_system` are the OUTCAR
+        files themselves rather than the calculation directories.  Searching
+        recursively also supports grouping calculations below intermediate
+        directories such as workflow stages or temperatures.
+
+        Parameters
+        ----------
+        directory : str or os.PathLike
+            Root directory containing VASP calculation directories.
+        **kwargs : dict
+            Additional format options. They are consumed later when each
+            discovered OUTCAR is loaded.
+
+        Returns
+        -------
+        list[str]
+            Deterministically ordered paths to files named ``OUTCAR``.
+        """
+        outcar_files = []
+        for root, _, files in os.walk(directory):
+            # Match VASP's canonical output name so unrelated files in the
+            # calculation tree are not accidentally parsed as OUTCAR data.
+            if "OUTCAR" in files:
+                outcar_files.append(os.path.join(root, "OUTCAR"))
+        return sorted(outcar_files)
+
     @Format.post("rot_lower_triangular")
     def from_labeled_system(
         self, file_name, begin=0, step=1, convergence_check=True, **kwargs
