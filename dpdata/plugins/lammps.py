@@ -60,7 +60,7 @@ class LAMMPSLmpFormat(Format):
         atom_style : str, optional
             The LAMMPS atom style. Default is "auto" which attempts to detect
             the style automatically from the file. Can also be explicitly set to:
-            atomic, full, charge, bond, angle, molecular, dipole, sphere
+            atomic, full, charge, bond, angle, molecular, dipole, sphere, spin
         **kwargs : dict
             Other parameters
 
@@ -100,6 +100,7 @@ class LAMMPSLmpFormat(Format):
         - molecular: atom-ID molecule-ID atom-type x y z
         - dipole: atom-ID atom-type charge x y z mux muy muz
         - sphere: atom-ID atom-type diameter density x y z
+        - spin: atom-ID atom-type x y z spx spy spz sp
         """
         with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]

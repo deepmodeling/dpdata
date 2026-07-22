@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import subprocess
 import unittest
 
 import numpy as np
@@ -54,9 +55,19 @@ class TestLmp(unittest.TestCase):
         with open(self.lmp_coord_name) as f:
             c = f.read()
 
+        self.assertIn("Atoms # spin", c)
         coord_ref = """     1      1    0.0000000000    0.0000000000    0.0000000000    0.6000000000    0.8000000000    0.0000000000    5.0000000000
      2      2    1.2621856000    0.7018028000    0.5513885000    0.0000000000    0.8000000000    0.6000000000    5.0000000000"""
         self.assertTrue(coord_ref in c)
+
+        # Auto-detection must understand the official spin annotation and
+        # reconstruct the original vectors, including their magnitudes.
+        roundtrip = dpdata.System(
+            self.lmp_coord_name, fmt="lammps/lmp", type_map=["O", "H"]
+        )
+        np.testing.assert_allclose(
+            roundtrip.data["spins"], self.tmp_system.data["spins"]
+        )
 
     def test_dump_input_zero_spin(self):
         self.tmp_system.data["spins"] = [[[0, 0, 0], [0, 0, 0]]]
@@ -67,6 +78,28 @@ class TestLmp(unittest.TestCase):
         coord_ref = """     1      1    0.0000000000    0.0000000000    0.0000000000    0.0000000000    0.0000000000    1.0000000000    0.0000000000
      2      2    1.2621856000    0.7018028000    0.5513885000    0.0000000000    0.0000000000    1.0000000000    0.0000000000"""
         self.assertTrue(coord_ref in c)
+
+    def test_dump_input_is_accepted_by_lammps(self):
+        """The generated spin section must be valid for LAMMPS itself."""
+        lmp = shutil.which("lmp")
+        if lmp is None:
+            self.skipTest("LAMMPS executable is not installed")
+        self.tmp_system.to("lammps/lmp", self.lmp_coord_name)
+        result = subprocess.run(
+            [lmp, "-log", "none", "-screen", "none"],
+            input=(
+                "units metal\n"
+                "atom_style spin\n"
+                f"read_data {self.lmp_coord_name}\n"
+                "run 0\n"
+            ),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode and "Unrecognized atom style" in result.stderr:
+            self.skipTest("LAMMPS was built without the SPIN package")
+        self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_read_input(self):
         # check if dpdata can read the spins
