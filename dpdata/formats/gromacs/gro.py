@@ -77,7 +77,12 @@ def file_to_system_data(fname: FileType, format_atom_name=True, **kwargs):
                 posis = np.array(posis)
                 if frame == 1:
                     system["orig"] = np.zeros(3)
-                    system["atom_names"] = list(set(names))
+                    # A .gro file does not carry a separate atom-type table. The
+                    # original reader sorted inferred names alphabetically, but
+                    # the multi-frame refactor accidentally retained an unsorted
+                    # set. Use first occurrence as the explicit contract so type
+                    # IDs remain stable and follow the file's atom order.
+                    system["atom_names"] = list(dict.fromkeys(names))
                     system["atom_numbs"] = [
                         names.count(ii) for ii in system["atom_names"]
                     ]
