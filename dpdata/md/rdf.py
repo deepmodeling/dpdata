@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 
-def rdf(sys, sel_type=[None, None], max_r=5, nbins=100):
+def rdf(sys, sel_type=None, max_r=5, nbins=100):
     """Compute the rdf of a system.
 
     Parameters
@@ -40,7 +40,12 @@ def rdf(sys, sel_type=[None, None], max_r=5, nbins=100):
     )
 
 
-def compute_rdf(box, posis, atype, sel_type=[None, None], max_r=5, nbins=100):
+def compute_rdf(box, posis, atype, sel_type=None, max_r=5, nbins=100):
+    """Compute an RDF without mutating the caller's selection list."""
+    if sel_type is None:
+        sel_type = [None, None]
+    else:
+        sel_type = list(sel_type)
     nframes = box.shape[0]
     xx = None
     all_rdf = []
@@ -58,7 +63,13 @@ def compute_rdf(box, posis, atype, sel_type=[None, None], max_r=5, nbins=100):
     return xx, all_rdf, all_cod
 
 
-def _compute_rdf_1frame(box, posis, atype, sel_type=[None, None], max_r=5, nbins=100):
+def _compute_rdf_1frame(box, posis, atype, sel_type=None, max_r=5, nbins=100):
+    if sel_type is None:
+        sel_type = [None, None]
+    else:
+        # Normalise into a fresh list because the two ``None`` replacements
+        # below must not leak into a caller-owned list or a function default.
+        sel_type = list(sel_type)
     all_types = list(set(list(np.sort(atype, kind="stable"))))
     if sel_type[0] is None:
         sel_type[0] = all_types
