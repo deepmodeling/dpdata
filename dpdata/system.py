@@ -461,10 +461,16 @@ class System:
                     slice(None) for _ in self.data[tt.name].shape
                 ]
                 new_shape[axis_nframes] = f_idx
-                tmp.data[tt.name] = self.data[tt.name][tuple(new_shape)]
+                # A slice produces a NumPy view, while advanced indexing
+                # produces a copy.  Deep-copy the result so ownership is
+                # consistent for every supported frame selector.
+                tmp.data[tt.name] = deepcopy(self.data[tt.name][tuple(new_shape)])
             else:
-                # keep the original data
-                tmp.data[tt.name] = self.data[tt.name]
+                # Frame-independent values (atom names/types, ``orig``, and
+                # optional metadata) are usually lists or arrays.  Copy them
+                # as well as frame data so editing a slice can never mutate
+                # the source system through a shared mutable object.
+                tmp.data[tt.name] = deepcopy(self.data[tt.name])
         return tmp
 
     def append(self, system: System) -> bool:
