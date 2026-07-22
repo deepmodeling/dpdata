@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import io
 import unittest
+import warnings
 
 import numpy as np
 from comp_sys import CompLabeledSys, IsPBC
 from context import dpdata
 
+from dpdata.formats.vasp.outcar import _get_frames_lower
 from dpdata.utils import uniq_atom_names
 
 
@@ -19,6 +22,83 @@ class TestVaspOUTCAR(unittest.TestCase, CompLabeledSys, IsPBC):
         self.e_places = 6
         self.f_places = 6
         self.v_places = 4
+
+
+class TestVaspOUTCARIncompleteForceTable(unittest.TestCase):
+    """Regression tests for force tables cut short before all atom rows."""
+
+    @staticmethod
+    def _block(force_rows, *, include_header=False, energy=-1.0):
+        lines = []
+        if include_header:
+            lines.extend(
+                [
+                    " TITEL  = PAW_PBE H 15Jun2001",
+                    " NELM = 60; maximum number of electronic SC steps",
+                    " ions per type = 2",
+                ]
+            )
+        lines.extend(
+            [
+                " VOLUME and BASIS-vectors are now :",
+                " filler",
+                " filler",
+                " filler",
+                " filler",
+                " 1.0 0.0 0.0",
+                " 0.0 1.0 0.0",
+                " 0.0 0.0 1.0",
+                " POSITION                                       TOTAL-FORCE (eV/Angst)",
+                " -----------------------------------------------------------------------------------",
+                *force_rows,
+                f" free  energy   TOTEN  =       {energy:.6f} eV",
+            ]
+        )
+        return "\n".join(lines) + "\n"
+
+    def test_non_numeric_record_before_all_atoms_skips_incomplete_frame(self):
+        # The first frame is valid, but the second table reaches its energy
+        # record after only one of the two expected atoms. Older tests used
+        # complete tables, so converting that non-numeric record was never
+        # exercised.
+        valid_rows = ["0 0 0 1 2 3", "1 1 1 4 5 6"]
+        incomplete_rows = ["2 2 2 7 8 9"]
+        contents = self._block(valid_rows, include_header=True) + self._block(
+            incomplete_rows, energy=-2.0
+        )
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            frames = _get_frames_lower(io.StringIO(contents), "OUTCAR")
+
+        self.assertEqual(frames[3].shape, (1, 3, 3))
+        self.assertEqual(frames[4].shape, (1, 2, 3))
+        self.assertEqual(frames[6].shape, (1, 2, 3))
+        self.assertTrue(
+            any("incomplete labels in frame 2" in str(item.message) for item in caught)
+        )
+
+    def test_truncated_table_does_not_index_past_block(self):
+        # A file truncated immediately after its first atom previously raised
+        # IndexError while the parser blindly indexed all ``ntot`` rows.
+        valid_rows = ["0 0 0 1 2 3", "1 1 1 4 5 6"]
+        truncated_block = "\n".join(
+            [
+                " POSITION                                       TOTAL-FORCE (eV/Angst)",
+                " -----------------------------------------------------------------------------------",
+                "0 0 0 1 2 3",
+            ]
+        )
+        contents = self._block(valid_rows, include_header=True) + truncated_block
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            frames = _get_frames_lower(io.StringIO(contents), "OUTCAR")
+
+        self.assertEqual(frames[4].shape, (1, 2, 3))
+        self.assertTrue(
+            any("expected 2 atom rows, found 1" in str(item.message) for item in caught)
+        )
 
 
 class TestVaspOUTCARTypeMap(unittest.TestCase, CompLabeledSys, IsPBC):
