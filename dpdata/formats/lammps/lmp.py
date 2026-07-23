@@ -70,6 +70,10 @@ def detect_atom_style(lines: list[str]) -> str | None:
                 # If it's a small float, likely a charge
                 if abs(val) < 10 and val != int(val):
                     return "charge"
+                # Neutral charge is numerically integral (0.0), but the
+                # decimal/exponent notation still identifies a charge column.
+                if any(ch in first_line[2].lower() for ch in (".", "e")):
+                    return "charge"
                 else:
                     # Likely molecule ID (integer), so bond/molecular style
                     return "bond"
@@ -327,6 +331,11 @@ def get_charges(lines: list[str], atom_style: str = "atomic") -> np.ndarray | No
 
 
 def get_spins(lines: list[str], atom_style: str = "atomic") -> np.ndarray | None:
+    # This branch predates explicit LAMMPS spin-style support and stores spin
+    # columns only in dpdata's legacy atomic layout. Other registered styles
+    # use their extra columns for unrelated physical quantities.
+    if atom_style != "atomic":
+        return None
     atom_lines = get_atoms(lines)
     if len(atom_lines[0].split()) < 8:
         return None
