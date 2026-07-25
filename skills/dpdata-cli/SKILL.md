@@ -183,7 +183,7 @@ The following format names are **all equivalent** and invoke the same reader/wri
 - `nequip/xyz` — NequIP model training data
 - `gpumd/xyz` — GPUMD simulation data
 
-> **Important:** Plain `xyz` is a **different**, simpler format that only stores coordinates without labels (energies/forces), cell information, or periodic boundary conditions. Do not confuse `xyz` with `extxyz`.
+> **Important:** Plain `xyz` is a **different**, simpler format that stores atom species and coordinates but does not provide per-frame properties such as energies, forces, cell information, or periodic boundary conditions. Do not confuse `xyz` with `extxyz`.
 
 #### CLI Examples for extxyz
 
@@ -197,8 +197,8 @@ uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy/mixed --multi
 # Convert extxyz to VASP POSCAR (single-frame input only)
 uvx dpdata data.xyz -i extxyz -O POSCAR -o vasp/poscar
 
-# Convert with explicit type map (--multi for multi-frame files)
-uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy -t H C N O --multi
+# Convert a single-frame extxyz with explicit type map
+uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy -t H C N O
 ```
 
 #### Tips for extxyz
