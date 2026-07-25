@@ -9,6 +9,13 @@ from dpdata.format import Format
 
 @Format.register("pymatgen/structure")
 class PyMatgenStructureFormat(Format):
+    """In-memory pymatgen ``Structure`` objects for periodic systems.
+
+    This adapter converts without writing a file and requires the optional
+    ``pymatgen`` dependency. Writing a multi-frame System returns one
+    ``Structure`` object per frame.
+    """
+
     def from_system(self, structure, **kwargs) -> dict:
         """Convert pymatgen.core.Structure to System.
 
@@ -27,7 +34,20 @@ class PyMatgenStructureFormat(Format):
         return dpdata.formats.pymatgen.structure.from_system_data(structure)
 
     def to_system(self, data, **kwargs):
-        """Convert System to Pymatgen Structure obj."""
+        """Convert System frames to pymatgen Structure objects.
+
+        Parameters
+        ----------
+        data : dict
+            Periodic System data.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        list[pymatgen.core.Structure]
+            One structure per frame.
+        """
         structures = []
         try:
             from pymatgen.core import Lattice, Structure
@@ -49,8 +69,29 @@ class PyMatgenStructureFormat(Format):
 
 @Format.register("pymatgen/molecule")
 class PyMatgenMoleculeFormat(Format):
+    """In-memory pymatgen ``Molecule`` objects for nonperiodic systems.
+
+    Periodic boundary conditions are removed during conversion. The optional
+    ``pymatgen`` dependency is required, and writing returns one ``Molecule``
+    object per frame.
+    """
+
     @Format.post("remove_pbc")
     def from_system(self, file_name, **kwargs):
+        """Convert a pymatgen Molecule into System data.
+
+        Parameters
+        ----------
+        file_name : pymatgen.core.Molecule
+            In-memory molecule to convert.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Nonperiodic system data.
+        """
         try:
             from pymatgen.core import Molecule  # noqa: F401
         except ModuleNotFoundError as e:
@@ -59,7 +100,20 @@ class PyMatgenMoleculeFormat(Format):
         return dpdata.formats.pymatgen.molecule.to_system_data(file_name)
 
     def to_system(self, data, **kwargs):
-        """Convert System to Pymatgen Molecule obj."""
+        """Convert System frames to pymatgen Molecule objects.
+
+        Parameters
+        ----------
+        data : dict
+            System data. Periodic boundary conditions are removed.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        list[pymatgen.core.Molecule]
+            One molecule per frame.
+        """
         molecules = []
         try:
             from pymatgen.core import Molecule
@@ -77,8 +131,30 @@ class PyMatgenMoleculeFormat(Format):
 @Format.register("pymatgen/computedstructureentry")
 @Format.register_to("to_pymatgen_ComputedStructureEntry")
 class PyMatgenCSEFormat(Format):
+    """In-memory pymatgen ``ComputedStructureEntry`` objects.
+
+    This write-only labeled adapter creates one entry per frame and places
+    forces and virials in the entry's ``data`` mapping. The optional
+    ``pymatgen`` dependency is required.
+    """
+
     def to_labeled_system(self, data, *args, **kwargs):
-        """Convert System to Pymagen ComputedStructureEntry obj."""
+        """Convert labeled frames to pymatgen ComputedStructureEntry objects.
+
+        Parameters
+        ----------
+        data : dict
+            LabeledSystem data containing energy, forces, and virials.
+        *args : list
+            Additional positional arguments accepted for API compatibility.
+        **kwargs : dict
+            Additional keyword arguments accepted for API compatibility.
+
+        Returns
+        -------
+        list[pymatgen.entries.computed_entries.ComputedStructureEntry]
+            One computed entry per frame.
+        """
         try:
             from pymatgen.entries.computed_entries import ComputedStructureEntry
         except ModuleNotFoundError as e:

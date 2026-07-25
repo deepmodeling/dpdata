@@ -527,7 +527,9 @@ class System:
         return True
 
     def convert_to_mixed_type(self, type_map: list[str] | None = None):
-        """Convert the data dict to mixed type format structure, in order to append systems
+        """Convert the data dictionary to the mixed-type structure.
+
+        This allows appending systems
         with different formula but the same number of atoms. Change the 'atom_names' to
         one placeholder type 'MIXED_TOKEN' and add 'real_atom_types' to store the real type
         vectors according to the given type_map.
@@ -553,7 +555,9 @@ class System:
         self.data["atom_names"] = ["MIXED_TOKEN"]
 
     def sort_atom_names(self, type_map: list[str] | None = None):
-        """Sort atom_names of the system and reorder atom_numbs and atom_types accoarding
+        """Sort atom names and reorder the related type data.
+
+        Reorder atom_numbs and atom_types according
         to atom_names. If type_map is not given, atom_names will be sorted by
         alphabetical order. If type_map is given, atom_names will be type_map.
 
@@ -565,7 +569,9 @@ class System:
         self.data = sort_atom_names(self.data, type_map=type_map)
 
     def check_type_map(self, type_map: list[str] | None):
-        """Assign atom_names to type_map if type_map is given and different from
+        """Apply a type map when it differs from the current atom names.
+
+        Assign atom_names to type_map if type_map is given and different from
         atom_names.
 
         Parameters
@@ -577,7 +583,9 @@ class System:
             self.sort_atom_names(type_map=type_map)
 
     def apply_type_map(self, type_map: list[str]):
-        """Customize the element symbol order and  it should maintain order
+        """Customize the element-symbol order.
+
+        The selected order should remain
         consistency in dpgen or deepmd-kit. It is especially recommended
         for multiple complexsystems with multiple elements.
 
@@ -628,6 +636,7 @@ class System:
     @property
     def uniq_formula(self) -> str:
         """Return the uniq_formula of this system.
+
         The uniq_formula sort the elements in formula by names.
         Systems with the same uniq_formula can be append together.
         """
@@ -642,8 +651,9 @@ class System:
 
     @property
     def short_formula(self) -> str:
-        """Return the short formula of this system. Elements with zero number
-        will be removed.
+        """Return the short formula of this system.
+
+        Elements with zero number will be removed.
         """
         return "".join(
             [
@@ -662,8 +672,9 @@ class System:
 
     @property
     def short_name(self) -> str:
-        """Return the short name of this system (no more than 255 bytes), in
-        the following order:
+        """Return the short name of this system, limited to 255 bytes.
+
+        Candidate names are tried in the following order:
             - formula
             - short_formula
             - formula_hash.
@@ -695,7 +706,9 @@ class System:
 
     @post_funcs.register("remove_pbc")
     def remove_pbc(self, protect_layer: int = 9):
-        """This method does NOT delete the definition of the cells, it
+        """Remove periodicity while retaining an enclosing cell.
+
+        This method does NOT delete the definition of the cells, it
         (1) revises the cell to a cubic cell and ensures that the cell
         boundary to any atom in the system is no less than `protect_layer`
         (2) translates the system such that the center-of-geometry of the system
@@ -747,7 +760,8 @@ class System:
         self.data = add_atom_names(self.data, atom_names)
 
     def replicate(self, ncopy: list[int] | tuple[int, int, int]):
-        """Replicate the each frame  in the system in 3 dimensions.
+        """Replicate each frame in three dimensions.
+
         Each frame in the system will become a supercell.
 
         Parameters
@@ -853,6 +867,7 @@ class System:
         atom_pert_prob: float = 1.0,
     ):
         """Perturb each frame in the system randomly.
+
         The cell will be deformed randomly, and atoms will be displaced by a random distance in random direction.
 
         Parameters
@@ -1036,6 +1051,7 @@ class System:
 
     def remove_atom_names(self, atom_names: str | list[str]):
         """Remove atom names and all such atoms.
+
         For example, you may not remove EP atoms in TIP4P/Ew water, which
         is not a real atom.
         """
@@ -1298,6 +1314,7 @@ class LabeledSystem(System):
 
     def correction(self, hl_sys: LabeledSystem) -> LabeledSystem:
         """Get energy and force correction between self and a high-level LabeledSystem.
+
         The self's coordinates will be kept, but energy and forces will be replaced by
         the correction between these two systems.
 
@@ -1370,7 +1387,9 @@ class MultiSystems:
     """A set containing several systems."""
 
     def __init__(self, *systems, type_map=None):
-        """Parameters
+        """Initialize a collection of systems.
+
+        Parameters
         ----------
         *systems : System
             The systems contained
@@ -1656,6 +1675,7 @@ class MultiSystems:
 
     def correction(self, hl_sys: MultiSystems) -> MultiSystems:
         """Get energy and force correction between self (assumed low-level) and a high-level MultiSystems.
+
         The self's coordinates will be kept, but energy and forces will be replaced by
         the correction between these two systems.
 
@@ -1769,8 +1789,10 @@ def get_cls_name(cls: type[Any]) -> str:
 
 
 def add_format_methods():
-    """Add format methods to System, LabeledSystem, and MultiSystems; add data types
-    to System and LabeledSystem.
+    """Add registered format methods and data types to the System classes.
+
+    This updates System, LabeledSystem, and MultiSystems with convenience
+    methods and adds registered data types to System and LabeledSystem.
 
     Notes
     -----

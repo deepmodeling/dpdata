@@ -44,10 +44,12 @@ def match_indices(atype1, atype2):
 
 @Format.register("n2p2")
 class N2P2Format(Format):
-    """n2p2.
+    """n2p2 ``input.data`` neural-network training dataset.
 
-    This class support the conversion from and to the training data of n2p2 format.
-    For more information about the n2p2 format, please refer to https://compphysvienna.github.io/n2p2/topics/cfg_file.html
+    Each ``begin``/``end`` block stores a periodic configuration with energy
+    and forces in atomic units. dpdata converts units on read and write. See
+    the `n2p2 configuration-file specification
+    <https://compphysvienna.github.io/n2p2/topics/cfg_file.html>`_.
     """
 
     def from_labeled_system(self, file_name: FileType, **kwargs):

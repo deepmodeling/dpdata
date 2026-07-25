@@ -1272,11 +1272,35 @@ class LMDBFormat(Format):
             raise
 
     def to_system(self, data, file_name, **kwargs):
-        """Save a single (unlabeled) System to an LMDB database."""
+        """Save a single unlabeled System to an LMDB database.
+
+        Parameters
+        ----------
+        data : dict
+            System data to write.
+        file_name : str or os.PathLike
+            Destination LMDB directory.
+        **kwargs : dict
+            Writer options accepted by :meth:`to_multi_systems`, including
+            ``map_size``, ``frame_idx_fmt``, ``type_map``,
+            ``write_batch_size``, and ``overwrite``.
+        """
         self._to_any(data, file_name, **kwargs)
 
     def to_labeled_system(self, data, file_name, **kwargs):
-        """Save a single LabeledSystem to an LMDB database."""
+        """Save a single LabeledSystem to an LMDB database.
+
+        Parameters
+        ----------
+        data : dict
+            LabeledSystem data to write.
+        file_name : str or os.PathLike
+            Destination LMDB directory.
+        **kwargs : dict
+            Writer options accepted by :meth:`to_multi_systems`, including
+            ``map_size``, ``frame_idx_fmt``, ``type_map``,
+            ``write_batch_size``, and ``overwrite``.
+        """
         self._to_any(data, file_name, **kwargs)
 
     def _to_any(self, data, file_name, **kwargs):
@@ -1417,13 +1441,54 @@ class LMDBFormat(Format):
                 )
 
     def from_system(self, file_name, **kwargs):
-        """Load data for a single System from an LMDB database."""
+        """Load the first composition group as a System.
+
+        Parameters
+        ----------
+        file_name : str, os.PathLike, or dict
+            LMDB directory, or an already decoded system-data dictionary used
+            internally by MultiSystems loading.
+        **kwargs : dict
+            Reader options accepted by :meth:`from_multi_systems`, including
+            ``mixed_type``, ``type_map``, and ``max_frames``.
+
+        Returns
+        -------
+        dict
+            Unlabeled data for the first composition group.
+
+        Warns
+        -----
+        UserWarning
+            If the database contains more than one composition. Use
+            :meth:`dpdata.MultiSystems.from_file` to load all groups.
+        """
         if isinstance(file_name, dict):
             return file_name
         return self._first_system(file_name, require_labeled=False, **kwargs)
 
     def from_labeled_system(self, file_name, **kwargs):
-        """Load data for a single LabeledSystem from an LMDB database."""
+        """Load the first composition group as a LabeledSystem.
+
+        Parameters
+        ----------
+        file_name : str, os.PathLike, or dict
+            LMDB directory, or an already decoded system-data dictionary used
+            internally by MultiSystems loading.
+        **kwargs : dict
+            Reader options accepted by :meth:`from_multi_systems`, including
+            ``mixed_type``, ``type_map``, and ``max_frames``.
+
+        Returns
+        -------
+        dict
+            Labeled data for the first composition group.
+
+        Raises
+        ------
+        LMDBFrameError
+            If the selected data has no energy labels.
+        """
         if isinstance(file_name, dict):
             return file_name
         return self._first_system(file_name, require_labeled=True, **kwargs)

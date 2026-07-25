@@ -43,17 +43,68 @@ def register_spin():
 @Format.register("deepmd")
 @Format.register("deepmd/raw")
 class DeePMDRawFormat(Format):
+    """DeePMD-kit raw text dataset directory.
+
+    A raw dataset stores atom types in ``type.raw`` and frame properties in
+    text files such as ``coord.raw``, ``box.raw``, ``energy.raw``, and
+    ``force.raw``. It is human-readable and convenient for inspection, but
+    ``deepmd/npy`` is usually smaller and faster for training.
+    """
+
     def from_system(self, file_name, type_map=None, **kwargs):
+        """Load an unlabeled DeePMD raw dataset.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            DeePMD raw dataset directory.
+        type_map : list[str], optional
+            Element names used when ``type_map.raw`` is absent, or a requested
+            ordering used to remap the stored atom types.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Unlabeled system data.
+        """
         register_spin()
         return dpdata.formats.deepmd.raw.to_system_data(
             file_name, type_map=type_map, labels=False
         )
 
     def to_system(self, data, file_name, **kwargs):
-        """Dump the system in deepmd raw format to directory `file_name`."""
+        """Write a System or LabeledSystem as DeePMD raw text files.
+
+        Parameters
+        ----------
+        data : dict
+            System or labeled-system data.
+        file_name : str or os.PathLike
+            Destination dataset directory.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+        """
         dpdata.formats.deepmd.raw.dump(file_name, data)
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
+        """Load a labeled DeePMD raw dataset.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            DeePMD raw dataset directory.
+        type_map : list[str], optional
+            Element names or requested type ordering used while loading.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled system data with all available registered fields.
+        """
         register_spin()
         return dpdata.formats.deepmd.raw.to_system_data(
             file_name, type_map=type_map, labels=True
@@ -65,7 +116,31 @@ class DeePMDRawFormat(Format):
 @Format.register("deepmd/npy")
 @Format.register("deepmd/comp")
 class DeePMDCompFormat(Format):
+    """DeePMD-kit NumPy dataset directory.
+
+    Commonly called ``deepmd/npy``, this layout keeps type metadata as raw
+    files and splits frame arrays among ``set.000``, ``set.001``, ...
+    directories containing ``.npy`` files. It is the standard efficient
+    on-disk format for DeePMD-kit training data.
+    """
+
     def from_system(self, file_name, type_map=None, **kwargs):
+        """Load an unlabeled DeePMD NumPy dataset.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            DeePMD NumPy dataset directory.
+        type_map : list[str], optional
+            Element names or requested type ordering used while loading.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Unlabeled system data.
+        """
         register_spin()
         return dpdata.formats.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=False
@@ -97,6 +172,22 @@ class DeePMDCompFormat(Format):
         )
 
     def from_labeled_system(self, file_name, type_map=None, **kwargs):
+        """Load a labeled DeePMD NumPy dataset.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            DeePMD NumPy dataset directory.
+        type_map : list[str], optional
+            Element names or requested type ordering used while loading.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled system data with all available registered fields.
+        """
         register_spin()
         return dpdata.formats.deepmd.comp.to_system_data(
             file_name, type_map=type_map, labels=True
@@ -107,10 +198,13 @@ class DeePMDCompFormat(Format):
 
 @Format.register("deepmd/npy/mixed")
 class DeePMDMixedFormat(Format):
-    """Mixed type numpy format for DeePMD-kit.
-    Under this format, systems with the same number of atoms but different formula can be put together
-    for a larger system, especially when the frame numbers in systems are sparse.
-    This also helps to mixture the type information together for model training with type embedding network.
+    """Mixed-type NumPy dataset for DeePMD-kit.
+
+    Unlike regular ``deepmd/npy``, this layout can combine frames that have
+    the same atom count but different formulas. Per-frame real atom types keep
+    each composition recoverable for models that use type embeddings. Optional
+    atom-count padding can reduce the number of output groups when a
+    :class:`dpdata.MultiSystems` contains many system sizes.
 
     Examples
     --------
@@ -202,6 +296,20 @@ class DeePMDMixedFormat(Format):
         )
 
     def from_multi_systems(self, directory, **kwargs):
+        """Find mixed-type DeePMD NumPy systems below a directory.
+
+        Parameters
+        ----------
+        directory : str or os.PathLike
+            Root directory containing one or more mixed datasets.
+        **kwargs : dict
+            Additional format arguments forwarded when each dataset is read.
+
+        Returns
+        -------
+        list[str]
+            Directories containing ``type_map.raw`` and mixed-type data.
+        """
         register_spin()
         sys_dir = []
         for root, dirs, files in os.walk(directory):
@@ -217,6 +325,12 @@ class DeePMDMixedFormat(Format):
 @Format.register("deepmd/hdf5")
 class DeePMDHDF5Format(Format):
     """HDF5 format for DeePMD-kit.
+
+    The layout stores the same type metadata and frame arrays as
+    ``deepmd/npy`` inside one HDF5 file. It supports unlabeled and labeled
+    systems, and top-level groups can hold multiple formulas for
+    :class:`dpdata.MultiSystems`. Inputs may be file paths, open HDF5 objects,
+    or strings such as ``"data.hdf5#group/path"`` that select a nested group.
 
     Examples
     --------
@@ -241,8 +355,8 @@ class DeePMDHDF5Format(Format):
         file_name : str or h5py.Group or h5py.File
             file name of the HDF5 file or HDF5 object. If it is a string,
             hashtag is used to split path to the HDF5 file and the HDF5 group
-        type_map : dict[str]
-            type map
+        type_map : list[str] or None
+            Element names used to map stored atom-type indices.
         labels : bool
             if Labeled
 
@@ -287,8 +401,8 @@ class DeePMDHDF5Format(Format):
         file_name : str or h5py.Group or h5py.File
             file name of the HDF5 file or HDF5 object. If it is a string,
             hashtag is used to split path to the HDF5 file and the HDF5 group
-        type_map : dict[str]
-            type map
+        type_map : list[str], optional
+            Element names used to map stored atom-type indices.
         **kwargs : dict
             other parameters
 
@@ -317,8 +431,8 @@ class DeePMDHDF5Format(Format):
         file_name : str or h5py.Group or h5py.File
             file name of the HDF5 file or HDF5 object. If it is a string,
             hashtag is used to split path to the HDF5 file and the HDF5 group
-        type_map : dict[str]
-            type map
+        type_map : list[str], optional
+            Element names used to map stored atom-type indices.
         **kwargs : dict
             other parameters
 
@@ -375,8 +489,9 @@ class DeePMDHDF5Format(Format):
             raise TypeError("Unsupported file_name")
 
     def from_multi_systems(self, directory: str, **kwargs) -> h5py.Group:
-        """Generate HDF5 groups from a HDF5 file, which will be
-        passed to `from_system`.
+        """Generate HDF5 groups from a HDF5 file.
+
+        The groups are passed to ``from_system``.
 
         Parameters
         ----------

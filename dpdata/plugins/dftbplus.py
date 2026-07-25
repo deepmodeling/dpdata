@@ -12,21 +12,12 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 @Format.register("dftbplus")
 class DFTBplusFormat(Format):
-    """The DFTBplusFormat class handles files in the DFTB+ format.
+    """DFTB+ input/output pair for one labeled molecular configuration.
 
-    This class provides a method to read DFTB+ files from a labeled system and
-    returns a dictionary containing various properties of the system.For more
-    information, please refer to the official documentation at the following URL:
-    https://dftbplus.org/documentation
-
-    Attributes
-    ----------
-        None
-
-    Methods
-    -------
-        from_labeled_system(file_paths, **kwargs): Reads system information from files.
-
+    Pass a tuple containing the DFTB+ input geometry file and output result
+    file. The reader combines symbols and coordinates from the input with the
+    energy and forces from the output. See the `DFTB+ documentation
+    <https://dftbplus.org/documentation>`_ for the underlying file formats.
     """
 
     def from_labeled_system(self, file_paths, **kwargs):

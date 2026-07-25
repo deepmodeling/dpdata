@@ -24,25 +24,27 @@ hessian_convert = HessianConversion("hartree/bohr^2", "eV/angstrom^2").value()
 
 
 def create_full_hessian(hessian_raw: list | np.ndarray, natoms: int) -> np.ndarray:
-    """
-    Reconstructs the full, symmetric Hessian matrix from a 1D array
-    containing its lower triangular elements.
+    """Reconstruct the full, symmetric Hessian matrix from a 1D array.
 
-    Args:
-        hessian_raw (list | np.ndarray): A 1D list or NumPy array containing the
-                                         lower triangular elements (including the
-                                         diagonal) of the Hessian matrix.
-        natoms (int): The number of atoms in the system.
+    The input contains the lower-triangular elements of the matrix.
+
+    Parameters
+    ----------
+    hessian_raw : list or np.ndarray
+        Lower-triangular Hessian elements, including the diagonal.
+    natoms : int
+        Number of atoms in the system.
 
     Returns
     -------
-    np.ndarray: A full, symmetric (3*natoms, 3*natoms) Hessian matrix.
+    np.ndarray
+        Full, symmetric ``(3 * natoms, 3 * natoms)`` Hessian matrix.
 
     Raises
     ------
-    ValueError: If the number of elements in `hessian_raw` does not match
-        the expected number for the lower triangle of a
-        (3*natoms, 3*natoms) matrix.
+    ValueError
+        If ``hessian_raw`` does not contain the expected number of elements
+        for the lower triangle of a ``(3 * natoms, 3 * natoms)`` matrix.
     """
     # Convert input to a NumPy array in case it's a list
     hessian_block = np.array(hessian_raw)

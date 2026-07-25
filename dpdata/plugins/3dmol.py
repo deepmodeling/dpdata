@@ -8,9 +8,11 @@ from dpdata.formats.xyz.xyz import coord_to_xyz
 
 @Format.register("3dmol")
 class Py3DMolFormat(Format):
-    """3DMol format.
+    """Interactive py3Dmol visualization for one System frame.
 
-    To use this format,  py3Dmol should be installed in advance.
+    This write-only in-memory adapter returns a configured py3Dmol viewer for
+    use in Jupyter notebooks. It does not serialize a data format. The
+    optional ``py3Dmol`` dependency is required.
     """
 
     def to_system(

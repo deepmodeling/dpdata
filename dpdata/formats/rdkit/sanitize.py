@@ -655,7 +655,6 @@ def super_sanitize_mol(mol, name=None, verbose=True):
 class Sanitizer:
     def __init__(self, level="medium", raise_errors=True, verbose=False):
         """Set up sanitizer.
-        --------.
 
         Parameters
         ----------

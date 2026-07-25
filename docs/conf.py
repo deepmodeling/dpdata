@@ -52,8 +52,13 @@ extensions = [
     "numpydoc",
     "myst_parser",
     "sphinxarg.ext",
-    "jupyterlite_sphinx",
 ]
+
+# JupyterLite needs micromamba to build its Emscripten environment. Allow
+# contributors to validate the regular Sphinx pages without that optional
+# toolchain while keeping the full Read the Docs build unchanged by default.
+if not os.environ.get("DPDATA_DOCS_SKIP_JUPYTERLITE"):
+    extensions.append("jupyterlite_sphinx")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -72,7 +77,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -191,7 +196,8 @@ def run_apidoc(_):
 
 
 def run_formats(_):
-    sp.check_output([sys.executable, "make_format.py"])
+    script = os.path.join(os.path.dirname(__file__), "make_format.py")
+    sp.check_output([sys.executable, script])
 
 
 def setup(app):
@@ -200,10 +206,8 @@ def setup(app):
 
 
 intersphinx_mapping = {
-    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
-    "python": ("https://docs.python.org/", None),
-    "ase": ("https://wiki.fysik.dtu.dk/ase/", None),
-    "monty": ("https://guide.materialsvirtuallab.org/monty/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "python": ("https://docs.python.org/3/", None),
     "h5py": ("https://docs.h5py.org/en/stable/", None),
 }
 

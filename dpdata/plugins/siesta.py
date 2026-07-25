@@ -7,7 +7,27 @@ from dpdata.format import Format
 
 @Format.register("siesta/output")
 class SiestaOutputFormat(Format):
+    """SIESTA single-step text output.
+
+    The format can be loaded as an unlabeled structure or as a labeled system
+    containing the energy, forces, and virial reported by SIESTA.
+    """
+
     def from_system(self, file_name, **kwargs):
+        """Load geometry from a SIESTA output file.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            SIESTA text output.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Unlabeled system data.
+        """
         data = {}
         (
             data["atom_names"],
@@ -22,6 +42,20 @@ class SiestaOutputFormat(Format):
         return data
 
     def from_labeled_system(self, file_name, **kwargs):
+        """Load geometry and labels from a SIESTA output file.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            SIESTA text output.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled system data with energy, forces, and virial.
+        """
         data = {}
         (
             data["atom_names"],
@@ -39,7 +73,27 @@ class SiestaOutputFormat(Format):
 @Format.register("siesta/aimd_output")
 @Format.register_from("from_siesta_aiMD_output")
 class SiestaAIMDOutputFormat(Format):
+    """SIESTA ab initio molecular-dynamics output.
+
+    This reader handles the multi-frame layout emitted by SIESTA AIMD runs and
+    can return either the trajectory geometry alone or all available labels.
+    """
+
     def from_system(self, file_name, **kwargs):
+        """Load geometry from a SIESTA AIMD output.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            SIESTA AIMD output file.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Unlabeled trajectory data.
+        """
         data = {}
         (
             data["atom_names"],
@@ -54,6 +108,20 @@ class SiestaAIMDOutputFormat(Format):
         return data
 
     def from_labeled_system(self, file_name, **kwargs):
+        """Load geometry and labels from a SIESTA AIMD output.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            SIESTA AIMD output file.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled trajectory data with energies, forces, and virials.
+        """
         data = {}
         (
             data["atom_names"],
