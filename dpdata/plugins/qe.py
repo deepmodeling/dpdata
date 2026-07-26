@@ -25,7 +25,7 @@ class QECPTrajFormat(Format):
 
         Parameters
         ----------
-        file_name : str or os.PathLike
+        file_name : str
             Common prefix of the CP input and trajectory files.
         begin : int, default=0
             Index of the first frame to load.
@@ -54,7 +54,7 @@ class QECPTrajFormat(Format):
 
         Parameters
         ----------
-        file_name : str or os.PathLike
+        file_name : str
             Common prefix of the CP input, trajectory, energy, and force files.
         begin : int, default=0
             Index of the first frame to load.
@@ -99,8 +99,10 @@ class QECPPWSCFFormat(Format):
 
         Parameters
         ----------
-        file_name : str or os.PathLike
-            Quantum ESPRESSO ``pw.x`` output file.
+        file_name : str or list[str]
+            Quantum ESPRESSO ``pw.x`` output file. The matching input file is
+            inferred by replacing ``out`` with ``in`` in the base name; pass
+            ``[input_file, output_file]`` to give both paths explicitly.
         **kwargs : dict
             Additional format arguments accepted for API compatibility.
 

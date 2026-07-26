@@ -179,7 +179,7 @@ def open_file(file: FileType, *args, **kwargs) -> Generator[io.IOBase, None, Non
     ----------
     file : file object or file path
         A file object or a file path.
-    *args : list
+    *args : tuple
         Positional arguments passed to :func:`open` for path inputs.
     **kwargs : dict
         Keyword arguments passed to :func:`open` for path inputs.
@@ -192,7 +192,7 @@ def open_file(file: FileType, *args, **kwargs) -> Generator[io.IOBase, None, Non
     Raises
     ------
     ValueError
-        If file is not a file object or a file
+        If file is neither a file object nor a file path.
 
     Examples
     --------

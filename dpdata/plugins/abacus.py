@@ -37,7 +37,7 @@ class AbacusSTRUFormat(Format):
 
         Parameters
         ----------
-        file_name : str or os.PathLike or file-like object
+        file_name : str or os.PathLike
             Input ``STRU`` file.
         **kwargs : dict
             Additional format arguments accepted for API compatibility.

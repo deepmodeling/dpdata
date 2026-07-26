@@ -25,7 +25,9 @@ class XYZFormat(Format):
 
     Examples
     --------
-    >>> s.to("xyz", "a.xyz")
+    >>> import dpdata
+    >>> system = dpdata.System("POSCAR", fmt="vasp/poscar")
+    >>> system.to("xyz", "a.xyz")
     """
 
     def to_system(self, data, file_name: FileType, **kwargs):

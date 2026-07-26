@@ -19,8 +19,8 @@ class AmberMDFormat(Format):
     programs for molecular dynamics simulations and analysis.
 
     Coordinates and topology are read from ``.nc`` and ``.parm7`` files.
-    Labeled loading additionally combines optional ``.mdfrc``, ``.mden``,
-    and ``.mdout`` files for forces, energies, and box information. The
+    Labeled loading additionally requires the ``.mdfrc`` force trajectory and
+    takes energies from either the ``.mden`` or the ``.mdout`` file. The
     ``parmed`` optional dependency is required.
     """
 
@@ -42,9 +42,10 @@ class AmberMDFormat(Format):
             Explicit AMBER topology file. Overrides the inferred path.
         nc_file : str, optional
             Explicit NetCDF trajectory file. Overrides the inferred path.
-        use_element_symbols : list[str] or bool, optional
-            Element-symbol information forwarded to the AMBER reader when
-            atom names cannot be inferred unambiguously from the topology.
+        use_element_symbols : list[int] or str, optional
+            Atoms whose element symbols are used instead of AMBER atom types,
+            given either as a list of atom indexes or as an AMBER mask string
+            selecting them.
         **kwargs : dict
             Additional format arguments accepted for API compatibility.
 
@@ -87,13 +88,18 @@ class AmberMDFormat(Format):
         nc_file : str, optional
             Explicit NetCDF coordinate trajectory.
         mdfrc_file : str, optional
-            Explicit force trajectory.
+            Explicit force trajectory. Required for labeled loading; inferred
+            from ``file_name`` when not given.
         mden_file : str, optional
-            Explicit energy file.
+            Explicit energy file. Used when present, otherwise ``mdout_file``
+            supplies the energies.
         mdout_file : str, optional
-            Explicit AMBER text output.
-        use_element_symbols : list[str] or bool, optional
-            Element-symbol information forwarded to the AMBER reader.
+            Explicit AMBER text output. Fallback energy source when
+            ``mden_file`` is absent.
+        use_element_symbols : list[int] or str, optional
+            Atoms whose element symbols are used instead of AMBER atom types,
+            given either as a list of atom indexes or as an AMBER mask string
+            selecting them.
         **kwargs : dict
             Additional format arguments accepted for API compatibility.
 
