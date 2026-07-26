@@ -205,7 +205,7 @@ uvx dpdata data.xyz -i extxyz -O deepmd_data -o deepmd/npy -t H C N O
 
 1. **Use `-i extxyz` explicitly** when working with `.xyz` files that contain extended XYZ data. Using `-i xyz` retains only atom species and coordinates, omitting per-frame properties such as energies, forces, and cell information.
 1. **Use `--multi` for any multi-frame extxyz file.** Without `--multi`, the CLI constructs a `LabeledSystem` that keeps only the first frame. This applies to all multi-frame trajectories, not just heterogeneous (mixed-composition) files. dpdata groups frames by chemical formula internally.
-1. **All alias names behave identically** — `-i mace/xyz`, `-i quip/gap/xyz`, `-i nequip/xyz`, and `-i extxyz` produce the same result.
+1. **All alias names behave identically** — `-i mace/xyz`, `-i nequip/xyz`, `-i gpumd/xyz`, `-i quip/gap/xyz`, `-i quip/gap/xyz_file`, and `-i extxyz` produce the same result.
 
 ## Tips
 
