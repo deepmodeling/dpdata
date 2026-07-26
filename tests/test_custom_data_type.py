@@ -56,8 +56,10 @@ class TestDataType(unittest.TestCase):
         self.assertEqual(repr(dt), expected)
 
     def test_check_tuple_dtype_error_message(self):
-        """Regression test for #989: a type mismatch against a tuple dtype must
-        raise a readable DataError, not AttributeError on ``tuple.__name__``.
+        """Regression test for #989.
+
+        A type mismatch against a tuple dtype must raise a readable DataError,
+        not AttributeError on ``tuple.__name__``.
         """
         dt = DataType("test", (list, np.ndarray), shape=(Axis.NFRAMES,))
         system = dpdata.System()
