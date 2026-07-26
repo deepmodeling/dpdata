@@ -9,6 +9,9 @@ from dpdata.format import Format
 class MolFormat(Format):
     """MDL Molfile containing one molecular graph and its conformers.
 
+    `RDKit <https://www.rdkit.org/>`_ is a collection of cheminformatics and
+    machine-learning tools.
+
     Reading and writing requires RDKit. Bond orders and formal charges are
     preserved through :class:`dpdata.BondOrderSystem` rather than the regular
     System classes.
@@ -60,6 +63,9 @@ class MolFormat(Format):
 @Format.register("sdf_file")
 class SdfFormat(Format):
     """Structure-data file (SDF) containing one or more conformers.
+
+    `RDKit <https://www.rdkit.org/>`_ provides cheminformatics capabilities
+    for SDF reading and writing.
 
     All records must describe the same molecular topology so they can be
     represented as conformers of one :class:`dpdata.BondOrderSystem`. Reading

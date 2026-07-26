@@ -22,6 +22,10 @@ if TYPE_CHECKING:
 class AbacusSTRUFormat(Format):
     """ABACUS structure file.
 
+    `ABACUS <https://abacus.ustc.edu.cn/>`_ (Atomic-orbital Based Ab-initio
+    Computation at UStc) is an open-source DFT package based on LCAO and
+    plane-wave basis sets.
+
     ``STRU`` stores the cell, species, coordinates, pseudopotential/orbital
     references, and optional movement or magnetic-moment fields for one
     ABACUS configuration. This format reads and writes unlabeled
@@ -138,6 +142,7 @@ def register_move_data(data):
 class AbacusSCFFormat(Format):
     """ABACUS self-consistent-field calculation directory.
 
+    `ABACUS <https://abacus.ustc.edu.cn/>`_ is an open-source DFT package.
     The reader combines the calculation's ``INPUT`` and ``STRU`` files with
     the corresponding ``OUT.<suffix>/running_scf.log`` output and returns the
     final labeled configuration.
@@ -173,6 +178,7 @@ class AbacusSCFFormat(Format):
 class AbacusMDFormat(Format):
     """ABACUS molecular-dynamics calculation directory.
 
+    `ABACUS <https://abacus.ustc.edu.cn/>`_ is an open-source DFT package.
     This format reads the trajectory and labels emitted by an ABACUS MD run,
     including optional force, virial, movement, and magnetic data.
     """
@@ -206,6 +212,7 @@ class AbacusMDFormat(Format):
 class AbacusRelaxFormat(Format):
     """ABACUS ionic- or cell-relaxation calculation directory.
 
+    `ABACUS <https://abacus.ustc.edu.cn/>`_ is an open-source DFT package.
     The reader reconstructs relaxation frames from the ABACUS log and saved
     ``STRU_ION*_D`` structures and attaches the available energies, forces,
     virials, movement flags, and magnetic data.

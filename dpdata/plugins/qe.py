@@ -10,6 +10,10 @@ from dpdata.format import Format
 class QECPTrajFormat(Format):
     """Quantum ESPRESSO CP trajectory files sharing a common prefix.
 
+    `Quantum ESPRESSO <https://www.quantum-espresso.org/>`_ is an integrated
+    suite of open-source codes for electronic-structure calculations based on
+    DFT, plane waves, and pseudopotentials.
+
     Given ``file_name='run'``, dpdata reads ``run.in`` together with the CP
     trajectory files rooted at ``run``. Loading as a labeled system also reads
     the matching energy and force records.
@@ -81,6 +85,9 @@ class QECPTrajFormat(Format):
 @Format.register("qe/pw/scf")
 class QECPPWSCFFormat(Format):
     """Quantum ESPRESSO PWscf self-consistent-field output.
+
+    `Quantum ESPRESSO <https://www.quantum-espresso.org/>`_ is an integrated
+    suite of open-source codes for DFT calculations.
 
     The reader extracts the final cell, coordinates, total energy, forces, and
     optional stress/virial from a ``pw.x`` text output.

@@ -10,6 +10,9 @@ from dpdata.formats.xyz.xyz import coord_to_xyz
 class Py3DMolFormat(Format):
     """Interactive py3Dmol visualization for one System frame.
 
+    `py3Dmol <https://3dmol.csb.pitt.edu/>`_ is a Jupyter/Python wrapper for
+    3Dmol.js for interactive 3D molecular visualization.
+
     This write-only in-memory adapter returns a configured py3Dmol viewer for
     use in Jupyter notebooks. It does not serialize a data format. The
     optional ``py3Dmol`` dependency is required.

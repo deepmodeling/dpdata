@@ -35,6 +35,9 @@ def register_hessian_data(data):
 class GaussianLogFormat(Format):
     """Gaussian text output containing energies, coordinates, and forces.
 
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package for molecules.
+
     Standard single-point or optimization output is read by default. Set
     ``md=True`` when the file contains a Gaussian molecular-dynamics run.
     """
@@ -67,8 +70,10 @@ class GaussianLogFormat(Format):
 class GaussianFChkFormat(Format):
     """Gaussian formatted checkpoint (``.fchk``) file.
 
-    Formatted checkpoint files provide molecular geometry and energy and may
-    also contain gradients and Cartesian force constants (the Hessian).
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package. Formatted checkpoint files provide molecular geometry
+    and energy and may also contain gradients and Cartesian force constants
+    (the Hessian).
     """
 
     def from_labeled_system(
@@ -106,8 +111,9 @@ class GaussianFChkFormat(Format):
 class GaussianMDFormat(Format):
     """Gaussian molecular-dynamics text output.
 
-    This alias uses the Gaussian log reader with multi-frame MD parsing
-    enabled.
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package. This alias uses the Gaussian log reader with
+    multi-frame MD parsing enabled.
     """
 
     def from_labeled_system(self, file_name: FileType, **kwargs):
@@ -132,9 +138,11 @@ class GaussianMDFormat(Format):
 class GaussiaGJFFormat(Format):
     """Gaussian input (``.gjf``/``.com``) file.
 
-    The reader extracts the molecular geometry from an input deck. The writer
-    creates a Gaussian job for the supplied frames using keyword arguments
-    documented by :func:`dpdata.formats.gaussian.gjf.make_gaussian_input`.
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package. The reader extracts the molecular geometry from an
+    input deck. The writer creates a Gaussian job for the supplied frames
+    using keyword arguments documented by
+    :func:`dpdata.formats.gaussian.gjf.make_gaussian_input`.
     """
 
     def from_system(self, file_name: FileType, **kwargs):

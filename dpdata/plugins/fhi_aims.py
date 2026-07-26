@@ -9,6 +9,9 @@ from dpdata.format import Format
 class FhiMDFormat(Format):
     """FHI-aims molecular-dynamics or multi-step output.
 
+    `FHI-aims <https://fhi-aims.org/>`_ is an all-electron electronic
+    structure code based on numeric atom-centered orbitals.
+
     The text-output reader extracts geometries, energies, forces, and optional
     virials from converged FHI-aims calculation steps.
     """
@@ -64,9 +67,11 @@ class FhiMDFormat(Format):
 class FhiSCFFormat(Format):
     """FHI-aims single-point self-consistent-field output.
 
-    The text reader loads the calculation geometry, total energy, forces, and
-    an optional virial into one :class:`dpdata.LabeledSystem` frame. Use
-    ``fhi_aims/output`` for molecular-dynamics or other multi-step output.
+    `FHI-aims <https://fhi-aims.org/>`_ is an all-electron electronic
+    structure code. The text reader loads the calculation geometry, total
+    energy, forces, and an optional virial into one
+    :class:`dpdata.LabeledSystem` frame. Use ``fhi_aims/output`` for
+    molecular-dynamics or other multi-step output.
     """
 
     def from_labeled_system(self, file_name, **kwargs):

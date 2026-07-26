@@ -21,6 +21,9 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 class PSI4OutFormat(Format):
     """Psi4 energy and gradient output.
 
+    `Psi4 <https://psicode.org/>`_ is an open-source quantum chemistry program
+    package.
+
     The reader creates one nonperiodic :class:`dpdata.LabeledSystem` frame
     containing atomic coordinates, the total energy, and forces converted from
     the Cartesian gradient. Both energy and gradient sections must be present
@@ -65,6 +68,8 @@ class PSI4OutFormat(Format):
 @Format.register("psi4/inp")
 class PSI4InputFormat(Format):
     """Psi4 input file for a single molecular configuration.
+
+    `Psi4 <https://psicode.org/>`_ is an open-source quantum chemistry program.
 
     The writer emits the molecule, charge, multiplicity, requested electronic-
     structure method, and basis set. Psi4 input is write-only in dpdata; use

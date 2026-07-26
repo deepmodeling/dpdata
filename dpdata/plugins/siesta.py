@@ -9,6 +9,10 @@ from dpdata.format import Format
 class SiestaOutputFormat(Format):
     """SIESTA single-step text output.
 
+    `SIESTA <https://siesta-project.org/>`_ (Spanish Initiative for
+    Electronic Simulations with Thousands of Atoms) is an open-source DFT
+    package based on linear-scaling methods and LCAO basis sets.
+
     The format can be loaded as an unlabeled structure or as a labeled system
     containing the energy, forces, and virial reported by SIESTA.
     """
@@ -74,6 +78,10 @@ class SiestaOutputFormat(Format):
 @Format.register_from("from_siesta_aiMD_output")
 class SiestaAIMDOutputFormat(Format):
     """SIESTA ab initio molecular-dynamics output.
+
+    `SIESTA <https://siesta-project.org/>`_ (Spanish Initiative for
+    Electronic Simulations with Thousands of Atoms) is an open-source DFT
+    package based on LCAO basis sets.
 
     This reader handles the multi-frame layout emitted by SIESTA AIMD runs and
     can return either the trajectory geometry alone or all available labels.

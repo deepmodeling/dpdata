@@ -21,6 +21,9 @@ if TYPE_CHECKING:
 class PwmatOutputFormat(Format):
     """PWmat ``MOVEMENT``/``OUT.MLMD`` labeled trajectory.
 
+    `PWmat <https://www.pwmat.com/>`_ is a plane-wave based DFT
+    electronic-structure calculation software using GPU acceleration.
+
     These output files contain a sequence of cells and coordinates together
     with energies and optional force or virial labels. The reader supports
     frame subsampling and convergence filtering.
@@ -82,6 +85,9 @@ class PwmatOutputFormat(Format):
 @Format.register("pwmat/final.config")
 class PwmatAtomconfigFormat(Format):
     """PWmat ``atom.config`` or ``final.config`` structure file.
+
+    `PWmat <https://www.pwmat.com/>`_ is a plane-wave DFT software using GPU
+    acceleration.
 
     The format stores a cell and one atomic configuration. Reading and writing
     normalize the cell to dpdata's lower-triangular convention.

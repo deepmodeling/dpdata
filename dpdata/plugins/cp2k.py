@@ -20,6 +20,9 @@ https://robinzyb.github.io/cp2kdata/
 class CP2KAIMDOutputFormat(Format):
     """CP2K AIMD calculation directory.
 
+    `CP2K <https://www.cp2k.org/>`_ is a quantum chemistry and solid state
+    physics software package that can perform atomistic simulations.
+
     The reader pairs the first ``*pos*.xyz`` trajectory with the first CP2K
     ``.log`` file in the directory and extracts coordinates, cells, energies,
     forces, and virials where available.
@@ -55,9 +58,11 @@ class CP2KAIMDOutputFormat(Format):
 class CP2KOutputFormat(Format):
     """Single CP2K output file containing coordinates and calculation labels.
 
-    This legacy reader targets standard CP2K text output. For newer or
-    unsupported CP2K layouts, use the separately maintained ``cp2kdata``
-    plugin referenced by the warning raised on parse failure.
+    `CP2K <https://www.cp2k.org/>`_ is a quantum chemistry and solid state
+    physics software package. This legacy reader targets standard CP2K text
+    output. For newer or unsupported CP2K layouts, use the separately
+    maintained ``cp2kdata`` plugin referenced by the warning raised on parse
+    failure.
     """
 
     def from_labeled_system(self, file_name, restart=False, **kwargs):

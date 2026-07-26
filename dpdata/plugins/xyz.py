@@ -87,6 +87,13 @@ class XYZFormat(Format):
 class QuipGapXYZFormat(Format):
     """Extended XYZ used by QUIP/GAP and atomistic ML tools.
 
+    `QUIP/GAP <https://libatoms.github.io/QUIP/>`_ provides a Gaussian
+    Approximation Potential framework, while `MACE
+    <https://github.com/ACEsuit/mace>`_, `NequIP
+    <https://github.com/mir-group/nequip>`_, and `GPUMD
+    <https://github.com/brucefan1983/GPUMD>`_ are modern machine-learning
+    interatomic potential packages.
+
     The comment-line ``Lattice`` and ``Properties`` metadata can store cells,
     energies, forces, virials, and per-atom fields. A single file may contain
     multiple frames and formulas, so the format supports

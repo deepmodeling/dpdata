@@ -15,6 +15,9 @@ if TYPE_CHECKING:
 class GromacsGroFormat(Format):
     """GROMACS ``.gro`` structure or trajectory file.
 
+    `GROMACS <https://www.gromacs.org/>`_ is a versatile package for
+    molecular dynamics simulations.
+
     GRO stores atom names, Cartesian coordinates, an optional velocity block,
     and a periodic box. dpdata reads one or more concatenated frames and can
     write either a selected frame or the complete trajectory.

@@ -11,6 +11,9 @@ from dpdata.format import Format
 class PyMatgenStructureFormat(Format):
     """In-memory pymatgen ``Structure`` objects for periodic systems.
 
+    `pymatgen <https://pymatgen.org/>`_ (Python Materials Genomics) is a
+    robust, open-source Python library for materials analysis.
+
     This adapter converts without writing a file and requires the optional
     ``pymatgen`` dependency. Writing a multi-frame System returns one
     ``Structure`` object per frame.
@@ -70,6 +73,9 @@ class PyMatgenStructureFormat(Format):
 @Format.register("pymatgen/molecule")
 class PyMatgenMoleculeFormat(Format):
     """In-memory pymatgen ``Molecule`` objects for nonperiodic systems.
+
+    `pymatgen <https://pymatgen.org/>`_ (Python Materials Genomics) is a
+    robust, open-source Python library for materials analysis.
 
     Periodic boundary conditions are removed during conversion. The optional
     ``pymatgen`` dependency is required, and writing returns one ``Molecule``
@@ -132,6 +138,9 @@ class PyMatgenMoleculeFormat(Format):
 @Format.register_to("to_pymatgen_ComputedStructureEntry")
 class PyMatgenCSEFormat(Format):
     """In-memory pymatgen ``ComputedStructureEntry`` objects.
+
+    `pymatgen <https://pymatgen.org/>`_ (Python Materials Genomics) is a
+    robust, open-source Python library for materials analysis.
 
     This write-only labeled adapter creates one entry per frame and places
     forces and virials in the entry's ``data`` mapping. The optional

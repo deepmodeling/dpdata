@@ -45,10 +45,12 @@ def register_spin():
 class DeePMDRawFormat(Format):
     """DeePMD-kit raw text dataset directory.
 
-    A raw dataset stores atom types in ``type.raw`` and frame properties in
-    text files such as ``coord.raw``, ``box.raw``, ``energy.raw``, and
-    ``force.raw``. It is human-readable and convenient for inspection, but
-    ``deepmd/npy`` is usually smaller and faster for training.
+    `DeePMD-kit <https://github.com/deepmodeling/deepmd-kit>`_ is a deep
+    learning package for training interatomic potentials. A raw dataset stores
+    atom types in ``type.raw`` and frame properties in text files such as
+    ``coord.raw``, ``box.raw``, ``energy.raw``, and ``force.raw``. It is
+    human-readable and convenient for inspection, but ``deepmd/npy`` is
+    usually smaller and faster for training.
     """
 
     def from_system(self, file_name, type_map=None, **kwargs):
@@ -118,10 +120,12 @@ class DeePMDRawFormat(Format):
 class DeePMDCompFormat(Format):
     """DeePMD-kit NumPy dataset directory.
 
-    Commonly called ``deepmd/npy``, this layout keeps type metadata as raw
-    files and splits frame arrays among ``set.000``, ``set.001``, ...
-    directories containing ``.npy`` files. It is the standard efficient
-    on-disk format for DeePMD-kit training data.
+    `DeePMD-kit <https://github.com/deepmodeling/deepmd-kit>`_ is a deep
+    learning package for training interatomic potentials. Commonly called
+    ``deepmd/npy``, this layout keeps type metadata as raw files and splits
+    frame arrays among ``set.000``, ``set.001``, ... directories containing
+    ``.npy`` files. It is the standard efficient on-disk format for DeePMD-kit
+    training data.
     """
 
     def from_system(self, file_name, type_map=None, **kwargs):
@@ -200,9 +204,11 @@ class DeePMDCompFormat(Format):
 class DeePMDMixedFormat(Format):
     """Mixed-type NumPy dataset for DeePMD-kit.
 
-    Unlike regular ``deepmd/npy``, this layout can combine frames that have
-    the same atom count but different formulas. Per-frame real atom types keep
-    each composition recoverable for models that use type embeddings. Optional
+    `DeePMD-kit <https://github.com/deepmodeling/deepmd-kit>`_ is a deep
+    learning package for training interatomic potentials. Unlike regular
+    ``deepmd/npy``, this layout can combine frames that have the same atom
+    count but different formulas. Per-frame real atom types keep each
+    composition recoverable for models that use type embeddings. Optional
     atom-count padding can reduce the number of output groups when a
     :class:`dpdata.MultiSystems` contains many system sizes.
 
@@ -326,7 +332,9 @@ class DeePMDMixedFormat(Format):
 class DeePMDHDF5Format(Format):
     """HDF5 format for DeePMD-kit.
 
-    The layout stores the same type metadata and frame arrays as
+    `DeePMD-kit <https://github.com/deepmodeling/deepmd-kit>`_ is a deep
+    learning package for training interatomic potentials. The layout stores
+    the same type metadata and frame arrays as
     ``deepmd/npy`` inside one HDF5 file. It supports unlabeled and labeled
     systems, and top-level groups can hold multiple formulas for
     :class:`dpdata.MultiSystems`. Inputs may be file paths, open HDF5 objects,
@@ -540,6 +548,9 @@ class DeePMDHDF5Format(Format):
 @Format.register("deepmd/hdf5/mixed")
 class DeePMDHDF5MixedFormat(DeePMDMixedFormat):
     """Mixed type HDF5 format for DeePMD-kit.
+
+    `DeePMD-kit <https://github.com/deepmodeling/deepmd-kit>`_ is a deep
+    learning package for training interatomic potentials.
 
     Mixed type data stores frames with the same atom count in one dataset even
     when their formulas differ. The placeholder ``type.raw`` contains only the

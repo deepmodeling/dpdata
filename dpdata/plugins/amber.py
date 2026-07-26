@@ -15,6 +15,9 @@ from dpdata.utils import open_file
 class AmberMDFormat(Format):
     """AMBER molecular-dynamics trajectory and label files.
 
+    `AMBER <https://ambermd.org/>`_ is a suite of biomolecular simulation
+    programs for molecular dynamics simulations and analysis.
+
     Coordinates and topology are read from ``.nc`` and ``.parm7`` files.
     Labeled loading additionally combines optional ``.mdfrc``, ``.mden``,
     and ``.mdout`` files for forces, energies, and box information. The
@@ -119,6 +122,10 @@ class AmberMDFormat(Format):
 class SQMOutFormat(Format):
     """AmberTools SQM output from a semiempirical calculation.
 
+    `AmberTools <https://ambermd.org/AmberTools.php>`_ is a collection of
+    complementary tools for AMBER simulations. SQM implements semiempirical
+    quantum-mechanical methods.
+
     The same file can be loaded as an unlabeled system, or as a labeled system
     when the output contains gradients that can be converted to forces.
     """
@@ -153,6 +160,9 @@ class SQMOutFormat(Format):
 @Format.register("sqm/in")
 class SQMINFormat(Format):
     """AmberTools SQM input for semiempirical calculations.
+
+    `AmberTools <https://ambermd.org/AmberTools.php>`_ provides the SQM
+    module for semiempirical QM calculations.
 
     This write-only format serializes one nonperiodic System frame with its
     charge, multiplicity, semiempirical method, and minimization-cycle limit.

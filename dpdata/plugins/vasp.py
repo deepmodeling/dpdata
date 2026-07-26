@@ -35,6 +35,9 @@ def register_move_data(data):
 class VASPPoscarFormat(Format):
     """VASP POSCAR or CONTCAR structure file.
 
+    `VASP <https://www.vasp.at/>`_ (Vienna Ab initio Simulation Package) is
+    a computer program for atomic scale materials modelling.
+
     POSCAR/CONTCAR stores one periodic configuration and optional selective
     dynamics flags. It does not contain energies or forces, so it maps to
     :class:`dpdata.System` rather than :class:`dpdata.LabeledSystem`.
@@ -87,6 +90,9 @@ class VASPPoscarFormat(Format):
 class VASPStringFormat(Format):
     """In-memory VASP POSCAR text representation.
 
+    `VASP <https://www.vasp.at/>`_ (Vienna Ab initio Simulation Package) is
+    a computer program for atomic scale materials modelling.
+
     Unlike ``vasp/poscar``, this write-only helper returns the POSCAR content
     as a string instead of writing it to a file.
     """
@@ -112,6 +118,9 @@ class VASPStringFormat(Format):
 @Format.register("vasp/outcar")
 class VASPOutcarFormat(Format):
     """VASP ``OUTCAR`` labeled trajectory.
+
+    `VASP <https://www.vasp.at/>`_ (Vienna Ab initio Simulation Package) is
+    a computer program for atomic scale materials modelling.
 
     The reader extracts ionic-step cells, coordinates, energies, forces, and
     virials. It supports frame subsampling, convergence filtering, and
@@ -213,6 +222,9 @@ class VASPOutcarFormat(Format):
 @Format.register("vasp/xml")
 class VASPXMLFormat(Format):
     """VASP ``vasprun.xml`` labeled trajectory.
+
+    `VASP <https://www.vasp.at/>`_ (Vienna Ab initio Simulation Package) is
+    a computer program for atomic scale materials modelling.
 
     XML output contains structured ionic-step cells, coordinates, energies,
     forces, and stresses and is useful when text ``OUTCAR`` parsing is not

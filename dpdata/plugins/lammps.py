@@ -43,6 +43,9 @@ def register_charge(data: dict) -> None:
 class LAMMPSLmpFormat(Format):
     """LAMMPS data file describing one simulation snapshot.
 
+    `LAMMPS <https://www.lammps.org/>`_ (Large-scale Atomic/Molecular
+    Massively Parallel Simulator) is a classical molecular dynamics code.
+
     The reader supports common ``Atoms`` styles, including atomic, charge,
     full, molecular, dipole, and sphere layouts. A ``type_map`` is usually
     needed because LAMMPS data files store numeric atom types rather than
@@ -142,6 +145,9 @@ class LAMMPSLmpFormat(Format):
 @Format.register("lammps/dump")
 class LAMMPSDumpFormat(Format):
     """LAMMPS text dump trajectory.
+
+    `LAMMPS <https://www.lammps.org/>`_ (Large-scale Atomic/Molecular
+    Massively Parallel Simulator) is a classical molecular dynamics code.
 
     The reader handles scaled, unscaled, wrapped, and image-flag coordinates,
     supports frame subsampling, and can use a LAMMPS input file to resolve

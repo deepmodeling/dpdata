@@ -19,6 +19,9 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 class ORCASPOutFormat(Format):
     """ORCA single-point energy and gradient output.
 
+    `ORCA <https://orcaforum.kofo.mpg.de/>`_ is an ab initio quantum chemistry
+    program package for molecular calculations.
+
     The reader creates one nonperiodic :class:`dpdata.LabeledSystem` frame
     containing atomic coordinates, the total energy, and forces converted from
     the Cartesian gradient. Both energy and gradient sections must be present
