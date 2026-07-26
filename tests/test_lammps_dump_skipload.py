@@ -91,6 +91,12 @@ class TestLmpDumpFrameSelection(unittest.TestCase):
             dump.load_file(self.dump_file, f_idx=[-1])
         with self.assertRaisesRegex(IndexError, "out of range"):
             dump.load_file(self.dump_file, f_idx=[5])
+        with self.assertRaisesRegex(TypeError, "only integers"):
+            dump.load_file(self.dump_file, f_idx=["a"])
+        with self.assertRaisesRegex(TypeError, "only integers"):
+            dump.load_file(self.dump_file, f_idx=[True])
+        with self.assertRaisesRegex(TypeError, "an iterable of integers"):
+            dump.load_file(self.dump_file, f_idx=1.5)
 
     def test_frame_indices_are_mutually_exclusive_with_slice(self):
         with self.assertRaisesRegex(ValueError, "cannot be combined"):
