@@ -187,6 +187,17 @@ def _get_frames_lower(fp, fname, begin=0, step=1, ml=False, convergence_check=Tr
                 cc += 1
                 continue
             if energy is None:
+                # Reaching here normally just means the trailing timing report
+                # after the last ionic step. Only an interrupted run leaves a
+                # block that had started emitting step data, and nothing after
+                # it can be read either, since the block splitter keys on the
+                # energy token.
+                if len(coord) > 0 or len(cell) > 0 or len(force) > 0:
+                    warnings.warn(
+                        f"no energy found in frame {cc + 1}; it and any frame "
+                        "after it are not read. This usually means the "
+                        "calculation was interrupted before it finished writing."
+                    )
                 break
             if nwrite == 0:
                 has_label = len(force) > 0 and len(coord) > 0 and len(cell) > 0
