@@ -26,6 +26,17 @@ class UnwrapWarning(UserWarning):
 warnings.simplefilter("once", UnwrapWarning)
 
 
+def _is_data_line(line):
+    """Tell payload lines apart from blanks and ``#`` comments.
+
+    LAMMPS itself never writes either, but concatenated or post-processed
+    trajectories often carry them, and every consumer of a block parses its
+    lines as numbers.
+    """
+    stripped = line.strip()
+    return bool(stripped) and not stripped.startswith("#")
+
+
 def _get_block(lines, key):
     for idx in range(len(lines)):
         if ("ITEM: " + key) in lines[idx]:
@@ -37,7 +48,7 @@ def _get_block(lines, key):
     idx_e = idx
     if idx_e == len(lines) - 1:
         idx_e += 1
-    return lines[idx_s:idx_e], lines[idx_s - 1]
+    return [ii for ii in lines[idx_s:idx_e] if _is_data_line(ii)], lines[idx_s - 1]
 
 
 def get_atype(lines, type_idx_zero=False):
@@ -279,10 +290,64 @@ def get_spin(lines, spin_keys):
         return None
 
 
+def _describe_incomplete_frame(frame_lines):
+    """Return why a dump frame is unusable, or ``None`` when it is intact.
+
+    A run killed mid-write leaves a final frame whose sections are missing or
+    short. Reporting that here keeps the failure legible instead of surfacing
+    as a ragged-array error deep inside the coordinate readers.
+    """
+    for key in ("NUMBER OF ATOMS", "BOX BOUNDS", "ATOMS"):
+        if not any(("ITEM: " + key) in ii for ii in frame_lines):
+            return f"missing the 'ITEM: {key}' section"
+
+    natoms_blk, _ = _get_block(frame_lines, "NUMBER OF ATOMS")
+    if not natoms_blk:
+        return "empty 'ITEM: NUMBER OF ATOMS' section"
+    try:
+        natoms = int(natoms_blk[0])
+    except ValueError:
+        return f"unparsable atom count {natoms_blk[0].strip()!r}"
+
+    box_blk, _ = _get_block(frame_lines, "BOX BOUNDS")
+    if len(box_blk) < 3:
+        return f"only {len(box_blk)} of 3 box bound lines"
+
+    atoms_blk, head = _get_block(frame_lines, "ATOMS")
+    if len(atoms_blk) != natoms:
+        return f"{len(atoms_blk)} atom lines for {natoms} atoms"
+    ncols = len(head.split()) - 2
+    for ii in atoms_blk:
+        if len(ii.split()) < ncols:
+            return f"truncated atom line {ii.strip()!r}"
+    return None
+
+
+def _drop_incomplete_frames(array_lines):
+    """Keep the intact frames, warning once per frame that is dropped."""
+    kept = []
+    for idx, frame_lines in enumerate(array_lines):
+        reason = _describe_incomplete_frame(frame_lines)
+        if reason is None:
+            kept.append(frame_lines)
+        else:
+            warnings.warn(
+                f"incomplete frame {idx} in the dump file ({reason}); it is ignored"
+            )
+    return kept
+
+
 def system_data(
     lines, type_map=None, type_idx_zero=True, unwrap=False, input_file=None
 ):
     array_lines = split_traj(lines)
+    if array_lines is None:
+        raise RuntimeError(
+            "no 'ITEM: TIMESTEP' marker found; this is not a LAMMPS dump file"
+        )
+    array_lines = _drop_incomplete_frames(array_lines)
+    if not array_lines:
+        raise RuntimeError("no complete frame found in the dump file")
     lines = array_lines[0]
     system = {}
     system["atom_numbs"] = get_natoms_vec(lines)
@@ -342,17 +407,11 @@ def split_traj(dump_lines):
             marks.append(idx)
     if len(marks) == 0:
         return None
-    elif len(marks) == 1:
-        return [dump_lines]
-    else:
-        block_size = marks[1] - marks[0]
-        ret = []
-        for ii in marks:
-            ret.append(dump_lines[ii : ii + block_size])
-        # for ii in range(len(marks)-1):
-        #     assert(marks[ii+1] - marks[ii] == block_size)
-        return ret
-    return None
+    # Slice every frame at the next marker instead of reusing the first
+    # frame's length. A truncated final frame, or any extra line anywhere in
+    # the file, otherwise shifts each later frame out of alignment.
+    bounds = [*marks, len(dump_lines)]
+    return [dump_lines[bounds[ii] : bounds[ii + 1]] for ii in range(len(marks))]
 
 
 def from_system_data(system, f_idx=0, timestep=0):
