@@ -499,7 +499,8 @@ class DeePMDHDF5Format(Format):
     def from_multi_systems(self, directory: str, **kwargs) -> h5py.Group:
         """Generate HDF5 groups from a HDF5 file.
 
-        The groups are passed to ``from_system``.
+        Each group is passed to :meth:`from_labeled_system`, or to
+        :meth:`from_system` when the caller loads with ``labeled=False``.
 
         Parameters
         ----------
