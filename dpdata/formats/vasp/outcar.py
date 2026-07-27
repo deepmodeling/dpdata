@@ -28,6 +28,77 @@ def atom_name_from_potcar_string(instr: str) -> str:
         return instr
 
 
+# VASP echoes the POSCAR title into a fixed-width field, so a long formula is
+# cut off; anything reaching the full width may have lost its last species.
+_POSCAR_TITLE_WIDTH = 40
+_FORMULA_TOKEN = re.compile(r"^([A-Z][a-z]?)(\d*)$")
+
+
+def formula_from_poscar_title(title: str) -> list[str] | None:
+    """Read the species order out of a POSCAR title, if it is a formula.
+
+    The title is free-form text, so this returns ``None`` unless every token
+    reads as an element symbol with an optional count -- ``Li3 F39 K3`` yields
+    ``["Li", "F", "K"]``, while ``POSCAR file written by OVITO`` yields
+    ``None``. A title filling the whole field is treated as truncated and its
+    final token is dropped.
+
+    Parameters
+    ----------
+    title : str
+        the text following ``POSCAR =`` in the OUTCAR
+
+    Returns
+    -------
+    Optional[list[str]]
+        element symbols in POSCAR order, or None if the title is not a formula
+    """
+    from dpdata.periodic_table import ELEMENTS
+
+    truncated = len(title.rstrip()) >= _POSCAR_TITLE_WIDTH
+    tokens = title.split()
+    if truncated:
+        tokens = tokens[:-1]
+    if len(tokens) < 2:
+        # A single symbol cannot disagree on ordering, and a one-word title is
+        # far more likely to be prose than a formula.
+        return None
+    names = []
+    for token in tokens:
+        matched = _FORMULA_TOKEN.match(token)
+        if matched is None or matched.group(1) not in ELEMENTS:
+            return None
+        names.append(matched.group(1))
+    return names
+
+
+def check_potcar_poscar_order(atom_names: list[str], poscar_title: str | None) -> None:
+    """Warn when the POTCAR species order contradicts the POSCAR title.
+
+    VASP pairs the ``ions per type`` counts, which come from the POSCAR, with
+    the species order of the POTCAR. When the two files disagree, VASP neither
+    reorders nor complains, so every count silently lands on the wrong element
+    and dpdata faithfully reports the mislabeled system. Say so loudly.
+    """
+    if poscar_title is None:
+        return
+    title_names = formula_from_poscar_title(poscar_title)
+    if title_names is None:
+        return
+    shared = min(len(title_names), len(atom_names))
+    if title_names[:shared] == atom_names[:shared]:
+        return
+    warnings.warn(
+        "the POTCAR species order in this OUTCAR "
+        f"({' '.join(atom_names[:shared])}) does not match the POSCAR title "
+        f"({' '.join(title_names[:shared])}). VASP assigns the 'ions per type' "
+        "counts by POTCAR order, so the atom names reported here are what VASP "
+        "actually computed; if that is not what you intended, the POTCAR was "
+        "concatenated in a different order than the POSCAR lists its species "
+        "and the calculation itself used the wrong potentials."
+    )
+
+
 def system_info(
     lines: list[str],
     type_idx_zero: bool = False,
@@ -59,6 +130,7 @@ def system_info(
     atom_numbs = None
     nelm = None
     nwrite = None
+    poscar_title = None
     for ii in lines:
         if "TITEL" in ii:
             # get atom names from POTCAR info, tested only for PAW_PBE ...
@@ -79,6 +151,12 @@ def system_info(
             m = re.search(r"NWRITE\s*=\s*(\d+)", ii)
             if m:
                 nwrite = int(m.group(1))
+        if poscar_title is None:
+            # the POSCAR title echoed among the start parameters, e.g.
+            # POSCAR =  Li3 F39 K3 Mg3 Ca3 Na3 Al10 O6
+            m = re.match(r"\s*POSCAR\s*=\s?(.*)$", ii)
+            if m:
+                poscar_title = m.group(1)
         if "ions per type" in ii:
             atom_numbs_ = [int(s) for s in ii.split()[4:]]
             if atom_numbs is None:
@@ -103,6 +181,7 @@ def system_info(
             f"Please try to convert data from vasprun.xml instead."
         )
     atom_names = atom_names[: len(atom_numbs)]
+    check_potcar_poscar_order(atom_names, poscar_title)
     atom_types = []
     for idx, ii in enumerate(atom_numbs):
         for jj in range(ii):
