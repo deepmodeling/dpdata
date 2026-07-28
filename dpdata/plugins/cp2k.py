@@ -25,14 +25,19 @@ def _find_single_file(directory, pattern, description, hint):
     ``IndexError`` from subscripting the empty match list, which says neither
     what was looked for nor where.
     """
-    matches = sorted(glob.glob(os.path.join(directory, pattern)))
+    # Only ``pattern`` is a glob. Escaping the directory keeps valid names
+    # such as ``run[1]`` from being interpreted as character classes.
+    matches = sorted(
+        glob.glob(os.path.join(glob.escape(os.fspath(directory)), pattern))
+    )
     if not matches:
-        listing = sorted(os.listdir(directory)) if os.path.isdir(directory) else None
-        found = (
-            f" The directory contains: {', '.join(listing) or '(nothing)'}."
-            if listing is not None
-            else f" {directory!r} is not a directory."
-        )
+        if not os.path.exists(directory):
+            found = f" {directory!r} does not exist."
+        elif not os.path.isdir(directory):
+            found = f" {directory!r} is not a directory."
+        else:
+            listing = sorted(os.listdir(directory))
+            found = f" The directory contains: {', '.join(listing) or '(nothing)'}."
         raise FileNotFoundError(
             f"cp2k/aimd_output found no {description} matching {pattern!r} in "
             f"{directory!r}.{found} {hint}"

@@ -32,6 +32,12 @@ class TestCp2kAimdMissingInputs(unittest.TestCase):
         system = dpdata.LabeledSystem(self.work, fmt="cp2k/aimd_output")
         self.assertGreater(system.get_nframes(), 0)
 
+    def test_directory_glob_metacharacters_are_literal(self):
+        bracketed = os.path.join(self.tmp_dir, "aimd[1]")
+        shutil.copytree(FIXTURE, bracketed)
+        system = dpdata.LabeledSystem(bracketed, fmt="cp2k/aimd_output")
+        self.assertGreater(system.get_nframes(), 0)
+
     def test_missing_trajectory_names_the_pattern(self):
         self._remove("DPGEN-pos-1.xyz")
         with self.assertRaises(FileNotFoundError) as caught:
@@ -61,7 +67,7 @@ class TestCp2kAimdMissingInputs(unittest.TestCase):
         absent = os.path.join(self.tmp_dir, "absent")
         with self.assertRaises(FileNotFoundError) as caught:
             dpdata.LabeledSystem(absent, fmt="cp2k/aimd_output")
-        self.assertIn("is not a directory", str(caught.exception))
+        self.assertIn("does not exist", str(caught.exception))
 
 
 if __name__ == "__main__":
