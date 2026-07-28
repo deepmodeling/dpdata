@@ -23,7 +23,9 @@ jobs:
 
         import dpdata
 
-        system = dpdata.System("tests/poscars/POSCAR.h2o.md")
+        system = dpdata.System(
+            "tests/poscars/POSCAR.h2o.md", fmt="vasp/poscar"
+        )
         with tempfile.TemporaryDirectory() as tmpdir:
             filename = Path(tmpdir) / "system.yaml"
             system.dump(filename)

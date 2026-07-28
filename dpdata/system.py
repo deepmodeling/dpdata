@@ -335,8 +335,10 @@ class System:
         """Dump a JSON, YAML, or MessagePack file."""
         from dpdata.serialization import _detect_format, dumpfn
 
-        kwargs = {"indent": indent} if _detect_format(filename) != "mpk" else {}
-        dumpfn(self.as_dict(), filename, **kwargs)
+        if _detect_format(filename) == "mpk":
+            dumpfn(self.as_dict(), filename)
+        else:
+            dumpfn(self.as_dict(), filename, indent=indent)
 
     def map_atom_types(
         self, type_map: dict[str, int] | list[str] | None = None
