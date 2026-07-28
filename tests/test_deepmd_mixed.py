@@ -22,6 +22,7 @@ from dpdata.data_type import (
     DataError,
     DataType,
 )
+from dpdata.plugins.deepmd import DeePMDMixedFormat
 
 
 class TestMixedMultiSystemsUnlabeled(unittest.TestCase):
@@ -48,6 +49,11 @@ class TestMixedMultiSystemsUnlabeled(unittest.TestCase):
                     fmt="deepmd/npy/mixed",
                 )
 
+            with self.assertRaisesRegex(DataError, "energies not found in data\\. For"):
+                dpdata.MultiSystems().from_fmt_obj(
+                    DeePMDMixedFormat(), mixed_dir, labeled=True
+                )
+
             # The explicit, discoverable flag selects ordinary System objects.
             systems = dpdata.MultiSystems.from_file(
                 mixed_dir, fmt="deepmd/npy/mixed", labeled=False
@@ -62,6 +68,19 @@ class TestMixedMultiSystemsUnlabeled(unittest.TestCase):
         )
         np.testing.assert_allclose(loaded.data["cells"], system.data["cells"])
         np.testing.assert_allclose(loaded.data["coords"], system.data["coords"])
+
+    def test_unrelated_mixed_data_error_does_not_suggest_unlabeled_loading(self):
+        class CorruptMixedFormat(DeePMDMixedFormat):
+            def from_multi_systems(self, directory, **kwargs):
+                yield directory
+
+            def from_labeled_system_mix(self, file_name, type_map=None, **kwargs):
+                raise DataError("force.npy is truncated")
+
+        with self.assertRaisesRegex(DataError, "force.npy is truncated") as caught:
+            dpdata.MultiSystems().from_fmt_obj(CorruptMixedFormat(), "mixed")
+
+        self.assertNotIn("labeled=False", str(caught.exception))
 
 
 class TestMixedMultiSystemsDumpLoad(

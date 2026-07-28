@@ -1389,16 +1389,17 @@ class MultiSystems:
     def from_fmt_obj(
         self, fmtobj: Format, directory, labeled: bool = True, **kwargs: Any
     ):
-        if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
-            for dd in fmtobj.from_multi_systems(directory, **kwargs):
-                if labeled:
-                    system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
-                else:
-                    system = System().from_fmt_obj(fmtobj, dd, **kwargs)
-                system.sort_atom_names()
-                self.append(system)
-            return self
-        else:
+        try:
+            if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
+                for dd in fmtobj.from_multi_systems(directory, **kwargs):
+                    if labeled:
+                        system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
+                    else:
+                        system = System().from_fmt_obj(fmtobj, dd, **kwargs)
+                    system.sort_atom_names()
+                    self.append(system)
+                return self
+
             system_list = []
             for dd in fmtobj.from_multi_systems(directory, **kwargs):
                 if labeled:
@@ -1411,6 +1412,16 @@ class MultiSystems:
                         system_list.append(System(data=data_item, **kwargs))
             self.append(*system_list)
             return self
+        except DataError as exc:
+            if (
+                labeled
+                and isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat)
+                and str(exc) == "energies not found in data"
+            ):
+                raise DataError(
+                    f"{exc}. For coordinate-only mixed datasets, pass labeled=False."
+                ) from exc
+            raise
 
     def to_fmt_obj(self, fmtobj: Format, directory, *args: Any, **kwargs: Any):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
@@ -1544,16 +1555,7 @@ class MultiSystems:
         """
         assert fmt is not None
         fmt = fmt.lower()
-        try:
-            return self.from_fmt_obj(
-                load_format(fmt), file_name, labeled=labeled, **kwargs
-            )
-        except DataError as exc:
-            if labeled and fmt in {"deepmd/npy/mixed", "deepmd/hdf5/mixed"}:
-                raise DataError(
-                    f"{exc} For coordinate-only mixed datasets, pass labeled=False."
-                ) from exc
-            raise
+        return self.from_fmt_obj(load_format(fmt), file_name, labeled=labeled, **kwargs)
 
     def get_nframes(self) -> int:
         """Returns number of frames in all systems."""
