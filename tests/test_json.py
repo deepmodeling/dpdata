@@ -68,6 +68,34 @@ class TestJsonDumpLoad(unittest.TestCase, CompLabeledSys, IsPBC):
         self.v_places = 4
 
 
+class TestYamlDumpLoad(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
+        self.filename = os.path.join(self.tmpdir.name, "h2o.md.yaml")
+        self.system_1.dump(self.filename)
+        self.system_2 = dpdata.LabeledSystem.load(self.filename)
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+
+class TestMessagePackDumpLoad(unittest.TestCase, CompLabeledSys, IsPBC):
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
+        self.filename = os.path.join(self.tmpdir.name, "h2o.md.mpk")
+        self.system_1.dump(self.filename)
+        self.system_2 = dpdata.LabeledSystem.load(self.filename)
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+
 class TestSerialization(unittest.TestCase):
     def test_detect_format_uses_final_meaningful_suffix(self):
         self.assertEqual(_detect_format("data.mpk.gz"), "mpk")

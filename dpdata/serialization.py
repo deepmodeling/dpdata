@@ -5,6 +5,7 @@ import datetime
 import gzip
 import importlib
 import json
+import lzma
 from enum import Enum
 from pathlib import Path
 from typing import Any, BinaryIO, TextIO, cast
@@ -17,7 +18,7 @@ def _detect_format(filename: str | Path, fmt: str | None = None) -> str:
     if fmt is not None:
         return fmt
     suffixes = [suffix.lower() for suffix in Path(filename).suffixes]
-    if suffixes and suffixes[-1] in {".gz", ".z", ".bz2"}:
+    if suffixes and suffixes[-1] in {".gz", ".z", ".bz2", ".xz", ".lzma"}:
         suffixes.pop()
     suffix = suffixes[-1] if suffixes else ""
     if suffix == ".mpk":
@@ -34,6 +35,8 @@ def _open_text(filename: str | Path, mode: str) -> TextIO:
         return cast("TextIO", gzip.open(path, mode, encoding="utf-8"))
     if lower_path.endswith(".bz2"):
         return cast("TextIO", bz2.open(path, mode, encoding="utf-8"))
+    if lower_path.endswith((".xz", ".lzma")):
+        return cast("TextIO", lzma.open(path, mode, encoding="utf-8"))
     return cast("TextIO", open(path, mode, encoding="utf-8"))
 
 
@@ -44,6 +47,8 @@ def _open_binary(filename: str | Path, mode: str) -> BinaryIO:
         return cast("BinaryIO", gzip.open(path, mode))
     if lower_path.endswith(".bz2"):
         return cast("BinaryIO", bz2.open(path, mode))
+    if lower_path.endswith((".xz", ".lzma")):
+        return cast("BinaryIO", lzma.open(path, mode))
     return cast("BinaryIO", open(path, mode))
 
 

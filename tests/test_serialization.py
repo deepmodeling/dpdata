@@ -52,6 +52,8 @@ class TestDetectFormat(unittest.TestCase):
             ("data.yaml.gz", "yaml"),
             ("data.mpk.bz2", "mpk"),
             ("data.json.z", "json"),
+            ("data.yaml.xz", "yaml"),
+            ("data.mpk.lzma", "mpk"),
             ("data.gz", "json"),
         ):
             with self.subTest(name=name):
@@ -69,7 +71,14 @@ class TestCompressedStreams(unittest.TestCase):
         return os.path.join(self.tmp_dir, name)
 
     def test_text_roundtrip_through_each_codec(self):
-        for name in ("plain.txt", "gzipped.gz", "packed.z", "squeezed.bz2"):
+        for name in (
+            "plain.txt",
+            "gzipped.gz",
+            "packed.z",
+            "squeezed.bz2",
+            "compressed.xz",
+            "legacy.lzma",
+        ):
             with self.subTest(name=name):
                 path = self._path(name)
                 with _open_text(path, "wt") as fp:
@@ -78,7 +87,14 @@ class TestCompressedStreams(unittest.TestCase):
                     self.assertEqual(fp.read(), "hello")
 
     def test_binary_roundtrip_through_each_codec(self):
-        for name in ("plain.bin", "gzipped.gz", "packed.z", "squeezed.bz2"):
+        for name in (
+            "plain.bin",
+            "gzipped.gz",
+            "packed.z",
+            "squeezed.bz2",
+            "compressed.xz",
+            "legacy.lzma",
+        ):
             with self.subTest(name=name):
                 path = self._path(name)
                 with _open_binary(path, "wb") as fp:
@@ -91,6 +107,13 @@ class TestCompressedStreams(unittest.TestCase):
         dumpfn({"a": 1}, path)
         with open(path, "rb") as fp:
             self.assertEqual(fp.read(2), b"\x1f\x8b")
+        self.assertEqual(loadfn(path), {"a": 1})
+
+    def test_xz_files_are_compressed_and_round_trip(self):
+        path = self._path("compressed.json.xz")
+        dumpfn({"a": 1}, path)
+        with open(path, "rb") as fp:
+            self.assertEqual(fp.read(6), b"\xfd7zXZ\x00")
         self.assertEqual(loadfn(path), {"a": 1})
 
 
