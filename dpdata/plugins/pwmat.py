@@ -89,8 +89,8 @@ class PwmatAtomconfigFormat(Format):
     `PWmat <https://www.pwmat.com/>`_ is a plane-wave DFT software using GPU
     acceleration.
 
-    The format stores a cell and one atomic configuration. Reading and writing
-    normalize the cell to dpdata's lower-triangular convention.
+    The format stores a cell and one atomic configuration. Reading normalizes
+    the cell to dpdata's lower-triangular convention.
     """
 
     @Format.post("rot_lower_triangular")

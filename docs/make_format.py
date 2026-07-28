@@ -143,12 +143,39 @@ read_source_overrides = {
     "AmberMDFormat": '"trajectory_prefix"',
     "ASEStructureFormat": "atoms",
     "CP2KAIMDOutputFormat": '"calculation_directory"',
-    "DFTBplusFormat": '("geometry.gen", "detailed.out")',
+    "DFTBplusFormat": '("dftb_in.hsd", "detailed.out")',
     "OPENMXFormat": '"system_name_prefix"',
     "PyMatgenMoleculeFormat": "molecule",
     "PyMatgenStructureFormat": "structure",
     "QECPTrajFormat": '"trajectory_prefix"',
     "QuipGapXYZFormat": '"data.xyz"',
+}
+
+read_source_setups = {
+    "ASEStructureFormat": [
+        "from ase import Atoms",
+        "",
+        'atoms = Atoms("H")',
+    ],
+    "PyMatgenMoleculeFormat": [
+        "from pymatgen.core import Molecule",
+        "",
+        'molecule = Molecule(["H"], [[0.0, 0.0, 0.0]])',
+    ],
+    "PyMatgenStructureFormat": [
+        "from pymatgen.core import Lattice, Structure",
+        "",
+        "structure = Structure(",
+        '    Lattice.cubic(1.0), ["H"], [[0.0, 0.0, 0.0]]',
+        ")",
+    ],
+}
+
+write_variable_setups = {
+    "system": 'system = dpdata.System("input_file")',
+    "labeled_system": 'labeled_system = dpdata.LabeledSystem("input_file")',
+    "bond_order_system": 'bond_order_system = dpdata.BondOrderSystem("input_file")',
+    "systems": 'systems = dpdata.MultiSystems(dpdata.System("input_file"))',
 }
 
 internal_parameters = {
@@ -204,6 +231,22 @@ def get_method_obj(format_cls: type[Format], method: str):
     ):
         return getattr(format_cls, "to_system")
     return getattr(format_cls, method)
+
+
+def get_method_docstring(
+    format_cls: type[Format], method: str, method_obj
+) -> str | None:
+    """Return only implementation-owned documentation for a conversion.
+
+    ``MultiMode`` can advertise the inherited base implementations, whose
+    docstrings are instructions for plugin authors rather than user-facing
+    format documentation. The one intentional fallback is a ``to_system``
+    implementation reused for labeled systems.
+    """
+    implemented_here = method in format_cls.__dict__ or (
+        method == "to_labeled_system" and "to_system" in format_cls.__dict__
+    )
+    return method_obj.__doc__ if implemented_here else None
 
 
 def get_user_parameters(
@@ -270,6 +313,10 @@ def append_quick_examples(
     """Append copyable examples for every supported dpdata object type."""
     alias = get_primary_alias(format_cls, aliases)
     lines = ["import dpdata", ""]
+    setup = read_source_setups.get(format_cls.__name__)
+    if setup is not None:
+        lines.extend([*setup, ""])
+    defined_variables = set()
 
     read_examples = [
         ("from_system", "Geometry-only data", "system", "dpdata.System"),
@@ -298,6 +345,7 @@ def append_quick_examples(
                 "",
             ]
         )
+        defined_variables.add(variable)
 
     if "from_multi_systems" in methods:
         method_obj = get_method_obj(format_cls, "from_multi_systems")
@@ -309,6 +357,7 @@ def append_quick_examples(
                 "",
             ]
         )
+        defined_variables.add("systems")
 
     write_examples = [
         ("to_system", "system", "Write geometry-only data"),
@@ -331,6 +380,15 @@ def append_quick_examples(
         arguments, has_location = get_write_arguments(method_obj, method)
         call_args = ", ".join([f'"{alias}"', *arguments])
         call = f"{variable}.to({call_args})"
+        if variable not in defined_variables:
+            lines.extend(
+                [
+                    f"# Load or construct the {variable.replace('_', ' ')} to write",
+                    write_variable_setups[variable],
+                    "",
+                ]
+            )
+            defined_variables.add(variable)
         lines.append(f"# {comment}")
         if has_location:
             lines.append(call)
@@ -403,7 +461,7 @@ def generate_sub_format_pages(formats: dict):
                 buff.append("`" * len(buff[-1]))
             buff.append("")
             method_obj = get_method_obj(format_cls, method)
-            docstring = method_obj.__doc__
+            docstring = get_method_docstring(format_cls, method, method_obj)
             if docstring is not None:
                 docstring = cleandoc(docstring)
             method_signature = signature(method_obj)
