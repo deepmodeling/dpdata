@@ -76,6 +76,17 @@ class TestLmpDumpIncomplete(unittest.TestCase):
         self.assertEqual(system.get_nframes(), reference.get_nframes())
         np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
 
+    def test_blank_lines_are_ignored(self):
+        atoms = [i for i, ll in enumerate(self.lines) if ll.startswith("ITEM: ATOMS")]
+        separated = list(self.lines)
+        for offset, idx in enumerate(atoms):
+            separated.insert(idx + 1 + offset, "")
+        path = self._write("blank_lines.dump", separated)
+        system = self._load(path)
+        reference = self._load(SOURCE)
+        self.assertEqual(system.get_nframes(), reference.get_nframes())
+        np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
+
     def test_no_usable_frame_raises(self):
         starts = [i for i, ll in enumerate(self.lines) if "ITEM: TIMESTEP" in ll]
         path = self._write("headers_only.dump", self.lines[: starts[0] + 4])

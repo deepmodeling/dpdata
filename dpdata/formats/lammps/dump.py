@@ -192,13 +192,14 @@ def load_file(fname: FileType, begin=0, step=1):
     cc = -1
     with open_file(fname) as fp:
         while True:
-            line = fp.readline().rstrip("\n")
-            if not line:
+            raw_line = fp.readline()
+            if raw_line == "":
                 if cc >= begin and (cc - begin) % step == 0:
                     lines += buff
                     buff = []
                 cc += 1
                 return lines
+            line = raw_line.rstrip("\n")
             if "ITEM: TIMESTEP" in line:
                 if cc >= begin and (cc - begin) % step == 0:
                     lines += buff
