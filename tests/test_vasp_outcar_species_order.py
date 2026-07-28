@@ -134,6 +134,17 @@ class TestOutcarOrderMismatch(unittest.TestCase):
         self.assertEqual(len(messages), 1)
         self.assertIn("does not match the POSCAR title", messages[0])
 
+    def test_poscar_separator_padding_is_not_part_of_title(self):
+        # VASP commonly emits multiple spaces after ``POSCAR =``. They are
+        # separator padding, not part of the fixed-width title field used to
+        # decide whether the last formula token was truncated.
+        padded = list(self.lines)
+        title = next(i for i, line in enumerate(padded) if "POSCAR =" in line)
+        padded[title] = " POSCAR =   H11111111111111111111111111111111111 O"
+        _, messages = self._load(padded)
+        self.assertEqual(len(messages), 1)
+        self.assertIn("does not match the POSCAR title", messages[0])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -154,7 +154,7 @@ def system_info(
         if poscar_title is None:
             # the POSCAR title echoed among the start parameters, e.g.
             # POSCAR =  Li3 F39 K3 Mg3 Ca3 Na3 Al10 O6
-            m = re.match(r"\s*POSCAR\s*=\s?(.*)$", ii)
+            m = re.match(r"\s*POSCAR\s*=\s*(.*)$", ii)
             if m:
                 poscar_title = m.group(1)
         if "ions per type" in ii:
