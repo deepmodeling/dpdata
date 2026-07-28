@@ -461,10 +461,14 @@ class System:
                     slice(None) for _ in self.data[tt.name].shape
                 ]
                 new_shape[axis_nframes] = f_idx
-                # A slice produces a NumPy view, while advanced indexing
-                # produces a copy.  Deep-copy the result so ownership is
-                # consistent for every supported frame selector.
-                tmp.data[tt.name] = deepcopy(self.data[tt.name][tuple(new_shape)])
+                # Advanced indexing already produces an independent array.
+                # Copy only slice results that still share storage, avoiding a
+                # second full memcpy for permutations and index lists.
+                source = self.data[tt.name]
+                selected = source[tuple(new_shape)]
+                if np.shares_memory(selected, source):
+                    selected = selected.copy()
+                tmp.data[tt.name] = selected
             else:
                 # Frame-independent values (atom names/types, ``orig``, and
                 # optional metadata) are usually lists or arrays.  Copy them
