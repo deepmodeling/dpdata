@@ -21,7 +21,7 @@ from comp_sys import (
 from context import dpdata
 
 from dpdata.data_type import Axis, DataError, DataType
-from dpdata.formats.lmdb.format import (
+from dpdata.formats.deepmd.lmdb.format import (
     LMDBError,
     LMDBFrameError,
     LMDBMetadataError,
@@ -52,8 +52,8 @@ class TestLMDBLabeledSystem(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         self.system_1 = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
         self.lmdb_path = "tmp_labeled.lmdb"
-        self.system_1.to("lmdb", self.lmdb_path)
-        self.system_2 = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        self.system_1.to("deepmd/lmdb", self.lmdb_path)
+        self.system_2 = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -68,8 +68,8 @@ class TestLMDBSystem(unittest.TestCase, CompSys, IsPBC):
     def setUp(self):
         self.system_1 = dpdata.System("poscars/POSCAR.h2o.md", fmt="vasp/poscar")
         self.lmdb_path = "tmp_system.lmdb"
-        self.system_1.to("lmdb", self.lmdb_path)
-        self.system_2 = dpdata.System(self.lmdb_path, fmt="lmdb")
+        self.system_1.to("deepmd/lmdb", self.lmdb_path)
+        self.system_2 = dpdata.System(self.lmdb_path, fmt="deepmd/lmdb")
         self.places = 6
         self.e_places = 6
         self.f_places = 6
@@ -96,8 +96,8 @@ class TestLMDBMultiSystems(unittest.TestCase, CompLabeledMultiSys, MSAllIsNoPBC)
         self.ms_1 = dpdata.MultiSystems(system_1, system_2, system_3)
         for system in self.ms_1:
             system.sort_atom_types()
-        self.ms_1.to("lmdb", self.lmdb_path)
-        self.ms_2 = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        self.ms_1.to("deepmd/lmdb", self.lmdb_path)
+        self.ms_2 = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
 
         self.places = 6
         self.e_places = 6
@@ -109,13 +109,51 @@ class TestLMDBMultiSystems(unittest.TestCase, CompLabeledMultiSys, MSAllIsNoPBC)
             shutil.rmtree(self.lmdb_path)
 
 
+class TestLMDBLegacyAlias(unittest.TestCase):
+    """The legacy ``lmdb`` alias and its ``from_lmdb``/``to_lmdb`` methods
+    must remain equivalent to the canonical ``deepmd/lmdb`` name.
+    """
+
+    def setUp(self):
+        self.system = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
+        self.canonical_path = "tmp_alias_canonical.lmdb"
+        self.legacy_path = "tmp_alias_legacy.lmdb"
+
+    def tearDown(self):
+        for path in (self.canonical_path, self.legacy_path):
+            if os.path.exists(path):
+                shutil.rmtree(path)
+
+    def test_alias_methods_exist(self):
+        self.assertTrue(hasattr(self.system, "to_lmdb"))
+        self.assertTrue(hasattr(self.system, "to_deepmd_lmdb"))
+
+    def test_legacy_alias_round_trip(self):
+        self.system.to("lmdb", self.legacy_path)
+        loaded = dpdata.LabeledSystem(self.legacy_path, fmt="deepmd/lmdb")
+        np.testing.assert_allclose(loaded["energies"], self.system["energies"])
+        np.testing.assert_allclose(loaded["forces"], self.system["forces"])
+
+    def test_canonical_read_via_legacy_alias(self):
+        self.system.to("deepmd/lmdb", self.canonical_path)
+        loaded = dpdata.LabeledSystem(self.canonical_path, fmt="lmdb")
+        np.testing.assert_allclose(loaded["energies"], self.system["energies"])
+        np.testing.assert_allclose(loaded["forces"], self.system["forces"])
+
+    def test_to_lmdb_from_lmdb_methods(self):
+        self.system.to_lmdb(self.legacy_path)
+        loaded = dpdata.LabeledSystem().from_lmdb(self.legacy_path)
+        np.testing.assert_allclose(loaded["energies"], self.system["energies"])
+        np.testing.assert_allclose(loaded["forces"], self.system["forces"])
+
+
 class TestLMDBOnDiskFormat(unittest.TestCase):
     """The on-disk layout must match the DeePMD-kit / reference converters."""
 
     def setUp(self):
         self.lmdb_path = "tmp_format.lmdb"
         self.system = dpdata.LabeledSystem("poscars/OUTCAR.h2o.md", fmt="vasp/outcar")
-        self.system.to("lmdb", self.lmdb_path)
+        self.system.to("deepmd/lmdb", self.lmdb_path)
 
     def tearDown(self):
         if os.path.exists(self.lmdb_path):
@@ -184,7 +222,7 @@ class TestLMDBMixedTypeRead(unittest.TestCase):
         )
         self.ms = dpdata.MultiSystems(s1, s2)
         self.type_map = ["H", "C", "N", "O"]
-        self.ms.to("lmdb", self.lmdb_path, type_map=self.type_map)
+        self.ms.to("deepmd/lmdb", self.lmdb_path, type_map=self.type_map)
 
     def tearDown(self):
         if os.path.exists(self.lmdb_path):
@@ -193,7 +231,9 @@ class TestLMDBMixedTypeRead(unittest.TestCase):
     def test_mixed_preserves_full_type_map(self):
         # via MultiSystems the element order is normalized (sorted), but the
         # full type_map set must be preserved on every system.
-        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", mixed_type=True)
+        ms = dpdata.MultiSystems.from_file(
+            self.lmdb_path, fmt="deepmd/lmdb", mixed_type=True
+        )
         for ss in ms:
             names = [str(n) for n in ss.data["atom_names"]]
             self.assertEqual(sorted(names), sorted(self.type_map))
@@ -205,15 +245,15 @@ class TestLMDBMixedTypeRead(unittest.TestCase):
         path = "tmp_mixed_single.lmdb"
         try:
             s = dpdata.LabeledSystem("gaussian/methane.gaussianlog", fmt="gaussian/log")
-            s.to("lmdb", path, type_map=self.type_map)
-            ls = dpdata.LabeledSystem(path, fmt="lmdb", mixed_type=True)
+            s.to("deepmd/lmdb", path, type_map=self.type_map)
+            ls = dpdata.LabeledSystem(path, fmt="deepmd/lmdb", mixed_type=True)
             self.assertEqual([str(n) for n in ls.data["atom_names"]], self.type_map)
         finally:
             if os.path.exists(path):
                 shutil.rmtree(path)
 
     def test_standard_compresses_type_map(self):
-        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         # methane only contains C and H, not N/O
         for ss in ms:
             self.assertNotIn("N", ss.data["atom_names"])
@@ -231,7 +271,7 @@ class TestLMDBTypeMapOverride(unittest.TestCase):
 
     def test_explicit_type_map(self):
         type_map = ["H", "He", "Li", "Be", "B", "C", "N", "O"]
-        self.system.to("lmdb", self.lmdb_path, type_map=type_map)
+        self.system.to("deepmd/lmdb", self.lmdb_path, type_map=type_map)
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             with env.begin() as txn:
                 meta = msgpack.unpackb(txn.get(b"__metadata__"), raw=False)
@@ -248,11 +288,11 @@ class TestLMDBTypeMapOverride(unittest.TestCase):
         self.assertEqual(decoded, expected)
 
     def test_missing_element_raises(self):
-        from dpdata.formats.lmdb.format import LMDBError
+        from dpdata.formats.deepmd.lmdb.format import LMDBError
 
         # water needs O and H; this type_map omits O.
         with self.assertRaises(LMDBError):
-            self.system.to("lmdb", self.lmdb_path, type_map=["H", "He"])
+            self.system.to("deepmd/lmdb", self.lmdb_path, type_map=["H", "He"])
 
 
 class TestLMDBReferenceFormatInterop(unittest.TestCase):
@@ -305,14 +345,14 @@ class TestLMDBReferenceFormatInterop(unittest.TestCase):
             shutil.rmtree(self.lmdb_path)
 
     def test_read_reference(self):
-        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(ms.get_nframes(), 2)
         self.assertEqual(len(ms), 2)
         # composition-based grouping: water (3 atoms) + methane (5 atoms)
         self.assertEqual(sorted(s.get_natoms() for s in ms), [3, 5])
 
     def test_read_reference_values(self):
-        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         water = next(s for s in ms if s.get_natoms() == 3)
         # Frames are canonicalized by global type while coordinates and labels
         # follow the same stable permutation.
@@ -405,7 +445,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H", "O"])
         ms = dpdata.MultiSystems.from_file(
-            self.lmdb_path, fmt="lmdb", type_map=["O", "N", "C", "H"]
+            self.lmdb_path, fmt="deepmd/lmdb", type_map=["O", "N", "C", "H"]
         )
         s = ms[0]
         names = [str(s.data["atom_names"][t]) for t in s.data["atom_types"]]
@@ -421,11 +461,11 @@ class TestLMDBReadRobustness(unittest.TestCase):
             }
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["O", "H"])
-        from dpdata.formats.lmdb.format import LMDBError
+        from dpdata.formats.deepmd.lmdb.format import LMDBError
 
         with self.assertRaises(LMDBError):
             dpdata.MultiSystems.from_file(
-                self.lmdb_path, fmt="lmdb", type_map=["C", "N"]
+                self.lmdb_path, fmt="deepmd/lmdb", type_map=["C", "N"]
             )
 
     def test_inconsistent_keys_raise(self):
@@ -449,7 +489,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["O", "H"])
         with self.assertRaisesRegex(LMDBFrameError, "must contain identical fields"):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
 
     def test_single_system_multi_composition_warns(self):
         frames = [
@@ -468,7 +508,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["C", "H"])
         with self.assertWarns(UserWarning):
-            ls = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+            ls = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         # only the first composition is returned
         self.assertEqual(ls.get_natoms(), 3)
 
@@ -494,7 +534,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H", "O"])
-        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(len(ms), 1)
         system = ms[0]
         self.assertEqual(system.get_nframes(), 2)
@@ -524,7 +564,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["O", "H"])
         with self.assertRaisesRegex(LMDBFrameError, "must contain identical fields"):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
 
     def test_max_frames_guard(self):
         frames = [
@@ -539,9 +579,11 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         with self.assertRaisesRegex(LMDBError, "exceeding max_frames"):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", max_frames=1)
+            dpdata.MultiSystems.from_file(
+                self.lmdb_path, fmt="deepmd/lmdb", max_frames=1
+            )
         loaded = dpdata.MultiSystems.from_file(
-            self.lmdb_path, fmt="lmdb", max_frames=None, labeled=False
+            self.lmdb_path, fmt="deepmd/lmdb", max_frames=None, labeled=False
         )
         self.assertEqual(loaded.get_nframes(), 2)
 
@@ -561,7 +603,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
-        system = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")[0]
+        system = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")[0]
         self.assertEqual(system["coords"].dtype.str, ">f8")
         self.assertEqual(system["cells"].dtype.str, ">f8")
         self.assertEqual(system["energies"].dtype.str, ">f8")
@@ -580,7 +622,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
-        dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+        dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb", labeled=False)
         dtype = next(dt for dt in dpdata.System.DTYPES if dt.name == "fparam")
         shape = dtype.shape
         self.assertIsNotNone(shape)
@@ -617,7 +659,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
                 ]
                 _write_raw_lmdb(self.lmdb_path, frames, ["H", "O"])
                 system = dpdata.MultiSystems.from_file(
-                    self.lmdb_path, fmt="lmdb", labeled=False
+                    self.lmdb_path, fmt="deepmd/lmdb", labeled=False
                 )[0]
                 np.testing.assert_array_equal(system["aparam"], expected)
                 registered = next(
@@ -638,7 +680,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         system = dpdata.MultiSystems.from_file(
-            self.lmdb_path, fmt="lmdb", labeled=False
+            self.lmdb_path, fmt="deepmd/lmdb", labeled=False
         )[0]
         self.assertIn("spins", system.data)
         self.assertNotIn("spin", system.data)
@@ -663,7 +705,9 @@ class TestLMDBReadRobustness(unittest.TestCase):
             },
         )
         with self.assertRaisesRegex(LMDBMetadataError, "changes its protocol shape"):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+            dpdata.MultiSystems.from_file(
+                self.lmdb_path, fmt="deepmd/lmdb", labeled=False
+            )
 
     def test_data_name_hint_must_match_registered_protocol(self):
         frames = [
@@ -680,7 +724,9 @@ class TestLMDBReadRobustness(unittest.TestCase):
             metadata_extra={"dp_data_names": {"foo": "spins"}},
         )
         with self.assertRaises(LMDBMetadataError) as context:
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+            dpdata.MultiSystems.from_file(
+                self.lmdb_path, fmt="deepmd/lmdb", labeled=False
+            )
         self.assertIn("foo", str(context.exception))
         self.assertIn("spins", str(context.exception))
 
@@ -694,7 +740,9 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         with self.assertRaisesRegex(LMDBFrameError, "reserved LMDB key 'coord'"):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+            dpdata.MultiSystems.from_file(
+                self.lmdb_path, fmt="deepmd/lmdb", labeled=False
+            )
 
     def test_unknown_atomic_axis_inferred_across_atom_counts(self):
         frames = [
@@ -711,7 +759,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         systems = dpdata.MultiSystems.from_file(
-            self.lmdb_path, fmt="lmdb", labeled=False
+            self.lmdb_path, fmt="deepmd/lmdb", labeled=False
         )
         self.assertEqual(systems.get_nframes(), 2)
         dtype = next(dt for dt in dpdata.System.DTYPES if dt.name == "mystery")
@@ -734,7 +782,9 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H", "O"])
         with self.assertRaisesRegex(LMDBFrameError, "ambiguous without dp_data_shapes"):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+            dpdata.MultiSystems.from_file(
+                self.lmdb_path, fmt="deepmd/lmdb", labeled=False
+            )
 
     def test_process_global_schema_conflict_raises(self):
         second_path = "tmp_robust_second.lmdb"
@@ -755,9 +805,13 @@ class TestLMDBReadRobustness(unittest.TestCase):
             ]
             _write_raw_lmdb(self.lmdb_path, first_frames, ["H"])
             _write_raw_lmdb(second_path, second_frames, ["H"])
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+            dpdata.MultiSystems.from_file(
+                self.lmdb_path, fmt="deepmd/lmdb", labeled=False
+            )
             with self.assertRaisesRegex(LMDBError, "process-global definition"):
-                dpdata.MultiSystems.from_file(second_path, fmt="lmdb", labeled=False)
+                dpdata.MultiSystems.from_file(
+                    second_path, fmt="deepmd/lmdb", labeled=False
+                )
         finally:
             if os.path.exists(second_path):
                 shutil.rmtree(second_path)
@@ -781,7 +835,9 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         with self.assertRaisesRegex(LMDBFrameError, "must contain identical fields"):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb", labeled=False)
+            dpdata.MultiSystems.from_file(
+                self.lmdb_path, fmt="deepmd/lmdb", labeled=False
+            )
         self.assertNotIn("new_scalar", [dt.name for dt in dpdata.System.DTYPES])
 
     def test_caller_construction_failure_rolls_back_registration(self):
@@ -794,7 +850,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         with self.assertRaises(DataError):
-            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+            dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertNotIn(
             "unlabeled_custom",
             [dt.name for dt in dpdata.System.DTYPES],
@@ -814,7 +870,7 @@ class TestLMDBReadRobustness(unittest.TestCase):
         ]
         _write_raw_lmdb(self.lmdb_path, frames, ["H"])
         with self.assertRaisesRegex(LMDBFrameError, "required by LabeledSystem"):
-            dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+            dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertNotIn(
             "unlabeled_custom",
             [dt.name for dt in dpdata.System.DTYPES],
@@ -844,7 +900,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             shutil.rmtree(path)
 
     def test_system_ids_preserved(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A, self.B, self.C], self.lmdb_path)
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
@@ -860,7 +916,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
     def test_contrast_with_multisystems_merge(self):
         # the default MultiSystems path merges A and C by formula.
         ms = dpdata.MultiSystems(self.A, self.B, self.C)
-        ms.to("lmdb", self.lmdb_path)
+        ms.to("deepmd/lmdb", self.lmdb_path)
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             with env.begin() as txn:
                 meta = msgpack.unpackb(txn.get(b"__metadata__"), raw=False)
@@ -868,14 +924,14 @@ class TestLMDBDumpSystems(unittest.TestCase):
         self.assertEqual(sorted(set(meta["frame_system_ids"])), [0, 1])
 
     def test_roundtrip_total_frames(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A, self.B, self.C], self.lmdb_path)
-        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        ms = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(ms.get_nframes(), 6)
 
     def test_generator_with_type_map(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         def gen():
             yield self.A
@@ -890,7 +946,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         self.assertEqual(meta["frame_system_ids"], [0, 0, 1, 2, 2, 2])
 
     def test_empty_input_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         with self.assertRaisesRegex(LMDBError, "empty"):
             dump_systems([], self.lmdb_path)
@@ -898,17 +954,17 @@ class TestLMDBDumpSystems(unittest.TestCase):
 
     def test_empty_multisystems_rejected(self):
         with self.assertRaisesRegex(LMDBError, "empty"):
-            dpdata.MultiSystems().to("lmdb", self.lmdb_path)
+            dpdata.MultiSystems().to("deepmd/lmdb", self.lmdb_path)
         self.assertFalse(os.path.exists(self.lmdb_path))
 
     def test_multisystems_input_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         with self.assertRaisesRegex(TypeError, "original ordered systems"):
             dump_systems(dpdata.MultiSystems(self.A, self.B), self.lmdb_path)
 
     def test_negative_standard_atom_type_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         data = self.A.data.copy()
         data["atom_types"] = np.array([-1, 1, 1])
@@ -917,7 +973,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         self.assertFalse(os.path.exists(self.lmdb_path))
 
     def test_floating_atom_type_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         data = self.A.data.copy()
         data["atom_types"] = np.array([0.0, 1.0, 1.0])
@@ -925,7 +981,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             dump_systems([data], self.lmdb_path)
 
     def test_uint64_overflow_not_treated_as_virtual_atom(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         data = {
             "atom_numbs": [1],
@@ -941,7 +997,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             dump_systems([data], self.lmdb_path)
 
     def test_inconsistent_atom_numbs_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         data = self.A.data.copy()
         data["atom_numbs"] = [2, 1]
@@ -949,7 +1005,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             dump_systems([data], self.lmdb_path)
 
     def test_nonportable_array_dtypes_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         for dtype in (
             object,
@@ -963,7 +1019,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
                 self.assertFalse(os.path.exists(self.lmdb_path))
 
     def test_mixed_raw_virtual_atoms_are_removed(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         data = {
             "atom_numbs": [3],
@@ -989,7 +1045,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         self.assertEqual(frame["forces"]["shape"], [2, 3])
 
     def test_ambiguous_mixed_custom_field_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         data = {
             "atom_numbs": [3],
@@ -1006,19 +1062,19 @@ class TestLMDBDumpSystems(unittest.TestCase):
             dump_systems([data], self.lmdb_path)
 
     def test_existing_destination_requires_overwrite(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A], self.lmdb_path)
         with self.assertRaises(FileExistsError):
             dump_systems([self.B], self.lmdb_path)
 
     def test_windows_overwrite_rejected_explicitly(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A], self.lmdb_path)
         with (
             mock.patch(
-                "dpdata.formats.lmdb.format._IS_WINDOWS",
+                "dpdata.formats.deepmd.lmdb.format._IS_WINDOWS",
                 True,
             ),
             self.assertRaisesRegex(NotImplementedError, "not supported on Windows"),
@@ -1031,7 +1087,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
 
     @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_failed_overwrite_preserves_old_database(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         old = _make_labeled_system([0], ["H"], 1)
         old.data["energies"][:] = 10.0
@@ -1049,7 +1105,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
                 overwrite=True,
                 write_batch_size=1,
             )
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         np.testing.assert_array_equal(loaded["energies"], [10.0])
         temporary = list(
             Path(self.lmdb_path).parent.glob(f".{Path(self.lmdb_path).name}.tmp-*")
@@ -1058,7 +1114,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
 
     @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_successful_overwrite_replaces_database(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A], self.lmdb_path)
         dump_systems(
@@ -1067,7 +1123,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             overwrite=True,
             write_batch_size=1,
         )
-        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(loaded.get_nframes(), 1)
         self.assertEqual(loaded[0].get_natoms(), 5)
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
@@ -1076,7 +1132,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
                 self.assertIsNone(txn.get(b"000000000001"))
 
     def test_duplicate_type_map_rejected(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         with self.assertRaisesRegex(LMDBError, "duplicate"):
             dump_systems(
@@ -1086,7 +1142,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
             )
 
     def test_invalid_write_batch_size_rejected_without_artifact(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         with self.assertRaisesRegex(ValueError, "write_batch_size"):
             dump_systems(
@@ -1097,7 +1153,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         self.assertFalse(os.path.exists(self.lmdb_path))
 
     def test_map_full_grows_and_retries_batch(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         large = _make_labeled_system([0] * 128, ["H"], 8)
         dump_systems(
@@ -1106,14 +1162,14 @@ class TestLMDBDumpSystems(unittest.TestCase):
             map_size=4096,
             write_batch_size=3,
         )
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(loaded.get_nframes(), 8)
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             self.assertGreater(env.info()["map_size"], 4096)
 
     @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_active_dpdata_reader_blocks_overwrite_for_path_alias(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A], self.lmdb_path)
         resolved, _ = _open_read_env(str(Path(self.lmdb_path).resolve()))
@@ -1126,12 +1182,12 @@ class TestLMDBDumpSystems(unittest.TestCase):
                 )
         finally:
             _close_read_env(resolved)
-        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(loaded.get_nframes(), self.A.get_nframes())
 
     @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_external_lmdb_reader_blocks_overwrite(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A], self.lmdb_path)
         external_env = lmdb.open(
@@ -1152,12 +1208,12 @@ class TestLMDBDumpSystems(unittest.TestCase):
                 )
         finally:
             external_env.close()
-        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(loaded.get_nframes(), self.A.get_nframes())
 
     @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_publish_guard_closes_external_reader_race(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A], self.lmdb_path)
         replace_entered = threading.Event()
@@ -1193,7 +1249,7 @@ class TestLMDBDumpSystems(unittest.TestCase):
         thread.start()
         try:
             with mock.patch(
-                "dpdata.formats.lmdb.format.os.replace",
+                "dpdata.formats.deepmd.lmdb.format.os.replace",
                 side_effect=synchronized_replace,
             ):
                 dump_systems(
@@ -1204,13 +1260,13 @@ class TestLMDBDumpSystems(unittest.TestCase):
         finally:
             thread.join(timeout=5)
         self.assertEqual(reader_was_blocked, [True])
-        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(loaded[0].get_natoms(), self.B.get_natoms())
 
     @unittest.skipIf(os.name == "nt", "LMDB overwrite is POSIX-only")
     def test_staged_validation_failure_preserves_old_database(self):
-        from dpdata.formats.lmdb import dump_systems
-        from dpdata.formats.lmdb.format import _LMDBWriter
+        from dpdata.formats.deepmd.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb.format import _LMDBWriter
 
         dump_systems([self.A], self.lmdb_path)
         with (
@@ -1226,12 +1282,12 @@ class TestLMDBDumpSystems(unittest.TestCase):
                 self.lmdb_path,
                 overwrite=True,
             )
-        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.MultiSystems.from_file(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(loaded.get_nframes(), self.A.get_nframes())
 
     @unittest.skipUnless(hasattr(os, "fork"), "requires os.fork")
     def test_read_cache_resets_after_fork(self):
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([self.A], self.lmdb_path)
         resolved, _ = _open_read_env(self.lmdb_path)
@@ -1276,11 +1332,11 @@ class TestLMDBErrorHandling(unittest.TestCase):
     def test_missing_metadata(self):
         lmdb.open(self.lmdb_missing_meta, map_size=1 << 30).close()
         with self.assertRaises(LMDBMetadataError):
-            dpdata.MultiSystems.from_file(self.lmdb_missing_meta, fmt="lmdb")
+            dpdata.MultiSystems.from_file(self.lmdb_missing_meta, fmt="deepmd/lmdb")
 
     def test_missing_frame(self):
         with self.assertRaises(LMDBFrameError):
-            dpdata.MultiSystems.from_file(self.lmdb_missing_frame, fmt="lmdb")
+            dpdata.MultiSystems.from_file(self.lmdb_missing_frame, fmt="deepmd/lmdb")
 
     def test_non_mapping_metadata_rejected(self):
         path = "tmp_bad_metadata.lmdb"
@@ -1290,7 +1346,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
                 txn.put(b"__metadata__", _reference_packb(["not", "a", "mapping"]))
             env.close()
             with self.assertRaisesRegex(LMDBMetadataError, "must contain a mapping"):
-                dpdata.MultiSystems.from_file(path, fmt="lmdb")
+                dpdata.MultiSystems.from_file(path, fmt="deepmd/lmdb")
         finally:
             if os.path.exists(path):
                 shutil.rmtree(path)
@@ -1305,7 +1361,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
             with self.assertRaisesRegex(
                 LMDBMetadataError, "Cannot decode __metadata__"
             ):
-                dpdata.MultiSystems.from_file(path, fmt="lmdb")
+                dpdata.MultiSystems.from_file(path, fmt="deepmd/lmdb")
         finally:
             if os.path.exists(path):
                 shutil.rmtree(path)
@@ -1329,7 +1385,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
             with self.assertRaisesRegex(
                 LMDBMetadataError, "nframes must be an integer"
             ):
-                dpdata.MultiSystems.from_file(path, fmt="lmdb")
+                dpdata.MultiSystems.from_file(path, fmt="deepmd/lmdb")
         finally:
             if os.path.exists(path):
                 shutil.rmtree(path)
@@ -1357,7 +1413,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
                     with self.assertRaisesRegex(
                         LMDBMetadataError, "must be an integer"
                     ):
-                        dpdata.MultiSystems.from_file(path, fmt="lmdb")
+                        dpdata.MultiSystems.from_file(path, fmt="deepmd/lmdb")
                 finally:
                     if os.path.exists(path):
                         shutil.rmtree(path)
@@ -1389,7 +1445,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
                 )
             env.close()
             with self.assertRaisesRegex(LMDBFrameError, "Cannot decode array"):
-                dpdata.MultiSystems.from_file(path, fmt="lmdb")
+                dpdata.MultiSystems.from_file(path, fmt="deepmd/lmdb")
         finally:
             if os.path.exists(path):
                 shutil.rmtree(path)
@@ -1398,7 +1454,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
         path = "tmp_invalid_system_ids.lmdb"
         try:
             system = _make_labeled_system([0], ["H"], 1)
-            system.to("lmdb", path)
+            system.to("deepmd/lmdb", path)
             env = lmdb.open(path, map_size=1 << 30)
             with env.begin(write=True) as txn:
                 metadata = msgpack.unpackb(txn.get(b"__metadata__"), raw=False)
@@ -1409,7 +1465,7 @@ class TestLMDBErrorHandling(unittest.TestCase):
                 )
             env.close()
             with self.assertRaisesRegex(LMDBMetadataError, "frame_system_ids length"):
-                dpdata.MultiSystems.from_file(path, fmt="lmdb")
+                dpdata.MultiSystems.from_file(path, fmt="deepmd/lmdb")
         finally:
             if os.path.exists(path):
                 shutil.rmtree(path)
@@ -1417,13 +1473,13 @@ class TestLMDBErrorHandling(unittest.TestCase):
     def test_existing_external_reader_has_actionable_error(self):
         path = "tmp_external_reader.lmdb"
         try:
-            _make_labeled_system([0], ["H"], 1).to("lmdb", path)
+            _make_labeled_system([0], ["H"], 1).to("deepmd/lmdb", path)
             env = lmdb.open(path, readonly=True, lock=False)
             try:
                 with self.assertRaisesRegex(
                     LMDBError, "another library has already opened"
                 ):
-                    dpdata.MultiSystems.from_file(path, fmt="lmdb")
+                    dpdata.MultiSystems.from_file(path, fmt="deepmd/lmdb")
             finally:
                 env.close()
         finally:
@@ -1442,12 +1498,12 @@ class TestLMDBConfig(unittest.TestCase):
 
     def test_custom_frame_idx_fmt(self):
         ms = dpdata.MultiSystems(self.system)
-        ms.to("lmdb", self.lmdb_path, frame_idx_fmt="06d")
+        ms.to("deepmd/lmdb", self.lmdb_path, frame_idx_fmt="06d")
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             with env.begin() as txn:
                 self.assertIsNotNone(txn.get(b"000000"))
                 self.assertIsNone(txn.get(b"000000000000"))
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(len(loaded), len(self.system))
         np.testing.assert_allclose(loaded.data["coords"], self.system.data["coords"])
 
