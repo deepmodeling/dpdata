@@ -185,6 +185,10 @@ def _iter_frames(fp):
             if frame:
                 yield frame
             frame = [line]
+        elif not line:
+            # Blank separators are common in concatenated trajectories and do
+            # not belong to any numeric dump section.
+            continue
         elif frame:
             # Ignore any preamble before the first TIMESTEP marker, matching the
             # historical loader behavior.
@@ -445,7 +449,21 @@ def split_traj(dump_lines):
     if len(marks) == 0:
         return None
     frame_ends = marks[1:] + [len(dump_lines)]
-    return [dump_lines[start:end] for start, end in zip(marks, frame_ends)]
+    frames = [dump_lines[start:end] for start, end in zip(marks, frame_ends)]
+    for index, frame in enumerate(frames):
+        try:
+            natoms = get_natoms(frame)
+            atoms_header = next(
+                ii for ii, line in enumerate(frame) if "ITEM: ATOMS" in line
+            )
+        except (IndexError, StopIteration, UnboundLocalError, ValueError):
+            # Leave malformed frames intact so the existing parsers can report
+            # their precise structural error.
+            continue
+        # A dump frame ends after its declared atom records. Ignore unrelated
+        # trailer text after the final frame instead of parsing it as an atom.
+        frames[index] = frame[: atoms_header + natoms + 1]
+    return frames
 
 
 def from_system_data(system, f_idx=0, timestep=0):
