@@ -1399,16 +1399,17 @@ class MultiSystems:
     def from_fmt_obj(
         self, fmtobj: Format, directory, labeled: bool = True, **kwargs: Any
     ):
-        if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
-            for dd in fmtobj.from_multi_systems(directory, **kwargs):
-                if labeled:
-                    system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
-                else:
-                    system = System().from_fmt_obj(fmtobj, dd, **kwargs)
-                system.sort_atom_names()
-                self.append(system)
-            return self
-        else:
+        try:
+            if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
+                for dd in fmtobj.from_multi_systems(directory, **kwargs):
+                    if labeled:
+                        system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
+                    else:
+                        system = System().from_fmt_obj(fmtobj, dd, **kwargs)
+                    system.sort_atom_names()
+                    self.append(system)
+                return self
+
             system_list = []
             for dd in fmtobj.from_multi_systems(directory, **kwargs):
                 if labeled:
@@ -1421,6 +1422,16 @@ class MultiSystems:
                         system_list.append(System(data=data_item, **kwargs))
             self.append(*system_list)
             return self
+        except DataError as exc:
+            if (
+                labeled
+                and isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat)
+                and str(exc) == "energies not found in data"
+            ):
+                raise DataError(
+                    f"{exc}. For coordinate-only mixed datasets, pass labeled=False."
+                ) from exc
+            raise
 
     def to_fmt_obj(self, fmtobj: Format, directory, *args: Any, **kwargs: Any):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
@@ -1491,9 +1502,32 @@ class MultiSystems:
         raise RuntimeError("Unspported data structure")
 
     @classmethod
-    def from_file(cls, file_name, fmt: str, **kwargs: Any):
+    def from_file(
+        cls, file_name, fmt: str, *, labeled: bool = True, **kwargs: Any
+    ) -> MultiSystems:
+        """Load multiple systems from a file or directory.
+
+        Parameters
+        ----------
+        file_name
+            Source accepted by the selected format backend.
+        fmt : str
+            Format identifier, such as ``"deepmd/npy/mixed"``.
+        labeled : bool, default=True
+            Load :class:`LabeledSystem` objects when true. Set this to false for
+            coordinate-only data that does not contain energies or forces.
+        **kwargs
+            Additional arguments forwarded to the format backend.
+
+        Returns
+        -------
+        MultiSystems
+            Systems reconstructed from the source.
+        """
         multi_systems = cls()
-        multi_systems.load_systems_from_file(file_name=file_name, fmt=fmt, **kwargs)
+        multi_systems.load_systems_from_file(
+            file_name=file_name, fmt=fmt, labeled=labeled, **kwargs
+        )
         return multi_systems
 
     @classmethod
@@ -1516,10 +1550,22 @@ class MultiSystems:
             )
         return multi_systems
 
-    def load_systems_from_file(self, file_name=None, fmt: str | None = None, **kwargs):
+    def load_systems_from_file(
+        self,
+        file_name=None,
+        fmt: str | None = None,
+        *,
+        labeled: bool = True,
+        **kwargs,
+    ):
+        """Load systems into this collection.
+
+        ``labeled=False`` selects regular :class:`System` objects, which is
+        required for DeepMD datasets that omit label arrays.
+        """
         assert fmt is not None
         fmt = fmt.lower()
-        return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
+        return self.from_fmt_obj(load_format(fmt), file_name, labeled=labeled, **kwargs)
 
     def get_nframes(self) -> int:
         """Returns number of frames in all systems."""
