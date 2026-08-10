@@ -34,14 +34,16 @@ _POSCAR_TITLE_WIDTH = 40
 _FORMULA_TOKEN = re.compile(r"^([A-Z][a-z]?)(\d*)$")
 
 
-def formula_from_poscar_title(title: str) -> list[str] | None:
-    """Read the species order out of a POSCAR title, if it is a formula.
+def composition_from_poscar_title(title: str) -> dict[str, int] | None:
+    """Read a composition from a POSCAR title when every count is explicit.
 
     The title is free-form text, so this returns ``None`` unless every token
-    reads as an element symbol with an optional count -- ``Li3 F39 K3`` yields
-    ``["Li", "F", "K"]``, while ``POSCAR file written by OVITO`` yields
-    ``None``. A title filling the whole field is treated as truncated and its
-    final token is dropped.
+    reads as an element symbol with a count -- ``Li3 F39 K3`` yields
+    ``{"Li": 3, "F": 39, "K": 3}``, while both ``H C`` and ``POSCAR file
+    written by OVITO`` yield ``None``. Requiring counts avoids interpreting a
+    comment that merely lists elements as a declaration of their order. A
+    title filling the whole field is treated as truncated and its final token
+    is dropped.
 
     Parameters
     ----------
@@ -50,8 +52,8 @@ def formula_from_poscar_title(title: str) -> list[str] | None:
 
     Returns
     -------
-    Optional[list[str]]
-        element symbols in POSCAR order, or None if the title is not a formula
+    Optional[dict[str, int]]
+        element counts, or None if the title is not an explicit composition
     """
     from dpdata.periodic_table import ELEMENTS
 
@@ -63,39 +65,59 @@ def formula_from_poscar_title(title: str) -> list[str] | None:
         # A single symbol cannot disagree on ordering, and a one-word title is
         # far more likely to be prose than a formula.
         return None
-    names = []
+    composition = {}
     for token in tokens:
         matched = _FORMULA_TOKEN.match(token)
-        if matched is None or matched.group(1) not in ELEMENTS:
+        if matched is None or matched.group(1) not in ELEMENTS or not matched.group(2):
             return None
-        names.append(matched.group(1))
-    return names
+        name = matched.group(1)
+        composition[name] = composition.get(name, 0) + int(matched.group(2))
+    return composition
 
 
-def check_potcar_poscar_order(atom_names: list[str], poscar_title: str | None) -> None:
-    """Warn when the POTCAR species order contradicts the POSCAR title.
+def check_potcar_poscar_order(
+    atom_names: list[str], atom_numbs: list[int], poscar_title: str | None
+) -> None:
+    """Warn when POTCAR-paired counts contradict a POSCAR-title composition.
 
     VASP pairs the ``ions per type`` counts, which come from the POSCAR, with
     the species order of the POTCAR. When the two files disagree, VASP neither
-    reorders nor complains, so every count silently lands on the wrong element
-    and dpdata faithfully reports the mislabeled system. Say so loudly.
+    reorders nor complains, so counts can silently land on the wrong elements
+    and dpdata faithfully reports the mislabeled system. The POSCAR title is
+    only a comment, however, so compare compositions rather than token order.
     """
     if poscar_title is None:
         return
-    title_names = formula_from_poscar_title(poscar_title)
-    if title_names is None:
+    title_composition = composition_from_poscar_title(poscar_title)
+    if title_composition is None:
         return
-    shared = min(len(title_names), len(atom_names))
-    if title_names[:shared] == atom_names[:shared]:
+
+    potcar_composition = {}
+    for name, count in zip(atom_names, atom_numbs):
+        potcar_composition[name] = potcar_composition.get(name, 0) + count
+
+    truncated = len(poscar_title.rstrip()) >= _POSCAR_TITLE_WIDTH
+    if truncated:
+        matches = all(
+            potcar_composition.get(name) == count
+            for name, count in title_composition.items()
+        )
+    else:
+        matches = title_composition == potcar_composition
+    if matches:
         return
+
+    def format_composition(composition: dict[str, int]) -> str:
+        return " ".join(f"{name}{count}" for name, count in composition.items())
+
     warnings.warn(
-        "the POTCAR species order in this OUTCAR "
-        f"({' '.join(atom_names[:shared])}) does not match the POSCAR title "
-        f"({' '.join(title_names[:shared])}). VASP assigns the 'ions per type' "
-        "counts by POTCAR order, so the atom names reported here are what VASP "
-        "actually computed; if that is not what you intended, the POTCAR was "
-        "concatenated in a different order than the POSCAR lists its species "
-        "and the calculation itself used the wrong potentials."
+        "the composition produced by pairing the POTCAR species with 'ions per "
+        f"type' in this OUTCAR ({format_composition(potcar_composition)}) does "
+        "not match the explicit composition in the POSCAR title "
+        f"({format_composition(title_composition)}). The atom names reported "
+        "here are what VASP actually computed; if the title describes the "
+        "intended structure, the POTCAR may have been concatenated in a "
+        "different order and the calculation used the wrong potentials."
     )
 
 
@@ -181,7 +203,7 @@ def system_info(
             f"Please try to convert data from vasprun.xml instead."
         )
     atom_names = atom_names[: len(atom_numbs)]
-    check_potcar_poscar_order(atom_names, poscar_title)
+    check_potcar_poscar_order(atom_names, atom_numbs, poscar_title)
     atom_types = []
     for idx, ii in enumerate(atom_numbs):
         for jj in range(ii):
