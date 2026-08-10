@@ -37,13 +37,19 @@ def _is_data_line(line):
     return bool(stripped) and not stripped.startswith("#")
 
 
+def _is_item_header(line, key=None):
+    """Return whether a non-comment line starts with a LAMMPS ITEM header."""
+    prefix = "ITEM:" if key is None else f"ITEM: {key}"
+    return _is_data_line(line) and line.lstrip().startswith(prefix)
+
+
 def _get_block(lines, key):
     for idx in range(len(lines)):
-        if ("ITEM: " + key) in lines[idx]:
+        if _is_item_header(lines[idx], key):
             break
     idx_s = idx + 1
     for idx in range(idx_s, len(lines)):
-        if ("ITEM: ") in lines[idx]:
+        if _is_item_header(lines[idx]):
             break
     idx_e = idx
     if idx_e == len(lines) - 1:
@@ -200,7 +206,7 @@ def load_file(fname: FileType, begin=0, step=1):
                 cc += 1
                 return lines
             line = raw_line.rstrip("\n")
-            if "ITEM: TIMESTEP" in line:
+            if _is_item_header(line, "TIMESTEP"):
                 if cc >= begin and (cc - begin) % step == 0:
                     lines += buff
                     buff = []
@@ -299,7 +305,7 @@ def _describe_incomplete_frame(frame_lines):
     as a ragged-array error deep inside the coordinate readers.
     """
     for key in ("NUMBER OF ATOMS", "BOX BOUNDS", "ATOMS"):
-        if not any(("ITEM: " + key) in ii for ii in frame_lines):
+        if not any(_is_item_header(line, key) for line in frame_lines):
             return f"missing the 'ITEM: {key}' section"
 
     natoms_blk, _ = _get_block(frame_lines, "NUMBER OF ATOMS")
@@ -355,7 +361,7 @@ def _clamp_after_atom_payload(frame_lines):
         return frame_lines
 
     atoms_header = next(
-        (idx for idx, line in enumerate(frame_lines) if "ITEM: ATOMS" in line),
+        (idx for idx, line in enumerate(frame_lines) if _is_item_header(line, "ATOMS")),
         None,
     )
     if atoms_header is None:
@@ -438,7 +444,7 @@ def system_data(
 def split_traj(dump_lines):
     marks = []
     for idx, ii in enumerate(dump_lines):
-        if "ITEM: TIMESTEP" in ii:
+        if _is_item_header(ii, "TIMESTEP"):
             marks.append(idx)
     if len(marks) == 0:
         return None

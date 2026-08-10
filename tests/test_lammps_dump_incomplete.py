@@ -101,6 +101,32 @@ class TestLmpDumpIncomplete(unittest.TestCase):
         self.assertEqual(system.get_nframes(), reference.get_nframes())
         np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
 
+    def test_item_like_comment_is_not_a_frame_boundary(self):
+        atoms = next(
+            i for i, line in enumerate(self.lines) if line.startswith("ITEM: ATOMS")
+        )
+        annotated = list(self.lines)
+        annotated.insert(atoms + 1, "# ITEM: TIMESTEP is documentation, not a frame")
+        path = self._write("commented_timestep.dump", annotated)
+
+        system = self._load(path, begin=1, step=2)
+        reference = self._load(SOURCE, begin=1, step=2)
+        self.assertEqual(system.get_nframes(), reference.get_nframes())
+        np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
+
+    def test_item_like_comment_before_atoms_header_is_ignored(self):
+        atoms = next(
+            i for i, line in enumerate(self.lines) if line.startswith("ITEM: ATOMS")
+        )
+        annotated = list(self.lines)
+        annotated.insert(atoms, "# ITEM: ATOMS id type x y z")
+        path = self._write("commented_atoms_header.dump", annotated)
+
+        system = self._load(path)
+        reference = self._load(SOURCE)
+        self.assertEqual(system.get_nframes(), reference.get_nframes())
+        np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
+
     def test_no_usable_frame_raises(self):
         starts = [i for i, ll in enumerate(self.lines) if "ITEM: TIMESTEP" in ll]
         path = self._write("headers_only.dump", self.lines[: starts[0] + 4])
