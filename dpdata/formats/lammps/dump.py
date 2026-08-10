@@ -338,6 +338,40 @@ def _drop_incomplete_frames(array_lines):
     return kept
 
 
+def _clamp_after_atom_payload(frame_lines):
+    """Discard non-ITEM trailers after the declared atom payload.
+
+    Blank and comment lines may appear inside a post-processed ATOMS block,
+    so the physical line count cannot locate its end. Count only payload lines
+    and leave short frames untouched for ``_describe_incomplete_frame`` to
+    diagnose.
+    """
+    natoms_blk, _ = _get_block(frame_lines, "NUMBER OF ATOMS")
+    if not natoms_blk:
+        return frame_lines
+    try:
+        natoms = int(natoms_blk[0])
+    except ValueError:
+        return frame_lines
+
+    atoms_header = next(
+        (idx for idx, line in enumerate(frame_lines) if "ITEM: ATOMS" in line),
+        None,
+    )
+    if atoms_header is None:
+        return frame_lines
+    if natoms == 0:
+        return frame_lines[: atoms_header + 1]
+
+    payload_lines = 0
+    for idx in range(atoms_header + 1, len(frame_lines)):
+        if _is_data_line(frame_lines[idx]):
+            payload_lines += 1
+            if payload_lines == natoms:
+                return frame_lines[: idx + 1]
+    return frame_lines
+
+
 def system_data(
     lines, type_map=None, type_idx_zero=True, unwrap=False, input_file=None
 ):
@@ -412,7 +446,10 @@ def split_traj(dump_lines):
     # frame's length. A truncated final frame, or any extra line anywhere in
     # the file, otherwise shifts each later frame out of alignment.
     bounds = [*marks, len(dump_lines)]
-    return [dump_lines[bounds[ii] : bounds[ii + 1]] for ii in range(len(marks))]
+    return [
+        _clamp_after_atom_payload(dump_lines[bounds[ii] : bounds[ii + 1]])
+        for ii in range(len(marks))
+    ]
 
 
 def from_system_data(system, f_idx=0, timestep=0):

@@ -87,6 +87,20 @@ class TestLmpDumpIncomplete(unittest.TestCase):
         self.assertEqual(system.get_nframes(), reference.get_nframes())
         np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
 
+    def test_atom_comments_and_non_item_trailer_preserve_last_frame(self):
+        atoms = [
+            i for i, line in enumerate(self.lines) if line.startswith("ITEM: ATOMS")
+        ]
+        annotated = list(self.lines)
+        annotated[atoms[-1] + 1 : atoms[-1] + 1] = ["", "# final frame annotation"]
+        annotated.extend(["Loop time of 0.5 on 1 procs", "END OF RUN"])
+        path = self._write("annotated_with_trailer.dump", annotated)
+
+        system = self._load(path)
+        reference = self._load(SOURCE)
+        self.assertEqual(system.get_nframes(), reference.get_nframes())
+        np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
+
     def test_no_usable_frame_raises(self):
         starts = [i for i, ll in enumerate(self.lines) if "ITEM: TIMESTEP" in ll]
         path = self._write("headers_only.dump", self.lines[: starts[0] + 4])
