@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 from context import dpdata
 
-from dpdata.formats.qe.traj import convert_celldm
+from dpdata.formats.qe.traj import convert_celldm, load_cell_parameters
 
 bohr2ang = dpdata.unit.LengthConversion("bohr", "angstrom").value()
 
@@ -87,6 +87,45 @@ class TestCPTRAJInputCellUnits(unittest.TestCase):
             system["cells"][0],
             np.eye(3) * 2.0 * bohr2ang,
         )
+
+    def test_alat_cell_without_cel_trajectory(self):
+        system = dpdata.System(
+            "qe.traj/alat_no_cel/cp",
+            fmt="qe/cp/traj",
+        )
+
+        np.testing.assert_allclose(
+            system["cells"][0],
+            np.eye(3) * 10.0 * bohr2ang,
+        )
+
+    def test_omitted_unit_uses_a_lattice_parameter(self):
+        system = dpdata.System(
+            "qe.traj/a_no_cel/cp",
+            fmt="qe/cp/traj",
+        )
+        np.testing.assert_allclose(system["cells"][0], np.eye(3) * 5.5)
+
+    def test_alat_without_lattice_parameter_raises(self):
+        with self.assertRaisesRegex(ValueError, "requires celldm\\(1\\) or A"):
+            load_cell_parameters(["CELL_PARAMETERS {alat}", "1 0 0", "0 1 0", "0 0 1"])
+
+    def test_omitted_unit_without_lattice_parameter_raises(self):
+        with self.assertRaisesRegex(ValueError, "without a unit requires"):
+            load_cell_parameters(["CELL_PARAMETERS", "1 0 0", "0 1 0", "0 0 1"])
+
+    def test_unsupported_cell_unit_raises(self):
+        with self.assertRaisesRegex(ValueError, "unsupported CELL_PARAMETERS unit"):
+            load_cell_parameters(
+                ["CELL_PARAMETERS {crystal}", "1 0 0", "0 1 0", "0 0 1"]
+            )
+
+    def test_ambiguous_cell_unit_raises(self):
+        with self.assertRaisesRegex(ValueError, "ambiguous CELL_PARAMETERS unit"):
+            load_cell_parameters(
+                ["CELL_PARAMETERS {alat} bohr", "1 0 0", "0 1 0", "0 0 1"],
+                lattice_parameter=5.0,
+            )
 
     def test_missing_cell_parameters_for_ibrav_zero_raises(self):
         with self.assertRaisesRegex(
