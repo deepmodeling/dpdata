@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from dpdata.utils import FileType
 
 import os
+import re
 
 from ...unit import (
     EnergyConversion,
@@ -27,6 +28,13 @@ gpa2evperbohr = PressureConversion("GPa", "eV/bohr^3").value()
 length_convert = LengthConversion("bohr", "angstrom").value()
 energy_convert = EnergyConversion("hartree", "eV").value()
 force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
+
+_QE_FLOAT_PATTERN = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[EeDd][-+]?\d+)?"
+_CELL_PARAMETERS_PATTERN = re.compile(
+    r"^CELL_PARAMETERS(?:\s*(?:\{\s*([A-Za-z]+)\s*\}"
+    r"|\(\s*([A-Za-z]+)\s*\)|([A-Za-z]+)))?$",
+    re.IGNORECASE,
+)
 
 
 def load_key(lines, key):
@@ -65,12 +73,53 @@ def convert_celldm(ibrav, celldm):
         # raise RuntimeError('unsupported ibrav ' + str(ibrav))
 
 
-def load_cell_parameters(lines):
-    blk = load_block(lines, "CELL_PARAMETERS", 3)
-    ret = []
-    for ii in blk:
-        ret.append([float(jj) for jj in ii.split()[0:3]])
-    return np.array(ret)
+def load_cell_parameters(lines, lattice_parameter=None):
+    """Load ``CELL_PARAMETERS`` and convert its vectors to angstrom.
+
+    CP trajectory ``.cel`` files always use atomic units, but the fallback
+    cell in the QE input file follows the unit declared on the
+    ``CELL_PARAMETERS`` card.  Keeping that distinction here prevents an
+    angstrom input cell from being converted a second time when no ``.cel``
+    file is available. ``lattice_parameter`` is the QE ``alat`` value in
+    angstrom, derived from either ``celldm(1)`` or ``A``.
+    """
+    for idx, line in enumerate(lines):
+        # Ignore commented examples such as ``!CELL_PARAMETERS {bohr}``, which
+        # are common in QE inputs and must not shadow the active card below.
+        card = line.split("!", 1)[0].strip()
+        if card.upper().startswith("CELL_PARAMETERS"):
+            blk = lines[idx + 1 : idx + 4]
+            break
+    else:
+        raise ValueError("CELL_PARAMETERS is required when ibrav is 0")
+
+    matched = _CELL_PARAMETERS_PATTERN.fullmatch(card)
+    if matched is None:
+        raise ValueError(f"ambiguous CELL_PARAMETERS unit in {card!r}")
+    unit = next((value for value in matched.groups() if value is not None), None)
+    if unit is None:
+        if lattice_parameter is None:
+            raise ValueError(
+                "CELL_PARAMETERS without a unit requires celldm(1) or A to define alat"
+            )
+        unit = "alat"
+    unit = unit.lower()
+
+    if unit == "angstrom":
+        scale = 1.0
+    elif unit == "bohr":
+        scale = length_convert
+    elif unit == "alat":
+        if lattice_parameter is None:
+            raise ValueError(
+                "CELL_PARAMETERS {alat} requires celldm(1) or A to define alat"
+            )
+        scale = lattice_parameter
+    else:
+        raise ValueError(f"unsupported CELL_PARAMETERS unit {unit!r}")
+
+    cell = np.array([[float(value) for value in row.split()[:3]] for row in blk])
+    return cell * scale
 
 
 def load_atom_names(lines, ntypes):
@@ -86,6 +135,32 @@ def load_celldm(lines):
         if val is not None:
             celldm[ii] = float(val)
     return celldm
+
+
+def load_lattice_parameter(lines, celldm):
+    """Return QE's ``alat`` in angstrom, rejecting conflicting definitions."""
+    a_value = None
+    in_system = False
+    a_pattern = re.compile(rf"\bA\s*=\s*({_QE_FLOAT_PATTERN})", re.IGNORECASE)
+    for raw_line in lines:
+        line = raw_line.split("!", 1)[0]
+        if re.search(r"&SYSTEM\b", line, re.IGNORECASE):
+            in_system = True
+        if in_system:
+            matched = a_pattern.search(line)
+            if matched is not None:
+                a_value = float(matched.group(1).replace("d", "e").replace("D", "E"))
+            if "/" in line:
+                break
+
+    celldm_value = celldm[0] if celldm[0] != 0 else None
+    if a_value is not None and celldm_value is not None:
+        raise ValueError("both A and celldm(1) define the QE lattice parameter")
+    if a_value is not None:
+        return a_value
+    if celldm_value is not None:
+        return celldm_value * length_convert
+    return None
 
 
 def load_atom_types(lines, natoms, atom_names):
@@ -109,10 +184,11 @@ def load_param_file(fname: FileType):
     ibrav = int(load_key(lines, "ibrav"))
     celldm = load_celldm(lines)
     if ibrav == 0:
-        cell = load_cell_parameters(lines)
+        lattice_parameter = load_lattice_parameter(lines, celldm)
+        cell = load_cell_parameters(lines, lattice_parameter)
     else:
-        cell = convert_celldm(ibrav, celldm)
-    cell = cell * length_convert
+        # celldm and cells reconstructed from it are expressed in Bohr.
+        cell = convert_celldm(ibrav, celldm) * length_convert
     # print(atom_names)
     # print(atom_numbs)
     # print(atom_types)
