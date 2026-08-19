@@ -33,7 +33,33 @@ def register_hessian_data(data):
 
 @Format.register("gaussian/log")
 class GaussianLogFormat(Format):
+    """Gaussian text output containing energies, coordinates, and forces.
+
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package for molecules.
+
+    Standard single-point or optimization output is read by default. Set
+    ``md=True`` when the file contains a Gaussian molecular-dynamics run.
+    """
+
     def from_labeled_system(self, file_name: FileType, md=False, **kwargs):
+        """Load labeled frames from a Gaussian log file.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike or file-like object
+            Gaussian output file.
+        md : bool, default=False
+            Parse multiple molecular-dynamics frames instead of the standard
+            calculation layout.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled molecular data, or empty label arrays when parsing fails.
+        """
         try:
             return dpdata.formats.gaussian.log.to_system_data(file_name, md=md)
         except AssertionError:
@@ -42,9 +68,35 @@ class GaussianLogFormat(Format):
 
 @Format.register("gaussian/fchk")
 class GaussianFChkFormat(Format):
+    """Gaussian formatted checkpoint (``.fchk``) file.
+
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package. Formatted checkpoint files provide molecular geometry
+    and energy and may also contain gradients and Cartesian force constants
+    (the Hessian).
+    """
+
     def from_labeled_system(
         self, file_name: FileType, has_forces=True, has_hessian=True, **kwargs
     ):
+        """Load a Gaussian formatted checkpoint file.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike or file-like object
+            Gaussian ``.fchk`` file.
+        has_forces : bool, default=True
+            Expect and parse Cartesian gradients as forces.
+        has_hessian : bool, default=True
+            Expect and parse Cartesian force constants as a Hessian.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled molecular data and, when requested, Hessian data.
+        """
         try:
             data = dpdata.formats.gaussian.fchk.to_system_data(
                 file_name, has_forces=has_forces, has_hessian=has_hessian
@@ -57,13 +109,41 @@ class GaussianFChkFormat(Format):
 
 @Format.register("gaussian/md")
 class GaussianMDFormat(Format):
+    """Gaussian molecular-dynamics text output.
+
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package. This alias uses the Gaussian log reader with
+    multi-frame MD parsing enabled.
+    """
+
     def from_labeled_system(self, file_name: FileType, **kwargs):
+        """Load a Gaussian molecular-dynamics trajectory.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike or file-like object
+            Gaussian MD log file.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled molecular-dynamics frames.
+        """
         return GaussianLogFormat().from_labeled_system(file_name, md=True)
 
 
 @Format.register("gaussian/gjf")
 class GaussiaGJFFormat(Format):
-    """Gaussian input file."""
+    """Gaussian input (``.gjf``/``.com``) file.
+
+    `Gaussian <https://gaussian.com/>`_ is a general-purpose electronic
+    structure package. The reader extracts the molecular geometry from an
+    input deck. The writer creates a Gaussian job for the supplied frames
+    using keyword arguments documented by
+    :func:`dpdata.formats.gaussian.gjf.make_gaussian_input`.
+    """
 
     def from_system(self, file_name: FileType, **kwargs):
         """Read Gaussian input file.

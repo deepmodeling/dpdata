@@ -17,10 +17,15 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 @Format.register("orca/spout")
 class ORCASPOutFormat(Format):
-    """ORCA single point energy output.
+    """ORCA single-point energy and gradient output.
 
-    Note that both the energy and the gradient should be
-    printed into the output file.
+    `ORCA <https://orcaforum.kofo.mpg.de/>`_ is an ab initio quantum chemistry
+    program package for molecular calculations.
+
+    The reader creates one nonperiodic :class:`dpdata.LabeledSystem` frame
+    containing atomic coordinates, the total energy, and forces converted from
+    the Cartesian gradient. Both energy and gradient sections must be present
+    in the text output.
     """
 
     def from_labeled_system(self, file_name: FileType, **kwargs) -> dict:
@@ -30,8 +35,8 @@ class ORCASPOutFormat(Format):
         ----------
         file_name : FileType
             file name
-        **kwargs
-            keyword arguments
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
 
         Returns
         -------

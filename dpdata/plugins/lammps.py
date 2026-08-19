@@ -41,6 +41,17 @@ def register_charge(data: dict) -> None:
 @Format.register("lmp")
 @Format.register("lammps/lmp")
 class LAMMPSLmpFormat(Format):
+    """LAMMPS data file describing one simulation snapshot.
+
+    `LAMMPS <https://www.lammps.org/>`_ (Large-scale Atomic/Molecular
+    Massively Parallel Simulator) is a classical molecular dynamics code.
+
+    The reader supports common ``Atoms`` styles, including atomic, charge,
+    full, molecular, dipole, and sphere layouts. A ``type_map`` is usually
+    needed because LAMMPS data files store numeric atom types rather than
+    element symbols.
+    """
+
     @Format.post("shift_orig_zero")
     def from_system(
         self, file_name: FileType, type_map=None, atom_style="auto", **kwargs
@@ -133,6 +144,17 @@ class LAMMPSLmpFormat(Format):
 @Format.register("dump")
 @Format.register("lammps/dump")
 class LAMMPSDumpFormat(Format):
+    """LAMMPS text dump trajectory.
+
+    `LAMMPS <https://www.lammps.org/>`_ (Large-scale Atomic/Molecular
+    Massively Parallel Simulator) is a classical molecular dynamics code.
+
+    The reader handles scaled, unscaled, wrapped, and image-flag coordinates,
+    supports frame subsampling, and can use a LAMMPS input file to resolve
+    additional atom-style information. Numeric atom types can be mapped to
+    elements with ``type_map``.
+    """
+
     @Format.post("shift_orig_zero")
     def from_system(
         self,
@@ -165,6 +187,8 @@ class LAMMPSDumpFormat(Format):
             Specific non-negative frame indices to load. The requested order
             and duplicate indices are preserved. Cannot be combined with
             non-default ``begin`` or ``step`` values.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
 
         Returns
         -------

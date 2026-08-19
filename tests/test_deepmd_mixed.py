@@ -713,8 +713,9 @@ class TestMixedMultiSystemsPadding(
         self.assertEqual(subdirs[0], "8")
 
     def test_padded_virtual_atoms(self):
-        """Verify on-disk real atom count matches loaded natoms, and virtual
-        atoms have type -1 with zero coords and forces.
+        """Verify on-disk real atom count matches loaded natoms.
+
+        Virtual atoms have type -1 with zero coords and forces.
         """
         loaded_natoms = {f: s.get_natoms() for f, s in self.systems.systems.items()}
         mixed_sets = glob("tmp.deepmd.mixed.pad/*/set.*")

@@ -47,7 +47,33 @@ def _find_single_file(directory, pattern, description, hint):
 
 @Format.register("cp2k/aimd_output")
 class CP2KAIMDOutputFormat(Format):
+    """CP2K AIMD calculation directory.
+
+    `CP2K <https://www.cp2k.org/>`_ is a quantum chemistry and solid state
+    physics software package that can perform atomistic simulations.
+
+    The reader pairs the first ``*pos*.xyz`` trajectory with the first CP2K
+    ``.log`` file in the directory and extracts coordinates, cells, energies,
+    forces, and virials where available.
+    """
+
     def from_labeled_system(self, file_name, restart=False, **kwargs):
+        """Load a labeled CP2K AIMD trajectory.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            Directory containing CP2K position and log files.
+        restart : bool, default=False
+            Whether the trajectory is from a restarted CP2K calculation.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        tuple[dict, ...]
+            One or more labeled system-data dictionaries parsed from the run.
+        """
         xyz_file = _find_single_file(
             file_name,
             "*pos*.xyz",
@@ -70,7 +96,32 @@ class CP2KAIMDOutputFormat(Format):
 
 @Format.register("cp2k/output")
 class CP2KOutputFormat(Format):
+    """Single CP2K output file containing coordinates and calculation labels.
+
+    `CP2K <https://www.cp2k.org/>`_ is a quantum chemistry and solid state
+    physics software package. This legacy reader targets standard CP2K text
+    output. For newer or unsupported CP2K layouts, use the separately
+    maintained ``cp2kdata`` plugin referenced by the warning raised on parse
+    failure.
+    """
+
     def from_labeled_system(self, file_name, restart=False, **kwargs):
+        """Load frames from a CP2K text output.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            CP2K output file.
+        restart : bool, default=False
+            Reserved for compatibility with the AIMD reader.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled system data.
+        """
         try:
             data = {}
             (

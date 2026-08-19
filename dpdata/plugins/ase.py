@@ -18,13 +18,14 @@ if TYPE_CHECKING:
 
 @Format.register("ase/structure")
 class ASEStructureFormat(Format):
-    """Format for the `Atomic Simulation Environment <https://wiki.fysik.dtu.dk/ase/>`_ (ase).
+    """In-memory Atomic Simulation Environment (ASE) ``Atoms`` objects.
 
-    ASE supports parsing a few dozen of data formats. As described in i
-    `the documentation <ihttps://wiki.fysik.dtu.dk/ase/ase/io/io.html>`_,
-    many of these formats can be determined automatically.
-    Use the `ase_fmt` keyword argument to supply the format if
-    automatic detection fails.
+    This adapter converts between dpdata systems and ASE objects without
+    writing a file. It can also use `ASE's I/O support
+    <https://wiki.fysik.dtu.dk/ase/ase/io/io.html>`_ to load multi-frame files;
+    pass ``ase_fmt`` when ASE cannot infer the underlying file format. Labeled
+    conversion reads or attaches an ASE calculator's energy, forces, and
+    stress. The optional ``ase`` dependency is required.
     """
 
     def from_system(self, atoms: ase.Atoms, **kwargs) -> dict:
@@ -62,8 +63,9 @@ class ASEStructureFormat(Format):
         return info_dict
 
     def from_labeled_system(self, atoms: ase.Atoms, **kwargs) -> dict:
-        """Convert ase.Atoms to a LabeledSystem. Energies and forces
-        are calculated by the calculator.
+        """Convert ASE Atoms to a LabeledSystem.
+
+        Energies and forces are calculated by the attached calculator.
 
         Note that this method will try to load virials from either virial field or converted from stress tensor.
 
@@ -152,7 +154,20 @@ class ASEStructureFormat(Format):
         yield from frames
 
     def to_system(self, data, **kwargs) -> list[ase.Atoms]:
-        """Convert System to ASE Atom obj."""
+        """Convert every System frame to an ASE ``Atoms`` object.
+
+        Parameters
+        ----------
+        data : dict
+            System data to convert.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        list[ase.Atoms]
+            One ASE object per frame.
+        """
         from ase import Atoms
 
         structures = []
@@ -170,7 +185,24 @@ class ASEStructureFormat(Format):
         return structures
 
     def to_labeled_system(self, data, *args, **kwargs) -> list[ase.Atoms]:
-        """Convert System to ASE Atoms object."""
+        """Convert labeled frames to ASE objects with single-point calculators.
+
+        Parameters
+        ----------
+        data : dict
+            LabeledSystem data containing energies and optional forces or
+            virials.
+        *args : list
+            Additional positional arguments accepted for API compatibility.
+        **kwargs : dict
+            Additional keyword arguments accepted for API compatibility.
+
+        Returns
+        -------
+        list[ase.Atoms]
+            One ASE object per frame with labels stored in a
+            ``SinglePointCalculator``.
+        """
         from ase import Atoms
         from ase.calculators.singlepoint import SinglePointCalculator
 
@@ -212,8 +244,13 @@ class ASEStructureFormat(Format):
 
 @Format.register("ase/traj")
 class ASETrajFormat(Format):
-    """Format for the ASE's trajectory format <https://wiki.fysik.dtu.dk/ase/ase/io/trajectory.html#module-ase.io.trajectory>`_ (ase).'
-    a `traj' contains a sequence of frames, each of which is an `Atoms' object.
+    """ASE binary trajectory (``.traj``) file.
+
+    An `ASE trajectory
+    <https://wiki.fysik.dtu.dk/ase/ase/io/trajectory.html>`_ stores a sequence
+    of ``Atoms`` objects and can retain calculator results. dpdata supports
+    frame slicing on read and writes all frames to a new trajectory. The
+    optional ``ase`` dependency is required.
     """
 
     def from_system(
@@ -327,12 +364,16 @@ class ASETrajFormat(Format):
         return dict_frames
 
     def to_system(self, data, file_name: str = "confs.traj", **kwargs) -> None:
-        """Convert System to ASE Atoms object.
+        """Write System frames to an ASE trajectory.
 
         Parameters
         ----------
+        data : dict
+            System data to write.
         file_name : str
-            path to file
+            Destination trajectory path.
+        **kwargs : dict
+            Options forwarded to the in-memory ASE structure converter.
         """
         from ase.io import Trajectory
 
@@ -348,12 +389,18 @@ class ASETrajFormat(Format):
     def to_labeled_system(
         self, data, file_name: str = "labeled_confs.traj", *args, **kwargs
     ) -> None:
-        """Convert System to ASE Atoms object.
+        """Write labeled frames to an ASE trajectory.
 
         Parameters
         ----------
+        data : dict
+            LabeledSystem data to write.
         file_name : str
-            path to file
+            Destination trajectory path.
+        *args : list
+            Positional options forwarded to the in-memory ASE converter.
+        **kwargs : dict
+            Keyword options forwarded to the in-memory ASE converter.
         """
         from ase.io import Trajectory
 

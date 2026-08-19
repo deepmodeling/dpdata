@@ -5,8 +5,28 @@ from dpdata.format import Format
 
 @Format.register("list")
 class ListFormat(Format):
+    """In-memory list of one-frame System objects.
+
+    This write-only convenience format splits a multi-frame System or
+    LabeledSystem into independent one-frame objects; it does not create an
+    on-disk file.
+    """
+
     def to_system(self, data, **kwargs):
-        """Convert system to list, usefull for data collection."""
+        """Split system data into a list of one-frame systems.
+
+        Parameters
+        ----------
+        data : dict
+            System or labeled-system data.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        list[System] or list[LabeledSystem]
+            Empty for zero frames; otherwise one object per frame.
+        """
         from dpdata import LabeledSystem, System
 
         if "forces" in data:

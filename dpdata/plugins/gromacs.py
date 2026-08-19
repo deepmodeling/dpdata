@@ -13,6 +13,16 @@ if TYPE_CHECKING:
 @Format.register("gro")
 @Format.register("gromacs/gro")
 class GromacsGroFormat(Format):
+    """GROMACS ``.gro`` structure or trajectory file.
+
+    `GROMACS <https://www.gromacs.org/>`_ is a versatile package for
+    molecular dynamics simulations.
+
+    GRO stores atom names, Cartesian coordinates, an optional velocity block,
+    and a periodic box. dpdata reads one or more concatenated frames and can
+    write either a selected frame or the complete trajectory.
+    """
+
     def from_system(self, file_name, format_atom_name=True, **kwargs):
         """Load gromacs .gro file.
 
@@ -23,7 +33,7 @@ class GromacsGroFormat(Format):
         format_atom_name : bool
             Whether to format the atom name
         **kwargs : dict
-            other parameters
+            Additional format arguments accepted for API compatibility.
         """
         return dpdata.formats.gromacs.gro.file_to_system_data(
             file_name, format_atom_name=format_atom_name, **kwargs
@@ -43,7 +53,14 @@ class GromacsGroFormat(Format):
         frame_idx : int
             The index of the frame to dump
         **kwargs : dict
-            other parameters
+            Additional writer options described below.
+
+        Other Parameters
+        ----------------
+        resname : str, default="MOL"
+            Residue name written for every atom.
+        shift : int, default=0
+            Offset added to the one-based atom serial numbers.
         """
         assert frame_idx < len(data["coords"])
         if frame_idx == -1:

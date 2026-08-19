@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import csv
-import os
 from collections import defaultdict
 from inspect import Parameter, Signature, cleandoc, signature
+from pathlib import Path
 from typing import Literal
 
 from numpydoc.docscrape import Parameter as numpydoc_Parameter
@@ -15,6 +15,9 @@ from dpdata.bond_order_system import BondOrderSystem
 from dpdata.driver import Driver, Minimizer
 from dpdata.format import Format
 from dpdata.system import LabeledSystem, MultiSystems, System
+
+DOCS_DIR = Path(__file__).resolve().parent
+FORMAT_DIR = DOCS_DIR / "formats"
 
 
 def get_formats() -> dict:
@@ -130,34 +133,325 @@ method_cls_obj = {
 }
 
 
+preferred_aliases = {
+    "PwmatOutputFormat": "pwmat/output",
+    "QuipGapXYZFormat": "extxyz",
+    "VASPPoscarFormat": "vasp/poscar",
+}
+
+read_source_overrides = {
+    "AmberMDFormat": '"trajectory_prefix"',
+    "ASEStructureFormat": "atoms",
+    "CP2KAIMDOutputFormat": '"calculation_directory"',
+    "DFTBplusFormat": '("dftb_in.hsd", "detailed.out")',
+    "OPENMXFormat": '"system_name_prefix"',
+    "PyMatgenMoleculeFormat": "molecule",
+    "PyMatgenStructureFormat": "structure",
+    "QECPTrajFormat": '"trajectory_prefix"',
+    "QuipGapXYZFormat": '"data.xyz"',
+}
+
+read_source_setups = {
+    "ASEStructureFormat": [
+        "from ase import Atoms",
+        "",
+        'atoms = Atoms("H")',
+    ],
+    "PyMatgenMoleculeFormat": [
+        "from pymatgen.core import Molecule",
+        "",
+        'molecule = Molecule(["H"], [[0.0, 0.0, 0.0]])',
+    ],
+    "PyMatgenStructureFormat": [
+        "from pymatgen.core import Lattice, Structure",
+        "",
+        "structure = Structure(",
+        '    Lattice.cubic(1.0), ["H"], [[0.0, 0.0, 0.0]]',
+        ")",
+    ],
+}
+
+write_variable_setups = {
+    "system": 'system = dpdata.System("input_file")',
+    "labeled_system": 'labeled_system = dpdata.LabeledSystem("input_file")',
+    "bond_order_system": 'bond_order_system = dpdata.BondOrderSystem("input_file")',
+    "systems": 'systems = dpdata.MultiSystems(dpdata.System("input_file"))',
+}
+
+internal_parameters = {
+    "to_system": {"data"},
+    "to_labeled_system": {"data"},
+    "to_bond_order_system": {"data", "mol", "rdkit_mol"},
+    "to_multi_systems": {"formulas"},
+}
+
+# A single ``to_system`` implementation can back several writer pages, so the
+# generated docs filter the union of every dispatch-supplied name instead of
+# only the current method's.
+hidden_doc_parameters = {"*args"}.union(*internal_parameters.values())
+
+location_parameters = {"file_name", "fname", "directory"}
+
+
+def get_primary_alias(format_cls: type[Format], aliases: list[str]) -> str:
+    """Return the alias used in headings and generated examples.
+
+    Namespaced aliases are generally clearer than legacy short aliases. A few
+    widely recognized names need an explicit preference because several
+    equally valid ecosystem aliases share one implementation.
+    """
+    if format_cls.__name__ in preferred_aliases:
+        return preferred_aliases[format_cls.__name__]
+    return min(
+        aliases,
+        key=lambda alias: (alias.count("/") != 1, len(alias), alias),
+    )
+
+
+def sorted_format_items(formats: dict):
+    """Return formats in deterministic, user-facing alias order."""
+    return sorted(
+        formats.items(),
+        key=lambda item: (get_primary_alias(item[0], item[1]), item[0].__name__),
+    )
+
+
+def get_summary(format_cls: type[Format]) -> str:
+    """Return the first docstring paragraph as a compact table summary."""
+    docstring = cleandoc(format_cls.__doc__ or "")
+    return " ".join(docstring.split("\n\n", maxsplit=1)[0].splitlines())
+
+
+def get_method_obj(format_cls: type[Format], method: str):
+    """Return the implementation that supplies a conversion's signature."""
+    if (
+        method == "to_labeled_system"
+        and method not in format_cls.__dict__
+        and "to_system" in format_cls.__dict__
+    ):
+        return getattr(format_cls, "to_system")
+    return getattr(format_cls, method)
+
+
+def get_method_docstring(
+    format_cls: type[Format], method: str, method_obj
+) -> str | None:
+    """Return only implementation-owned documentation for a conversion.
+
+    ``MultiMode`` can advertise the inherited base implementations, whose
+    docstrings are instructions for plugin authors rather than user-facing
+    format documentation. The one intentional fallback is a ``to_system``
+    implementation reused for labeled systems.
+    """
+    implemented_here = method in format_cls.__dict__ or (
+        method == "to_labeled_system" and "to_system" in format_cls.__dict__
+    )
+    return method_obj.__doc__ if implemented_here else None
+
+
+def get_user_parameters(
+    method_obj, method: str, *, include_variadic: bool = False
+) -> list[Parameter]:
+    """Remove parameters supplied internally by dpdata's format dispatch."""
+    hidden = internal_parameters.get(method, set())
+    return [
+        parameter
+        for parameter in signature(method_obj).parameters.values()
+        if parameter.name != "self"
+        and parameter.name not in hidden
+        and (
+            include_variadic
+            or parameter.kind not in (Parameter.VAR_POSITIONAL, Parameter.VAR_KEYWORD)
+        )
+    ]
+
+
+def get_read_source(format_cls: type[Format], method_obj, method: str) -> str:
+    """Return a meaningful placeholder for a generated loading example."""
+    if method == "from_multi_systems" and format_cls.__name__ == "ASEStructureFormat":
+        return '"trajectory.xyz"'
+    if format_cls.__name__ in read_source_overrides:
+        return read_source_overrides[format_cls.__name__]
+    parameters = get_user_parameters(method_obj, method)
+    if not parameters:
+        return '"input_path"'
+    name = parameters[0].name
+    if name == "directory":
+        return '"input_directory"'
+    if name == "file_paths":
+        return '("input_geometry", "output_file")'
+    if name in {"file_name", "fname", "data"}:
+        return '"input_file"'
+    return name
+
+
+def get_parameter_example(parameter: Parameter) -> str:
+    """Return a readable placeholder for one required output parameter."""
+    examples = {
+        "basis": '"sto-3g"',
+        "method": '"hf"',
+    }
+    return examples.get(parameter.name, f"{parameter.name}_value")
+
+
+def get_write_arguments(method_obj, method: str) -> tuple[list[str], bool]:
+    """Build user-supplied arguments for a generated ``to`` example."""
+    arguments = []
+    has_location = False
+    for parameter in get_user_parameters(method_obj, method):
+        if parameter.name in location_parameters:
+            arguments.append('"output_path"')
+            has_location = True
+        elif parameter.default is Parameter.empty:
+            arguments.append(f"{parameter.name}={get_parameter_example(parameter)}")
+    return arguments, has_location
+
+
+def append_quick_examples(
+    buff: list[str], format_cls: type[Format], aliases: list[str], methods: list[str]
+):
+    """Append copyable examples for every supported dpdata object type."""
+    alias = get_primary_alias(format_cls, aliases)
+    lines = ["import dpdata", ""]
+    setup = read_source_setups.get(format_cls.__name__)
+    if setup is not None:
+        lines.extend([*setup, ""])
+    defined_variables = set()
+
+    read_examples = [
+        ("from_system", "Geometry-only data", "system", "dpdata.System"),
+        (
+            "from_labeled_system",
+            "Data with energies and forces",
+            "labeled_system",
+            "dpdata.LabeledSystem",
+        ),
+        (
+            "from_bond_order_system",
+            "Molecular graph and conformers",
+            "bond_order_system",
+            "dpdata.BondOrderSystem",
+        ),
+    ]
+    for method, comment, variable, constructor in read_examples:
+        if method not in methods:
+            continue
+        method_obj = get_method_obj(format_cls, method)
+        source = get_read_source(format_cls, method_obj, method)
+        lines.extend(
+            [
+                f"# {comment}",
+                f'{variable} = {constructor}({source}, fmt="{alias}")',
+                "",
+            ]
+        )
+        defined_variables.add(variable)
+
+    if "from_multi_systems" in methods:
+        method_obj = get_method_obj(format_cls, "from_multi_systems")
+        source = get_read_source(format_cls, method_obj, "from_multi_systems")
+        lines.extend(
+            [
+                "# Multiple compositions or calculation directories",
+                f'systems = dpdata.MultiSystems.from_file({source}, fmt="{alias}")',
+                "",
+            ]
+        )
+        defined_variables.add("systems")
+
+    write_examples = [
+        ("to_system", "system", "Write geometry-only data"),
+        ("to_labeled_system", "labeled_system", "Write labeled data"),
+        (
+            "to_bond_order_system",
+            "bond_order_system",
+            "Write molecular graph data",
+        ),
+        ("to_multi_systems", "systems", "Write multiple systems"),
+    ]
+    for method, variable, comment in write_examples:
+        if method not in methods:
+            continue
+        # ``to_labeled_system`` is automatically advertised when a System
+        # writer is reused, so avoid showing the same call twice.
+        if method == "to_labeled_system" and method not in format_cls.__dict__:
+            continue
+        method_obj = get_method_obj(format_cls, method)
+        arguments, has_location = get_write_arguments(method_obj, method)
+        call_args = ", ".join([f'"{alias}"', *arguments])
+        call = f"{variable}.to({call_args})"
+        if variable not in defined_variables:
+            lines.extend(
+                [
+                    f"# Load or construct the {variable.replace('_', ' ')} to write",
+                    write_variable_setups[variable],
+                    "",
+                ]
+            )
+            defined_variables.add(variable)
+        lines.append(f"# {comment}")
+        if has_location:
+            lines.append(call)
+        else:
+            lines.append(f"converted = {call}")
+        lines.append("")
+
+    if lines[-1] == "":
+        lines.pop()
+    buff.extend(
+        [
+            "Quick examples",
+            "--------------",
+            "",
+            f"The examples use the preferred alias ``{alias}``; any alias listed above is equivalent.",
+            "",
+            ".. code-block:: python",
+            "",
+            *(f"   {line}" for line in lines),
+            "",
+        ]
+    )
+
+
 def generate_sub_format_pages(formats: dict):
-    """Generate sub format pages."""
-    os.makedirs("formats", exist_ok=True)
-    for format, alias in formats.items():
-        # format: Format, alias: list[str]
+    """Generate one complete reference page per registered format class."""
+    FORMAT_DIR.mkdir(exist_ok=True)
+    for format_cls, aliases in sorted_format_items(formats):
+        aliases = sorted(aliases)
+        primary_alias = get_primary_alias(format_cls, aliases)
         buff = []
-        buff.append(f".. _{format.__name__}:")
+        buff.append(f".. _{format_cls.__name__}:")
         buff.append("")
-        for aa in alias:
-            buff.append(f"{aa} format")
-            buff.append("=" * len(buff[-1]))
-            buff.append("")
-        buff.append(f"Class: {get_cls_link(format)}")
+        title = f"{primary_alias} format"
+        buff.append(title)
+        buff.append("=" * len(title))
+        buff.append("")
+        buff.append("Aliases")
+        buff.append("-------")
+        buff.append("")
+        buff.append(", ".join(f"``{alias}``" for alias in aliases))
+        buff.append("")
+        buff.append(f"Implementation: {get_cls_link(format_cls)}")
+        buff.append("")
+        buff.append("Overview")
+        buff.append("--------")
         buff.append("")
 
-        docstring = format.__doc__
+        docstring = format_cls.__doc__
         if docstring is not None:
             docstring = cleandoc(docstring)
             rst = str(SphinxDocString(docstring))
             buff.append(rst)
             buff.append("")
 
+        methods = check_supported(format_cls)
+        append_quick_examples(buff, format_cls, aliases, methods)
+
         buff.append("Conversions")
         buff.append("-----------")
-        methods = check_supported(format)
         for method in methods:
             buff.append("")
-            buff.append(f".. _{format.__name__}_{method}:")
+            buff.append(f".. _{format_cls.__name__}_{method}:")
             buff.append("")
             if method.startswith("from_"):
                 buff.append(f"Convert from this format to {method_classes[method]}")
@@ -166,48 +460,48 @@ def generate_sub_format_pages(formats: dict):
                 buff.append(f"Convert from {method_classes[method]} to this format")
                 buff.append("`" * len(buff[-1]))
             buff.append("")
-            method_obj = getattr(format, method)
-            if (
-                method == "to_labeled_system"
-                and method not in format.__dict__
-                and "to_system" in format.__dict__
-            ):
-                method_obj = getattr(format, "to_system")
-            docstring = method_obj.__doc__
+            method_obj = get_method_obj(format_cls, method)
+            docstring = get_method_docstring(format_cls, method, method_obj)
             if docstring is not None:
                 docstring = cleandoc(docstring)
-            sig = signature(method_obj)
-            parameters = dict(sig.parameters)
-            return_annotation = sig.return_annotation
-            # del self
-            del parameters[list(parameters)[0]]
-            # del data
-            if method.startswith("to_"):
-                del parameters[list(parameters)[0]]
-            if "args" in parameters:
-                del parameters["args"]
-            if "kwargs" in parameters:
-                del parameters["kwargs"]
+            method_signature = signature(method_obj)
+            parameters = get_user_parameters(method_obj, method, include_variadic=True)
+            return_annotation = method_signature.return_annotation
             if method == "to_multi_systems" or method.startswith("from_"):
-                sig = Signature(
-                    list(parameters.values()), return_annotation=method_cls_obj[method]
-                )
+                sig = Signature(parameters, return_annotation=method_cls_obj[method])
             else:
-                sig = Signature(
-                    list(parameters.values()), return_annotation=return_annotation
-                )
+                sig = Signature(parameters, return_annotation=return_annotation)
             sig = str(sig)
             if method.startswith("from_"):
                 if method != "from_multi_systems":
-                    for aa in alias:
-                        parameters["fmt"] = Parameter(
-                            "fmt",
-                            Parameter.POSITIONAL_OR_KEYWORD,
-                            default=None,
-                            annotation=Literal[aa],
-                        )
+                    for alias in aliases:
+                        positional_parameters = [
+                            parameter
+                            for parameter in parameters
+                            if parameter.kind
+                            not in (
+                                Parameter.VAR_POSITIONAL,
+                                Parameter.KEYWORD_ONLY,
+                                Parameter.VAR_KEYWORD,
+                            )
+                        ]
+                        trailing_parameters = [
+                            parameter
+                            for parameter in parameters
+                            if parameter not in positional_parameters
+                        ]
+                        constructor_parameters = [
+                            *positional_parameters,
+                            Parameter(
+                                "fmt",
+                                Parameter.POSITIONAL_OR_KEYWORD,
+                                default=None,
+                                annotation=Literal[alias],
+                            ),
+                            *trailing_parameters,
+                        ]
                         sig_fmt = Signature(
-                            list(parameters.values()),
+                            constructor_parameters,
                             return_annotation=method_cls_obj[method],
                         )
                         sig_fmt = str(sig_fmt)
@@ -215,24 +509,22 @@ def generate_sub_format_pages(formats: dict):
                             f""".. py:function:: dpdata.{method_classes[method]}{sig_fmt}"""
                         )
                         buff.append("""   :noindex:""")
-                for aa in alias:
+                for alias in aliases:
                     buff.append(
                         """.. py:function:: dpdata.{}.from_{}{}""".format(
                             method_classes[method],
-                            aa.replace("/", "_").replace(".", ""),
+                            alias.replace("/", "_").replace(".", ""),
                             sig,
                         )
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                if docstring is None or method not in format.__dict__:
+                if docstring is None:
                     docstring = f"""   Convert this format to :class:`{method_classes[method]}`."""
                 doc_obj = SphinxDocString(docstring)
                 if len(doc_obj["Parameters"]) > 0:
                     doc_obj["Parameters"] = [
-                        xx
-                        for xx in doc_obj["Parameters"]
-                        if xx.name not in ("*args", "**kwargs")
+                        xx for xx in doc_obj["Parameters"] if xx.name != "*args"
                     ]
                 else:
                     if method == "from_multi_systems":
@@ -251,23 +543,23 @@ def generate_sub_format_pages(formats: dict):
                 buff.append(rst)
                 buff.append("")
             elif method.startswith("to_"):
-                for aa in alias:
-                    parameters = {
-                        "fmt": Parameter(
+                for alias in aliases:
+                    to_parameters = [
+                        Parameter(
                             "fmt",
                             Parameter.POSITIONAL_OR_KEYWORD,
-                            annotation=Literal[aa],
+                            annotation=Literal[alias],
                         ),
-                        **parameters,
-                    }
+                        *parameters,
+                    ]
                     if method == "to_multi_systems":
                         sig_fmt = Signature(
-                            list(parameters.values()),
+                            to_parameters,
                             return_annotation=method_cls_obj[method],
                         )
                     else:
                         sig_fmt = Signature(
-                            list(parameters.values()),
+                            to_parameters,
                             return_annotation=return_annotation,
                         )
                     sig_fmt = str(sig_fmt)
@@ -275,24 +567,17 @@ def generate_sub_format_pages(formats: dict):
                         f""".. py:function:: dpdata.{method_classes[method]}.to{sig_fmt}"""
                     )
                     buff.append("""   :noindex:""")
-                for aa in alias:
+                for alias in aliases:
                     buff.append(
                         """.. py:function:: dpdata.{}.to_{}{}""".format(
                             method_classes[method],
-                            aa.replace("/", "_").replace(".", ""),
+                            alias.replace("/", "_").replace(".", ""),
                             sig,
                         )
                     )
                     buff.append("""   :noindex:""")
                 buff.append("")
-                if docstring is None or (
-                    method not in format.__dict__
-                    and not (
-                        method == "to_labeled_system"
-                        and method not in format.__dict__
-                        and "to_system" in format.__dict__
-                    )
-                ):
+                if docstring is None:
                     docstring = (
                         f"Convert :class:`{method_classes[method]}` to this format."
                     )
@@ -300,8 +585,8 @@ def generate_sub_format_pages(formats: dict):
                 if len(doc_obj["Parameters"]) > 0:
                     doc_obj["Parameters"] = [
                         xx
-                        for xx in doc_obj["Parameters"][1:]
-                        if xx.name not in ("*args", "**kwargs")
+                        for xx in doc_obj["Parameters"]
+                        if xx.name not in hidden_doc_parameters
                     ]
                 else:
                     if method == "to_multi_systems":
@@ -323,26 +608,30 @@ def generate_sub_format_pages(formats: dict):
             buff.append("")
             buff.append("")
 
-        with open(f"formats/{format.__name__}.rst", "w") as rstfile:
+        with (FORMAT_DIR / f"{format_cls.__name__}.rst").open(
+            "w", encoding="utf-8"
+        ) as rstfile:
             rstfile.write("\n".join(buff))
 
 
 if __name__ == "__main__":
     formats = get_formats()
-    with open("formats.csv", "w", newline="") as csvfile:
+    with (DOCS_DIR / "formats.csv").open("w", encoding="utf-8", newline="") as csvfile:
         fieldnames = [
             "Format",
+            "Description",
             "Alias",
             "Supported Conversions",
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
-        for kk, vv in formats.items():
+        for kk, vv in sorted_format_items(formats):
             writer.writerow(
                 {
                     "Format": f":ref:`{kk.__name__}`",
-                    "Alias": "\n".join(f"``{vvv}``" for vvv in vv),
+                    "Description": get_summary(kk),
+                    "Alias": "\n".join(f"``{vvv}``" for vvv in sorted(vv)),
                     "Supported Conversions": "\n".join(
                         method_links[mtd].format(kk.__name__, mtd)
                         for mtd in check_supported(kk)
@@ -351,7 +640,7 @@ if __name__ == "__main__":
             )
 
     drivers = get_driver()
-    with open("drivers.csv", "w", newline="") as csvfile:
+    with (DOCS_DIR / "drivers.csv").open("w", encoding="utf-8", newline="") as csvfile:
         fieldnames = [
             "Class",
             "Alias",
@@ -368,7 +657,9 @@ if __name__ == "__main__":
             )
 
     minimizers = get_minimizer()
-    with open("minimizers.csv", "w", newline="") as csvfile:
+    with (DOCS_DIR / "minimizers.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as csvfile:
         fieldnames = [
             "Class",
             "Alias",

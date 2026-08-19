@@ -19,10 +19,40 @@ if TYPE_CHECKING:
 @Format.register("pwmat/mlmd")
 @Format.register("pwmat/output")
 class PwmatOutputFormat(Format):
+    """PWmat ``MOVEMENT``/``OUT.MLMD`` labeled trajectory.
+
+    `PWmat <https://www.pwmat.com/>`_ is a plane-wave based DFT
+    electronic-structure calculation software using GPU acceleration.
+
+    These output files contain a sequence of cells and coordinates together
+    with energies and optional force or virial labels. The reader supports
+    frame subsampling and convergence filtering.
+    """
+
     @Format.post("rot_lower_triangular")
     def from_labeled_system(
         self, file_name, begin=0, step=1, convergence_check=True, **kwargs
     ):
+        """Load a labeled PWmat trajectory.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike
+            PWmat ``MOVEMENT`` or ``OUT.MLMD`` file.
+        begin : int, default=0
+            Index of the first frame to load.
+        step : int, default=1
+            Load every ``step``-th frame.
+        convergence_check : bool, default=True
+            Exclude frames marked as unconverged when enabled.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled trajectory data.
+        """
         data = {}
         (
             data["atom_names"],
@@ -54,8 +84,31 @@ class PwmatOutputFormat(Format):
 @Format.register("pwmat/atom.config")
 @Format.register("pwmat/final.config")
 class PwmatAtomconfigFormat(Format):
+    """PWmat ``atom.config`` or ``final.config`` structure file.
+
+    `PWmat <https://www.pwmat.com/>`_ is a plane-wave DFT software using GPU
+    acceleration.
+
+    The format stores a cell and one atomic configuration. Reading normalizes
+    the cell to dpdata's lower-triangular convention.
+    """
+
     @Format.post("rot_lower_triangular")
     def from_system(self, file_name: FileType, **kwargs):
+        """Load one PWmat configuration.
+
+        Parameters
+        ----------
+        file_name : str or os.PathLike or file-like object
+            ``atom.config`` or ``final.config`` input.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            System data for one configuration.
+        """
         with open_file(file_name) as fp:
             lines = [line.rstrip("\n") for line in fp]
         return dpdata.formats.pwmat.atomconfig.to_system_data(lines)

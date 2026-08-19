@@ -62,7 +62,9 @@ def add_atom_names(data, atom_names):
 
 
 def sort_atom_names(data, type_map=None):
-    """Sort atom_names of the system and reorder atom_numbs and atom_types according
+    """Sort atom names and reorder the corresponding type data.
+
+    Reorder atom_numbs and atom_types according
     to atom_names. If type_map is not given, atom_names will be sorted by
     alphabetical order. If type_map is given, atom_names will be set to type_map,
     and zero-count elements are kept.
@@ -132,7 +134,9 @@ def sort_atom_names(data, type_map=None):
 
 
 def uniq_atom_names(data):
-    """Make the atom names uniq. For example
+    """Make atom names unique.
+
+    For example,
     ['O', 'H', 'O', 'H', 'O'] -> ['O', 'H'].
 
     Parameters
@@ -175,20 +179,20 @@ def open_file(file: FileType, *args, **kwargs) -> Generator[io.IOBase, None, Non
     ----------
     file : file object or file path
         A file object or a file path.
+    *args : tuple
+        Positional arguments passed to :func:`open` for path inputs.
+    **kwargs : dict
+        Keyword arguments passed to :func:`open` for path inputs.
 
     Yields
     ------
     file : io.IOBase
         A file object.
-    *args
-        parameters to open
-    **kwargs
-        other parameters
 
     Raises
     ------
     ValueError
-        If file is not a file object or a file
+        If file is neither a file object nor a file path.
 
     Examples
     --------

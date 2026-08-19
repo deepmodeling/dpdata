@@ -19,10 +19,15 @@ force_convert = ForceConversion("hartree/bohr", "eV/angstrom").value()
 
 @Format.register("psi4/out")
 class PSI4OutFormat(Format):
-    """Psi4 output.
+    """Psi4 energy and gradient output.
 
-    Note that both the energy and the gradient should be
-    printed into the output file.
+    `Psi4 <https://psicode.org/>`_ is an open-source quantum chemistry program
+    package.
+
+    The reader creates one nonperiodic :class:`dpdata.LabeledSystem` frame
+    containing atomic coordinates, the total energy, and forces converted from
+    the Cartesian gradient. Both energy and gradient sections must be present
+    in the text output.
     """
 
     def from_labeled_system(self, file_name: FileType, **kwargs) -> dict:
@@ -32,8 +37,8 @@ class PSI4OutFormat(Format):
         ----------
         file_name : FileType
             file name
-        **kwargs
-            keyword arguments
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
 
         Returns
         -------
@@ -62,7 +67,14 @@ class PSI4OutFormat(Format):
 
 @Format.register("psi4/inp")
 class PSI4InputFormat(Format):
-    """Psi4 input file."""
+    """Psi4 input file for a single molecular configuration.
+
+    `Psi4 <https://psicode.org/>`_ is an open-source quantum chemistry program.
+
+    The writer emits the molecule, charge, multiplicity, requested electronic-
+    structure method, and basis set. Psi4 input is write-only in dpdata; use
+    ``psi4/out`` to load calculated energies and gradients.
+    """
 
     def to_system(
         self,
@@ -93,8 +105,8 @@ class PSI4InputFormat(Format):
             multiplicity of system
         frame_idx : int, default=0
             The index of the frame to dump
-        **kwargs
-            keyword arguments
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
         """
         types = np.array(data["atom_names"])[data["atom_types"]]
         with open_file(file_name, "w") as fout:

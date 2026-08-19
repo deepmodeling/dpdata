@@ -48,7 +48,9 @@ def get_relax_stru_files(output_dir):
 
 
 def get_coords_from_log(loglines, natoms, stru_files=None):
-    """NOTICE: unit of coords and cells is Angstrom
+    """Read relaxation coordinates and labels from an ABACUS log.
+
+    NOTICE: unit of coords and cells is Angstrom
     order:
         coordinate
         cell (no output if cell is not changed)

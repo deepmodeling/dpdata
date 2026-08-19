@@ -91,7 +91,9 @@ def read_amber_traj(
     use_element_symbols=None,
     labeled=True,
 ):
-    """The amber trajectory includes:
+    """Read an AMBER trajectory and its optional labels.
+
+    The amber trajectory includes:
     * nc, NetCDF format, stores coordinates
     * mdfrc, NetCDF format, stores forces
     * mden (optional), text format, stores energies

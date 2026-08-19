@@ -14,8 +14,9 @@ if TYPE_CHECKING:
 
 
 class Driver(ABC):
-    """The base class for a driver plugin. A driver can
-    label a pure System to generate the LabeledSystem.
+    """Base class for driver plugins.
+
+    A driver can label a pure System to generate the LabeledSystem.
 
     See Also
     --------
@@ -180,8 +181,9 @@ class HybridDriver(Driver):
 
 
 class Minimizer(ABC):
-    """The base class for a minimizer plugin. A minimizer can
-    minimize geometry.
+    """Base class for minimizer plugins.
+
+    A minimizer can minimize geometry.
     """
 
     __MinimizerPlugin = Plugin()
