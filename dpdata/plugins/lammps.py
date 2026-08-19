@@ -70,6 +70,7 @@ class LAMMPSLmpFormat(Format):
             System data dictionary with additional data based on atom style:
             - charges: For styles with charge information (full, charge, dipole)
             - molecule_ids: For styles with molecule information (full, bond, angle, molecular)
+            - spins: For spin style with spin vectors
 
         Examples
         --------

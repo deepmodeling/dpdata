@@ -96,6 +96,7 @@ class TestLmp(unittest.TestCase):
             text=True,
             capture_output=True,
             check=False,
+            timeout=60,
         )
         if result.returncode and "Unrecognized atom style" in result.stderr:
             self.skipTest("LAMMPS was built without the SPIN package")
