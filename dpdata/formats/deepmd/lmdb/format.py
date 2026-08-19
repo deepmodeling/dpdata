@@ -1099,21 +1099,21 @@ class LMDBFormat(Format):
 
         >>> import dpdata
         >>> ls = dpdata.LabeledSystem("OUTCAR", fmt="vasp/outcar")
-        >>> ls.to("lmdb", "data.lmdb")
+        >>> ls.to("deepmd/lmdb", "data.lmdb")
 
     Write many systems into one LMDB, forcing a global type map::
 
         >>> ms = dpdata.MultiSystems(s1, s2, s3)
-        >>> ms.to("lmdb", "data.lmdb", type_map=["H", "C", "N", "O"])
+        >>> ms.to("deepmd/lmdb", "data.lmdb", type_map=["H", "C", "N", "O"])
 
     Read back as standard (per-composition) systems::
 
-        >>> ms = dpdata.MultiSystems.from_file("data.lmdb", fmt="lmdb")
+        >>> ms = dpdata.MultiSystems.from_file("data.lmdb", fmt="deepmd/lmdb")
 
     Read back keeping the full global type map on every system::
 
         >>> ms = dpdata.MultiSystems.from_file(
-        ...     "data.lmdb", fmt="lmdb", mixed_type=True
+        ...     "data.lmdb", fmt="deepmd/lmdb", mixed_type=True
         ... )
 
     Note that loading through :class:`dpdata.MultiSystems` normalises the
@@ -1198,7 +1198,7 @@ class LMDBFormat(Format):
         """Write an ordered sequence of systems, one ``frame_system_id`` each.
 
         Unlike :meth:`to_multi_systems` (the path used by
-        ``MultiSystems.to('lmdb', ...)``), the systems are **not** merged by
+        ``MultiSystems.to('deepmd/lmdb', ...)``), the systems are **not** merged by
         formula: every element of ``systems`` becomes exactly one source
         system in the database, numbered ``0, 1, 2, ...`` in iteration order.
         This preserves the system partition recorded in ``frame_system_ids``,
@@ -1452,7 +1452,7 @@ class LMDBFormat(Format):
             warnings.warn(
                 f"LMDB '{file_name}' contains more than one composition; only the "
                 "first is loaded into a single System. Use "
-                "dpdata.MultiSystems.from_file(..., fmt='lmdb') to load all of them.",
+                "dpdata.MultiSystems.from_file(..., fmt='deepmd/lmdb') to load all of them.",
                 stacklevel=2,
             )
         return first
@@ -2027,7 +2027,7 @@ def dump_systems(
     Each element of ``systems`` is stored as a distinct source system,
     numbered ``0, 1, 2, ...`` in iteration order, and recorded in the
     ``frame_system_ids`` metadata. In contrast to
-    ``MultiSystems.to('lmdb', ...)``, systems are not merged by formula, so
+    ``MultiSystems.to('deepmd/lmdb', ...)``, systems are not merged by formula, so
     the system partition used by DeePMD-kit's ``prob_sys_size`` is kept.
 
     Parameters
@@ -2057,7 +2057,7 @@ def dump_systems(
     Examples
     --------
     >>> import dpdata
-    >>> from dpdata.formats.lmdb import dump_systems
+    >>> from dpdata.formats.deepmd.lmdb import dump_systems
     >>> systems = [
     ...     dpdata.LabeledSystem(d, fmt="deepmd/npy") for d in directories
     ... ]

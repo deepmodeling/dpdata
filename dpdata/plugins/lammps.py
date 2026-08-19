@@ -142,6 +142,7 @@ class LAMMPSDumpFormat(Format):
         step: int = 1,
         unwrap: bool = False,
         input_file: str = None,
+        f_idx: int | list[int] | np.ndarray | None = None,
         **kwargs,
     ):
         """Read the data from a lammps dump file.
@@ -160,13 +161,19 @@ class LAMMPSDumpFormat(Format):
             Whether to unwrap the coordinates
         input_file : str, optional
             The input file name
+        f_idx : int or array-like of int, optional
+            Specific non-negative frame indices to load. The requested order
+            and duplicate indices are preserved. Cannot be combined with
+            non-default ``begin`` or ``step`` values.
 
         Returns
         -------
         dict
             The system data
         """
-        lines = dpdata.formats.lammps.dump.load_file(file_name, begin=begin, step=step)
+        lines = dpdata.formats.lammps.dump.load_file(
+            file_name, begin=begin, step=step, f_idx=f_idx
+        )
         data = dpdata.formats.lammps.dump.system_data(
             lines, type_map, unwrap=unwrap, input_file=input_file
         )

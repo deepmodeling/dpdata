@@ -332,10 +332,13 @@ class System:
         return self.__class__.from_dict({"data": self_copy.data})
 
     def dump(self, filename: str, indent: int = 4):
-        """Dump .json or .yaml file."""
-        from monty.serialization import dumpfn
+        """Dump a JSON, YAML, or MessagePack file."""
+        from dpdata.serialization import _detect_format, dumpfn
 
-        dumpfn(self.as_dict(), filename, indent=indent)
+        if _detect_format(filename) == "mpk":
+            dumpfn(self.as_dict(), filename)
+        else:
+            dumpfn(self.as_dict(), filename, indent=indent)
 
     def map_atom_types(
         self, type_map: dict[str, int] | list[str] | None = None
@@ -379,20 +382,18 @@ class System:
 
     @staticmethod
     def load(filename: str):
-        """Rebuild System obj. from .json or .yaml file."""
-        from monty.serialization import loadfn
+        """Rebuild a System object from a JSON, YAML, or MessagePack file."""
+        from dpdata.serialization import loadfn
 
         return loadfn(filename)
 
     @classmethod
     def from_dict(cls, data: dict):
         """Construct a System instance from a data dict."""
-        from monty.serialization import MontyDecoder  # type: ignore
+        from dpdata.serialization import process_decoded
 
         decoded = {
-            k: MontyDecoder().process_decoded(v)
-            for k, v in data.items()
-            if not k.startswith("@")
+            k: process_decoded(v) for k, v in data.items() if not k.startswith("@")
         }
         return cls(**decoded)
 
@@ -461,10 +462,20 @@ class System:
                     slice(None) for _ in self.data[tt.name].shape
                 ]
                 new_shape[axis_nframes] = f_idx
-                tmp.data[tt.name] = self.data[tt.name][tuple(new_shape)]
+                # Advanced indexing already produces an independent array.
+                # Copy only slice results that still share storage, avoiding a
+                # second full memcpy for permutations and index lists.
+                source = self.data[tt.name]
+                selected = source[tuple(new_shape)]
+                if np.shares_memory(selected, source):
+                    selected = selected.copy()
+                tmp.data[tt.name] = selected
             else:
-                # keep the original data
-                tmp.data[tt.name] = self.data[tt.name]
+                # Frame-independent values (atom names/types, ``orig``, and
+                # optional metadata) are usually lists or arrays.  Copy them
+                # as well as frame data so editing a slice can never mutate
+                # the source system through a shared mutable object.
+                tmp.data[tt.name] = deepcopy(self.data[tt.name])
         return tmp
 
     def append(self, system: System) -> bool:
@@ -1389,16 +1400,17 @@ class MultiSystems:
     def from_fmt_obj(
         self, fmtobj: Format, directory, labeled: bool = True, **kwargs: Any
     ):
-        if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
-            for dd in fmtobj.from_multi_systems(directory, **kwargs):
-                if labeled:
-                    system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
-                else:
-                    system = System().from_fmt_obj(fmtobj, dd, **kwargs)
-                system.sort_atom_names()
-                self.append(system)
-            return self
-        else:
+        try:
+            if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
+                for dd in fmtobj.from_multi_systems(directory, **kwargs):
+                    if labeled:
+                        system = LabeledSystem().from_fmt_obj(fmtobj, dd, **kwargs)
+                    else:
+                        system = System().from_fmt_obj(fmtobj, dd, **kwargs)
+                    system.sort_atom_names()
+                    self.append(system)
+                return self
+
             system_list = []
             for dd in fmtobj.from_multi_systems(directory, **kwargs):
                 if labeled:
@@ -1411,6 +1423,16 @@ class MultiSystems:
                         system_list.append(System(data=data_item, **kwargs))
             self.append(*system_list)
             return self
+        except DataError as exc:
+            if (
+                labeled
+                and isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat)
+                and str(exc) == "energies not found in data"
+            ):
+                raise DataError(
+                    f"{exc}. For coordinate-only mixed datasets, pass labeled=False."
+                ) from exc
+            raise
 
     def to_fmt_obj(self, fmtobj: Format, directory, *args: Any, **kwargs: Any):
         if not isinstance(fmtobj, dpdata.plugins.deepmd.DeePMDMixedFormat):
@@ -1481,9 +1503,32 @@ class MultiSystems:
         raise RuntimeError("Unspported data structure")
 
     @classmethod
-    def from_file(cls, file_name, fmt: str, **kwargs: Any):
+    def from_file(
+        cls, file_name, fmt: str, *, labeled: bool = True, **kwargs: Any
+    ) -> MultiSystems:
+        """Load multiple systems from a file or directory.
+
+        Parameters
+        ----------
+        file_name
+            Source accepted by the selected format backend.
+        fmt : str
+            Format identifier, such as ``"deepmd/npy/mixed"``.
+        labeled : bool, default=True
+            Load :class:`LabeledSystem` objects when true. Set this to false for
+            coordinate-only data that does not contain energies or forces.
+        **kwargs
+            Additional arguments forwarded to the format backend.
+
+        Returns
+        -------
+        MultiSystems
+            Systems reconstructed from the source.
+        """
         multi_systems = cls()
-        multi_systems.load_systems_from_file(file_name=file_name, fmt=fmt, **kwargs)
+        multi_systems.load_systems_from_file(
+            file_name=file_name, fmt=fmt, labeled=labeled, **kwargs
+        )
         return multi_systems
 
     @classmethod
@@ -1506,10 +1551,22 @@ class MultiSystems:
             )
         return multi_systems
 
-    def load_systems_from_file(self, file_name=None, fmt: str | None = None, **kwargs):
+    def load_systems_from_file(
+        self,
+        file_name=None,
+        fmt: str | None = None,
+        *,
+        labeled: bool = True,
+        **kwargs,
+    ):
+        """Load systems into this collection.
+
+        ``labeled=False`` selects regular :class:`System` objects, which is
+        required for DeepMD datasets that omit label arrays.
+        """
         assert fmt is not None
         fmt = fmt.lower()
-        return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
+        return self.from_fmt_obj(load_format(fmt), file_name, labeled=labeled, **kwargs)
 
     def get_nframes(self) -> int:
         """Returns number of frames in all systems."""
