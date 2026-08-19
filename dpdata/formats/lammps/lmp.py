@@ -330,9 +330,10 @@ def get_charges(lines: list[str], atom_style: str = "atomic") -> np.ndarray | No
 
 
 def get_spins(lines: list[str], atom_style: str = "atomic") -> np.ndarray | None:
-    if atom_style not in {"atomic", "spin"}:
-        # Extra columns in dipole/sphere/etc. styles describe those styles'
-        # own properties and must never be reinterpreted as magnetic spins.
+    # This branch predates explicit LAMMPS spin-style support and stores spin
+    # columns only in dpdata's legacy atomic layout. Other registered styles
+    # use their extra columns for unrelated physical quantities.
+    if atom_style != "atomic":
         return None
     atom_lines = get_atoms(lines)
     if len(atom_lines[0].split()) < 8:
@@ -418,7 +419,9 @@ def system_data(
     if charges is not None:
         system["charges"] = np.array([charges])
 
-    spins = get_spins(lines, atom_style=atom_style)
+    spins = get_spins(
+        lines, atom_style="atomic" if atom_style == "spin" else atom_style
+    )
     if spins is not None:
         system["spins"] = np.array([spins])
 
