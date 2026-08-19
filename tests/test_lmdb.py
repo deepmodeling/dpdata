@@ -110,8 +110,10 @@ class TestLMDBMultiSystems(unittest.TestCase, CompLabeledMultiSys, MSAllIsNoPBC)
 
 
 class TestLMDBLegacyAlias(unittest.TestCase):
-    """The legacy ``lmdb`` alias and its ``from_lmdb``/``to_lmdb`` methods
-    must remain equivalent to the canonical ``deepmd/lmdb`` name.
+    """Verify that the legacy ``lmdb`` alias remains equivalent.
+
+    The ``from_lmdb``/``to_lmdb`` methods must remain equivalent to the
+    canonical ``deepmd/lmdb`` name.
     """
 
     def setUp(self):
