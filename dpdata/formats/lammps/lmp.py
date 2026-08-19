@@ -20,6 +20,9 @@ ATOM_STYLE_COLUMNS = {
     "molecular": (0, 2, 3, 4, 5, True, False, None),
     "dipole": (0, 1, 3, 4, 5, False, True, 2),
     "sphere": (0, 1, 4, 5, 6, False, False, None),
+    # LAMMPS ``atom_style spin`` stores x/y/z in the same columns as atomic
+    # style, followed by a unit spin direction and its magnetic moment.
+    "spin": (0, 1, 2, 3, 4, False, False, None),
 }
 
 
@@ -420,7 +423,9 @@ def system_data(
     if charges is not None:
         system["charges"] = np.array([charges])
 
-    spins = get_spins(lines, atom_style=atom_style)
+    spins = get_spins(
+        lines, atom_style="atomic" if atom_style == "spin" else atom_style
+    )
     if spins is not None:
         system["spins"] = np.array([spins])
 
@@ -576,7 +581,11 @@ def from_system_data(system, f_idx=0):
             ret += mass_fmt % (ii + 1, mass, atom_name)
         ret += "\n"
 
-    ret += "Atoms # atomic\n"
+    # The extra direction/magnitude columns have an official LAMMPS layout:
+    # they belong to ``atom_style spin``, not ``atom_style atomic``.  Using the
+    # matching section annotation lets ``read_data`` validate the rows.
+    atom_style = "spin" if "spins" in system else "atomic"
+    ret += f"Atoms # {atom_style}\n"
     ret += "\n"
     coord_fmt = (
         ptr_int_fmt
