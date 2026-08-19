@@ -255,7 +255,10 @@ def get_frames(fname, begin=0, step=1, ml=False, convergence_check=True):
 
 
 def _get_frames_lower(fp, fname, begin=0, step=1, ml=False, convergence_check=True):
-    blk = get_outcar_block(fp)
+    # Split on the same token as every later block. An ML_ISTART=2 run writes
+    # only "free  energy ML TOTEN", so asking for the ab initio token here
+    # swallowed the whole file into one block and yielded a single frame.
+    blk = get_outcar_block(fp, ml)
 
     atom_names, atom_numbs, atom_types, nelm, nwrite = system_info(
         blk, type_idx_zero=True
