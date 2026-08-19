@@ -216,3 +216,6 @@ intersphinx_mapping = {
 jupyterlite_contents = "./nb"
 jupyterlite_bind_ipynb_suffix = False
 jupyterlite_silence = False
+jupyterlite_build_command_options = {
+    "XeusAddon.mount_jupyterlite_content": True,
+}

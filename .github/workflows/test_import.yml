@@ -33,3 +33,23 @@ jobs:
         assert loaded.formula == system.formula
         assert loaded.get_nframes() == system.get_nframes()
         PY
+    - name: Test core import without LMDB dependencies
+      run: |
+        python -m pip uninstall -y lmdb msgpack
+        python - <<'PY'
+        import dpdata
+
+        system = dpdata.System(
+            "tests/poscars/POSCAR.h2o.md", fmt="vasp/poscar"
+        )
+        assert system.get_nframes() == 1
+
+        try:
+            dpdata.System("missing.lmdb", fmt="lmdb")
+        except ModuleNotFoundError as exc:
+            assert "lmdb" in str(exc)
+        else:
+            raise AssertionError(
+                "LMDB format should require its backend dependencies"
+            )
+        PY
