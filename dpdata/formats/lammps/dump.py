@@ -431,6 +431,21 @@ def _atom_line_error(line, head):
     return None
 
 
+def _box_line_error(line, head):
+    """Return why a BOX BOUNDS row is unusable, or ``None`` if valid."""
+    words = line.split()
+    ncols = 3 if "xy xz yz" in head else 2
+    if len(words) < ncols:
+        return f"truncated box bound line {line.strip()!r}"
+
+    try:
+        for word in words:
+            float(word)
+    except ValueError:
+        return f"unparsable box bound line {line.strip()!r}"
+    return None
+
+
 def _describe_incomplete_frame(frame_lines):
     """Return why a dump frame is unusable, or ``None`` when it is intact.
 
@@ -450,9 +465,13 @@ def _describe_incomplete_frame(frame_lines):
     except ValueError:
         return f"unparsable atom count {natoms_blk[0].strip()!r}"
 
-    box_blk, _ = _get_block(frame_lines, "BOX BOUNDS")
+    box_blk, box_head = _get_block(frame_lines, "BOX BOUNDS")
     if len(box_blk) < 3:
         return f"only {len(box_blk)} of 3 box bound lines"
+    for ii in box_blk[:3]:
+        error = _box_line_error(ii, box_head)
+        if error is not None:
+            return error
 
     atoms_blk, head = _get_block(frame_lines, "ATOMS")
     if len(atoms_blk) != natoms:
