@@ -149,6 +149,34 @@ class TestLmpDumpIncomplete(unittest.TestCase):
         self.assertEqual(system.get_nframes(), reference.get_nframes())
         np.testing.assert_allclose(system["coords"], reference["coords"], atol=1e-10)
 
+    def test_malformed_box_bounds_frame_is_skipped(self):
+        boxes = [
+            i
+            for i, line in enumerate(self.lines)
+            if line.startswith("ITEM: BOX BOUNDS")
+        ]
+        damaged = list(self.lines)
+        damaged[boxes[-1] + 1 : boxes[-1] + 4] = [
+            "low high tilt",
+            "low high tilt",
+            "low high tilt",
+        ]
+        path = self._write("malformed_box.dump", damaged)
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            system = self._load(path)
+
+        self.assertEqual(system.get_nframes(), 4)
+        self.assertTrue(
+            any(
+                "incomplete frame 4" in str(ii.message)
+                and "unparsable box bound line" in str(ii.message)
+                for ii in caught
+            ),
+            "a frame with non-numeric box bounds must be skipped",
+        )
+
     def test_no_usable_frame_raises(self):
         starts = [i for i, ll in enumerate(self.lines) if "ITEM: TIMESTEP" in ll]
         path = self._write("headers_only.dump", self.lines[: starts[0] + 4])
