@@ -18,6 +18,18 @@ def _to_system_data_lower(lines, cartesian=True, selective_dynamics=False):
     system["atom_names"] = [str(ii) for ii in lines[5].split()]
     system["atom_numbs"] = [int(ii) for ii in lines[6].split()]
     scale = float(lines[1])
+    # VASP interprets a negative scale as a target cell volume (in A^3), not
+    # as a negative vector multiplier.  Convert it to a positive linear scale
+    # after reading the unscaled lattice vectors.
+    if scale < 0:
+        target_volume = abs(scale)
+        raw_cell = np.array(
+            [[float(jj) for jj in lines[ii].split()] for ii in range(2, 5)]
+        )
+        raw_volume = abs(np.linalg.det(raw_cell))
+        if raw_volume == 0:
+            raise ValueError("negative POSCAR scale requires a non-zero cell volume")
+        scale = (target_volume / raw_volume) ** (1.0 / 3.0)
     cell = []
     move_flags = []
     for ii in range(2, 5):
