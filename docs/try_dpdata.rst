@@ -1,4 +1,4 @@
 Try dpdata online
 =================
 
-.. retrolite:: nb/try_dpdata.ipynb
+.. notebooklite:: nb/try_dpdata.ipynb
