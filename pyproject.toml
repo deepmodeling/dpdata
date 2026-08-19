@@ -51,6 +51,7 @@ docs = [
     'sphinx',
     'recommonmark',
     'sphinx-book-theme',
+    'sphinx-design',
     'numpydoc',
     'myst-parser',
     'deepmodeling-sphinx>=0.3.0',
