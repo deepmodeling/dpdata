@@ -506,9 +506,10 @@ def _clamp_after_atom_payload(frame_lines):
     head = frame_lines[atoms_header]
     payload_lines = 0
     for idx in range(atoms_header + 1, len(frame_lines)):
-        if _is_data_line(frame_lines[idx]) and _atom_line_error(
-            frame_lines[idx], head
-        ) is None:
+        if (
+            _is_data_line(frame_lines[idx])
+            and _atom_line_error(frame_lines[idx], head) is None
+        ):
             payload_lines += 1
             if payload_lines == natoms:
                 return frame_lines[: idx + 1]
