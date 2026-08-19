@@ -46,6 +46,7 @@ version = ".".join(release.split(".")[:2])
 extensions = [
     "deepmodeling_sphinx",
     "sphinx_book_theme",
+    "sphinx_design",
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
