@@ -10,7 +10,7 @@ import numpy as np
 
 import dpdata
 from dpdata.data_type import Axis, DataType
-from dpdata.formats.lmdb.format import LMDBError, LMDBFrameError
+from dpdata.formats.deepmd.lmdb.format import LMDBError, LMDBFrameError
 
 
 class TestLMDBFrameData(unittest.TestCase):
@@ -48,21 +48,21 @@ class TestLMDBFrameData(unittest.TestCase):
             shutil.rmtree(self.lmdb_path)
 
     def test_frame_data_preservation(self):
-        self.system.to("lmdb", self.lmdb_path)
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        self.system.to("deepmd/lmdb", self.lmdb_path)
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         np.testing.assert_allclose(
             loaded.data["frame_data"], self.system.data["frame_data"]
         )
 
     def test_frame_data_auto_registration(self):
-        self.system.to("lmdb", self.lmdb_path)
+        self.system.to("deepmd/lmdb", self.lmdb_path)
 
         # simulate a clean session
         dpdata.System.DTYPES = self.original_system_dtypes
         dpdata.LabeledSystem.DTYPES = self.original_labeled_system_dtypes
         self.assertNotIn("frame_data", [dt.name for dt in dpdata.LabeledSystem.DTYPES])
 
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertIn("frame_data", [dt.name for dt in dpdata.LabeledSystem.DTYPES])
         np.testing.assert_allclose(
             loaded.data["frame_data"], self.system.data["frame_data"]
@@ -111,18 +111,18 @@ class TestLMDBFparamAparam(unittest.TestCase):
             shutil.rmtree(self.lmdb_path)
 
     def test_fparam_aparam_preservation(self):
-        self.system.to("lmdb", self.lmdb_path)
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        self.system.to("deepmd/lmdb", self.lmdb_path)
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         np.testing.assert_allclose(loaded.data["fparam"], self.system.data["fparam"])
         np.testing.assert_allclose(loaded.data["aparam"], self.system.data["aparam"])
 
     def test_fparam_aparam_auto_registration(self):
-        self.system.to("lmdb", self.lmdb_path)
+        self.system.to("deepmd/lmdb", self.lmdb_path)
 
         dpdata.System.DTYPES = self.original_system_dtypes
         dpdata.LabeledSystem.DTYPES = self.original_labeled_system_dtypes
 
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertIn("fparam", [dt.name for dt in dpdata.LabeledSystem.DTYPES])
         self.assertIn("aparam", [dt.name for dt in dpdata.LabeledSystem.DTYPES])
         np.testing.assert_allclose(loaded.data["fparam"], self.system.data["fparam"])
@@ -132,12 +132,12 @@ class TestLMDBFparamAparam(unittest.TestCase):
         # natoms == 3 collides with the trailing coordinate dim; the stored
         # symbolic shape must still recover (NFRAMES, NATOMS, 3), not
         # (NFRAMES, NATOMS, NATOMS).
-        self.system.to("lmdb", self.lmdb_path)
+        self.system.to("deepmd/lmdb", self.lmdb_path)
 
         dpdata.System.DTYPES = self.original_system_dtypes
         dpdata.LabeledSystem.DTYPES = self.original_labeled_system_dtypes
 
-        dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         aparam_dt = next(
             dt for dt in dpdata.LabeledSystem.DTYPES if dt.name == "aparam"
         )
@@ -198,7 +198,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             dtype=float,
         ).reshape(self.system.get_nframes(), self.system.get_natoms(), 3)
         expected = self.system.data["spins"].copy()
-        self.system.to("lmdb", self.lmdb_path)
+        self.system.to("deepmd/lmdb", self.lmdb_path)
 
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:
             with env.begin() as txn:
@@ -210,7 +210,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
 
         dpdata.System.DTYPES = self.original_system_dtypes
         dpdata.LabeledSystem.DTYPES = self.original_labeled_system_dtypes
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         np.testing.assert_array_equal(loaded["spins"], expected)
         registered = next(
             dt for dt in dpdata.LabeledSystem.DTYPES if dt.name == "spins"
@@ -240,7 +240,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             LMDBError,
             "both map to",
         ):
-            self.system.to("lmdb", self.lmdb_path)
+            self.system.to("deepmd/lmdb", self.lmdb_path)
 
     def test_deepmd_core_name_collision_rejected(self):
         malicious = DataType(
@@ -260,7 +260,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             101.0,
         )
         with self.assertRaisesRegex(LMDBError, "reserved LMDB key"):
-            self.system.to("lmdb", self.lmdb_path)
+            self.system.to("deepmd/lmdb", self.lmdb_path)
 
     def test_additional_protocol_alias_rejected(self):
         alias = DataType(
@@ -279,7 +279,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             )
         )
         with self.assertRaisesRegex(LMDBError, "belongs to 'spins'"):
-            self.system.to("lmdb", self.lmdb_path)
+            self.system.to("deepmd/lmdb", self.lmdb_path)
 
     def test_atom_types_key_collision_rejected(self):
         malicious = DataType(
@@ -294,21 +294,21 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             (self.system.get_nframes(), self.system.get_natoms())
         )
         with self.assertRaisesRegex(LMDBError, "reserved LMDB key"):
-            self.system.to("lmdb", self.lmdb_path)
+            self.system.to("deepmd/lmdb", self.lmdb_path)
 
     def test_static_field_roundtrip(self):
         static = DataType("static_data", np.ndarray, shape=(2,), required=False)
         self._register(static)
         self.system.data["static_data"] = np.array([1.0, 2.0])
-        self.system.to("lmdb", self.lmdb_path)
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        self.system.to("deepmd/lmdb", self.lmdb_path)
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         np.testing.assert_array_equal(loaded["static_data"], [1.0, 2.0])
 
     def test_inconsistent_static_field_raises(self):
         static = DataType("static_data", np.ndarray, shape=(2,), required=False)
         self._register(static)
         self.system.data["static_data"] = np.array([1.0, 2.0])
-        self.system.to("lmdb", self.lmdb_path)
+        self.system.to("deepmd/lmdb", self.lmdb_path)
 
         env = lmdb.open(self.lmdb_path, map_size=1 << 30)
         with env.begin(write=True) as txn:
@@ -327,7 +327,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             LMDBFrameError,
             "Static field",
         ):
-            dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+            dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
 
     def test_nonleading_frame_axis_roundtrip(self):
         transposed = DataType(
@@ -341,8 +341,8 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             2, self.system.get_nframes()
         )
         self.system.data["transposed_frames"] = values
-        self.system.to("lmdb", self.lmdb_path)
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        self.system.to("deepmd/lmdb", self.lmdb_path)
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         np.testing.assert_array_equal(loaded["transposed_frames"], values)
 
     def test_unused_shape_none_data_type_does_not_block_write(self):
@@ -353,8 +353,8 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             required=False,
         )
         self._register(undefined)
-        self.system.to("lmdb", self.lmdb_path)
-        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="lmdb")
+        self.system.to("deepmd/lmdb", self.lmdb_path)
+        loaded = dpdata.LabeledSystem(self.lmdb_path, fmt="deepmd/lmdb")
         self.assertEqual(loaded.get_nframes(), self.system.get_nframes())
 
     def test_used_shape_none_data_type_rejected(self):
@@ -369,7 +369,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             (self.system.get_nframes(), 2)
         )
         with self.assertRaisesRegex(LMDBError, "no declared shape"):
-            self.system.to("lmdb", self.lmdb_path)
+            self.system.to("deepmd/lmdb", self.lmdb_path)
 
     def test_multiple_atom_axes_remove_virtual_atoms(self):
         hessian = DataType(
@@ -398,7 +398,7 @@ class TestLMDBFieldProtocol(unittest.TestCase):
             "energies": np.array([-1.0]),
             "hessian": np.zeros((1, 3, 3, 3, 3)),
         }
-        from dpdata.formats.lmdb import dump_systems
+        from dpdata.formats.deepmd.lmdb import dump_systems
 
         dump_systems([data], self.lmdb_path)
         with lmdb.open(self.lmdb_path, readonly=True, lock=False) as env:

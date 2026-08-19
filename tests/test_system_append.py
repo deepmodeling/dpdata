@@ -18,6 +18,41 @@ class TestFailedAppend(unittest.TestCase):
         )
 
 
+class TestAppendOwnership(unittest.TestCase):
+    """Regression tests for copy-on-slice and copy-on-first-append semantics."""
+
+    def test_sub_system_does_not_alias_metadata(self):
+        system = dpdata.System(
+            data={
+                "atom_names": ["H"],
+                "atom_numbs": [1],
+                "atom_types": np.array([0]),
+                "orig": np.zeros(3),
+                "cells": np.eye(3).reshape(1, 3, 3),
+                "coords": np.zeros((1, 1, 3)),
+            }
+        )
+        sub = system[0:1]
+        sub.data["atom_names"][0] = "X"
+        sub.data["atom_types"][0] = 1
+        sub.data["coords"][0, 0, 0] = 123.0
+        sub.data["cells"][0, 0, 0] = 456.0
+        self.assertEqual(system.data["atom_names"], ["H"])
+        np.testing.assert_array_equal(system.data["atom_types"], [0])
+        self.assertEqual(system.data["coords"][0, 0, 0], 0.0)
+        self.assertEqual(system.data["cells"][0, 0, 0], 1.0)
+
+    def test_first_append_does_not_alias_source(self):
+        source = dpdata.System("poscars/POSCAR.oh.d", fmt="vasp/poscar")
+        target = dpdata.System()
+        target.append(source)
+
+        source.data["atom_names"][0] = "X"
+        source.data["coords"][0, 0, 0] = 123.0
+        self.assertEqual(target.data["atom_names"][0], "O")
+        self.assertNotEqual(target.data["coords"][0, 0, 0], 123.0)
+
+
 class TestVaspXmlAppend(unittest.TestCase, CompLabeledSys, IsPBC):
     def setUp(self):
         self.places = 6

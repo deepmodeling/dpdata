@@ -1,0 +1,20 @@
+&CONTROL
+  calculation = 'cp',
+  prefix = 'cp',
+/
+&SYSTEM
+  ibrav = 0,
+  nat = 1,
+  ntyp = 1,
+/
+
+CELL_PARAMETERS { angstrom }
+  19.7299995422   0.0000000000   0.0000000000
+   0.0000000000  19.7299995422   0.0000000000
+   0.0000000000   0.0000000000  19.7299995422
+
+ATOMIC_SPECIES
+H  1.00794  H.UPF
+
+ATOMIC_POSITIONS { bohr }
+H  0.0  0.0  0.0
