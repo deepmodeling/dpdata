@@ -402,6 +402,35 @@ def get_spin(lines, spin_keys):
         return None
 
 
+def _atom_line_error(line, head):
+    """Return why an ATOMS payload row is unusable, or ``None`` if valid."""
+    keys = head.split()
+    words = line.split()
+    ncols = len(keys) - 2
+    if len(words) < ncols:
+        return f"truncated atom line {line.strip()!r}"
+
+    try:
+        id_idx = keys.index("id") - 2
+        type_idx = keys.index("type") - 2
+    except ValueError:
+        return "ATOMS header is missing an 'id' or 'type' column"
+
+    coord_tp_and_sf = get_coordtype_and_scalefactor(keys)
+    if coord_tp_and_sf is None:
+        return "ATOMS header does not contain atomic coordinates"
+    coordtype, _, _ = coord_tp_and_sf
+
+    try:
+        int(words[id_idx])
+        int(words[type_idx])
+        for key in coordtype:
+            float(words[keys.index(key) - 2])
+    except (ValueError, IndexError):
+        return f"unparsable atom line {line.strip()!r}"
+    return None
+
+
 def _describe_incomplete_frame(frame_lines):
     """Return why a dump frame is unusable, or ``None`` when it is intact.
 
@@ -428,10 +457,10 @@ def _describe_incomplete_frame(frame_lines):
     atoms_blk, head = _get_block(frame_lines, "ATOMS")
     if len(atoms_blk) != natoms:
         return f"{len(atoms_blk)} atom lines for {natoms} atoms"
-    ncols = len(head.split()) - 2
     for ii in atoms_blk:
-        if len(ii.split()) < ncols:
-            return f"truncated atom line {ii.strip()!r}"
+        error = _atom_line_error(ii, head)
+        if error is not None:
+            return error
     return None
 
 
@@ -474,9 +503,12 @@ def _clamp_after_atom_payload(frame_lines):
     if natoms == 0:
         return frame_lines[: atoms_header + 1]
 
+    head = frame_lines[atoms_header]
     payload_lines = 0
     for idx in range(atoms_header + 1, len(frame_lines)):
-        if _is_data_line(frame_lines[idx]):
+        if _is_data_line(frame_lines[idx]) and _atom_line_error(
+            frame_lines[idx], head
+        ) is None:
             payload_lines += 1
             if payload_lines == natoms:
                 return frame_lines[: idx + 1]

@@ -48,6 +48,28 @@ class TestLmpDumpIncomplete(unittest.TestCase):
             "dropping a frame must be reported",
         )
 
+    def test_truncated_last_frame_with_trailer_is_skipped(self):
+        atoms = [
+            i for i, line in enumerate(self.lines) if line.startswith("ITEM: ATOMS")
+        ]
+        damaged = self.lines[: atoms[-1] + 2]
+        damaged.append("Loop time of 0.5 on 1 procs")
+        path = self._write("truncated_with_trailer.dump", damaged)
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            system = self._load(path)
+
+        self.assertEqual(system.get_nframes(), 4)
+        self.assertTrue(
+            any(
+                "incomplete frame 4" in str(ii.message)
+                and "unparsable atom line" in str(ii.message)
+                for ii in caught
+            ),
+            "a non-atom trailer must not complete a truncated frame",
+        )
+
     def test_truncated_frame_does_not_shift_later_frames(self):
         # Frames are sliced at their own markers, so a short frame in the
         # middle must not push the remaining frames out of alignment.
