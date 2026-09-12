@@ -442,6 +442,46 @@ def right_hand_rule(
     return cell, coord
 
 
+def validate_duplicate_species(atom_names, masses, pp_files, orb_files):
+    """Check that duplicate atom species definitions are consistent.
+
+    get_frame_from_stru merges repeated labels and keeps the metadata of the
+    first matching row for masses, pp_files, and orb_files. If a duplicate
+    row conflicts with the first one, raise an error instead of silently
+    discarding the conflicting metadata.
+
+    Args:
+        atom_names (list): list of atom names.
+        masses (list): list of atomic masses.
+        pp_files (list): list of pseudo potential files.
+        orb_files (list): list of orbital files.
+
+    Raises
+    ------
+        RuntimeError: if duplicate species have conflicting metadata.
+    """
+    for name in dict.fromkeys(atom_names):
+        indices = [j for j in range(len(atom_names)) if atom_names[j] == name]
+        if len(indices) < 2:
+            continue
+        ref_mass = masses[indices[0]]
+        ref_pp = pp_files[indices[0]]
+        ref_orb = orb_files[indices[0]] if orb_files else None
+        for j in indices[1:]:
+            if not np.isclose(masses[j], ref_mass):
+                raise RuntimeError(
+                    f"Conflicting duplicate species '{name}': mass {masses[j]} != {ref_mass}"
+                )
+            if pp_files[j] != ref_pp:
+                raise RuntimeError(
+                    f"Conflicting duplicate species '{name}': pp_file {pp_files[j]} != {ref_pp}"
+                )
+            if ref_orb is not None and orb_files[j] != ref_orb:
+                raise RuntimeError(
+                    f"Conflicting duplicate species '{name}': orb_file {orb_files[j]} != {ref_orb}"
+                )
+
+
 def get_frame_from_stru(stru):
     """Read the ABACUS STRU file and return the dpdata frame.
 
@@ -493,27 +533,46 @@ def get_frame_from_stru(stru):
         blocks["ATOMIC_POSITIONS"], atom_names, celldm, cell
     )
 
+    validate_duplicate_species(atom_names, masses, pp_files, orb_files)
+
     cell, coords = right_hand_rule(cell, coords)
+    uniq_name = []
+    uniq_atom_num = []
+    for i in atom_names:
+        if i not in uniq_name:
+            uniq_name.append(i)
+            uniq_atom_num.append(
+                sum(
+                    [
+                        atom_numbs[j]
+                        for j in range(len(atom_names))
+                        if atom_names[j] == i
+                    ]
+                )
+            )
     data = {
-        "atom_names": atom_names,
-        "atom_numbs": atom_numbs,
+        "atom_names": uniq_name,
+        "atom_numbs": uniq_atom_num,
         "atom_types": np.array(
-            [i for i in range(len(atom_numbs)) for j in range(atom_numbs[i])]
+            [
+                uniq_name.index(atom_names[i])
+                for i in range(len(atom_numbs))
+                for j in range(atom_numbs[i])
+            ]
         ),
-        "masses": np.array(masses),
-        "pp_files": pp_files,
+        "masses": np.array([masses[atom_names.index(i)] for i in uniq_name]),
+        "pp_files": [pp_files[atom_names.index(i)] for i in uniq_name],
         "cells": np.array([cell]),
         "coords": np.array([coords]),
     }
     if len(mags) > 0:
         data["spins"] = np.array([mags])
     if len(orb_files) > 0:
-        data["orb_files"] = orb_files
+        data["orb_files"] = [orb_files[atom_names.index(i)] for i in uniq_name]
     if len(dpks_descriptor) > 0:
         data["dpks_descriptor"] = dpks_descriptor[0].strip()
     if len(move) > 0:
         data["move"] = np.array([move])
-
     return data
 
 
