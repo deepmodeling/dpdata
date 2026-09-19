@@ -169,7 +169,19 @@ class TestConverCellDim(unittest.TestCase):
         -12: [[4, 0, 0], [0, 6, 0], [3.2, 0, 8 * np.sqrt(1 - 0.4**2)]],
         13: [[2, 0, -4], [3, 3 * np.sqrt(3), 0], [2, 0, 4]],
         -13: [[2, 3, 0], [-2, 3, 0], [3.2, 0, 8 * np.sqrt(1 - 0.4**2)]],
-        14: [[4, 0, 0], [3.6, 4.8, 0], [3.2, 2.6, 6.8556546004]],
+        14: [
+            [4, 0, 0],
+            [3.6, 4.8, 0],
+            [
+                3.2,
+                2.6,
+                8
+                * np.sqrt(
+                    (1.0 + 2.0 * 0.5 * 0.4 * 0.6 - 0.5**2 - 0.4**2 - 0.6**2)
+                    / (1.0 - 0.6**2)
+                ),
+            ],
+        ],
     }
 
     def test_all_ibrav(self):
@@ -211,6 +223,56 @@ class TestConverCellDim(unittest.TestCase):
             with self.subTest(ibrav=ibrav):
                 with self.assertRaises(RuntimeError):
                     convert_celldm(ibrav, self.CELLDIM)
+
+    def test_invalid_celldm_raises(self):
+        # (ibrav, celldm index to invalidate, replacement, QE-slot label)
+        bad_inputs = [
+            (1, 0, 0.0, "celldm(1)=0"),
+            (1, 0, -1.0, "celldm(1)<0"),
+            (4, 2, 0.0, "ibrav=4 celldm(3)<=0"),
+            (4, 2, -1.0, "ibrav=4 celldm(3)<0"),
+            (5, 3, -0.5, "ibrav=5 cosAB=-0.5"),
+            (5, 3, 1.0, "ibrav=5 cosAB=1"),
+            (-5, 3, 1.5, "ibrav=-5 cosAB out of range"),
+            (6, 2, 0.0, "ibrav=6 celldm(3)<=0"),
+            (7, 2, -0.1, "ibrav=7 celldm(3)<0"),
+            (8, 1, 0.0, "ibrav=8 celldm(2)=0"),
+            (8, 2, -1.0, "ibrav=8 celldm(3)<0"),
+            (9, 1, 0.0, "ibrav=9 celldm(2)=0"),
+            (-9, 2, 0.0, "ibrav=-9 celldm(3)=0"),
+            (91, 1, 0.0, "ibrav=91 celldm(2)=0"),
+            (10, 2, 0.0, "ibrav=10 celldm(3)=0"),
+            (11, 1, 0.0, "ibrav=11 celldm(2)=0"),
+            (12, 3, 1.0, "ibrav=12 cosAB=+1 (degenerate sen)"),
+            (12, 3, -1.0, "ibrav=12 cosAB=-1"),
+            (12, 1, 0.0, "ibrav=12 celldm(2)=0"),
+            (-12, 4, 1.0, "ibrav=-12 cosAC=+1"),
+            (-12, 2, -1.0, "ibrav=-12 celldm(3)<0"),
+            (13, 3, 1.0, "ibrav=13 cosAB=+1"),
+            (-13, 4, -1.0, "ibrav=-13 cosAC=-1"),
+            (14, 1, 0.0, "ibrav=14 celldm(2)=0"),
+            (14, 2, 0.0, "ibrav=14 celldm(3)=0"),
+            (14, 3, 1.0, "ibrav=14 cosBC=+1"),
+            (14, 4, -1.0, "ibrav=14 cosAC=-1"),
+            (14, 5, 1.0, "ibrav=14 cosAB=+1 (singam=0)"),
+        ]
+        for ibrav, idx, value, label in bad_inputs:
+            with self.subTest(case=label):
+                celldm = self.CELLDIM.copy()
+                celldm[idx] = value
+                with self.assertRaises(RuntimeError):
+                    convert_celldm(ibrav, celldm)
+
+    def test_ibrav_14_degenerate_term_rejects_zero(self):
+        # cosBC=cosAC=cosAB=0.5 gives 1 + 2*(0.5)**3 - 3*(0.5)**2 = 0.875 > 0 (valid)
+        # But cosAB=0, cosAC=1-eps, cosBC=1-eps pushes term → 0 exactly at boundary
+        celldm = self.CELLDIM.copy()
+        celldm[3] = 0.0  # cosBC
+        celldm[4] = 1.0 - 1e-9  # cosAC (just inside range)
+        celldm[5] = 1.0 - 1e-9  # cosAB (just inside range)
+        # term = 1 + 0 - 0 - (1-1e-9)^2 - (1-1e-9)^2 ≈ -1 + 4e-9 → still rejected
+        with self.assertRaises(RuntimeError):
+            convert_celldm(14, celldm)
 
 
 class TestVirial(unittest.TestCase):

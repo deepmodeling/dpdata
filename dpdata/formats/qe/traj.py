@@ -63,6 +63,8 @@ def convert_celldm(ibrav, celldm):
     sr2 = np.sqrt(2.0)
     sr3 = np.sqrt(3.0)
     a = celldm[0]
+    if not a > 0.0:
+        raise RuntimeError(f"wrong celldm(1)={a}: must be positive for ibrav={ibrav}")
     cell = np.zeros((3, 3))
 
     if ibrav == 1:
@@ -89,12 +91,20 @@ def convert_celldm(ibrav, celldm):
             cell[2, 0] = -t
             cell[2, 1] = -t
     elif ibrav == 4:
+        if not celldm[2] > 0.0:
+            raise RuntimeError(
+                f"wrong celldm(3)={celldm[2]} for ibrav=4: c/a must be positive"
+            )
         cell[0, 0] = a
         cell[1, 0] = -a / 2.0
         cell[1, 1] = a * sr3 / 2.0
         cell[2, 2] = a * celldm[2]
     elif ibrav == 5:
         cosab = celldm[3]
+        if not -0.5 < cosab < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={cosab} for ibrav=5: need -0.5 < cosAB < 1"
+            )
         term1 = np.sqrt(1.0 + 2.0 * cosab)
         term2 = np.sqrt(1.0 - cosab)
         cell[1, 1] = sr2 * a * term2 / sr3
@@ -107,6 +117,10 @@ def convert_celldm(ibrav, celldm):
         cell[2, 2] = cell[1, 2]
     elif ibrav == -5:
         cosab = celldm[3]
+        if not -0.5 < cosab < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={cosab} for ibrav=-5: need -0.5 < cosAB < 1"
+            )
         term1 = np.sqrt(1.0 + 2.0 * cosab)
         term2 = np.sqrt(1.0 - cosab)
         cell[0, 0] = a * (term1 - 2.0 * term2) / 3.0
@@ -119,10 +133,18 @@ def convert_celldm(ibrav, celldm):
         cell[2, 1] = cell[0, 2]
         cell[2, 2] = cell[0, 0]
     elif ibrav == 6:
+        if not celldm[2] > 0.0:
+            raise RuntimeError(
+                f"wrong celldm(3)={celldm[2]} for ibrav=6: c/a must be positive"
+            )
         cell[0, 0] = a
         cell[1, 1] = a
         cell[2, 2] = a * celldm[2]
     elif ibrav == 7:
+        if not celldm[2] > 0.0:
+            raise RuntimeError(
+                f"wrong celldm(3)={celldm[2]} for ibrav=7: c/a must be positive"
+            )
         cell[1, 0] = a / 2.0
         cell[1, 1] = cell[1, 0]
         cell[1, 2] = celldm[2] * a / 2.0
@@ -133,28 +155,53 @@ def convert_celldm(ibrav, celldm):
         cell[2, 1] = -cell[1, 0]
         cell[2, 2] = cell[1, 2]
     elif ibrav == 8:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=8: b/a and c/a must be positive"
+            )
         cell[0, 0] = a
         cell[1, 1] = a * celldm[1]
         cell[2, 2] = a * celldm[2]
     elif ibrav == 9:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=9: b/a and c/a must be positive"
+            )
         cell[0, 0] = a / 2.0
         cell[0, 1] = cell[0, 0] * celldm[1]
         cell[1, 0] = -cell[0, 0]
         cell[1, 1] = cell[0, 1]
         cell[2, 2] = a * celldm[2]
     elif ibrav == -9:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=-9: b/a and c/a must be positive"
+            )
         cell[0, 0] = a / 2.0
         cell[0, 1] = -cell[0, 0] * celldm[1]
         cell[1, 0] = cell[0, 0]
         cell[1, 1] = -cell[0, 1]
         cell[2, 2] = a * celldm[2]
     elif ibrav == 91:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=91: b/a and c/a must be positive"
+            )
         cell[0, 0] = a
         cell[1, 1] = a * celldm[1] / 2.0
         cell[1, 2] = -a * celldm[2] / 2.0
         cell[2, 1] = cell[1, 1]
         cell[2, 2] = -cell[1, 2]
     elif ibrav == 10:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=10: b/a and c/a must be positive"
+            )
         cell[1, 0] = a / 2.0
         cell[1, 1] = cell[1, 0] * celldm[1]
         cell[0, 0] = cell[1, 0]
@@ -162,6 +209,11 @@ def convert_celldm(ibrav, celldm):
         cell[2, 1] = cell[1, 0] * celldm[1]
         cell[2, 2] = cell[0, 2]
     elif ibrav == 11:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=11: b/a and c/a must be positive"
+            )
         cell[0, 0] = a / 2.0
         cell[0, 1] = cell[0, 0] * celldm[1]
         cell[0, 2] = cell[0, 0] * celldm[2]
@@ -172,18 +224,45 @@ def convert_celldm(ibrav, celldm):
         cell[2, 1] = -cell[0, 1]
         cell[2, 2] = cell[0, 2]
     elif ibrav == 12:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=12: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[3] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={celldm[3]} for ibrav=12: |cosAB| < 1 required"
+            )
         sen = np.sqrt(1.0 - celldm[3] ** 2)
         cell[0, 0] = a
         cell[1, 0] = a * celldm[1] * celldm[3]
         cell[1, 1] = a * celldm[1] * sen
         cell[2, 2] = a * celldm[2]
     elif ibrav == -12:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=-12: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[4] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(5)={celldm[4]} for ibrav=-12: |cosAC| < 1 required"
+            )
         sen = np.sqrt(1.0 - celldm[4] ** 2)
         cell[0, 0] = a
         cell[1, 1] = a * celldm[1]
         cell[2, 0] = a * celldm[2] * celldm[4]
         cell[2, 2] = a * celldm[2] * sen
     elif ibrav == 13:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=13: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[3] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={celldm[3]} for ibrav=13: |cosAB| < 1 required"
+            )
         sen = np.sqrt(1.0 - celldm[3] ** 2)
         cell[0, 0] = a / 2.0
         cell[0, 2] = -cell[0, 0] * celldm[2]
@@ -192,6 +271,15 @@ def convert_celldm(ibrav, celldm):
         cell[2, 0] = cell[0, 0]
         cell[2, 2] = -cell[0, 2]
     elif ibrav == -13:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=-13: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[4] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(5)={celldm[4]} for ibrav=-13: |cosAC| < 1 required"
+            )
         sen = np.sqrt(1.0 - celldm[4] ** 2)
         cell[0, 0] = a / 2.0
         cell[0, 1] = cell[0, 0] * celldm[1]
@@ -200,6 +288,17 @@ def convert_celldm(ibrav, celldm):
         cell[2, 0] = a * celldm[2] * celldm[4]
         cell[2, 2] = a * celldm[2] * sen
     elif ibrav == 14:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=14: b/a and c/a must be positive"
+            )
+        for _idx, _key in ((3, "cosBC"), (4, "cosAC"), (5, "cosAB")):
+            if not -1.0 < celldm[_idx] < 1.0:
+                raise RuntimeError(
+                    f"wrong celldm({_idx + 1})={celldm[_idx]} for ibrav=14: "
+                    f"|{_key}| < 1 required"
+                )
         singam = np.sqrt(1.0 - celldm[5] ** 2)
         term = (
             1.0
@@ -208,11 +307,11 @@ def convert_celldm(ibrav, celldm):
             - celldm[4] ** 2
             - celldm[5] ** 2
         )
-        if term < 0.0:
+        if term <= 0.0:
             raise RuntimeError(
-                "celldm do not make sense, check your data "
-                f"(ibrav=14 with cosAB={celldm[5]}, cosAC={celldm[4]}, "
-                f"cosBC={celldm[3]})"
+                "celldm do not make sense for ibrav=14, check your data "
+                f"(cosBC={celldm[3]}, cosAC={celldm[4]}, cosAB={celldm[5]} "
+                "yield a degenerate or invalid cell)"
             )
         cell[0, 0] = a
         cell[1, 0] = a * celldm[1] * celldm[5]
