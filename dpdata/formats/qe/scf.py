@@ -8,7 +8,10 @@ import numpy as np
 from dpdata.utils import open_file
 
 from .traj import (
+    convert_celldm,
     kbar2evperang3,
+    load_celldm,
+    resolve_celldm,
     ry2ev,
 )
 from .traj import (
@@ -64,21 +67,9 @@ def get_cell(lines):
         for ii in blk:
             ret.append([float(jj) for jj in ii.split()[0:3]])
         ret = np.array(ret)
-    elif ibrav == 1:
-        a = None
-        for iline in lines:
-            line = iline.replace("=", " ").replace(",", "").split()
-            if len(line) >= 2 and "a" == line[0]:
-                # print("line = ", line)
-                a = float(line[1])
-            if len(line) >= 2 and "celldm(1)" == line[0]:
-                a = float(line[1]) * bohr2ang
-        # print("a = ", a)
-        if not a:
-            raise RuntimeError("parameter 'a' or 'celldm(1)' cannot be found.")
-        ret = np.array([[a, 0.0, 0.0], [0.0, a, 0.0], [0.0, 0.0, a]])
     else:
-        raise RuntimeError("ibrav > 1 not supported yet.")
+        celldm = resolve_celldm(lines, ibrav, load_celldm(lines))
+        ret = convert_celldm(ibrav, celldm) * bohr2ang
     return ret
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -55,22 +54,274 @@ def load_block(lines, key, nlines):
 
 
 def convert_celldm(ibrav, celldm):
+    """Build a 3x3 cell matrix from QE ``ibrav`` and ``celldm(1..6)``.
+
+    Rows are the lattice vectors a1, a2, a3 in the same length unit as
+    ``celldm[0]`` (Bohr for QE inputs). Formulas follow Quantum ESPRESSO's
+    ``latgen`` (``Modules/latgen.f90``) so the cell matches QE's own output.
+    """
+    sr2 = np.sqrt(2.0)
+    sr3 = np.sqrt(3.0)
+    a = celldm[0]
+    if not a > 0.0:
+        raise RuntimeError(f"wrong celldm(1)={a}: must be positive for ibrav={ibrav}")
+    cell = np.zeros((3, 3))
+
     if ibrav == 1:
-        return celldm[0] * np.eye(3)
+        cell[0, 0] = a
+        cell[1, 1] = a
+        cell[2, 2] = a
     elif ibrav == 2:
-        return celldm[0] * 0.5 * np.array([[-1, 0, 1], [0, 1, 1], [-1, 1, 0]])
-    elif ibrav == 3:
-        return celldm[0] * 0.5 * np.array([[1, 1, 1], [-1, 1, 1], [-1, -1, 1]])
-    elif ibrav == -3:
-        return celldm[0] * 0.5 * np.array([[-1, 1, 1], [1, -1, 1], [1, 1, -1]])
-    else:
-        warnings.warn(
-            "unsupported ibrav "
-            + str(ibrav)
-            + " if no .cel file, the cell convertion may be wrong. "
+        t = a / 2.0
+        cell[0, 0] = -t
+        cell[0, 2] = t
+        cell[1, 1] = t
+        cell[1, 2] = t
+        cell[2, 0] = -t
+        cell[2, 1] = t
+    elif abs(ibrav) == 3:
+        t = a / 2.0
+        cell[:, :] = t
+        if ibrav < 0:
+            cell[0, 0] = -t
+            cell[1, 1] = -t
+            cell[2, 2] = -t
+        else:
+            cell[1, 0] = -t
+            cell[2, 0] = -t
+            cell[2, 1] = -t
+    elif ibrav == 4:
+        if not celldm[2] > 0.0:
+            raise RuntimeError(
+                f"wrong celldm(3)={celldm[2]} for ibrav=4: c/a must be positive"
+            )
+        cell[0, 0] = a
+        cell[1, 0] = -a / 2.0
+        cell[1, 1] = a * sr3 / 2.0
+        cell[2, 2] = a * celldm[2]
+    elif ibrav == 5:
+        cosab = celldm[3]
+        if not -0.5 < cosab < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={cosab} for ibrav=5: need -0.5 < cosAB < 1"
+            )
+        term1 = np.sqrt(1.0 + 2.0 * cosab)
+        term2 = np.sqrt(1.0 - cosab)
+        cell[1, 1] = sr2 * a * term2 / sr3
+        cell[1, 2] = a * term1 / sr3
+        cell[0, 0] = a * term2 / sr2
+        cell[0, 1] = -cell[0, 0] / sr3
+        cell[0, 2] = cell[1, 2]
+        cell[2, 0] = -cell[0, 0]
+        cell[2, 1] = cell[0, 1]
+        cell[2, 2] = cell[1, 2]
+    elif ibrav == -5:
+        cosab = celldm[3]
+        if not -0.5 < cosab < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={cosab} for ibrav=-5: need -0.5 < cosAB < 1"
+            )
+        term1 = np.sqrt(1.0 + 2.0 * cosab)
+        term2 = np.sqrt(1.0 - cosab)
+        cell[0, 0] = a * (term1 - 2.0 * term2) / 3.0
+        cell[0, 1] = a * (term1 + term2) / 3.0
+        cell[0, 2] = cell[0, 1]
+        cell[1, 0] = cell[0, 2]
+        cell[1, 1] = cell[0, 0]
+        cell[1, 2] = cell[0, 1]
+        cell[2, 0] = cell[0, 1]
+        cell[2, 1] = cell[0, 2]
+        cell[2, 2] = cell[0, 0]
+    elif ibrav == 6:
+        if not celldm[2] > 0.0:
+            raise RuntimeError(
+                f"wrong celldm(3)={celldm[2]} for ibrav=6: c/a must be positive"
+            )
+        cell[0, 0] = a
+        cell[1, 1] = a
+        cell[2, 2] = a * celldm[2]
+    elif ibrav == 7:
+        if not celldm[2] > 0.0:
+            raise RuntimeError(
+                f"wrong celldm(3)={celldm[2]} for ibrav=7: c/a must be positive"
+            )
+        cell[1, 0] = a / 2.0
+        cell[1, 1] = cell[1, 0]
+        cell[1, 2] = celldm[2] * a / 2.0
+        cell[0, 0] = cell[1, 0]
+        cell[0, 1] = -cell[1, 0]
+        cell[0, 2] = cell[1, 2]
+        cell[2, 0] = -cell[1, 0]
+        cell[2, 1] = -cell[1, 0]
+        cell[2, 2] = cell[1, 2]
+    elif ibrav == 8:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=8: b/a and c/a must be positive"
+            )
+        cell[0, 0] = a
+        cell[1, 1] = a * celldm[1]
+        cell[2, 2] = a * celldm[2]
+    elif ibrav == 9:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=9: b/a and c/a must be positive"
+            )
+        cell[0, 0] = a / 2.0
+        cell[0, 1] = cell[0, 0] * celldm[1]
+        cell[1, 0] = -cell[0, 0]
+        cell[1, 1] = cell[0, 1]
+        cell[2, 2] = a * celldm[2]
+    elif ibrav == -9:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=-9: b/a and c/a must be positive"
+            )
+        cell[0, 0] = a / 2.0
+        cell[0, 1] = -cell[0, 0] * celldm[1]
+        cell[1, 0] = cell[0, 0]
+        cell[1, 1] = -cell[0, 1]
+        cell[2, 2] = a * celldm[2]
+    elif ibrav == 91:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=91: b/a and c/a must be positive"
+            )
+        cell[0, 0] = a
+        cell[1, 1] = a * celldm[1] / 2.0
+        cell[1, 2] = -a * celldm[2] / 2.0
+        cell[2, 1] = cell[1, 1]
+        cell[2, 2] = -cell[1, 2]
+    elif ibrav == 10:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=10: b/a and c/a must be positive"
+            )
+        cell[1, 0] = a / 2.0
+        cell[1, 1] = cell[1, 0] * celldm[1]
+        cell[0, 0] = cell[1, 0]
+        cell[0, 2] = cell[1, 0] * celldm[2]
+        cell[2, 1] = cell[1, 0] * celldm[1]
+        cell[2, 2] = cell[0, 2]
+    elif ibrav == 11:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=11: b/a and c/a must be positive"
+            )
+        cell[0, 0] = a / 2.0
+        cell[0, 1] = cell[0, 0] * celldm[1]
+        cell[0, 2] = cell[0, 0] * celldm[2]
+        cell[1, 0] = -cell[0, 0]
+        cell[1, 1] = cell[0, 1]
+        cell[1, 2] = cell[0, 2]
+        cell[2, 0] = -cell[0, 0]
+        cell[2, 1] = -cell[0, 1]
+        cell[2, 2] = cell[0, 2]
+    elif ibrav == 12:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=12: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[3] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={celldm[3]} for ibrav=12: |cosAB| < 1 required"
+            )
+        sen = np.sqrt(1.0 - celldm[3] ** 2)
+        cell[0, 0] = a
+        cell[1, 0] = a * celldm[1] * celldm[3]
+        cell[1, 1] = a * celldm[1] * sen
+        cell[2, 2] = a * celldm[2]
+    elif ibrav == -12:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=-12: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[4] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(5)={celldm[4]} for ibrav=-12: |cosAC| < 1 required"
+            )
+        sen = np.sqrt(1.0 - celldm[4] ** 2)
+        cell[0, 0] = a
+        cell[1, 1] = a * celldm[1]
+        cell[2, 0] = a * celldm[2] * celldm[4]
+        cell[2, 2] = a * celldm[2] * sen
+    elif ibrav == 13:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=13: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[3] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(4)={celldm[3]} for ibrav=13: |cosAB| < 1 required"
+            )
+        sen = np.sqrt(1.0 - celldm[3] ** 2)
+        cell[0, 0] = a / 2.0
+        cell[0, 2] = -cell[0, 0] * celldm[2]
+        cell[1, 0] = a * celldm[1] * celldm[3]
+        cell[1, 1] = a * celldm[1] * sen
+        cell[2, 0] = cell[0, 0]
+        cell[2, 2] = -cell[0, 2]
+    elif ibrav == -13:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=-13: b/a and c/a must be positive"
+            )
+        if not -1.0 < celldm[4] < 1.0:
+            raise RuntimeError(
+                f"wrong celldm(5)={celldm[4]} for ibrav=-13: |cosAC| < 1 required"
+            )
+        sen = np.sqrt(1.0 - celldm[4] ** 2)
+        cell[0, 0] = a / 2.0
+        cell[0, 1] = cell[0, 0] * celldm[1]
+        cell[1, 0] = -cell[0, 0]
+        cell[1, 1] = cell[0, 1]
+        cell[2, 0] = a * celldm[2] * celldm[4]
+        cell[2, 2] = a * celldm[2] * sen
+    elif ibrav == 14:
+        if not (celldm[1] > 0.0 and celldm[2] > 0.0):
+            raise RuntimeError(
+                f"wrong celldm(2)={celldm[1]} or celldm(3)={celldm[2]} "
+                f"for ibrav=14: b/a and c/a must be positive"
+            )
+        for _idx, _key in ((3, "cosBC"), (4, "cosAC"), (5, "cosAB")):
+            if not -1.0 < celldm[_idx] < 1.0:
+                raise RuntimeError(
+                    f"wrong celldm({_idx + 1})={celldm[_idx]} for ibrav=14: "
+                    f"|{_key}| < 1 required"
+                )
+        singam = np.sqrt(1.0 - celldm[5] ** 2)
+        term = (
+            1.0
+            + 2.0 * celldm[3] * celldm[4] * celldm[5]
+            - celldm[3] ** 2
+            - celldm[4] ** 2
+            - celldm[5] ** 2
         )
-        return np.eye(3)
-        # raise RuntimeError('unsupported ibrav ' + str(ibrav))
+        if term <= 0.0:
+            raise RuntimeError(
+                "celldm do not make sense for ibrav=14, check your data "
+                f"(cosBC={celldm[3]}, cosAC={celldm[4]}, cosAB={celldm[5]} "
+                "yield a degenerate or invalid cell)"
+            )
+        cell[0, 0] = a
+        cell[1, 0] = a * celldm[1] * celldm[5]
+        cell[1, 1] = a * celldm[1] * singam
+        cell[2, 0] = a * celldm[2] * celldm[4]
+        cell[2, 1] = a * celldm[2] * (celldm[3] - celldm[4] * celldm[5]) / singam
+        cell[2, 2] = a * celldm[2] * np.sqrt(term / (1.0 - celldm[5] ** 2))
+    else:
+        raise RuntimeError(f"nonexistent bravais lattice {ibrav}")
+    return cell
 
 
 def load_cell_parameters(lines, lattice_parameter=None):
@@ -137,6 +388,78 @@ def load_celldm(lines):
     return celldm
 
 
+def _float_after(lines, name):
+    """Return the QE namelist value assigned to ``name`` in ``&SYSTEM``.
+
+    The regex keeps ``name`` a whole word so ``B`` does not match inside
+    ``celldm`` or ``cosBC``, and skips comment text and content after the
+    closing ``/``.
+    """
+    pattern = re.compile(
+        rf"\b{re.escape(name)}\s*=\s*({_QE_FLOAT_PATTERN})", re.IGNORECASE
+    )
+    in_system = False
+    for raw_line in lines:
+        line = raw_line.split("!", 1)[0]
+        if re.search(r"&SYSTEM\b", line, re.IGNORECASE):
+            in_system = True
+        if not in_system:
+            continue
+        matched = pattern.search(line)
+        if matched is not None:
+            return float(matched.group(1).replace("d", "e").replace("D", "E"))
+        if "/" in line:
+            break
+    return None
+
+
+def abc_to_celldm(ibrav, a=None, b=None, c=None, cosab=None, cosac=None, cosbc=None):
+    """Convert QE A/B/C (Angstrom) + cosines to ``celldm(1..6)`` in Bohr.
+
+    Mirrors ``abc2celldm`` in QE's ``Modules/latgen.f90``: the angle-cosine
+    slots (4..6) are ibrav-dependent because each lattice fixes a different
+    axis pair.
+    """
+    if a is None:
+        raise RuntimeError(
+            f"A (or celldm(1)) must be defined when ibrav={ibrav} is nonzero"
+        )
+    if a <= 0:
+        raise RuntimeError(f"A must be positive (got {a})")
+    b_ratio = b / a if b is not None else 0.0
+    c_ratio = c / a if c is not None else 0.0
+    if ibrav in (14, 0):
+        c4, c5, c6 = cosbc or 0.0, cosac or 0.0, cosab or 0.0
+    elif ibrav in (-12, -13):
+        c4, c5, c6 = 0.0, cosac or 0.0, 0.0
+    elif ibrav in (5, -5, 12, 13):
+        c4, c5, c6 = cosab or 0.0, 0.0, 0.0
+    else:
+        c4 = c5 = c6 = 0.0
+    return np.array([a / length_convert, b_ratio, c_ratio, c4, c5, c6])
+
+
+def resolve_celldm(lines, ibrav, celldm):
+    """Return a valid ``celldm`` array, deriving it from A/B/C when unset.
+
+    QE accepts either ``celldm(1..6)`` or the crystallographic ``A, B, C,
+    cosAB, cosAC, cosBC`` form (A/B/C in Angstrom). Both must not be mixed.
+    """
+    if celldm[0] != 0.0:
+        if _float_after(lines, "A") is not None:
+            raise ValueError("both A and celldm(1) define the QE lattice parameter")
+        return celldm
+    a = _float_after(lines, "A")
+    if a is None:
+        return celldm
+    b = _float_after(lines, "B")
+    c = _float_after(lines, "C")
+    cosab = _float_after(lines, "cosAB")
+    cosac = _float_after(lines, "cosAC")
+    cosbc = _float_after(lines, "cosBC")
+    return abc_to_celldm(ibrav, a, b, c, cosab, cosac, cosbc)
+
+
 def load_lattice_parameter(lines, celldm):
     """Return QE's ``alat`` in angstrom, rejecting conflicting definitions."""
     a_value = None
@@ -188,6 +511,7 @@ def load_param_file(fname: FileType):
         cell = load_cell_parameters(lines, lattice_parameter)
     else:
         # celldm and cells reconstructed from it are expressed in Bohr.
+        celldm = resolve_celldm(lines, ibrav, celldm)
         cell = convert_celldm(ibrav, celldm) * length_convert
     # print(atom_names)
     # print(atom_numbs)
