@@ -138,12 +138,79 @@ class TestCPTRAJInputCellUnits(unittest.TestCase):
 
 
 class TestConverCellDim(unittest.TestCase):
-    def test_case_null(self):
-        cell = convert_celldm(8, [1, 1, 1])
-        ref = np.eye(3)
-        for ii in range(3):
-            for jj in range(3):
-                self.assertAlmostEqual(cell[ii][jj], ref[ii][jj])
+    # Reference cells follow latgen in QE's Modules/latgen.f90. They were
+    # checked against each lattice family's lengths, angles, and volume.
+    CELLDIM = np.array([4.0, 1.5, 2.0, 0.5, 0.4, 0.6])
+    GOLDEN = {
+        1: [[4, 0, 0], [0, 4, 0], [0, 0, 4]],
+        2: [[-2, 0, 2], [0, 2, 2], [-2, 2, 0]],
+        3: [[2, 2, 2], [-2, 2, 2], [-2, -2, 2]],
+        -3: [[-2, 2, 2], [2, -2, 2], [2, 2, -2]],
+        4: [[4, 0, 0], [-2, 2 * np.sqrt(3), 0], [0, 0, 8]],
+        5: [
+            [2, -2 / np.sqrt(3), 4 * np.sqrt(2 / 3)],
+            [0, 4 / np.sqrt(3), 4 * np.sqrt(2 / 3)],
+            [-2, -2 / np.sqrt(3), 4 * np.sqrt(2 / 3)],
+        ],
+        -5: [
+            [0, 2 * np.sqrt(2), 2 * np.sqrt(2)],
+            [2 * np.sqrt(2), 0, 2 * np.sqrt(2)],
+            [2 * np.sqrt(2), 2 * np.sqrt(2), 0],
+        ],
+        6: [[4, 0, 0], [0, 4, 0], [0, 0, 8]],
+        7: [[2, -2, 4], [2, 2, 4], [-2, -2, 4]],
+        8: [[4, 0, 0], [0, 6, 0], [0, 0, 8]],
+        9: [[2, 3, 0], [-2, 3, 0], [0, 0, 8]],
+        -9: [[2, -3, 0], [2, 3, 0], [0, 0, 8]],
+        91: [[4, 0, 0], [0, 3, -4], [0, 3, 4]],
+        10: [[2, 0, 4], [2, 3, 0], [0, 3, 4]],
+        11: [[2, 3, 4], [-2, 3, 4], [-2, -3, 4]],
+        12: [[4, 0, 0], [3, 3 * np.sqrt(3), 0], [0, 0, 8]],
+        -12: [[4, 0, 0], [0, 6, 0], [3.2, 0, 8 * np.sqrt(1 - 0.4**2)]],
+        13: [[2, 0, -4], [3, 3 * np.sqrt(3), 0], [2, 0, 4]],
+        -13: [[2, 3, 0], [-2, 3, 0], [3.2, 0, 8 * np.sqrt(1 - 0.4**2)]],
+        14: [[4, 0, 0], [3.6, 4.8, 0], [3.2, 2.6, 6.8556546004]],
+    }
+
+    def test_all_ibrav(self):
+        for ibrav, expected in self.GOLDEN.items():
+            with self.subTest(ibrav=ibrav):
+                cell = convert_celldm(ibrav, self.CELLDIM)
+                np.testing.assert_allclose(cell, expected, atol=1e-7)
+
+    def test_lengths_angles_and_volume(self):
+        # (lens, sorted cos of the three pairs, |det|), independent of axis choice.
+        expected = {
+            1: ([4, 4, 4], [0, 0, 0], 64),
+            2: ([4 / np.sqrt(2)] * 3, [0.5, 0.5, 0.5], 16),
+            4: ([4, 4, 8], [-0.5, 0, 0], 0.5 * np.sqrt(3) * 4 * 4 * 8),
+            5: ([4, 4, 4], [0.5, 0.5, 0.5], 45.25483),
+            8: ([4, 6, 8], [0, 0, 0], 192),
+            12: ([4, 6, 8], [0, 0, 0.5], 192 * np.sqrt(0.75)),
+            -12: ([4, 6, 8], [0, 0.4, 0], 192 * np.sqrt(1 - 0.4**2)),
+            14: ([4, 6, 8], [0.4, 0.5, 0.6], 131.6286),
+        }
+        for ibrav, (lens, cos, vol) in expected.items():
+            with self.subTest(ibrav=ibrav):
+                cell = convert_celldm(ibrav, self.CELLDIM)
+                np.testing.assert_allclose(
+                    np.linalg.norm(cell, axis=1), lens, atol=1e-6
+                )
+                pairs = [
+                    np.dot(cell[i], cell[j])
+                    / np.linalg.norm(cell[i])
+                    / np.linalg.norm(cell[j])
+                    for i in range(3)
+                    for j in range(i + 1, 3)
+                ]
+                np.testing.assert_allclose(sorted(pairs), sorted(cos), atol=1e-6)
+                self.assertAlmostEqual(abs(np.linalg.det(cell)), vol, places=4)
+
+    def test_unsupported_ibrav_raises(self):
+        for ibrav in (0, 15, -1, 99):
+            with self.subTest(ibrav=ibrav):
+                with self.assertRaises(RuntimeError):
+                    convert_celldm(ibrav, self.CELLDIM)
 
 
 class TestVirial(unittest.TestCase):
