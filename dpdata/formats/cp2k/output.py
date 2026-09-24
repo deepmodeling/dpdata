@@ -491,6 +491,8 @@ def get_frames(fname):
                             force.append(ii.split()[3:6])
             # add reading stress tensor
             if "STRESS TENSOR [GPa" in ii:
+                stress = []
+                stress_block_idx = None
                 stress_flag = True
                 stress_idx = idx
             if stress_flag:

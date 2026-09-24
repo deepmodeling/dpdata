@@ -264,6 +264,33 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
                     system.data["virials"], legacy.data["virials"], rtol=1e-10
                 )
 
+    def test_cp2k2025_stress_last_block_wins(self):
+        """A legacy block after a STRESS| block replaces it rather than appending."""
+        fname = self.create_cp2k_output_2025()
+        try:
+            legacy = dpdata.LabeledSystem(fname, fmt="cp2k/output")
+        finally:
+            os.unlink(fname)
+        fname = self.create_cp2k_output_2025(
+            stress_lines=[
+                *self.stress_block_lines("Analytical", "GPa", 9.0),
+                "",
+                " STRESS TENSOR [GPa]",
+                "",
+                "            X               Y               Z",
+                "  X       0.12345678      0.00000000      0.00000000",
+                "  Y       0.00000000      0.12345678      0.00000000",
+                "  Z       0.00000000      0.00000000      0.12345678",
+            ]
+        )
+        try:
+            system = dpdata.LabeledSystem(fname, fmt="cp2k/output")
+        finally:
+            os.unlink(fname)
+        np.testing.assert_allclose(
+            system.data["virials"], legacy.data["virials"], rtol=1e-10
+        )
+
     def test_cp2k2025_stress_block_unsupported_unit(self):
         """An unknown STRESS| unit is reported instead of silently misconverted."""
         fname = self.create_cp2k_output_2025(
