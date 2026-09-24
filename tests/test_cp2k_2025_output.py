@@ -4,6 +4,7 @@ import os
 import tempfile
 import unittest
 
+import numpy as np
 from comp_sys import CompLabeledSys
 from context import dpdata
 
@@ -61,7 +62,9 @@ class TestCp2k2023FormatStillWorks(unittest.TestCase, CompLabeledSys):
 class TestCp2k2025EdgeCases(unittest.TestCase):
     """Test edge cases for CP2K 2025 format parsing to improve coverage."""
 
-    def create_cp2k_output_2025(self, energy_line=None, forces_lines=None):
+    def create_cp2k_output_2025(
+        self, energy_line=None, forces_lines=None, stress_lines=None
+    ):
         """Create a minimal CP2K 2025 output file for testing."""
         with tempfile.NamedTemporaryFile(mode="w", suffix=".out", delete=False) as f:
             # Header required for parsing
@@ -136,12 +139,17 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
                 )
 
             f.write("\n")
-            f.write(" STRESS TENSOR [GPa]\n")
-            f.write("\n")
-            f.write("            X               Y               Z\n")
-            f.write("  X       0.12345678      0.00000000      0.00000000\n")
-            f.write("  Y       0.00000000      0.12345678      0.00000000\n")
-            f.write("  Z       0.00000000      0.00000000      0.12345678\n")
+            # Stress lines - use provided or default (pre-2023 layout)
+            if stress_lines is not None:
+                for line in stress_lines:
+                    f.write(line + "\n")
+            else:
+                f.write(" STRESS TENSOR [GPa]\n")
+                f.write("\n")
+                f.write("            X               Y               Z\n")
+                f.write("  X       0.12345678      0.00000000      0.00000000\n")
+                f.write("  Y       0.00000000      0.12345678      0.00000000\n")
+                f.write("  Z       0.00000000      0.00000000      0.12345678\n")
             f.write("\n")
             f.write(
                 "  **** **** ******  **  PROGRAM ENDED AT                 2025-01-15 10:30:05.000\n"
@@ -210,6 +218,122 @@ class TestCp2k2025EdgeCases(unittest.TestCase):
             )
         finally:
             os.unlink(fname)
+
+    @staticmethod
+    def stress_block_lines(kind, unit, diag):
+        """CP2K >= 2023 STRESS| block for a diagonal tensor, with eigenvector trailer."""
+        zero = f"{0.0:20.11E}"
+        return [
+            f" STRESS| {kind} stress tensor [{unit}]",
+            " STRESS|                        x                   y                   z",
+            f" STRESS|      x {diag:20.11E}{zero}{zero}",
+            f" STRESS|      y {zero}{diag:20.11E}{zero}",
+            f" STRESS|      z {zero}{zero}{diag:20.11E}",
+            f" STRESS| 1/3 Trace {diag:20.11E}",
+            f" STRESS| Determinant {diag**3:20.11E}",
+            "",
+            f" STRESS| Eigenvectors and eigenvalues of the {kind.lower()} stress tensor [{unit}]",
+            " STRESS|                        1                   2                   3",
+            f" STRESS| Eigenvalues {diag:20.11E}{diag:20.11E}{diag:20.11E}",
+            " STRESS|      x           1.000000000000      0.000000000000      0.000000000000",
+            " STRESS|      y           0.000000000000      1.000000000000      0.000000000000",
+            " STRESS|      z           0.000000000000      0.000000000000      1.000000000000",
+        ]
+
+    def test_cp2k2025_stress_block_matches_legacy_block(self):
+        """STRESS| blocks in GPa or bar give the same virial as the legacy GPa block."""
+        fname = self.create_cp2k_output_2025()
+        try:
+            legacy = dpdata.LabeledSystem(fname, fmt="cp2k/output")
+        finally:
+            os.unlink(fname)
+        for kind, unit, diag in [
+            ("Analytical", "GPa", 0.12345678),
+            ("Analytical", "bar", 0.12345678e4),
+            ("Numerical", "bar", 0.12345678e4),
+        ]:
+            with self.subTest(kind=kind, unit=unit):
+                fname = self.create_cp2k_output_2025(
+                    stress_lines=self.stress_block_lines(kind, unit, diag)
+                )
+                try:
+                    system = dpdata.LabeledSystem(fname, fmt="cp2k/output")
+                finally:
+                    os.unlink(fname)
+                np.testing.assert_allclose(
+                    system.data["virials"], legacy.data["virials"], rtol=1e-10
+                )
+
+    def test_cp2k2025_stress_last_block_wins(self):
+        """A legacy block after a STRESS| block replaces it rather than appending."""
+        fname = self.create_cp2k_output_2025()
+        try:
+            legacy = dpdata.LabeledSystem(fname, fmt="cp2k/output")
+        finally:
+            os.unlink(fname)
+        fname = self.create_cp2k_output_2025(
+            stress_lines=[
+                *self.stress_block_lines("Analytical", "GPa", 9.0),
+                "",
+                " STRESS TENSOR [GPa]",
+                "",
+                "            X               Y               Z",
+                "  X       0.12345678      0.00000000      0.00000000",
+                "  Y       0.00000000      0.12345678      0.00000000",
+                "  Z       0.00000000      0.00000000      0.12345678",
+            ]
+        )
+        try:
+            system = dpdata.LabeledSystem(fname, fmt="cp2k/output")
+        finally:
+            os.unlink(fname)
+        np.testing.assert_allclose(
+            system.data["virials"], legacy.data["virials"], rtol=1e-10
+        )
+
+    def test_cp2k2025_stress_block_unsupported_unit(self):
+        """An unknown STRESS| unit is reported instead of silently misconverted."""
+        fname = self.create_cp2k_output_2025(
+            stress_lines=self.stress_block_lines("Analytical", "atm", 1.0)
+        )
+        try:
+            with self.assertRaisesRegex(RuntimeError, r"stress unit \[atm\]"):
+                dpdata.formats.cp2k.output.get_frames(fname)
+        finally:
+            os.unlink(fname)
+
+
+class TestCp2k2025_2Output(unittest.TestCase, CompLabeledSys):
+    """Real CP2K 2025.2 ENERGY_FORCE output with a STRESS| block in bar."""
+
+    def setUp(self):
+        self.system_1 = dpdata.LabeledSystem(
+            "cp2k/cp2k_2025_2_output/cp2k_output", fmt="cp2k/output"
+        )
+        self.system_2 = dpdata.LabeledSystem(
+            "cp2k/cp2k_2025_2_output/deepmd", fmt="deepmd/npy"
+        )
+        self.places = 6
+        self.e_places = 6
+        self.f_places = 6
+        self.v_places = 4
+
+    def test_atoms(self):
+        self.assertEqual(self.system_1.data["atom_names"], ["O", "H", "Pt"])
+        self.assertEqual(self.system_1.data["atom_numbs"], [230, 460, 216])
+
+    def test_virial_from_stress_block(self):
+        # stress [bar] * 1e5 Pa/bar * V [angstrom^3] * 1e-30 / e [J/eV]
+        expected = np.array(
+            [
+                [-165.97467866, -5.59178174, -1.85802137],
+                [-5.59178174, -175.55563528, 10.62986842],
+                [-1.85802137, 10.62986842, -33.06329482],
+            ]
+        )
+        np.testing.assert_allclose(
+            self.system_1.data["virials"][0], expected, rtol=1e-8
+        )
 
 
 if __name__ == "__main__":

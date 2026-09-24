@@ -26,6 +26,13 @@ delimiter_patterns.append(delimiter_p2)
 avail_patterns = []
 avail_patterns.append(re.compile(r"^ INITIAL POTENTIAL ENERGY"))
 avail_patterns.append(re.compile(r"^ ENSEMBLE TYPE"))
+# Newer CP2K stress block (STRESS| prefix), in STRESS_UNIT (bar by default, or GPa):
+#  STRESS| Analytical stress tensor [bar]
+#  STRESS|                        x                   y                   z
+#  STRESS|      x       -2.60150458500E+04  -8.76461756245E+02  -2.91228225972E+02
+stress_block_pattern = re.compile(
+    r"^ STRESS\|\s+(?:Analytical|Numerical) stress tensor \[(?P<unit>[^\]]+)\]"
+)
 
 
 class Cp2kSystems:
@@ -393,6 +400,7 @@ def get_frames(fname):
     coord = []
     force = []
     stress = []
+    stress_block_idx = None
 
     fp = open(fname)
     # check if output is converged, if not, return sys = 0
@@ -483,6 +491,8 @@ def get_frames(fname):
                             force.append(ii.split()[3:6])
             # add reading stress tensor
             if "STRESS TENSOR [GPa" in ii:
+                stress = []
+                stress_block_idx = None
                 stress_flag = True
                 stress_idx = idx
             if stress_flag:
@@ -491,6 +501,21 @@ def get_frames(fname):
                         stress_flag = False
                     else:
                         stress.append(ii.split()[1:4])
+            # newer STRESS| format: header, column labels, then the x/y/z rows;
+            # the eigenvector rows that follow are not part of the tensor.
+            stress_block = stress_block_pattern.match(ii)
+            if stress_block:
+                stress = []
+                stress_block_idx = idx
+                stress_unit = stress_block.group("unit")
+                try:
+                    stress_to_gpa = PressureConversion(stress_unit, "GPa").value()
+                except (IndexError, ValueError, KeyError) as e:
+                    raise RuntimeError(
+                        f"Unsupported CP2K stress unit [{stress_unit}]: {ii.strip()}"
+                    ) from e
+            elif stress_block_idx is not None and 2 <= idx - stress_block_idx <= 4:
+                stress.append([float(v) * stress_to_gpa for v in ii.split()[2:5]])
 
     fp.close()
     assert coord, "cannot find coords"
