@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -34,11 +34,37 @@ def read_dftb_plus(
         atomic forces
 
     """
+    frame = parse_dftb_plus(fn_1, fn_2)
+    return frame["symbols"], frame["coords"], frame["energy"], frame["forces"]
+
+
+def parse_dftb_plus(fn_1: FileType, fn_2: FileType) -> dict[str, Any]:
+    """Read one labeled frame, including the cell and stress, from DFTB+ files.
+
+    Parameters
+    ----------
+    fn_1 : str
+        DFTB+ input file name
+    fn_2 : str
+        DFTB+ output file name
+
+    Returns
+    -------
+    dict
+        ``symbols``, ``coords``, ``energy`` and ``forces`` as returned by
+        :func:`read_dftb_plus`; ``cell``, the lattice vectors of a periodic
+        (``S`` or ``F``) GenFormat geometry; and ``stress``, the ``Total stress
+        tensor`` in Hartree/Bohr^3. ``cell`` and ``stress`` are ``None`` when
+        the files do not contain them.
+
+    """
     coord = None
     symbols = None
     forces = None
     energy = None
     natoms = None
+    cell = None
+    stress = None
     with open_file(fn_1) as f:
         lines = iter(f)
         for line in lines:
@@ -58,15 +84,18 @@ def read_dftb_plus(
                 s = next(lines).split()
                 symbols.append(components[int(s[1]) - 1])
                 coord.append([float(s[2]), float(s[3]), float(s[4])])
-            if coordinate_mode == "F":
-                # Fractional GenFormat coordinates are expressed in the
-                # lattice-vector basis that follows the atom records.
+            if coordinate_mode in {"S", "F"}:
+                # Periodic GenFormat geometries end with the origin and the
+                # three lattice vectors.
                 origin = np.array([float(value) for value in next(lines).split()])
-                lattice = np.array(
+                cell = np.array(
                     [[float(value) for value in next(lines).split()] for _ in range(3)]
                 )
-                coord = (np.asarray(coord) @ lattice + origin).tolist()
-            elif coordinate_mode not in {"C", "S"}:
+                if coordinate_mode == "F":
+                    # Fractional GenFormat coordinates are expressed in the
+                    # lattice-vector basis.
+                    coord = (np.asarray(coord) @ cell + origin).tolist()
+            elif coordinate_mode != "C":
                 raise ValueError(
                     f"unsupported GenFormat coordinate mode: {coordinate_mode}"
                 )
@@ -84,10 +113,21 @@ def read_dftb_plus(
             elif line.startswith("Total energy:"):
                 s = line.split()
                 energy = float(s[2])
+            elif line.startswith("Total stress tensor"):
+                stress = np.array(
+                    [[float(value) for value in next(lines).split()] for _ in range(3)]
+                )
 
     symbols = np.array(symbols)
     forces = np.array(forces)
     coord = np.array(coord)
     assert coord.shape == forces.shape
 
-    return symbols, coord, energy, forces
+    return {
+        "symbols": symbols,
+        "coords": coord,
+        "energy": energy,
+        "forces": forces,
+        "cell": cell,
+        "stress": stress,
+    }

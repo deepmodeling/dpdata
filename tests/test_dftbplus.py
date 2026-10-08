@@ -121,5 +121,73 @@ Total Forces
             )
 
 
+class TestDftbplusPeriodic(unittest.TestCase):
+    forces_text = """Total energy: -1.0 H
+Total Forces
+1 0.0 0.0 0.0
+2 0.0 0.0 0.0
+"""
+    stress_text = """
+Total stress tensor
+1.0e-6 0.0 0.0
+0.0 2.0e-6 0.0
+0.0 0.0 3.0e-6
+"""
+
+    @staticmethod
+    def load(input_text, output_text):
+        return dpdata.LabeledSystem(
+            (StringIO(input_text), StringIO(output_text)), fmt="dftbplus"
+        )
+
+    def test_supercell_keeps_cell_and_converts_stress_to_virial(self):
+        input_text = """Geometry = GenFormat {
+2 S
+Si
+1 1 0.0 0.0 0.0
+2 1 1.0 1.0 1.0
+0.0 0.0 0.0
+5.0 0.0 0.0
+0.0 5.0 0.0
+0.0 0.0 5.0
+}
+"""
+        system = self.load(input_text, self.forces_text + self.stress_text)
+
+        self.assertFalse(system.nopbc)
+        np.testing.assert_allclose(system["cells"][0], np.eye(3) * 5.0)
+        # DFTB+ prints the stress in Hartree/Bohr^3 with the opposite sign to
+        # ASE's, so the virial is +volume * stress.
+        pressure_convert = dpdata.unit.PressureConversion(
+            "hartree/bohr^3", "eV/angstrom^3"
+        ).value()
+        np.testing.assert_allclose(
+            system["virials"][0],
+            np.diag([1.0e-6, 2.0e-6, 3.0e-6]) * 125.0 * pressure_convert,
+        )
+
+    def test_fractional_geometry_keeps_cell_without_virial(self):
+        input_text = """Geometry = GenFormat {
+2 F
+H O
+1 1 0.5 0.0 0.0
+2 2 0.0 0.5 0.0
+0.0 0.0 0.0
+2.0 0.0 0.0
+0.0 4.0 0.0
+0.0 0.0 6.0
+}
+"""
+        system = self.load(input_text, self.forces_text)
+
+        self.assertFalse(system.nopbc)
+        np.testing.assert_allclose(system["cells"][0], np.diag([2.0, 4.0, 6.0]))
+        np.testing.assert_allclose(
+            system["coords"][0], [[1.0, 0.0, 0.0], [0.0, 2.0, 0.0]]
+        )
+        # Without a stress tensor in the output there is no virial label.
+        self.assertNotIn("virials", system.data)
+
+
 if __name__ == "__main__":
     unittest.main()
