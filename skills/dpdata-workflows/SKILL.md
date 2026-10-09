@@ -4,11 +4,11 @@ Use this page to choose the smallest dpdata skill that matches the user's
 intent. The workflow skills own user-facing procedures; API and extension
 material lives under `dpdata-extend`.
 
-| User intent | Skill | Load next |
-| --- | --- | --- |
+| User intent                                                           | Skill                                          | Load next                                                                                                    |
+| --------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Convert a producer output, export a dataset, or prepare training data | [`dpdata-convert`](../dpdata-convert/SKILL.md) | [`semantic-validation.md`](../dpdata-convert/references/semantic-validation.md), then the producer reference |
-| Inspect, validate, merge, or filter a dataset before it is consumed | [`dpdata-inspect`](../dpdata-inspect/SKILL.md) | `validate_labeled_system.py` for deterministic checks |
-| Add a format, driver, or minimizer | [`dpdata-extend`](../dpdata-extend/SKILL.md) | The matching developer reference |
+| Inspect, validate, merge, or filter a dataset before it is consumed   | [`dpdata-inspect`](../dpdata-inspect/SKILL.md) | `validate_labeled_system.py` for deterministic checks                                                        |
+| Add a format, driver, or minimizer                                    | [`dpdata-extend`](../dpdata-extend/SKILL.md)   | The matching developer reference                                                                             |
 
 A conversion request is incomplete until the output contract is checked. Ask
 whether the source is labeled, whether it contains one system or many, and

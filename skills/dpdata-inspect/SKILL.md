@@ -17,16 +17,16 @@ producer-specific contract only if the source producer is known.
 
 1. Preserve the raw source and record its producer/version, parser version,
    format, and conversion command.
-2. Load one `LabeledSystem` when energies are required. Load `System` only for
+1. Load one `LabeledSystem` when energies are required. Load `System` only for
    an intentionally unlabeled structure. Use `MultiSystems` for independent
    systems and check that their atom/type order is compatible.
-3. Run the deterministic validator below. It checks array shapes, frame
+1. Run the deterministic validator below. It checks array shapes, frame
    alignment, atom counts and type indices, finite values, labels, and (when
    requested) periodic-cell determinants.
-4. Review the remaining contract manually: units, stress versus virial and
+1. Review the remaining contract manually: units, stress versus virial and
    sign, periodicity, atom ordering, missing-label policy, producer/version,
    and provenance. These cannot be inferred safely from NumPy arrays.
-5. Stop with an actionable error when a required label or contract declaration
+1. Stop with an actionable error when a required label or contract declaration
    is absent. Do not repair missing labels by inserting zeros.
 
 ## Deterministic validator
@@ -35,19 +35,19 @@ For a labeled system:
 
 ```bash
 python skills/dpdata-inspect/scripts/validate_labeled_system.py \
-  converted -f deepmd/raw \
-  --energy-unit eV --force-unit eV/A \
-  --producer VASP --producer-version 6.4 --parser-version 0.1 \
-  --provenance raw/source.out
+    converted -f deepmd/raw \
+    --energy-unit eV --force-unit eV/A \
+    --producer VASP --producer-version 6.4 --parser-version 0.1 \
+    --provenance raw/source.out
 ```
 
 For multiple systems or an explicitly unlabeled structure:
 
 ```bash
 python skills/dpdata-inspect/scripts/validate_labeled_system.py \
-  dataset --format deepmd/comp --multi --type-map C H O
+    dataset --format deepmd/comp --multi --type-map C H O
 python skills/dpdata-inspect/scripts/validate_labeled_system.py \
-  POSCAR --format vasp/poscar --allow-unlabeled --require-pbc
+    POSCAR --format vasp/poscar --allow-unlabeled --require-pbc
 ```
 
 Add `--strict-metadata` to make undeclared units, stress sign, producer/version,

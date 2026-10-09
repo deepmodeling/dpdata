@@ -23,21 +23,21 @@ meaning.
    [`VASP`](references/producers/vasp.md),
    [`ABACUS`](references/producers/abacus.md), or
    [`Quantum ESPRESSO`](references/producers/qe.md).
-2. **Choose the data shape.** Use `LabeledSystem` for data that must carry
+1. **Choose the data shape.** Use `LabeledSystem` for data that must carry
    energies, and `System` for structures without labels. Use `MultiSystems`
    or `--multi` only when directories contain independent systems. Do not
    silently turn partial labels into a complete dataset; state which labels
    are required and what happens when one is absent.
-3. **Convert without discarding the source.** Keep the raw files and write the
+1. **Convert without discarding the source.** Keep the raw files and write the
    converted output to a new path. Include an explicit `--from_format` when
    auto-detection could be ambiguous. Supply `--type-map` when the producer's
    atom ordering is not self-describing.
-4. **Validate the output.** Check frame alignment, atom ordering, type-map
+1. **Validate the output.** Check frame alignment, atom ordering, type-map
    consistency, finite values, cell/PBC assumptions, units, and virial/stress
    conventions. The reusable checks and their limits are in
    [`semantic-validation.md`](references/semantic-validation.md); the
    deterministic validator is part of [`dpdata-inspect`](../dpdata-inspect/SKILL.md).
-5. **Record provenance.** Keep the raw path, producer/version, parser version,
+1. **Record provenance.** Keep the raw path, producer/version, parser version,
    command, format, type map, units, and any dropped or missing labels next to
    the converted data. A successful parser run is not evidence that a dataset
    is suitable for training.
