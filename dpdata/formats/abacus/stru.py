@@ -482,13 +482,15 @@ def validate_duplicate_species(atom_names, masses, pp_files, orb_files):
                 )
 
 
-def get_frame_from_stru(stru):
+def get_frame_from_stru(stru, return_flipped=False):
     """Read the ABACUS STRU file and return the dpdata frame.
 
     The description of ABACUS STRU can be found in https://abacus.deepmodeling.com/en/latest/advanced/input_files/stru.html
 
     Args:
         stru (str): path to the ABACUS STRU file.
+        return_flipped (bool): whether to return a flag indicating that the
+            input cell was left-handed and had to be reflected.
 
     Returns
     -------
@@ -529,6 +531,7 @@ def get_frame_from_stru(stru):
     celldm = parse_lattice_constant_block(blocks["LATTICE_CONSTANT"])
     cell = parse_lattice_vectors_block(blocks["LATTICE_VECTORS"])
     cell = np.array(cell) * celldm * bohr2ang
+    cell_flipped = np.linalg.det(cell) < 0
     atom_numbs, coords, move, mags, velocity, sc, lambda_ = parse_pos(
         blocks["ATOMIC_POSITIONS"], atom_names, celldm, cell
     )
@@ -573,6 +576,8 @@ def get_frame_from_stru(stru):
         data["dpks_descriptor"] = dpks_descriptor[0].strip()
     if len(move) > 0:
         data["move"] = np.array([move])
+    if return_flipped:
+        return data, cell_flipped
     return data
 
 
