@@ -21,6 +21,21 @@ class TestPOSCARCart(unittest.TestCase, TestPOSCARoh):
         self.assertTrue(np.array_equal(self.system["move"], expected))
 
 
+class TestPOSCARPostFunctionControl(unittest.TestCase):
+    def test_disable_rot_lower_triangular(self):
+        system = dpdata.System(
+            os.path.join("poscars", "POSCAR.oh.c"),
+            fmt="vasp/poscar",
+            rot_lower_triangular=False,
+        )
+        expected_cell = np.array(
+            [[0.0, 1.785, 1.785], [1.6065, 0.0, 1.785], [1.9635, 1.8207, 0.0]]
+        )
+        expected_coords = np.array([[0.0, 0.0, 0.0], [0.8925, 0.8925, 0.8925]])
+        np.testing.assert_allclose(system["cells"][0], expected_cell)
+        np.testing.assert_allclose(system["coords"][0], expected_coords)
+
+
 class TestPOSCARMoveFlags(unittest.TestCase):
     def setUp(self):
         self.tmp_file = "POSCAR.tmp.1"

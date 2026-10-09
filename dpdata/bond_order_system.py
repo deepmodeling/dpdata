@@ -95,11 +95,12 @@ class BondOrderSystem(System):
         self.check_data()
 
     def from_fmt_obj(self, fmtobj, file_name, **kwargs):
+        post_func_controls = self._get_post_func_controls(
+            fmtobj.from_bond_order_system, kwargs
+        )
         mol = fmtobj.from_bond_order_system(file_name, **kwargs)
         self.from_rdkit_mol(mol)
-        if hasattr(fmtobj.from_bond_order_system, "post_func"):
-            for post_f in fmtobj.from_bond_order_system.post_func:  # type: ignore
-                self.post_funcs.get_plugin(post_f)(self)
+        self._apply_post_funcs(fmtobj.from_bond_order_system, post_func_controls)
         return self
 
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
