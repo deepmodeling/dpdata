@@ -204,16 +204,19 @@ class System:
             return
         if file_name is None:
             return
-        self.from_fmt(
-            file_name,
-            fmt,
-            type_map=type_map,
-            begin=begin,
-            step=step,
-            convergence_check=convergence_check,
-            rot_lower_triangular=rot_lower_triangular,
+        load_kwargs = {
+            "type_map": type_map,
+            "begin": begin,
+            "step": step,
+            "convergence_check": convergence_check,
             **kwargs,
-        )
+        }
+        # The default keeps the historical post-processing behavior. Only
+        # pass an explicit opt-out to format readers; this avoids adding a
+        # control-only keyword to third-party readers that do not accept it.
+        if not rot_lower_triangular:
+            load_kwargs["rot_lower_triangular"] = False
+        self.from_fmt(file_name, fmt, **load_kwargs)
 
         if type_map is not None:
             self.apply_type_map(type_map)
