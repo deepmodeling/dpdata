@@ -108,6 +108,7 @@ class System:
         step: int = 1,
         data: dict[str, Any] | None = None,
         convergence_check: bool = True,
+        rot_lower_triangular: bool = True,
         **kwargs,
     ):
         """Constructor.
@@ -180,6 +181,9 @@ class System:
             The raw data of System class.
         convergence_check : boolean
             Whether to request a convergence check.
+        rot_lower_triangular : boolean
+            Whether to apply the registered ``rot_lower_triangular`` post
+            function after loading. The default is ``True``.
         **kwargs : dict
             other parameters
         """
@@ -204,6 +208,7 @@ class System:
             begin=begin,
             step=step,
             convergence_check=convergence_check,
+            rot_lower_triangular=rot_lower_triangular,
             **kwargs,
         )
 
@@ -236,7 +241,29 @@ class System:
             fmt = os.path.basename(file_name).split(".")[-1].lower()
         return self.from_fmt_obj(load_format(fmt), file_name, **kwargs)
 
+    def _get_post_func_controls(
+        self, from_method: Any, kwargs: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Remove registered post-function controls from format arguments."""
+        controls = {}
+        for post_f in getattr(from_method, "post_func", ()):
+            if post_f in kwargs:
+                controls[post_f] = kwargs.pop(post_f)
+        return controls
+
+    def _apply_post_funcs(self, from_method: Any, controls: dict[str, Any]):
+        """Run registered post functions unless explicitly disabled.
+
+        A post function can be disabled by passing a false value under its
+        registered name. This keeps format-specific post-processing opt-out
+        while retaining the existing default behavior.
+        """
+        for post_f in getattr(from_method, "post_func", ()):
+            if controls.get(post_f, True):
+                self.post_funcs.get_plugin(post_f)(self)
+
     def from_fmt_obj(self, fmtobj: Format, file_name: Any, **kwargs: Any):
+        post_func_controls = self._get_post_func_controls(fmtobj.from_system, kwargs)
         data = fmtobj.from_system(file_name, **kwargs)
         if data:
             if isinstance(data, (list, tuple)):
@@ -245,9 +272,7 @@ class System:
             else:
                 self.data = {**self.data, **data}
                 self.check_data()
-            if hasattr(fmtobj.from_system, "post_func"):
-                for post_f in fmtobj.from_system.post_func:  # type: ignore
-                    self.post_funcs.get_plugin(post_f)(self)
+            self._apply_post_funcs(fmtobj.from_system, post_func_controls)
         return self
 
     def to(self, fmt: str, *args: Any, **kwargs: Any) -> System:
@@ -1257,6 +1282,9 @@ class LabeledSystem(System):
     post_funcs = Plugin() + System.post_funcs
 
     def from_fmt_obj(self, fmtobj, file_name, **kwargs):
+        post_func_controls = self._get_post_func_controls(
+            fmtobj.from_labeled_system, kwargs
+        )
         data = fmtobj.from_labeled_system(file_name, **kwargs)
         if data:
             if isinstance(data, (list, tuple)):
@@ -1265,9 +1293,7 @@ class LabeledSystem(System):
             else:
                 self.data = {**self.data, **data}
                 self.check_data()
-            if hasattr(fmtobj.from_labeled_system, "post_func"):
-                for post_f in fmtobj.from_labeled_system.post_func:  # type: ignore
-                    self.post_funcs.get_plugin(post_f)(self)
+            self._apply_post_funcs(fmtobj.from_labeled_system, post_func_controls)
         return self
 
     def to_fmt_obj(self, fmtobj, *args, **kwargs):
