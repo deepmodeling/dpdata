@@ -299,7 +299,7 @@ def _output_position_frames(lines, natoms, cell):
             continue
         block = _read_atom_block(lines, line_idx + 1, natoms)
         if len(block) != natoms:
-            continue
+            raise RuntimeError("incomplete ATOMIC_POSITIONS block in QE output")
         unit = _position_unit(line)
         symbols_in_block = [parts[0] for parts in block]
         coords = np.array(

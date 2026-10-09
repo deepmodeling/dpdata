@@ -122,3 +122,11 @@ H 0.25 0.25 0.25
         cell = 5.0 * dpdata.formats.qe.scf.bohr2ang
         np.testing.assert_allclose(system["cells"][0], np.eye(3) * cell)
         np.testing.assert_allclose(system["coords"][0, 1], [cell / 2] * 3)
+
+    def test_incomplete_output_positions_are_rejected(self):
+        with self.assertRaisesRegex(RuntimeError, "incomplete ATOMIC_POSITIONS"):
+            dpdata.formats.qe.scf._output_position_frames(
+                ["ATOMIC_POSITIONS (angstrom)", "H 0.0 0.0 0.0", ""],
+                natoms=2,
+                cell=np.eye(3),
+            )
