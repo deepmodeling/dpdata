@@ -97,6 +97,16 @@ class TestValidateLabeledSystem(unittest.TestCase):
             any("cells: expected numeric" in error for error in report.errors)
         )
 
+    def test_nopbc_is_rejected_when_periodic_cells_are_required(self):
+        data = self._data()
+        data["nopbc"] = True
+        report = _VALIDATOR.validate_data(data, require_pbc=True)
+        self.assertFalse(report.ok)
+        self.assertIn(
+            "nopbc: system is non-periodic while periodic cells are required",
+            report.errors,
+        )
+
     def test_multi_system_type_map_must_match(self):
         first = type("System", (), {"data": self._data()})()
         second_data = self._data()

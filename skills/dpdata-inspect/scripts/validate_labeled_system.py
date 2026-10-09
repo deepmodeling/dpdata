@@ -160,6 +160,8 @@ def validate_data(
         )
 
     nopbc = bool(data.get("nopbc", False))
+    if require_pbc and nopbc:
+        errors.append("nopbc: system is non-periodic while periodic cells are required")
     if cells is None:
         if not nopbc or require_pbc:
             errors.append("cells: missing for a periodic system")
