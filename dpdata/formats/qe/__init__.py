@@ -1,5 +1,5 @@
 from __future__ import annotations
 
-from . import scf, traj
+from . import pwmd, scf, traj
 
-__all__ = ["scf", "traj"]
+__all__ = ["pwmd", "scf", "traj"]
