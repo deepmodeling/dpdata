@@ -129,6 +129,27 @@ class TestABACUSLabeledOutput(unittest.TestCase):
         # ref_energy = -30007.651851226798
         # self.assertAlmostEqual(self.system_h2o.data['energies'][0], ref_energy)
 
+    def test_left_handed_cell_transforms_forces(self):
+        # ABACUS accepts left-handed cells. The reader reflects both the cell
+        # and coordinates to satisfy dpdata's right-handed-cell convention, so
+        # force vectors must receive the same transformation.
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            shutil.copy("abacus.scf/INPUT.ok", os.path.join(tmp_dir, "INPUT"))
+            shutil.copytree("abacus.scf/OUT.ch4", os.path.join(tmp_dir, "OUT.ch4"))
+            with open("abacus.scf/STRU.ch4") as fp:
+                stru = fp.read().replace("0.0 0.0 1", "0.0 0.0 -1")
+            with open(os.path.join(tmp_dir, "STRU.ch4"), "w") as fp:
+                fp.write(stru)
+
+            left_handed = dpdata.LabeledSystem(tmp_dir, fmt="abacus/scf")
+
+            np.testing.assert_allclose(
+                left_handed.data["coords"], -self.system_ch4.data["coords"]
+            )
+            np.testing.assert_allclose(
+                left_handed.data["forces"], -self.system_ch4.data["forces"]
+            )
+
 
 class TestABACUSLabeledOutputFail(unittest.TestCase):
     def setUp(self):

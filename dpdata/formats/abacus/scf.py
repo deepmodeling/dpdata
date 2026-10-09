@@ -221,7 +221,7 @@ def get_frame(fname):
         return data
 
     # read STRU file
-    data = get_frame_from_stru(geometry_path_in)
+    data, cell_flipped = get_frame_from_stru(geometry_path_in, return_flipped=True)
     natoms = sum(data["atom_numbs"])
     # should remove spins from STRU file
     if "spins" in data:
@@ -236,6 +236,8 @@ def get_frame(fname):
         magforce = magforce[-1:]
 
     force = get_force(outlines, natoms)
+    if cell_flipped and force is not None:
+        force = -force
     stress = get_stress(outlines)
 
     data["energies"] = np.array(energy)[np.newaxis]
