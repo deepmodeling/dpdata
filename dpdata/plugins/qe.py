@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dpdata.formats.qe.pwmd
 import dpdata.formats.qe.scf
 import dpdata.formats.qe.traj
 import dpdata.md.pbc
@@ -82,6 +83,8 @@ class QECPTrajFormat(Format):
         return data
 
 
+@Format.register("qe/pw/aimd")
+@Format.register("qe/pw/aimd_output")
 @Format.register("qe/pw/scf")
 class QECPPWSCFFormat(Format):
     """Quantum ESPRESSO PWscf self-consistent-field output.
@@ -94,7 +97,7 @@ class QECPPWSCFFormat(Format):
     """
 
     @Format.post("rot_lower_triangular")
-    def from_labeled_system(self, file_name, **kwargs):
+    def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
         """Load a labeled Quantum ESPRESSO PWscf calculation.
 
         Parameters
@@ -103,6 +106,10 @@ class QECPPWSCFFormat(Format):
             Quantum ESPRESSO ``pw.x`` output file. The matching input file is
             inferred by replacing ``out`` with ``in`` in the base name; pass
             ``[input_file, output_file]`` to give both paths explicitly.
+        begin : int
+            Index of the first frame to return.
+        step : int
+            Stride between returned frames.
         **kwargs : dict
             Additional format arguments accepted for API compatibility.
 
@@ -121,7 +128,49 @@ class QECPPWSCFFormat(Format):
             data["energies"],
             data["forces"],
             tmp_virial,
-        ) = dpdata.formats.qe.scf.get_frame(file_name)
+        ) = dpdata.formats.qe.scf.get_frames(file_name, begin=begin, step=step)
         if tmp_virial is not None:
             data["virials"] = tmp_virial
+        return data
+
+
+@Format.register("qe/pw/md")
+class QECPPWMDFormat(Format):
+    """Quantum ESPRESSO ``pw.x`` molecular-dynamics output."""
+
+    @Format.post("rot_lower_triangular")
+    def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
+        """Load labeled frames from a Quantum ESPRESSO PW MD output.
+
+        Parameters
+        ----------
+        file_name : str or list[str]
+            Quantum ESPRESSO ``pw.x`` output file and, optionally, its input
+            file as ``[input_file, output_file]``.
+        begin : int
+            Index of the first frame to return.
+        step : int
+            Stride between returned frames.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled system data for the selected trajectory frames.
+        """
+        data = {}
+        (
+            data["atom_names"],
+            data["atom_numbs"],
+            data["atom_types"],
+            data["cells"],
+            data["coords"],
+            data["energies"],
+            data["forces"],
+            tmp_virial,
+        ) = dpdata.formats.qe.pwmd.to_system_data(file_name, begin=begin, step=step)
+        if tmp_virial is not None:
+            data["virials"] = tmp_virial
+        data["coords"] = dpdata.md.pbc.apply_pbc(data["coords"], data["cells"])
         return data
