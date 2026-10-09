@@ -74,7 +74,10 @@ class System:
 
     Restrictions:
         - `d_example['orig']` is always [0, 0, 0]
-        - `d_example['cells'][ii]` is always lower triangular (lammps cell tensor convention)
+        - `d_example['cells'][ii]` is lower triangular (the LAMMPS cell tensor
+          convention) when `rot_lower_triangular` is enabled. Set
+          `rot_lower_triangular=False` while loading to preserve the source
+          cell orientation.
 
     Attributes
     ----------
