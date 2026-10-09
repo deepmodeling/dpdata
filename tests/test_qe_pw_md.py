@@ -74,6 +74,11 @@ H 1.5 1.5 1.5
         system.to("deepmd/npy", npy_dir)
         self.assertTrue(os.path.isfile(os.path.join(npy_dir, "set.000", "coord.npy")))
 
+        # The original issue used the existing qe/pw/scf entry point for a
+        # pw.x AIMD output. It should now retain every labeled frame too.
+        scf_system = dpdata.LabeledSystem(self.prefix + ".out", fmt="qe/pw/scf")
+        self.assertEqual(scf_system.get_nframes(), 2)
+
     def test_variable_cell_units(self):
         output = self.prefix + ".vc.out"
         with open(self.prefix + ".vc.in", "w") as fp:
