@@ -77,7 +77,8 @@ H 1.5 1.5 1.5
     def test_variable_cell_units(self):
         output = self.prefix + ".vc.out"
         with open(self.prefix + ".vc.in", "w") as fp:
-            fp.write(open(self.prefix + ".in").read())
+            with open(self.prefix + ".in") as source:
+                fp.write(source.read())
         with open(output, "w") as fp:
             fp.write(
                 """     Program PWSCF
