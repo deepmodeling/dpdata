@@ -170,7 +170,7 @@ def validate_data(
             if require_pbc:
                 try:
                     determinants = np.linalg.det(cells)
-                except np.linalg.LinAlgError as exc:
+                except (np.linalg.LinAlgError, TypeError, ValueError) as exc:
                     errors.append(f"cells: cannot compute determinants ({exc})")
                 else:
                     if np.any(np.isclose(determinants, 0.0)):

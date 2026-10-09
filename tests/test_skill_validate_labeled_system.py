@@ -88,6 +88,15 @@ class TestValidateLabeledSystem(unittest.TestCase):
         self.assertFalse(report.ok)
         self.assertTrue(any("cells: shape" in error for error in report.errors))
 
+    def test_nonnumeric_cells_are_reported(self):
+        data = self._data()
+        data["cells"] = np.full((2, 3, 3), "invalid")
+        report = _VALIDATOR.validate_data(data, require_pbc=True)
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("cells: expected numeric" in error for error in report.errors)
+        )
+
     def test_multi_system_type_map_must_match(self):
         first = type("System", (), {"data": self._data()})()
         second_data = self._data()
