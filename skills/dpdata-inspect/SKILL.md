@@ -53,6 +53,8 @@ python skills/dpdata-inspect/scripts/validate_labeled_system.py \
 Add `--strict-metadata` to make undeclared units, stress sign, producer/version,
 or provenance fail. Add `--json` for CI or another machine consumer. The script exits zero
 only when every loaded system satisfies the selected contract.
+The validator rejects a supplied `--provenance` path when the file does not exist
+or is empty, whether or not `--strict-metadata` is enabled.
 
 The validator is intentionally small and deterministic. It does not infer
 units, transform forces, choose a stress sign, or decide whether a project

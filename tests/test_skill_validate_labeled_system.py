@@ -70,6 +70,24 @@ class TestValidateLabeledSystem(unittest.TestCase):
         self.assertTrue(any("forces: shape" in error for error in report.errors))
         self.assertIn("atom_types: index is outside atom_names/type_map", report.errors)
 
+    def test_provenance_check_is_independent_of_parser_version(self):
+        report = _VALIDATOR.validate_data(
+            self._data(), provenance=__file__, parser_version=None
+        )
+        self.assertTrue(report.ok, report.errors)
+
+        report = _VALIDATOR.validate_data(
+            self._data(), provenance=None, parser_version="1"
+        )
+        self.assertTrue(report.ok, report.errors)
+
+    def test_empty_cells_are_rejected(self):
+        data = self._data()
+        data["cells"] = np.empty((0,))
+        report = _VALIDATOR.validate_data(data, require_pbc=True)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("cells: shape" in error for error in report.errors))
+
     def test_multi_system_type_map_must_match(self):
         first = type("System", (), {"data": self._data()})()
         second_data = self._data()

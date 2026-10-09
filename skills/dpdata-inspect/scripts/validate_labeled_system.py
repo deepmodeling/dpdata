@@ -163,19 +163,20 @@ def validate_data(
     if cells is None:
         if not nopbc or require_pbc:
             errors.append("cells: missing for a periodic system")
-    elif cells.size:
+    else:
         _check_shape("cells", cells, (nframes, 3, 3), errors)
-        _check_finite("cells", cells, errors)
-        if require_pbc:
-            try:
-                determinants = np.linalg.det(cells)
-            except np.linalg.LinAlgError as exc:
-                errors.append(f"cells: cannot compute determinants ({exc})")
-            else:
-                if np.any(np.isclose(determinants, 0.0)):
-                    errors.append(
-                        "cells: singular cell while periodic cells are required"
-                    )
+        if cells.shape == (nframes, 3, 3):
+            _check_finite("cells", cells, errors)
+            if require_pbc:
+                try:
+                    determinants = np.linalg.det(cells)
+                except np.linalg.LinAlgError as exc:
+                    errors.append(f"cells: cannot compute determinants ({exc})")
+                else:
+                    if np.any(np.isclose(determinants, 0.0)):
+                        errors.append(
+                            "cells: singular cell while periodic cells are required"
+                        )
 
     label_shapes = {
         "energies": (nframes,),
@@ -211,7 +212,7 @@ def validate_data(
         warnings.append("producer version was not declared")
     if parser_version is None:
         warnings.append("parser version was not declared")
-    else:
+    if provenance is not None:
         provenance_path = Path(provenance)
         if not provenance_path.is_file():
             errors.append(f"provenance: file does not exist ({provenance})")
