@@ -511,6 +511,14 @@ def get_frames(fname, begin=0, step=1):
                 )
             ]
         )
+        # In a pw.x MD output, the energy and forces are printed for the
+        # current geometry before the updated positions for the next step.
+        # Associate the first labels with the input geometry and discard the
+        # final unlabelled update.
+        output_coords = np.concatenate(
+            (input_coords[np.newaxis, :, :], output_coords[:-1]), axis=0
+        )
+        cells = np.concatenate((cell[np.newaxis, :, :], cells[:-1]), axis=0)
     virials = None
     if stresses is not None:
         if len(stresses) < nframes:
