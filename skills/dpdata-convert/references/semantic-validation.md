@@ -6,15 +6,15 @@ can be made mechanically should be delegated to
 `dpdata-inspect/scripts/validate_labeled_system.py`; conventions that are not
 encoded in dpdata must be declared by the producer contract.
 
-| Invariant       | Check                                                                                                                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Labels          | Decide whether energies are required. If forces or virials are present, they must be complete for the same frames. Missing labels are reported, not filled with zeros or silently dropped. |
+| Invariant       | Check                                                                                                                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Labels          | Decide whether energies are required. If forces or virials are present, they must be complete for the same frames. Missing labels are reported, not filled with zeros or silently dropped.                    |
 | Frame alignment | `coords` and `cells` have `nframes`; required labels cover every frame; optional labels, when present, have matching frame dimensions. Forces have `(nframes, natoms, 3)` and virials have `(nframes, 3, 3)`. |
-| Atoms and types | `atom_types` has `natoms`, indices are in `atom_names`, and `sum(atom_numbs) == natoms`. A multi-system dataset uses one documented type-map order.                                        |
-| Values          | Coordinates, cells, energies, forces, and virials contain finite values.                                                                                                                   |
-| Cell and PBC    | Decide whether the source is periodic. For periodic data, cells are present and nonsingular; for molecules, preserve the explicit non-periodic (`nopbc`) choice.                           |
-| Units           | Record energy and force units. Record the virial/stress unit and the sign convention separately; they are not inferred from array names.                                                   |
-| Provenance      | Preserve the raw input, producer and version, parser version, conversion command, selected format, type map, and any filtering or dropped labels.                                          |
+| Atoms and types | `atom_types` has `natoms`, indices are in `atom_names`, and `sum(atom_numbs) == natoms`. A multi-system dataset uses one documented type-map order.                                                           |
+| Values          | Coordinates, cells, energies, forces, and virials contain finite values.                                                                                                                                      |
+| Cell and PBC    | Decide whether the source is periodic. For periodic data, cells are present and nonsingular; for molecules, preserve the explicit non-periodic (`nopbc`) choice.                                              |
+| Units           | Record energy and force units. Record the virial/stress unit and the sign convention separately; they are not inferred from array names.                                                                      |
+| Provenance      | Preserve the raw input, producer and version, parser version, conversion command, selected format, type map, and any filtering or dropped labels.                                                             |
 
 `dpdata`'s standard labeled fields are `energies`, `forces`, and `virials`.
 Some producers call the last field stress or pressure. Confirm whether the
