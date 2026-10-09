@@ -106,6 +106,10 @@ class QECPPWSCFFormat(Format):
             Quantum ESPRESSO ``pw.x`` output file. The matching input file is
             inferred by replacing ``out`` with ``in`` in the base name; pass
             ``[input_file, output_file]`` to give both paths explicitly.
+        begin : int
+            Index of the first frame to return.
+        step : int
+            Stride between returned frames.
         **kwargs : dict
             Additional format arguments accepted for API compatibility.
 
@@ -136,6 +140,25 @@ class QECPPWMDFormat(Format):
 
     @Format.post("rot_lower_triangular")
     def from_labeled_system(self, file_name, begin=0, step=1, **kwargs):
+        """Load labeled frames from a Quantum ESPRESSO PW MD output.
+
+        Parameters
+        ----------
+        file_name : str or list[str]
+            Quantum ESPRESSO ``pw.x`` output file and, optionally, its input
+            file as ``[input_file, output_file]``.
+        begin : int
+            Index of the first frame to return.
+        step : int
+            Stride between returned frames.
+        **kwargs : dict
+            Additional format arguments accepted for API compatibility.
+
+        Returns
+        -------
+        dict
+            Labeled system data for the selected trajectory frames.
+        """
         data = {}
         (
             data["atom_names"],
