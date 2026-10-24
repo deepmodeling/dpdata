@@ -188,3 +188,17 @@ Information and Modeling* **65** (21), 11497–11504 (2025). DOI:
 [systems]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/system.html
 [systems-index]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/index.html
 [try-online]: https://docs.deepmodeling.com/projects/dpdata/en/master/try_dpdata.html
+
+## Offline workflow instructions
+
+The installed CLI includes the public workflow skills from this release:
+
+```sh
+dpdata skills list
+dpdata skills read dpdata-cli
+dpdata skills read dpdata-cli README.md
+```
+
+These commands only display documentation; they do not execute its examples,
+access the network, or require a separate skill installation. Use `./skills` or
+`-- skills` when converting an input file literally named `skills`.
