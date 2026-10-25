@@ -177,20 +177,6 @@ Information and Modeling* **65** (21), 11497–11504 (2025). DOI:
 [10.1021/acs.jcim.5c01767][paper].
 [![Citations](https://citations.njzjz.win/10.1021/acs.jcim.5c01767)](https://badge.dimensions.ai/details/doi/10.1021/acs.jcim.5c01767)
 
-## Offline workflow instructions
-
-The installed CLI includes the public workflow skills from this release:
-
-```sh
-dpdata skills list
-dpdata skills read dpdata-cli
-dpdata skills read dpdata-cli README.md
-```
-
-These commands only display documentation; they do not execute its examples,
-access the network, or require a separate skill installation. Use `./skills` or
-`-- skills` when converting an input file literally named `skills`.
-
 [cli]: https://docs.deepmodeling.com/projects/dpdata/en/master/cli.html
 [documentation]: https://docs.deepmodeling.com/projects/dpdata/
 [formats]: https://docs.deepmodeling.com/projects/dpdata/en/master/formats.html
