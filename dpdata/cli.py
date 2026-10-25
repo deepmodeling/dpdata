@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 
 from . import __version__
 from .system import LabeledSystem, MultiSystems, System
@@ -16,9 +17,14 @@ def dpdata_parser() -> argparse.ArgumentParser:
     argparse.ArgumentParser
         dpdata cli parser
     """
+    from .skills import workflow_help
+
     parser = argparse.ArgumentParser(
         description="dpdata: Manipulating multiple atomic simulation data formats",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog=workflow_help("dpdata-cli")
+        + " Discover other guides: dpdata skills list. "
+        "To convert a file named skills, use ./skills or -- skills.",
     )
 
     parser.add_argument("from_file", type=str, help="read data from a file")
@@ -51,6 +57,10 @@ def dpdata_cli():
 
         $ dpdata -iposcar POSCAR -odeepmd/npy -O data -n
     """
+    if sys.argv[1:2] == ["skills"]:
+        from .skills import skills_cli
+
+        return skills_cli(sys.argv[2:])
     parser = dpdata_parser()
     parsed_args = parser.parse_args()
     convert(**vars(parsed_args))
