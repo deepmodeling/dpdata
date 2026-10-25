@@ -177,18 +177,6 @@ Information and Modeling* **65** (21), 11497–11504 (2025). DOI:
 [10.1021/acs.jcim.5c01767][paper].
 [![Citations](https://citations.njzjz.win/10.1021/acs.jcim.5c01767)](https://badge.dimensions.ai/details/doi/10.1021/acs.jcim.5c01767)
 
-[cli]: https://docs.deepmodeling.com/projects/dpdata/en/master/cli.html
-[documentation]: https://docs.deepmodeling.com/projects/dpdata/
-[formats]: https://docs.deepmodeling.com/projects/dpdata/en/master/formats.html
-[lmdb]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/lmdb.html
-[multisystems]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/multi.html
-[paper]: https://doi.org/10.1021/acs.jcim.5c01767
-[plugins]: https://docs.deepmodeling.com/projects/dpdata/en/master/plugin.html
-[python-api]: https://docs.deepmodeling.com/projects/dpdata/en/master/api/api.html
-[systems]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/system.html
-[systems-index]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/index.html
-[try-online]: https://docs.deepmodeling.com/projects/dpdata/en/master/try_dpdata.html
-
 ## Offline workflow instructions
 
 The installed CLI includes the public workflow skills from this release:
@@ -202,3 +190,15 @@ dpdata skills read dpdata-cli README.md
 These commands only display documentation; they do not execute its examples,
 access the network, or require a separate skill installation. Use `./skills` or
 `-- skills` when converting an input file literally named `skills`.
+
+[cli]: https://docs.deepmodeling.com/projects/dpdata/en/master/cli.html
+[documentation]: https://docs.deepmodeling.com/projects/dpdata/
+[formats]: https://docs.deepmodeling.com/projects/dpdata/en/master/formats.html
+[lmdb]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/lmdb.html
+[multisystems]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/multi.html
+[paper]: https://doi.org/10.1021/acs.jcim.5c01767
+[plugins]: https://docs.deepmodeling.com/projects/dpdata/en/master/plugin.html
+[python-api]: https://docs.deepmodeling.com/projects/dpdata/en/master/api/api.html
+[systems]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/system.html
+[systems-index]: https://docs.deepmodeling.com/projects/dpdata/en/master/systems/index.html
+[try-online]: https://docs.deepmodeling.com/projects/dpdata/en/master/try_dpdata.html
