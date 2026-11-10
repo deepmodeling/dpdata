@@ -1024,6 +1024,9 @@ class System:
     ):
         """Pick atom index.
 
+        The returned system has independent data and metadata. Editing it does
+        not modify the source, and editing the source does not modify it.
+
         Parameters
         ----------
         idx : int or list or slice
@@ -1050,7 +1053,13 @@ class System:
                     slice(None) for _ in self.data[tt.name].shape
                 ]
                 new_shape[axis_natoms] = idx
-                new_sys.data[tt.name] = self.data[tt.name][tuple(new_shape)]
+                # Index once; copy only slice results that still share storage,
+                # avoiding a second full memcpy for permutations/index lists.
+                source = self.data[tt.name]
+                selected = source[tuple(new_shape)]
+                if np.shares_memory(selected, source):
+                    selected = selected.copy()
+                new_sys.data[tt.name] = selected
         # recalculate atom_numbs according to atom_types
         atom_numbs = np.bincount(
             new_sys.data["atom_types"], minlength=len(self.get_atom_names())

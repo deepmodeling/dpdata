@@ -94,6 +94,19 @@ dpdata.LabeledSystem("OUTCAR").sub_system([0, -1]).to("deepmd/raw", "dpmd_raw")
 
 by which only the first and last frames are dumped to `dpmd_raw`.
 
+### Atom selection
+
+`pick_atom_idx` returns a system with independent data and metadata, including
+when selecting atoms with a slice:
+
+```python
+source = dpdata.System("POSCAR")
+picked = source.pick_atom_idx(slice(0, 10))
+```
+
+Editing either system does not modify the other. When selecting from a
+`LabeledSystem`, energies and virials are retained, not recomputed for the subset.
+
 ### replicate
 
 dpdata will create a super cell of the current atom configuration.
